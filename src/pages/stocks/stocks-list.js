@@ -1,0 +1,128 @@
+import React, { useState, useEffect } from 'react';
+import { Grid, Typography, Button, FormControl, InputLabel, Select, OutlinedInput, Box } from '@mui/material';
+import ProductCard from './product-card';
+import stockService from 'services/stockService';
+import LinearProgress from '@mui/material/LinearProgress';
+
+const StockList = (props) => {
+    const { brandid, branchid } = props;
+    const [loading, setloading] = useState(false);
+    const [ProductList, setProductList] = useState([]);
+    const [FilteredProductList, setFilteredProductList] = useState([]);
+    useEffect(() => {
+        getProductsList();
+    }, [brandid, branchid]);
+
+    const getProductsList = async () => {
+        const data = { branchid: branchid, brandid: brandid };
+        setloading(true);
+
+        try {
+            const response = await stockService.getProductsListWithQty(data);
+            if (response) {
+                const temp = response.data.result;
+                let products = getAllInnermostChildren(temp);
+                setProductList([]);
+                setProductList([...products]);
+                setFilteredProductList([...products]);
+                setloading(false);
+            }
+        } catch (error) {
+            setloading(false);
+        }
+    };
+
+    const searchArray = (value) => {
+        const results = ProductList.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()));
+
+        if (results.length > 0) {
+            console.log('Found Results:', results);
+            setFilteredProductList(results);
+        } else {
+            setFilteredProductList(ProductList);
+        }
+    };
+
+    const getAllInnermostChildren = (data) => {
+        const innermostChildren = [];
+
+        const traverse = (node) => {
+            if (!node.children || node.children.length === 0) {
+                if (node.type && node.type == 'product') {
+                    const branch = node.productQtyWithBranchs.find((ele) => ele.branchid === branchid);
+                    if (branch) {
+                        node.branchQty = branch.availabilityQty;
+                        node.isQtyAvailable = branch.isQtyAvailable;
+                    } else {
+                        node.branchQty = 0;
+                    }
+                    innermostChildren.push(node);
+                }
+            } else {
+                node.children.forEach(traverse);
+            }
+        };
+
+        data.forEach(traverse);
+
+        return innermostChildren;
+    };
+
+    return (
+        <>
+            <Box
+                sx={{
+                    // backgroundColor:"white",
+                    border: '1px solid lightGrey',
+                    borderRadius: 2,
+                    px: 2
+                }}
+                boxShadow={2}
+            >
+                {loading && <LinearProgress />}
+                <Box
+                    sx={{
+                        // backgroundColor:"red",
+                        // border: '1px solid lightGrey',
+                        borderRadius: 2,
+                        // mx: 2,
+                        // py: 2,
+                        px: 2,
+                        my: 3,
+                        width: '100%'
+                    }}
+                    display="flex"
+                    justifyContent="space-between"
+                    xs={12}
+                    boxShadow={0}
+                >
+                    <OutlinedInput
+                        id="email-login"
+                        type="email"
+                        name="Search"
+                        onChange={(e) => {
+                            searchArray(e.target.value);
+                        }}
+                        placeholder="Search by Product name"
+                        sx={{
+                            width: '30%'
+                        }}
+                    />
+
+                    <Typography>TOTAL ( {FilteredProductList.length} ) ITEMS</Typography>
+                </Box>
+                <Grid container sx={{ display: 'flex', px: 2 }} spacing={2}>
+                    {FilteredProductList.map((ele, index) => {
+                        return (
+                            <Grid item key={index} xs={4} sx={{ margin: '10px 0 0 0' }}>
+                                <ProductCard product={ele} branchid={4} fetchProduct={getProductsList} />;
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+            </Box>
+        </>
+    );
+};
+
+export default StockList;
