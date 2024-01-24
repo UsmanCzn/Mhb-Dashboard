@@ -138,7 +138,7 @@ const UserList = () => {
     };
 
     const handleCreateNewUser = () => {
-        navigate('/user-management');
+        navigate('/create-user');
     };
 
     const handleEditUser = (userId) =>{

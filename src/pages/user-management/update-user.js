@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
 import './create-user.css';
 import userManagementService from '../../services/userManagementService';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
+import {useSnackbar} from "notistack";
 
 const UpdateUser = ({ match }) => {
     const { id } = useParams();
 
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [multiSelectValues, setMultiSelectValues] = useState([]);
-    const [roleId, setRoleId] = useState();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -39,9 +40,16 @@ const UpdateUser = ({ match }) => {
             const response = await userManagementService.UpdateUser(postData);
             if (response) {
                 console.log('User updated:', response);
+                enqueueSnackbar('User Updated Successfully', {
+                    variant: 'success'
+                });
+                navigate('/user-management');
             }
         } catch (error) {
             console.error('Error updating user', error);
+            enqueueSnackbar(error.response.data.error.message, {
+                variant: 'error'
+            });
         }
     };
 
@@ -96,9 +104,10 @@ const UpdateUser = ({ match }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const allotedBranchIds = formData.branches.map((item) => item.value);
+        const allotedBranchIds = (formData.branches || []).map((item) => item.value);
+
         const postDataObject = {
-            id: id,
+            id: parseInt(id),
             userName: formData.firstName + ' ' + formData.lastName,
             name: formData.firstName,
             surname: formData.lastName,
@@ -106,16 +115,13 @@ const UpdateUser = ({ match }) => {
             address: formData.streetAddress || null,
             emailAddress: formData.email,
             phoneNumber: formData.phoneNumber,
-            roleId: roleId,
+            roleId: parseInt(formData.roles),
             allotedIdsList: allotedBranchIds,
         };
 
-        console.log(postDataObject)
-        debugger
-
         if (validateForm()) {
             await handlePostData(postDataObject);
-            navigate('/');
+            navigate('/user-management');
         } else {
             console.log('Form validation failed');
         }
@@ -139,11 +145,11 @@ const UpdateUser = ({ match }) => {
     const getDesiredBranch = async (role) => {
         try {
             let response = null;
-            if (role === 'Company_Admin') {
+            if (role == 3) {
                 response = await userManagementService.GetAllCompaniesUM();
-            } else if (role === 'Brand_Manager') {
+            } else if (role == 5) {
                 response = await userManagementService.GetBrandsForCurrentUserUM();
-            } else if (role === 'Branch_User') {
+            } else if (role == 7) {
                 response = await userManagementService.GetBranchesForCurrentUserUM();
             }
             if (response) {
@@ -182,30 +188,29 @@ const UpdateUser = ({ match }) => {
                         const roleObject = usersRoles?.find(role => role.id === userData?.roleId);
 
                         if (roleObject) {
-                            const responseForBranches = await getDesiredBranch(roleObject.name);
+                            const responseForBranches = await getDesiredBranch(roleObject.id);
                             const alloctedBranches = userData.allotedIdsList;
 
                             const alloctedBranchesObj = responseForBranches.filter((item) =>
                                 alloctedBranches.includes(item.id)
                             );
-
-                            const newObjForBranches = alloctedBranchesObj?.map((item) => ({
-                                value: item.id,
-                                label: item.name,
-                            }));
+                            let newObjForBranches = [];
+                            if(alloctedBranchesObj.length>0){
+                                newObjForBranches = alloctedBranchesObj?.map((item) => ({
+                                    value: item.id,
+                                    label: item.name,
+                                }));
+                            }
                             setFormData({
                                 firstName: userData.name,
                                 lastName: userData.surname,
                                 phoneNumber: userData.phoneNumber,
                                 password: '',
                                 streetAddress: userData.address || '',
-                                rollId:userData.rollId,
                                 email: userData.emailAddress,
                                 roles: roleObject.name,
                                 branches: newObjForBranches,
                             });
-                            setRoleId(formData.roleId)
-
                         }
                     }
                 } catch (error) {
@@ -291,7 +296,7 @@ const UpdateUser = ({ match }) => {
                             <option value="">Select a role</option>
                             {usersRoles.length > 0 &&
                                 usersRoles.map((role) => (
-                                    <option key={role.id} value={role.name}>
+                                    <option key={role.id} value={role.id}>
                                         {role.name === 'Company_Admin'
                                             ? 'Company Admin'
                                             : role.name === 'Brand_Manager'

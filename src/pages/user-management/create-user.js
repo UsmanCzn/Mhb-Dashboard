@@ -10,8 +10,7 @@ import './create-user.css';
 import userManagementService from '../../services/userManagementService';
 
 const CreateUser = () => {
-    const { userRole } = useAuth();
-    console.log(userRole);
+
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
     const [multiSelectValues, setMultiSelectValues] = useState([]);
@@ -107,7 +106,6 @@ const CreateUser = () => {
         try {
             const response = await userManagementService.CreateUser(postData);
             if (response) {
-                console.log('Form submitted:', response);
                 setFormData({
                     firstName: '',
                     lastName: '',
@@ -147,6 +145,7 @@ const CreateUser = () => {
             roleId: +formData.roles,
             allotedIdsList: allotedBranchIds
         };
+
         if (validateForm()) {
             await handlePostData(postDataObject);
         } else {
@@ -168,7 +167,6 @@ const CreateUser = () => {
     const getDesiredBranch = async (role) => {
         try {
             let response = null;
-            console.log(role);
             if (role == 3) {
                 response = await userManagementService.GetAllCompaniesUM();
             } else if (role == 5) {
