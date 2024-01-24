@@ -26,7 +26,4 @@ const ConfirmationModal = ({ open, onClose, onConfirm, statement }) => {
     </Dialog>
   );
 };
-
-
-
 export default ConfirmationModal;

@@ -1,14 +1,12 @@
-import React, {useEffect, useState} from 'react'
-
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import {useAuth} from "../../providers/authProvider";
-
 import './create-user.css';
-import userManagementService from "../../services/userManagementService";
+import userManagementService from '../../services/userManagementService';
+import {useParams} from "react-router-dom";
 
+const UpdateUser = ({ match }) => {
 
-const CreateUser = () => {
-    // const {userRole} = useAuth();
+    const { id } = useParams();
 
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
@@ -18,7 +16,7 @@ const CreateUser = () => {
         firstName: '',
         lastName: '',
         phoneNumber: '',
-        password:'',
+        password: '',
         streetAddress: '',
         email: '',
         roles: '',
@@ -30,10 +28,22 @@ const CreateUser = () => {
         lastName: '',
         phoneNumber: '',
         email: '',
-        password:'',
+        password: '',
         roles: '',
         branches: '',
     });
+
+    const handlePostData = async (postData) => {
+        try {
+            const response = await userManagementService.UpdateUser(postData);
+            if (response) {
+                console.log('User updated:', response);
+                // Handle success (e.g., show a success message, redirect, etc.)
+            }
+        } catch (error) {
+            console.error('Error updating user', error);
+        }
+    };
 
     const validateForm = () => {
         let isValid = true;
@@ -84,6 +94,29 @@ const CreateUser = () => {
         return isValid;
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const allotedBranchIds = formData.branches.map((item) => item.value);
+        const postDataObject = {
+            id: match.params.id,
+            userName: formData.firstName + ' ' + formData.lastName,
+            name: formData.firstName,
+            surname: formData.lastName,
+            password: formData.password || '',
+            address: formData.streetAddress || null,
+            emailAddress: formData.email,
+            phoneNumber: formData.phoneNumber,
+            roleId: 0,
+            allotedIdsList: allotedBranchIds,
+        };
+
+        if (validateForm()) {
+            await handlePostData(postDataObject);
+        } else {
+            console.log('Form validation failed');
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -92,66 +125,11 @@ const CreateUser = () => {
         });
     };
 
-
     const handleBranchesChange = (selectedBranches) => {
         setFormData({
             ...formData,
             branches: selectedBranches,
         });
-    };
-
-    const handlePostData = async (postData) =>{
-        try {
-            const response = await userManagementService.CreateUser(postData);
-            if (response) {
-                console.log('Form submitted:', response);
-                setFormData({
-                    firstName: '',
-                    lastName: '',
-                    phoneNumber: '',
-                    password:'',
-                    streetAddress: '',
-                    email: '',
-                    roles: '',
-                    branches: [],
-                })
-            }
-        } catch (error) {
-            console.error('Error fetching user roles', error);
-        }
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const allotedBranchIds = formData.branches.map(item => item.value);
-        const postDataObject =    {
-            id: 0,
-            userName: formData.firstName +" "+ formData.lastName,
-            name: formData.firstName,
-            surname: formData.lastName,
-            password: formData.password || '123456789',
-            address: formData.streetAddress || null,
-            emailAddress: formData.email,
-            phoneNumber: formData.phoneNumber,
-            roleId: 0,
-            allotedIdsList: allotedBranchIds,
-        }
-        if (validateForm()) {
-           await handlePostData(postDataObject)
-        } else {
-            console.log('Form validation failed');
-        }
-    };
-
-    const getUserRoles = async () => {
-        try {
-            const response = await userManagementService.getUserRoles();
-            if (response) {
-                setUsersRoles(response?.data?.result);
-            }
-        } catch (error) {
-            console.error('Error fetching user roles', error);
-        }
     };
 
     const getDesiredBranch = async (role) => {
@@ -166,6 +144,18 @@ const CreateUser = () => {
             }
             if (response) {
                 setUserBranches(response.data.result)
+                return response.data.result;
+            }
+        } catch (error) {
+            console.error('Error fetching user roles', error);
+        }
+    };
+
+    const getUserRoles = async () => {
+        try {
+            const response = await userManagementService.getUserRoles();
+            if (response) {
+                setUsersRoles(response?.data?.result);
             }
         } catch (error) {
             console.error('Error fetching user roles', error);
@@ -175,6 +165,41 @@ const CreateUser = () => {
     useEffect(() => {
         getUserRoles()
     }, []);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (id && usersRoles.length > 0) {
+                try {
+                    const response = await userManagementService.GetUserId(id);
+                    const roleObject = usersRoles?.filter(role => response?.data?.result?.roleId === role.id)
+                    console.log(roleObject)
+                    const responsex = await getDesiredBranch(roleObject[0].name)
+
+                    if (response) {
+                        const userData = response.data.result;
+                        console.log(userData)
+                        setFormData({
+                            firstName: userData.name,
+                            lastName: userData.surname,
+                            phoneNumber: userData.phoneNumber,
+                            password: '',
+                            streetAddress: userData.address || '',
+                            email: userData.emailAddress,
+                            roles: roleObject[0]?.name,
+                            branches: userData.allotedIdsList.map((id) => ({
+                                value: id,
+                                label: id,
+                            })),
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data', error);
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [id, usersRoles]);
 
     useEffect(()=>{
         getDesiredBranch(formData.roles)
@@ -195,6 +220,8 @@ const CreateUser = () => {
         handleBranchesChange([]);
 
     }, [userBranches]);
+
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -326,7 +353,6 @@ const CreateUser = () => {
             </div>
         </form>
     );
+};
 
-}
-
-export default CreateUser;
+export default UpdateUser;

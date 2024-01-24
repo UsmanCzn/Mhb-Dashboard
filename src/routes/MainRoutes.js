@@ -35,11 +35,13 @@ import PaymentMethods from 'pages/payment-settings/payment-methods';
 import AddPaymentMethod from 'pages/payment-settings/add-payment-method';
 import UserList from 'pages/user-management/user-lists';
 import CreateUser from 'pages/user-management/create-user';
+import UpdateUser from "../pages/user-management/update-user";
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
 const Brands = Loadable(lazy(() => import('pages/brands')));
 const Branches = Loadable(lazy(() => import('pages/branch/branches')));
+
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/SamplePage')));
@@ -77,6 +79,7 @@ export default function MainRoutes() {
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
 
                     <Route path="/user-management" element={<UserList />} />
+                    <Route path="/update-user/:id" element={<UpdateUser />} />
                     <Route path="/create-user" element={<CreateUser />} />
 
                     <Route path="/customers" element={<Customers />} />
