@@ -39,8 +39,7 @@ export function useAuth() {
     };
 
     useEffect(() => {
-        if(userId)
-        fetchRoleId();
+        if (userId) fetchRoleId();
     }, [userId]);
     return {
         isAuthenticated: Boolean(AuthToken),

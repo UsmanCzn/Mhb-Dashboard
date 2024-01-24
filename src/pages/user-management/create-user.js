@@ -1,28 +1,32 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react';
+import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
 
+import { useAuth } from '../../providers/authProvider';
 import Select from 'react-select';
-import {useAuth} from "../../providers/authProvider";
+import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 import './create-user.css';
-import userManagementService from "../../services/userManagementService";
-
+import userManagementService from '../../services/userManagementService';
 
 const CreateUser = () => {
-    // const {userRole} = useAuth();
-
+    const { userRole } = useAuth();
+    console.log(userRole);
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
     const [multiSelectValues, setMultiSelectValues] = useState([]);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         phoneNumber: '',
-        password:'',
+        password: '',
         streetAddress: '',
         email: '',
         roles: '',
-        branches: [],
+        branches: []
     });
 
     const [errors, setErrors] = useState({
@@ -30,9 +34,9 @@ const CreateUser = () => {
         lastName: '',
         phoneNumber: '',
         email: '',
-        password:'',
+        password: '',
         roles: '',
-        branches: '',
+        branches: ''
     });
 
     const validateForm = () => {
@@ -88,19 +92,18 @@ const CreateUser = () => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value,
+            [name]: value
         });
     };
-
 
     const handleBranchesChange = (selectedBranches) => {
         setFormData({
             ...formData,
-            branches: selectedBranches,
+            branches: selectedBranches
         });
     };
 
-    const handlePostData = async (postData) =>{
+    const handlePostData = async (postData) => {
         try {
             const response = await userManagementService.CreateUser(postData);
             if (response) {
@@ -109,35 +112,43 @@ const CreateUser = () => {
                     firstName: '',
                     lastName: '',
                     phoneNumber: '',
-                    password:'',
+                    password: '',
                     streetAddress: '',
                     email: '',
                     roles: '',
-                    branches: [],
-                })
+                    branches: []
+                });
+                enqueueSnackbar('User Created Successfully', {
+                    variant: 'success'
+                });
+                navigate('/user-management');
             }
         } catch (error) {
-            console.error('Error fetching user roles', error);
+            console.log('Error fetching user roles', error);
+
+            enqueueSnackbar(error.response.data.error.message, {
+                variant: 'error'
+            });
         }
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const allotedBranchIds = formData.branches.map(item => item.value);
-        const postDataObject =    {
+        const allotedBranchIds = formData.branches.map((item) => item.value);
+        const postDataObject = {
             id: 0,
-            userName: formData.firstName +" "+ formData.lastName,
+            userName: formData.firstName + ' ' + formData.lastName,
             name: formData.firstName,
             surname: formData.lastName,
             password: formData.password || '123456789',
             address: formData.streetAddress || null,
             emailAddress: formData.email,
             phoneNumber: formData.phoneNumber,
-            roleId: 0,
-            allotedIdsList: allotedBranchIds,
-        }
+            roleId: +formData.roles,
+            allotedIdsList: allotedBranchIds
+        };
         if (validateForm()) {
-           await handlePostData(postDataObject)
+            await handlePostData(postDataObject);
         } else {
             console.log('Form validation failed');
         }
@@ -156,16 +167,17 @@ const CreateUser = () => {
 
     const getDesiredBranch = async (role) => {
         try {
-            let response=null;
-            if(role === "Company_Admin"){
+            let response = null;
+            console.log(role);
+            if (role == 3) {
                 response = await userManagementService.GetAllCompaniesUM();
-            }else if(role === 'Brand_Manager'){
+            } else if (role == 5) {
                 response = await userManagementService.GetBrandsForCurrentUserUM();
-            }else if(role === 'Branch_User'){
+            } else if (role == 7) {
                 response = await userManagementService.GetBranchesForCurrentUserUM();
             }
             if (response) {
-                setUserBranches(response.data.result)
+                setUserBranches(response.data.result);
             }
         } catch (error) {
             console.error('Error fetching user roles', error);
@@ -173,75 +185,55 @@ const CreateUser = () => {
     };
 
     useEffect(() => {
-        getUserRoles()
+        getUserRoles();
     }, []);
 
-    useEffect(()=>{
-        getDesiredBranch(formData.roles)
-    },[formData.roles])
-
+    useEffect(() => {
+        getDesiredBranch(formData.roles);
+    }, [formData.roles]);
 
     useEffect(() => {
-        const branches=[];
+        const branches = [];
         if (userBranches) {
-            userBranches.map(user =>{
+            userBranches.map((user) => {
                 branches.push({
                     value: user?.id,
                     label: user?.name
-                })
-            })
+                });
+            });
         }
-        setMultiSelectValues(branches)
+        setMultiSelectValues(branches);
         handleBranchesChange([]);
-
     }, [userBranches]);
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className='userFormContainer'>
-                <div className='userNameContainer'>
-                    <div className='userNameChild'>
+            <div className="userFormContainer">
+                <div className="userNameContainer">
+                    <div className="userNameChild">
                         <div>
                             <label htmlFor="firstName">First Name:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="firstName"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
                         <p className="error">{errors.firstName}</p>
                     </div>
-                    <div className='userLastNameChild'>
+                    <div className="userLastNameChild">
                         <div>
                             <label htmlFor="lastName">Last Name:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
                         <p className="error">{errors.lastName}</p>
                     </div>
                 </div>
-                <div className='userPhoneContainer'>
-                    <div className='userPhoneChild'>
+                <div className="userPhoneContainer">
+                    <div className="userPhoneChild">
                         <div>
                             <label htmlFor="phoneNumber">Phone Number:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} />
                         <p className="error">{errors.phoneNumber}</p>
                     </div>
-                    <div className='userAddressChild'>
+                    <div className="userAddressChild">
                         <div>
                             <label htmlFor="streetAddress">Street Address:</label>
                         </div>
@@ -254,51 +246,51 @@ const CreateUser = () => {
                         />
                     </div>
                 </div>
-                <div className='userEmailContainer'>
-                    <div className='userEmailChild'>
+                <div className="userEmailContainer">
+                    <div className="userEmailChild">
                         <div>
                             <label htmlFor="email">Email:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
                         <p className="error">{errors.email}</p>
                     </div>
-                    <div className='userRolesChild'>
+                    <div className="userRolesChild">
                         <div>
                             <label htmlFor="roles">Roles:</label>
                         </div>
-                        <select
-                            id="roles"
-                            name="roles"
-                            value={formData.roles}
-                            onChange={handleInputChange}
-                        >
+                        <select id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
                             <option value="">Select a role</option>
                             {usersRoles.length > 0 &&
-                                usersRoles.map(role => (
-                                    <option key={role.id} value={role.name}>
-                                        {role.name === "Company_Admin" ? 'Company Admin' :
-                                            role.name === "Brand_Manager" ? "Brand Manager" :
-                                                role.name === "Branch_User" ? "Branch User" : role.name}
+                                usersRoles.map((role) => (
+                                    <option key={role.id} value={role.id}>
+                                        {role.name === 'Company_Admin'
+                                            ? 'Company Admin'
+                                            : role.name === 'Brand_Manager'
+                                            ? 'Brand Manager'
+                                            : role.name === 'Branch_User'
+                                            ? 'Branch User'
+                                            : role.name}
                                     </option>
                                 ))}
                         </select>
                         <p className="error">{errors.roles}</p>
                     </div>
                 </div>
-                <div className='userPasswordContainer'>
-                    <div className='userBranchSelectChild'>
+                <div className="userPasswordContainer">
+                    <div className="userBranchSelectChild">
                         <div>
-                            <label
-                                htmlFor="branches">{formData.roles === 'Company_Admin' ? 'Companies' : formData.roles === 'Brand_Manager' ? " Brands" : formData.roles === 'Branch_User' ? "Branches" : " Select"}</label>
+                            <label htmlFor="branches">
+                                {formData.roles === 'Company_Admin'
+                                    ? 'Companies'
+                                    : formData.roles === 'Brand_Manager'
+                                    ? ' Brands'
+                                    : formData.roles === 'Branch_User'
+                                    ? 'Branches'
+                                    : ' Select'}
+                            </label>
                         </div>
                         <Select
-                            className='multiSelectUserBranches'
+                            className="multiSelectUserBranches"
                             id="branches"
                             name="branches"
                             options={multiSelectValues || null}
@@ -308,25 +300,20 @@ const CreateUser = () => {
                         />
                         <p className="error">{errors.branches}</p>
                     </div>
-                    <div className='userPasswordChild'>
+                    <div className="userPasswordChild">
                         <div>
                             <label htmlFor="email">Password:</label>
                         </div>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                        />
+                        <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} />
                         <p className="error">{errors.password}</p>
                     </div>
                 </div>
-                <button type="submit">Add User</button>
+                <Button size="small" type="submit" variant="contained">
+                    Add User
+                </Button>
             </div>
         </form>
     );
-
-}
+};
 
 export default CreateUser;

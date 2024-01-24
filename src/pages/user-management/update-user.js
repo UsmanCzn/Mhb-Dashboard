@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
 import './create-user.css';
 import userManagementService from '../../services/userManagementService';
-import {useParams} from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 const UpdateUser = ({ match }) => {
-
     const { id } = useParams();
 
     const [usersRoles, setUsersRoles] = useState([]);
@@ -21,7 +21,7 @@ const UpdateUser = ({ match }) => {
         streetAddress: '',
         email: '',
         roles: '',
-        branches: [],
+        branches: []
     });
 
     const [errors, setErrors] = useState({
@@ -31,7 +31,7 @@ const UpdateUser = ({ match }) => {
         email: '',
         password: '',
         roles: '',
-        branches: '',
+        branches: ''
     });
 
     const handlePostData = async (postData) => {
@@ -125,29 +125,29 @@ const UpdateUser = ({ match }) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value,
+            [name]: value
         });
     };
 
     const handleBranchesChange = (selectedBranches) => {
         setFormData({
             ...formData,
-            branches: selectedBranches,
+            branches: selectedBranches
         });
     };
 
     const getDesiredBranch = async (role) => {
         try {
-            let response=null;
-            if(role === "Company_Admin"){
+            let response = null;
+            if (role === 'Company_Admin') {
                 response = await userManagementService.GetAllCompaniesUM();
-            }else if(role === 'Brand_Manager'){
+            } else if (role === 'Brand_Manager') {
                 response = await userManagementService.GetBrandsForCurrentUserUM();
-            }else if(role === 'Branch_User'){
+            } else if (role === 'Branch_User') {
                 response = await userManagementService.GetBranchesForCurrentUserUM();
             }
             if (response) {
-                setUserBranches(response.data.result)
+                setUserBranches(response.data.result);
                 return response.data.result;
             }
         } catch (error) {
@@ -167,7 +167,7 @@ const UpdateUser = ({ match }) => {
     };
 
     useEffect(() => {
-        getUserRoles()
+        getUserRoles();
     }, []);
 
     useEffect(() => {
@@ -217,74 +217,52 @@ const UpdateUser = ({ match }) => {
         fetchUserData();
     }, [id, usersRoles]);
 
-    useEffect(()=>{
-        getDesiredBranch(formData.roles)
-    },[formData.roles])
-
+    useEffect(() => {
+        getDesiredBranch(formData.roles);
+    }, [formData.roles]);
 
     useEffect(() => {
-        const branches=[];
+        const branches = [];
         if (userBranches) {
-            userBranches.map(user =>{
+            userBranches.map((user) => {
                 branches.push({
                     value: user?.id,
                     label: user?.name
-                })
-            })
+                });
+            });
         }
-        setMultiSelectValues(branches)
+        setMultiSelectValues(branches);
         handleBranchesChange([]);
-
     }, [userBranches]);
-
-
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className='userFormContainer'>
-                <div className='userNameContainer'>
-                    <div className='userNameChild'>
+            <div className="userFormContainer">
+                <div className="userNameContainer">
+                    <div className="userNameChild">
                         <div>
                             <label htmlFor="firstName">First Name:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="firstName"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
                         <p className="error">{errors.firstName}</p>
                     </div>
-                    <div className='userLastNameChild'>
+                    <div className="userLastNameChild">
                         <div>
                             <label htmlFor="lastName">Last Name:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
                         <p className="error">{errors.lastName}</p>
                     </div>
                 </div>
-                <div className='userPhoneContainer'>
-                    <div className='userPhoneChild'>
+                <div className="userPhoneContainer">
+                    <div className="userPhoneChild">
                         <div>
                             <label htmlFor="phoneNumber">Phone Number:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} />
                         <p className="error">{errors.phoneNumber}</p>
                     </div>
-                    <div className='userAddressChild'>
+                    <div className="userAddressChild">
                         <div>
                             <label htmlFor="streetAddress">Street Address:</label>
                         </div>
@@ -297,51 +275,51 @@ const UpdateUser = ({ match }) => {
                         />
                     </div>
                 </div>
-                <div className='userEmailContainer'>
-                    <div className='userEmailChild'>
+                <div className="userEmailContainer">
+                    <div className="userEmailChild">
                         <div>
                             <label htmlFor="email">Email:</label>
                         </div>
-                        <input
-                            type="text"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                        />
+                        <input type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
                         <p className="error">{errors.email}</p>
                     </div>
-                    <div className='userRolesChild'>
+                    <div className="userRolesChild">
                         <div>
                             <label htmlFor="roles">Roles:</label>
                         </div>
-                        <select
-                            id="roles"
-                            name="roles"
-                            value={formData.roles}
-                            onChange={handleInputChange}
-                        >
+                        <select id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
                             <option value="">Select a role</option>
                             {usersRoles.length > 0 &&
-                                usersRoles.map(role => (
+                                usersRoles.map((role) => (
                                     <option key={role.id} value={role.name}>
-                                        {role.name === "Company_Admin" ? 'Company Admin' :
-                                            role.name === "Brand_Manager" ? "Brand Manager" :
-                                                role.name === "Branch_User" ? "Branch User" : role.name}
+                                        {role.name === 'Company_Admin'
+                                            ? 'Company Admin'
+                                            : role.name === 'Brand_Manager'
+                                            ? 'Brand Manager'
+                                            : role.name === 'Branch_User'
+                                            ? 'Branch User'
+                                            : role.name}
                                     </option>
                                 ))}
                         </select>
                         <p className="error">{errors.roles}</p>
                     </div>
                 </div>
-                <div className='userPasswordContainer'>
-                    <div className='userBranchSelectChild'>
+                <div className="userPasswordContainer">
+                    <div className="userBranchSelectChild">
                         <div>
-                            <label
-                                htmlFor="branches">{formData.roles === 'Company_Admin' ? 'Companies' : formData.roles === 'Brand_Manager' ? " Brands" : formData.roles === 'Branch_User' ? "Branches" : " Select"}</label>
+                            <label htmlFor="branches">
+                                {formData.roles === 'Company_Admin'
+                                    ? 'Companies'
+                                    : formData.roles === 'Brand_Manager'
+                                    ? ' Brands'
+                                    : formData.roles === 'Branch_User'
+                                    ? 'Branches'
+                                    : ' Select'}
+                            </label>
                         </div>
                         <Select
-                            className='multiSelectUserBranches'
+                            className="multiSelectUserBranches"
                             id="branches"
                             name="branches"
                             options={multiSelectValues || null}
@@ -351,17 +329,11 @@ const UpdateUser = ({ match }) => {
                         />
                         <p className="error">{errors.branches}</p>
                     </div>
-                    <div className='userPasswordChild'>
+                    <div className="userPasswordChild">
                         <div>
                             <label htmlFor="email">Password:</label>
                         </div>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                        />
+                        <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} />
                         <p className="error">{errors.password}</p>
                     </div>
                 </div>
