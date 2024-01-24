@@ -1,0 +1,33 @@
+.userFormContainer{
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
+    padding: 25px;
+}
+.userNameContainer{
+    display: flex;
+}
+.userPhoneContainer{
+    display: flex;
+}
+.userEmailContainer{
+    display: flex;
+}
+.userPasswordContainer{
+    display: flex;
+}
+.userNameChild, .userLastNameChild, .userAddressChild, .userPhoneChild, .userRolesChild, .userEmailChild, .userBranchSelectChild, .userPasswordChild{
+    margin: 5px 0;
+    width: 50%;
+}
+.userNameChild p, .userLastNameChild p, .userAddressChild p, .userPhoneChild p, .userRolesChild p, .userEmailChild p, .userBranchSelectChild p, .userPasswordChild p{
+    color: red;
+}
+.userNameChild input, .userLastNameChild input, .userAddressChild input, .userPhoneChild input, .userEmailChild input, .userPasswordChild input{
+    width: 90%;
+    height: 40px;
+}
+.userRolesChild select, .multiSelectUserBranches{
+    width: 90%;
+    height: 40px;
+}
