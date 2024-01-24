@@ -11,6 +11,7 @@ const UpdateUser = ({ match }) => {
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
     const [multiSelectValues, setMultiSelectValues] = useState([]);
+    const [roleId, setRoleId] = useState();
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -38,7 +39,6 @@ const UpdateUser = ({ match }) => {
             const response = await userManagementService.UpdateUser(postData);
             if (response) {
                 console.log('User updated:', response);
-                // Handle success (e.g., show a success message, redirect, etc.)
             }
         } catch (error) {
             console.error('Error updating user', error);
@@ -98,7 +98,7 @@ const UpdateUser = ({ match }) => {
         e.preventDefault();
         const allotedBranchIds = formData.branches.map((item) => item.value);
         const postDataObject = {
-            id: match.params.id,
+            id: id,
             userName: formData.firstName + ' ' + formData.lastName,
             name: formData.firstName,
             surname: formData.lastName,
@@ -106,12 +106,16 @@ const UpdateUser = ({ match }) => {
             address: formData.streetAddress || null,
             emailAddress: formData.email,
             phoneNumber: formData.phoneNumber,
-            roleId: 0,
-            allotedIdsList: allotedBranchIds
+            roleId: roleId,
+            allotedIdsList: allotedBranchIds,
         };
+
+        console.log(postDataObject)
+        debugger
 
         if (validateForm()) {
             await handlePostData(postDataObject);
+            navigate('/');
         } else {
             console.log('Form validation failed');
         }
@@ -171,26 +175,38 @@ const UpdateUser = ({ match }) => {
             if (id && usersRoles.length > 0) {
                 try {
                     const response = await userManagementService.GetUserId(id);
-                    const roleObject = usersRoles?.filter((role) => response?.data?.result?.roleId === role.id);
-                    console.log(roleObject);
-                    const responsex = await getDesiredBranch(roleObject[0].name);
 
-                    if (response) {
+                    if (response?.data?.result) {
                         const userData = response.data.result;
-                        console.log(userData);
-                        setFormData({
-                            firstName: userData.name,
-                            lastName: userData.surname,
-                            phoneNumber: userData.phoneNumber,
-                            password: '',
-                            streetAddress: userData.address || '',
-                            email: userData.emailAddress,
-                            roles: roleObject[0]?.name,
-                            branches: userData.allotedIdsList.map((id) => ({
-                                value: id,
-                                label: id
-                            }))
-                        });
+
+                        const roleObject = usersRoles?.find(role => role.id === userData?.roleId);
+
+                        if (roleObject) {
+                            const responseForBranches = await getDesiredBranch(roleObject.name);
+                            const alloctedBranches = userData.allotedIdsList;
+
+                            const alloctedBranchesObj = responseForBranches.filter((item) =>
+                                alloctedBranches.includes(item.id)
+                            );
+
+                            const newObjForBranches = alloctedBranchesObj?.map((item) => ({
+                                value: item.id,
+                                label: item.name,
+                            }));
+                            setFormData({
+                                firstName: userData.name,
+                                lastName: userData.surname,
+                                phoneNumber: userData.phoneNumber,
+                                password: '',
+                                streetAddress: userData.address || '',
+                                rollId:userData.rollId,
+                                email: userData.emailAddress,
+                                roles: roleObject.name,
+                                branches: newObjForBranches,
+                            });
+                            setRoleId(formData.roleId)
+
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching user data', error);
@@ -308,7 +324,7 @@ const UpdateUser = ({ match }) => {
                             name="branches"
                             options={multiSelectValues || null}
                             isMulti
-                            value={formData.branches}
+                            value={ formData.branches }
                             onChange={handleBranchesChange}
                         />
                         <p className="error">{errors.branches}</p>
