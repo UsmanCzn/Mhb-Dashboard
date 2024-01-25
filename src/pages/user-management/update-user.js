@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './create-user.css';
 import userManagementService from '../../services/userManagementService';
-import {useNavigate, useParams} from 'react-router-dom';
-import {useSnackbar} from "notistack";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const UpdateUser = ({ match }) => {
     const { id } = useParams();
@@ -39,7 +39,6 @@ const UpdateUser = ({ match }) => {
         try {
             const response = await userManagementService.UpdateUser(postData);
             if (response) {
-                console.log('User updated:', response);
                 enqueueSnackbar('User Updated Successfully', {
                     variant: 'success'
                 });
@@ -116,7 +115,7 @@ const UpdateUser = ({ match }) => {
             emailAddress: formData.email,
             phoneNumber: formData.phoneNumber,
             roleId: parseInt(formData.roles),
-            allotedIdsList: allotedBranchIds,
+            allotedIdsList: allotedBranchIds
         };
 
         if (validateForm()) {
@@ -184,21 +183,19 @@ const UpdateUser = ({ match }) => {
 
                     if (response?.data?.result) {
                         const userData = response.data.result;
-
-                        const roleObject = usersRoles?.find(role => role.id === userData?.roleId);
+                        debugger;
+                        const roleObject = usersRoles?.find((role) => role.id === userData?.roleId);
 
                         if (roleObject) {
                             const responseForBranches = await getDesiredBranch(roleObject.id);
                             const alloctedBranches = userData.allotedIdsList;
 
-                            const alloctedBranchesObj = responseForBranches.filter((item) =>
-                                alloctedBranches.includes(item.id)
-                            );
+                            const alloctedBranchesObj = responseForBranches.filter((item) => alloctedBranches.includes(item.id));
                             let newObjForBranches = [];
-                            if(alloctedBranchesObj.length>0){
+                            if (alloctedBranchesObj.length > 0) {
                                 newObjForBranches = alloctedBranchesObj?.map((item) => ({
                                     value: item.id,
-                                    label: item.name,
+                                    label: item.name
                                 }));
                             }
                             setFormData({
@@ -208,8 +205,8 @@ const UpdateUser = ({ match }) => {
                                 password: '',
                                 streetAddress: userData.address || '',
                                 email: userData.emailAddress,
-                                roles: roleObject.name,
-                                branches: newObjForBranches,
+                                roles: roleObject.id,
+                                branches: newObjForBranches
                             });
                         }
                     }
@@ -329,7 +326,7 @@ const UpdateUser = ({ match }) => {
                             name="branches"
                             options={multiSelectValues || null}
                             isMulti
-                            value={ formData.branches }
+                            value={formData.branches}
                             onChange={handleBranchesChange}
                         />
                         <p className="error">{errors.branches}</p>
