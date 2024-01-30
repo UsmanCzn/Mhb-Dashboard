@@ -67,7 +67,7 @@ const dashboard = {
             url: '/user-management',
             icon: AccessibilityIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN, BRAND_MANAGER]
         },
         {
             id: 'rewards',
