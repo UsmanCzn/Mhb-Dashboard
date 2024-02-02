@@ -23,6 +23,7 @@ import RewardsHistory from 'pages/rewardsHistory/index';
 import Apps from 'pages/apps/index';
 import LocationDetail from 'pages/branch/branches/locationDetail';
 import RewardCollection from 'pages/rewards/rewardcollection';
+import RewardStats from 'pages/rewardStats/RewardStats';
 import RewardRedemption from 'pages/rewards/rewardredemption';
 import TiersList from 'pages/customers/tiers';
 import CustomersList from 'pages/customers/list';
@@ -77,6 +78,7 @@ export default function MainRoutes() {
                     <Route path="/rewardredemption" element={<RewardRedemption />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
+                    <Route path="/rewards-stats" element={<RewardStats/>}/>
 
                     <Route path="/user-management" element={<UserList />} />
                     <Route path="/update-user/:id" element={<UpdateUser />} />

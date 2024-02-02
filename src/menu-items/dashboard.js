@@ -34,6 +34,15 @@ const dashboard = {
             forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
         {
+            id: 'rewardStats',
+            title: 'Rewards Stats',
+            type: 'item',
+            url: '/rewards-stats',
+            icon: icons.DashboardOutlined,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        },
+        {
             id: 'apps',
             title: 'Apps',
             type: 'item',
