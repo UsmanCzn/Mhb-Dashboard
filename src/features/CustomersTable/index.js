@@ -1,18 +1,17 @@
-import { Chip, Grid, Typography,Menu,MenuItem  } from '@mui/material';
+import { Chip, Grid, Typography,Menu,MenuItem,TextField  } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent'; 
 import React,{useState} from 'react'; 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchCustomerList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function CustomerTable({ type,reload }) {
+export default function CustomerTable({ type,reload,setCustomerStats }) {
 
+  const [search, setSearch] = useState("")
   const navigate = useNavigate();
-
   const location = useLocation();
 
-    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList(reload);
-
+    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search,setCustomerStats});
    
   
     const activeColumnFormater = item => {
@@ -123,6 +122,16 @@ export default function CustomerTable({ type,reload }) {
 
   return (
     <> 
+    <TextField
+      style={{marginBottom:"10px"}}
+      id="search"
+      label="Search Users"
+      variant="outlined"
+      placeholder="Search by name or number"
+      onChange={(event)=>{
+        setSearch(event.target.value)
+      }}
+    />
     <DataGridComponent
       rows={customersList}
       columns={columns}
@@ -131,6 +140,7 @@ export default function CustomerTable({ type,reload }) {
       rowsPerPageOptions={[10]}
       totalRowCount={totalRowCount}
       fetchCallback={fetchCustomersList} 
+      search={search}
     />
      <Menu
         id="basic-menu"

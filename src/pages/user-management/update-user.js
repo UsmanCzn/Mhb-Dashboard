@@ -183,7 +183,6 @@ const UpdateUser = ({ match }) => {
 
                     if (response?.data?.result) {
                         const userData = response.data.result;
-                        debugger;
                         const roleObject = usersRoles?.find((role) => role.id === userData?.roleId);
 
                         if (roleObject) {

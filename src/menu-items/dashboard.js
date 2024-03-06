@@ -11,6 +11,8 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ShopTwoIcon from '@mui/icons-material/ShopTwo';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER } from 'helper/UserRoles';
 // icons
 const icons = {
@@ -33,15 +35,7 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
-        {
-            id: 'rewardStats',
-            title: 'Rewards Stats',
-            type: 'item',
-            url: '/rewards-stats',
-            icon: icons.DashboardOutlined,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-        },
+
         {
             id: 'apps',
             title: 'Apps',
@@ -114,6 +108,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
+        // {
+        //     id: 'rewardStats',
+        //     title: 'Rewards Stats',
+        //     type: 'item',
+        //     url: '/rewards-stats',
+        //     icon: icons.DashboardOutlined,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        // },
         {
             id: 'levels',
             title: 'Levels',
@@ -212,13 +215,22 @@ const dashboard = {
             forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
         {
+            id: 'offer',
+            title: 'Offers',
+            type: 'item',
+            url: '/offers',
+            icon: CardGiftcardIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRAND_MANAGER]
+        },
+        {
             id: 'payment',
             title: 'Payment Settings',
             type: 'collapse',
             url: '/payments-settings/methods',
             icon: InventoryIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER],
+            forUserRoles: [ADMIN, BRAND_MANAGER],
             children: [
                 {
                     id: 'providers',
@@ -226,7 +238,7 @@ const dashboard = {
                     type: 'item',
                     url: '/payments-settings/providers',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN, BRAND_MANAGER]
                 },
                 {
                     id: 'methods',
@@ -234,10 +246,20 @@ const dashboard = {
                     type: 'item',
                     url: '/payments-settings/methods',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,BRAND_MANAGER]
                 }
             ]
         },
+        {
+            id: 'advertisement',
+            title: 'Advertisement',
+            type: 'collapse',
+            url: '/advertisement',
+            icon: ShopTwoIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRAND_MANAGER],
+        },
+        
         {
             id: 'CreditBalance',
             title: 'All Request',

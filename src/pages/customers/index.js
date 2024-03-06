@@ -7,7 +7,7 @@ import NewCustomer from 'components/customers/newCustomer';
 
 export default function Customers() {
     const { type } = useParams();
-
+    const [Stats, setStats] = useState({totalDaily:0,totalMonthly:0,totalYearly:0,totalCount:0})
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [reload, setReload] = useState(false);
@@ -15,16 +15,16 @@ export default function Customers() {
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Today" count="18,800" percentage={27.4} />
+                <AnalyticEcommerce title="Today" count={Stats.totalDaily} percentage={27.4} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="This month" count="35,078" percentage={27.4} />
+                <AnalyticEcommerce title="This month" count={Stats.totalMonthly} percentage={27.4} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="This Year" count="18,800" percentage={27.4} />
+                <AnalyticEcommerce title="This Year" count={Stats.totalYearly} percentage={27.4} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="All" count="35,078" percentage={27.4} />
+                <AnalyticEcommerce title="All" count={Stats.totalCount} percentage={27.4} />
             </Grid>
 
             <Grid item xs={12}>
@@ -45,7 +45,7 @@ export default function Customers() {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <CustomersTable type="Customer" reload={reload} />
+                <CustomersTable type="Customer" reload={reload} setCustomerStats={setStats} />
             </Grid>
             <NewCustomer modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} />
         </Grid>

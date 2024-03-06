@@ -23,7 +23,6 @@ import RewardsHistory from 'pages/rewardsHistory/index';
 import Apps from 'pages/apps/index';
 import LocationDetail from 'pages/branch/branches/locationDetail';
 import RewardCollection from 'pages/rewards/rewardcollection';
-import RewardStats from 'pages/rewardStats/RewardStats';
 import RewardRedemption from 'pages/rewards/rewardredemption';
 import TiersList from 'pages/customers/tiers';
 import CustomersList from 'pages/customers/list';
@@ -36,13 +35,16 @@ import PaymentMethods from 'pages/payment-settings/payment-methods';
 import AddPaymentMethod from 'pages/payment-settings/add-payment-method';
 import UserList from 'pages/user-management/user-lists';
 import CreateUser from 'pages/user-management/create-user';
-import UpdateUser from "../pages/user-management/update-user";
+import UpdateUser from '../pages/user-management/update-user';
+import RewardStats from 'pages/rewardStats/RewardStats';
+import Offers from 'pages/offers/offers';
+import Advertisement from 'pages/advertisement/advertisement';
+
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
 const Brands = Loadable(lazy(() => import('pages/brands')));
 const Branches = Loadable(lazy(() => import('pages/branch/branches')));
-
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/SamplePage')));
@@ -78,7 +80,6 @@ export default function MainRoutes() {
                     <Route path="/rewardredemption" element={<RewardRedemption />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
-                    <Route path="/rewards-stats" element={<RewardStats/>}/>
 
                     <Route path="/user-management" element={<UserList />} />
                     <Route path="/update-user/:id" element={<UpdateUser />} />
@@ -89,8 +90,12 @@ export default function MainRoutes() {
                     <Route path="/customers/tiers" element={<TiersList />} />
                     <Route path="/customers/groups" element={<CustomerGroups />} />
                     <Route path="/customers/:cid" element={<CustomerDetail />} />
+                    <Route path="/rewards-stats" element={<RewardStats />} />
+
+                    <Route path="/advertisement" element={<Advertisement />} />
 
                     <Route path="/store" element={<Store />} />
+                    <Route path="/offers" element={<Offers />} />
 
                     <Route path="/products" element={<Products />} />
                     <Route path="/categories" element={<Categories />} />

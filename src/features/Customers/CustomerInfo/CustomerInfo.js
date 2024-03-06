@@ -29,7 +29,8 @@ const CustomerInfo = ({ setReload }) => {
         phoneNumber: '',
         gender: '',
         dateOfBirth: new Date(),
-        customerGroups: []
+        customerGroups: [],
+        country:""
     });
     const [modalOpen, setModalOpen] = useState(false);
     const [reload2, setReload2] = useState(false);
@@ -42,7 +43,7 @@ const CustomerInfo = ({ setReload }) => {
             .getCustomerDetail(cid)
             .then((res) => {
                 setData(res?.data?.result);
-                console.log(res?.data?.result);
+                console.log(res?.data?.result,"customer");
             })
             .catch((err) => {
                 console.log(err?.response);

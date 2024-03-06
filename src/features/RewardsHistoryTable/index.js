@@ -5,13 +5,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchCustomerList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function RewardsHistoryTable({ type,reload }) {
+export default function RewardsHistoryTable({  reload, search }) {
 
   const navigate = useNavigate();
 
   const location = useLocation();
 
-    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList(reload);
+    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search});
 
    
   
@@ -142,6 +142,7 @@ export default function RewardsHistoryTable({ type,reload }) {
       rowsPerPageOptions={[10]}
       totalRowCount={totalRowCount}
       fetchCallback={fetchCustomersList} 
+      search={search}
     />
      <Menu
         id="basic-menu"

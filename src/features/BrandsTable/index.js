@@ -5,6 +5,10 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchBrandsList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Tooltip from '@mui/material/Tooltip';
+
 
 export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOpen }) {
     const navigate = useNavigate();
@@ -60,7 +64,10 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             field: 'isHidden',
             headerName: 'Hidden',
             flex: 1,
-            headerAlign: 'left'
+            headerAlign: 'left',
+            renderCell: (params) => {   
+                return params.row.isHidden ? <Tooltip title="Hidden"> <CheckCircleIcon  /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon title="false"/></Tooltip> ;
+            }
         },
 
         {
@@ -81,48 +88,48 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             name: 'Edit Brand',
             modal: true
         },
-        {
-            name: 'Create Brand User',
-            modal: true
-        },
-        {
-            name: 'Show all Brand Users',
-            modal: false,
-            route: 'branchRewardProgram'
-        },
-        {
-            name: 'QR scans',
-            modal: false,
-            route: 'branchTimings'
-        },
-        {
-            name: 'Brand Fees',
-            modal: true
-        },
-        {
-            name: 'Brand Taxs',
-            modal: true
-        },
-        {
-            name: 'Brand Payments',
-            modal: true
-        },
-        {
-            name: 'Brand Topups',
-            modal: true
-        },
-        {
-            name: 'Brand Cars Settings',
-            modal: true
-        },
-        {
-            name: 'Brand Tutorial',
-            modal: true
-        },
-        {
-            name: 'Brand Events',
-            modal: true
-        }
+        // {
+        //     name: 'Create Brand User',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Show all Brand Users',
+        //     modal: false,
+        //     route: 'branchRewardProgram'
+        // },
+        // {
+        //     name: 'QR scans',
+        //     modal: false,
+        //     route: 'branchTimings'
+        // },
+        // {
+        //     name: 'Brand Fees',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Taxs',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Payments',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Topups',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Cars Settings',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Tutorial',
+        //     modal: true
+        // },
+        // {
+        //     name: 'Brand Events',
+        //     modal: true
+        // }
     ];
 
     return (

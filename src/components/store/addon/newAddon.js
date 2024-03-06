@@ -255,7 +255,7 @@ image:""
           <Grid item xs={12}>
             <Grid container spacing={2} >
             <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Order Value" variant="outlined" 
+                <TextField id="outlined-basic" fullWidth label="Sort Order" variant="outlined" 
                   value={data.orderValue}
                   onChange={(e) => setData({ ...data, orderValue: e.target.value })}
                 />

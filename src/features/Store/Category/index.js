@@ -235,7 +235,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Order Value"
+                                        label="Sort Order"
                                         variant="outlined"
                                         value={data.orderValue}
                                         onChange={(e) => setData({ ...data, orderValue: e.target.value })}
@@ -320,7 +320,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                             <TextField
                                                 id="outlined-basic"
                                                 fullWidth
-                                                label="Order Value"
+                                                label="Sort Order"
                                                 variant="outlined"
                                                 value={item?.orderValue}
                                                 onChange={(e) => {

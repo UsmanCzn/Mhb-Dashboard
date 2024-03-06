@@ -5,6 +5,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import CustomerInfo from 'features/Customers/CustomerInfo/CustomerInfo';
 import Wallet from 'features/Customers/wallet';
 import CreditBalance from 'features/Customers/creditBalance/index';
+import CustomerOrders from './customers-orders';
 
 export default function CustomerDetail() {
     const { type } = useParams();
@@ -31,14 +32,14 @@ export default function CustomerDetail() {
                 <Box sx={{ borderBottom: 0.3, borderColor: 'divider', marginTop: 4 }}>
                     <TabList onChange={handleChange}>
                         <Tab label="Info" value="1" />
-                        <Tab label="Customer Orders" value="6" />
+                        <Tab label="Customer Orders" value="2" />
                         <Tab label="Credit Balance" value="4" />
                     </TabList>
                 </Box>
                 <TabPanel value="1">
                     <CustomerInfo />
                 </TabPanel>
-                <TabPanel value="2">{/* <PointsCollection pointsCollection={pointsCollection} setReload={setReload} /> */}</TabPanel>
+                <TabPanel value="2"> <CustomerOrders/> {/* <PointsCollection pointsCollection={pointsCollection} setReload={setReload} /> */}</TabPanel>
                 <TabPanel value="3">{/* <ConstantsCollection constantCollection={constantCollection} setReload={setReload}/> */}</TabPanel>
                 <TabPanel value="4">
                     <CreditBalance />

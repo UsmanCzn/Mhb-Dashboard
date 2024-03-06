@@ -51,5 +51,11 @@ export default {
     },
     UpdateCreditDepositWalletByid(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerCreditWalletBalance', data);
+    },
+
+    getCustomerOrdersByBrand(data){
+        return ApiV1.get('services/app/Store/GetCurrentCustomerOrdersHistoryById', {
+            params: data
+        })
     }
 };

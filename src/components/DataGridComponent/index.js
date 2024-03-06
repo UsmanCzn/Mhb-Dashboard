@@ -15,6 +15,7 @@ export default function DataGridComponent(props) {
         onRowClick,
         onCellEditStop,
         initialState,
+        search=""
     } = props;
 
     const [pageSize, setPageSize] = useState(10);
@@ -24,7 +25,7 @@ export default function DataGridComponent(props) {
     const [rowCountState, setRowCountState] = useState(totalRowCount || 0);
 
     useEffect(() => { 
-        fetchCallback(page);
+        fetchCallback(page,search);
     }, [page, fetchCallback]);
 
     useEffect(() => {

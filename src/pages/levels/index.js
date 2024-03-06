@@ -119,9 +119,9 @@ export default function LevelForm() {
         return (
             <Grid container spacing={1} direction="column">
                 <Typography component="ul">
-                    {item?.itemNames?.map((obj) => {
+                    {item?.itemNames?.map((obj, index) => {
                         return (
-                            <li>
+                            <li key={index}>
                                 <Typography variant="h6">{obj}</Typography>
                             </li>
                         );
@@ -193,7 +193,11 @@ export default function LevelForm() {
                                 }}
                             >
                                 {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                    return (
+                                        <MenuItem key={index} value={row}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
                                 })}
                             </Select>
                         </FormControl>
@@ -230,7 +234,7 @@ export default function LevelForm() {
                     >
                         {options.map((row, index) => {
                             return (
-                                <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                                <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                                     {row.name}
                                 </MenuItem>
                             );

@@ -1,26 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ServiceFactory } from 'services/index';
 
-export function useFetchCustomerList({ reload }) {
+export function useFetchCustomerList(props) {
+    const { reload,search,setCustomerStats } = props
     const [loading, setloading] = useState(false);
-
     const [totalRowCount, setTotalRowCount] = useState(0);
-
     const [customersList, setCustomersList] = useState([]);
 
     const customerServices = ServiceFactory.get('customer');
-
-    const fetchCustomersList = useCallback((pageNo) => {
+    const fetchCustomersList = useCallback((pageNo,searchexp) => {
         setloading(true);
         customerServices
             .getAllCustomers({
                 Skip: pageNo * 10,
-                Take: pageNo + 1 + 10
+                Take: 10,
+                SearchExpression:searchexp
             })
             .then(
                 (res) => {
                     setCustomersList(res.data.result?.data?.data);
-                    // console.log(res.data.result);
+                    let stats= res.data.result.data 
+                    setCustomerStats({totalDaily:stats.totalDaily,totalMonthly:stats.totalMonthly,totalYearly:stats.totalYearly,totalCount:stats.totalCount})
                     setTotalRowCount(res.data?.result?.data?.totalCount);
 
                     // setTotalRowCount(res.data?.pages);
@@ -33,8 +33,8 @@ export function useFetchCustomerList({ reload }) {
     }, []);
 
     useEffect(() => {
-        fetchCustomersList(0);
-    }, [fetchCustomersList, reload]);
+        fetchCustomersList(0,search);
+    }, [fetchCustomersList, reload,search]);
 
     return {
         customersList: customersList || [],

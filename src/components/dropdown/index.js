@@ -73,7 +73,7 @@ const App=( {  title,
           onChange={handleChange}
         >
             {
-             list.map((row, index) => { 
+             list?.map((row, index) => { 
                     return (
                         <MenuItem value={type=="brands"||type=="customerGroup"||type=="country"||
                         type=="groups"||type=="company"||type=="currency"||type=="normal"?

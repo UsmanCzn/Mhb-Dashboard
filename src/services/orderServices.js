@@ -72,4 +72,13 @@ export default {
     );
   },
 
+  getCustomerOrders (data){
+    return ApiV1.get(
+      'services/app/Store/GetRejectedStatusOrdersHistory',
+      {
+        params:{branchId:data}
+      }
+    ); 
+  }
+
 }

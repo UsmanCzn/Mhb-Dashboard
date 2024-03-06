@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
 import userManagementService from 'services/userManagementService';
 
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import ConfirmationModal from '../../components/confirmation-modal';
 
 const UserList = () => {
@@ -21,9 +14,23 @@ const UserList = () => {
         { name: 'Name', value: 'name' },
         { name: 'Email', value: 'email' },
         { name: 'Phone', value: 'phoneNumber' },
-        // { name: 'Role', value: 'role' },
+        { name: 'Role', value: 'role' },
         { name: 'Action', value: 'action' }
     ];
+    const roles =  [
+        {
+            "id": 3,
+            "name": "Company Admin"
+        },
+        {
+            "id": 5,
+            "name": "Brand Manager"
+        },
+        {
+            "id": 7,
+            "name": "Branch User"
+        }
+    ]
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [users, setUsers] = useState([]);
@@ -39,6 +46,10 @@ const UserList = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
+    const getUserName = (user)=> {
+        return  roles.find((role)=> user.roles[0] === role.id).name
+    }
 
     const getUsersList = async () => {
         try {
@@ -139,6 +150,7 @@ const UserList = () => {
                                             <TableCell>{row.name + ' ' + row.surname}</TableCell>
                                             <TableCell>{row.emailAddress}</TableCell>
                                             <TableCell>{row?.phoneNumber}</TableCell>
+                                            <TableCell>{getUserName(row)}</TableCell>
                                             <TableCell>
                                                 <div>
                                                     <Button

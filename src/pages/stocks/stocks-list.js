@@ -11,7 +11,11 @@ const StockList = (props) => {
     const [FilteredProductList, setFilteredProductList] = useState([]);
     useEffect(() => {
         getProductsList();
-    }, [brandid, branchid]);
+    }, [brandid, branchid,]);
+    useEffect(() => {
+   
+    }, [FilteredProductList])
+    
 
     const getProductsList = async () => {
         const data = { branchid: branchid, brandid: brandid };
@@ -26,6 +30,8 @@ const StockList = (props) => {
                 setProductList([...products]);
                 setFilteredProductList([...products]);
                 setloading(false);
+
+                console.log(products,"products");
             }
         } catch (error) {
             setloading(false);
@@ -33,14 +39,18 @@ const StockList = (props) => {
     };
 
     const searchArray = (value) => {
-        const results = ProductList.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()));
-
-        if (results.length > 0) {
-            console.log('Found Results:', results);
-            setFilteredProductList(results);
-        } else {
-            setFilteredProductList(ProductList);
-        }
+        const lowercaseValue = value.toLowerCase();
+        // const results = ProductList.filter(item => item.name.toLowerCase().includes(LowercaseValue));
+        const uniqueResults = new Set();
+        ProductList.forEach(item => {
+            if (item.name.toLowerCase().includes(lowercaseValue)) {
+                uniqueResults.add(item); // Add matching item to the set
+            }
+        });
+        
+        const results = [...uniqueResults]; // Convert set back to array
+        setFilteredProductList(results);
+        console.log(results,'resluts');
     };
 
     const getAllInnermostChildren = (data) => {
@@ -100,22 +110,18 @@ const StockList = (props) => {
                         id="email-login"
                         type="email"
                         name="Search"
-                        onChange={(e) => {
-                            searchArray(e.target.value);
-                        }}
+                        onChange={(e) => searchArray(e.target.value)}
                         placeholder="Search by Product name"
-                        sx={{
-                            width: '30%'
-                        }}
+                        sx={{ width: '30%'}}
                     />
 
                     <Typography>TOTAL ( {FilteredProductList.length} ) ITEMS</Typography>
                 </Box>
-                <Grid container sx={{ display: 'flex', px: 2 }} spacing={2}>
+                <Grid container spacing={2}>
                     {FilteredProductList.map((ele, index) => {
                         return (
-                            <Grid item key={index} xs={4} sx={{ margin: '10px 0 0 0' }}>
-                                <ProductCard product={ele} branchid={4} fetchProduct={getProductsList} />;
+                            <Grid item key={index} xs={3} sx={{ margin: '10px 0 0 0' }}>
+                                <ProductCard product={ele} branchid={4} fetchProduct={getProductsList} />
                             </Grid>
                         );
                     })}

@@ -25,7 +25,7 @@ export default function Apps() {
                             Apps
                         </Typography>
                     </Grid>
-                    <Grid item xs={'auto'}>
+                    {/* <Grid item xs={'auto'}>
                         <Button
                             size="small"
                             variant="contained"
@@ -37,7 +37,7 @@ export default function Apps() {
                         >
                             Add New App
                         </Button>
-                    </Grid>
+                    </Grid> */}
                     {/* <Grid item xs={6}>
                     <TableControl type="Customer"/> 
                 </Grid> */}

@@ -44,7 +44,7 @@ const MonthlyLineChart = (data) => {
                         colors: [info]
                     },
                     formatter: function (value) {
-                        return '$' + value.toFixed(2);
+                        return 'KD' + value.toFixed(2);
                     }
                 },
                 title: {
@@ -65,6 +65,9 @@ const MonthlyLineChart = (data) => {
                 labels: {
                     style: {
                         colors: ['#f1c40f']
+                    },
+                    formatter: function (value) {
+                        return  value.toFixed(2);
                     }
                 },
                 title: {

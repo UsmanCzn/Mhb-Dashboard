@@ -18,7 +18,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
     const location = useLocation();
 
     const { tiersList, fetchTiersList, totalRowCount, loading } = useTiers(reload, selectedBrand);
-
+    
     const [modal, setModal] = useState(false);
     const [newModal, setNewModal] = useState(false);
     const upperMarin = 0.5;
@@ -162,19 +162,12 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
         {
             name: 'Edit',
             modal: true
-        },
-        {
-            name: 'Duplicate',
-            modal: true
-        },
-        {
-            name: 'Delete',
-            modal: true
         }
     ];
 
     return (
         <>
+            {/* {myLoading ? showLoader() : <></>} */}
             <Grid container mb={2} justifyContent="flex-end">
                 <Grid item xs={'auto'}>
                     <Button
@@ -191,7 +184,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                 </Grid>
             </Grid>
 
-            {/* <DataGridComponent
+            <DataGridComponent
                 rows={tiersList}
                 columns={columns}
                 loading={loading}
@@ -216,9 +209,9 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                         </MenuItem>
                     );
                 })}
-            </Menu> */}
+            </Menu>
 
-            <Grid container spacing={2}>
+            {/* <Grid container spacing={2}>
                 {myLoading ? showLoader() : <></>}
                 {tiersList.map((item, index) => (
                     <Grid item key={index} xs={6} sm={6} md={4} lg={3}>
@@ -298,7 +291,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                         </Card>
                     </Grid>
                 ))}
-            </Grid>
+            </Grid> */}
 
             <NewTier
                 modal={newModal}

@@ -34,7 +34,6 @@ export default function ProductType({ selectedBrand, sortOrder }) {
             </Grid>
         );
     };
-    console.log(productTypes, 'productTypes');
 
     const sortProductTypes = () => {
         const temp = [...productTypes];

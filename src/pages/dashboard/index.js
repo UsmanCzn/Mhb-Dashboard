@@ -90,7 +90,6 @@ const DashboardDefault = () => {
         setTopSales(dashbaordBoardData?.topUsersFromOrders);
         setOrdersChartData(dashbaordBoardData?.ordersChartData);
         setChartDataUpdateCounter((prev) => prev + 1);
-        console.log('Updated ordersChartData:', dashbaordBoardData?.ordersChartData);
     }, [dashbaordBoardData]);
 
     const topCard = () => {
@@ -110,31 +109,31 @@ const DashboardDefault = () => {
                         extra="$20,395"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}>
+                {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Average Order Ready Time"
                         count={formatTimeToHumanReadable(dashbaordBoardData?.averageReadyTime)}
                         percentage={27.4}
                         extra="1,943"
                     />
-                </Grid>
+                </Grid> */}
             </>
         );
     };
 
     useEffect(() => {
         if (brandsList[0]?.id) {
+            if(brandsList && brandsList.length>2){
             setselectedBrand(brandsList[1]);
+            }
+            else{
+                setselectedBrand(brandsList[0]);
+            }
             setOrdersChartData(null);
             setReload((prev) => !prev);
         } else {
-            console.log('now goes to zero ', 'sb');
         }
     }, [brandsList]);
-
-
-    console.log(topSales)
-    debugger
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>

@@ -13,7 +13,6 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
 
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
-    console.log(sortOrder, sortBy);
     const [SortedProductList, setSortedProductList] = useState([]);
 
     const sortByProperty = (array, propertyName, sortOrder = 0) => {
@@ -30,10 +29,16 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
             return 0;
         });
     };
+
+    const searchProducts =(search)=>{
+        const searchNameLower = search.toLowerCase();
+        const result = productsList.filter(item => item.name.toLowerCase().includes(searchNameLower));
+        setSortedProductList(result);
+    }
+    
     useEffect(() => {
         const temp = sortByProperty(productsList, sortBy, sortOrder);
         setSortedProductList([...temp]);
-        console.log(SortedProductList, 'Product List2');
 
         return () => {};
     }, [sortOrder, sortBy, productsList]);
@@ -66,12 +71,13 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
             >
                 <OutlinedInput
                     id="email-login"
-                    type="email"
+                    type="text"
                     name="Search"
                     placeholder="Search by Product name"
                     sx={{
                         width: '30%'
                     }}
+                    onChange={(event)=>{ searchProducts(event.target.value)}}
                 />
                 <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => setModalOpen(true)}>
                     Add new Product
@@ -84,9 +90,10 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 </Box>
             ) : (
                 <Grid container spacing={2} justify="space-between">
-                    {SortedProductList?.map((item) => {
+                    {SortedProductList?.map((item, index) => {
                         return (
                             <GridItem
+                                key={index}
                                 item={item}
                                 brand={selectedBranch}
                                 productTypes={productTypes}

@@ -255,6 +255,7 @@ export default function OrdersTable({
                 rowsPerPageOptions={[10]}
                 totalRowCount={totalRowCount}
                 fetchCallback={fetchOrdersList}
+                
             />
             <Menu
                 id="basic-menu"

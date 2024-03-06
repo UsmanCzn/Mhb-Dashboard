@@ -169,7 +169,7 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Order Value"
+                                        label="Sort Order"
                                         variant="outlined"
                                         value={data.orderValue}
                                         onChange={(e) => setData({ ...data, orderValue: e.target.value })}

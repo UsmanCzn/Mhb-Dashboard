@@ -197,7 +197,16 @@ export default {
     );
   },
  
-
+getProductNameandIdByBrandid(id){
+  return ApiV1.get(
+    'services/app/Products/GetProductsNameandIdByBrandId',
+  {
+    params:{
+      brandId:id
+    }
+  }
+  );
+}
 
 
 }

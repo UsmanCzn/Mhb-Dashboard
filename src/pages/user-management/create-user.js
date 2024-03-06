@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
-
+import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField ,Select} from '@mui/material';
 import { useAuth } from '../../providers/authProvider';
-import Select from 'react-select';
+// import Select from 'react-select';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,19 +68,26 @@ const CreateUser = () => {
             newErrors.email = '';
         }
 
-        if (!formData.roles.trim()) {
+        if (!formData.roles) {
             newErrors.roles = 'Roles is required';
             isValid = false;
         } else {
             newErrors.roles = '';
         }
+        if (!formData.password.trim()) {
+            newErrors.password = 'Password is required';
+            isValid = false;
+        } else {
+            newErrors.password = '';
+        }
 
         if (formData.branches.length === 0) {
-            newErrors.branches = 'Branches is required';
+            newErrors.branches = 'Field is required';
             isValid = false;
         } else {
             newErrors.branches = '';
         }
+
 
         setErrors(newErrors);
         return isValid;
@@ -96,6 +102,7 @@ const CreateUser = () => {
     };
 
     const handleBranchesChange = (selectedBranches) => {
+        console.log(selectedBranches,"selectedBranches");
         setFormData({
             ...formData,
             branches: selectedBranches
@@ -132,7 +139,7 @@ const CreateUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const allotedBranchIds = formData.branches.map((item) => item.value);
+        const allotedBranchIds = formData.branches.map((value) => value);
         const postDataObject = {
             id: 0,
             userName: formData.firstName + ' ' + formData.lastName,
@@ -200,116 +207,116 @@ const CreateUser = () => {
                 });
             });
         }
+        console.log(branches,"branches");
         setMultiSelectValues(branches);
         handleBranchesChange([]);
     }, [userBranches]);
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className="userFormContainer">
-                <div className="userNameContainer">
-                    <div className="userNameChild">
-                        <div>
-                            <label htmlFor="firstName">First Name:</label>
-                        </div>
-                        <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
-                        <p className="error">{errors.firstName}</p>
-                    </div>
-                    <div className="userLastNameChild">
-                        <div>
-                            <label htmlFor="lastName">Last Name:</label>
-                        </div>
-                        <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
-                        <p className="error">{errors.lastName}</p>
-                    </div>
-                </div>
-                <div className="userPhoneContainer">
-                    <div className="userPhoneChild">
-                        <div>
-                            <label htmlFor="phoneNumber">Phone Number:</label>
-                        </div>
-                        <input type="text" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} />
-                        <p className="error">{errors.phoneNumber}</p>
-                    </div>
-                    <div className="userAddressChild">
-                        <div>
-                            <label htmlFor="streetAddress">Street Address:</label>
-                        </div>
-                        <input
-                            type="text"
-                            id="streetAddress"
-                            name="streetAddress"
-                            value={formData.streetAddress}
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </div>
-                <div className="userEmailContainer">
-                    <div className="userEmailChild">
-                        <div>
-                            <label htmlFor="email">Email:</label>
-                        </div>
-                        <input type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
-                        <p className="error">{errors.email}</p>
-                    </div>
-                    <div className="userRolesChild">
-                        <div>
-                            <label htmlFor="roles">Roles:</label>
-                        </div>
-                        <select id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
-                            <option value="">Select a role</option>
-                            {usersRoles.length > 0 &&
-                                usersRoles.map((role) => (
-                                    <option key={role.id} value={role.id}>
-                                        {role.name === 'Company_Admin'
-                                            ? 'Company Admin'
-                                            : role.name === 'Brand_Manager'
-                                            ? 'Brand Manager'
-                                            : role.name === 'Branch_User'
-                                            ? 'Branch User'
-                                            : role.name}
-                                    </option>
-                                ))}
-                        </select>
-                        <p className="error">{errors.roles}</p>
-                    </div>
-                </div>
-                <div className="userPasswordContainer">
-                    <div className="userBranchSelectChild">
-                        <div>
-                            <label htmlFor="branches">
-                                {formData.roles === 'Company_Admin'
-                                    ? 'Companies'
-                                    : formData.roles === 'Brand_Manager'
-                                    ? ' Brands'
-                                    : formData.roles === 'Branch_User'
-                                    ? 'Branches'
-                                    : ' Select'}
-                            </label>
-                        </div>
-                        <Select
-                            className="multiSelectUserBranches"
-                            id="branches"
-                            name="branches"
-                            options={multiSelectValues || null}
-                            isMulti
-                            value={formData.branches}
-                            onChange={handleBranchesChange}
-                        />
-                        <p className="error">{errors.branches}</p>
-                    </div>
-                    <div className="userPasswordChild">
-                        <div>
-                            <label htmlFor="email">Password:</label>
-                        </div>
-                        <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} />
-                        <p className="error">{errors.password}</p>
-                    </div>
-                </div>
-                <Button size="small" type="submit" variant="contained">
-                    Add User
-                </Button>
+            <Grid container spacing={2} className="userFormContainer">
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="firstName">First Name:</label>
             </div>
+            <TextField  fullWidth type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
+            <p className="error">{errors.firstName}</p>
+            </Grid>
+
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="lastName">Last Name:</label>
+            </div>
+            <TextField fullWidth type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+            <p className="error">{errors.lastName}</p>
+            </Grid>
+
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="phoneNumber">Phone Number:</label>
+            </div>
+            <TextField fullWidth type="text" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} />
+            <p className="error">{errors.phoneNumber}</p>
+            </Grid>
+
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="email">Email:</label>
+            </div>
+            <TextField fullWidth type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
+            <p className="error">{errors.email}</p>
+            </Grid>
+
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="password">Password:</label>
+            </div>
+            <TextField fullWidth type="text" id="password" name="password" value={formData.password} onChange={handleInputChange} />
+            <p className="error">{errors.password}</p>
+            </Grid>
+
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="roles">Roles:</label>
+            </div>
+            <Select fullWidth id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
+            <MenuItem value="">Select a role</MenuItem>
+            {usersRoles.length > 0 &&
+                usersRoles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                {role.name === 'Company_Admin'
+                ? 'Company Admin'
+                : role.name === 'Brand_Manager'
+                ? 'Brand Manager'
+                : role.name === 'Branch_User'
+                ? 'Branch User'
+                : role.name}
+            </MenuItem>
+                        ))}
+            </Select>
+            <p className="error">{errors.roles}</p>
+            </Grid>
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="branches">
+                {formData.roles === 'Company_Admin'
+                    ? 'Companies'
+                    : formData.roles === 'Brand_Manager'
+                    ? ' Brands'
+                    : formData.roles === 'Branch_User'
+                    ? 'Branches'
+                    : ' Select'}
+            </label>
+            </div>
+            <Select 
+                fullWidth
+                className=""
+                id="branches"
+                name="branches"
+                options={multiSelectValues || null}
+                value={formData.branches}
+                multiple
+                onChange={(event)=>handleBranchesChange(event.target.value)}
+            >
+                <MenuItem value="">Select a Value</MenuItem>
+                {multiSelectValues.length > 0 &&
+                multiSelectValues.map((role, index) => (
+                <MenuItem key={index} value={role.value}>
+                    {role.label}
+                </MenuItem>
+            ))}
+            </Select>
+            <p className="error">{errors.branches}</p>
+            </Grid>
+
+            <Grid item xs={12} sx={{marginBottom:"10px"}}>
+            <Button size="small" type="submit" variant="contained">
+                    Add User
+            </Button>
+            </Grid>
+            </Grid>
+                        
+
         </form>
     );
 };

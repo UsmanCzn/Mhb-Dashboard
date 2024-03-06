@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react"; 
 import { ServiceFactory } from "services/index";
 
-export function useFetchCustomerList({reload}){
-
+export function useFetchCustomerList(props){
+    const {reload, search}= props
     const [loading, setloading] = useState(false);
 
     const [totalRowCount, setTotalRowCount] = useState(0);
@@ -12,13 +12,12 @@ export function useFetchCustomerList({reload}){
     const customerServices=ServiceFactory.get("customer")
 
     const fetchCustomersList = useCallback(
-      (pageNo) => {
-        
+      (pageNo,searchexp) => {
         setloading(true);
-           console.log(pageNo);
         customerServices.getAllCustomers({
             Skip:pageNo*10,
-            Take:(pageNo+1)+10
+            Take:(pageNo+1)+10,
+            SearchExpression:searchexp
         })
         .then(
             (res)=>{
@@ -39,8 +38,8 @@ export function useFetchCustomerList({reload}){
     );
 
     useEffect(() => {
-        fetchCustomersList(0);
-    }, [fetchCustomersList,reload]);
+        fetchCustomersList(0,search);
+    }, [fetchCustomersList,reload,search]);
 
     return {
         customersList: customersList || [],

@@ -14,6 +14,7 @@ import {
     FormLabel
 } from '@mui/material/index';
 import DropDown from 'components/dropdown';
+import imageCompression from 'browser-image-compression';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -52,7 +53,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
         branches: [],
         price: 0,
         addongroups: [],
-        orderValue: 0
+        orderValue: 0,
+        pointsOfCost:0
     });
 
     const { productTypes, fetchProductTypesList, totalRowCount, loading } = useFetchProductTypeList(true, selectedBrand);
@@ -78,6 +80,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                 {
                     name: data?.name,
                     price: data?.price,
+                    pointsOfCost: +data?.pointsOfCost,
                     nativeName: data?.nativeName,
                     productGroups: data?.addongroups?.map((obj) => {
                         return {
@@ -94,8 +97,16 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
             ]
         };
 
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          }
+          try{
+            const compressedFile = await imageCompression(p1, options);
+            
         await fileService
-            .uploadProductImage(p1)
+            .uploadProductImage(compressedFile)
             .then((res) => {
                 payload.newProducts[0].productImage = res.data?.result;
             })
@@ -114,7 +125,10 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
             .finally(() => {
                 setReload((prev) => !prev);
                 setModalOpen(false);
-            });
+            });}
+            catch(error){
+                console.log(error);
+            }
     };
     const updateProduct = async (event) => {
         event.preventDefault();
@@ -263,6 +277,12 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                         required
                                         value={data.price}
                                         onChange={(e) => setData({ ...data, price: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={4}>
+                                <TextField id="outlined-basic" fullWidth label="Points Of Cost" variant="outlined"
+                                        value={data.pointsOfCost}
+                                        onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={4}>

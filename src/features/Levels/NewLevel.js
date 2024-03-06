@@ -20,7 +20,7 @@ import tiersService from 'services/tiersService';
 
 const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype, tiersList, isEditing }) => {
     const customerService = ServiceFactory.get('customer');
-
+    console.log(editItem, isEditing, tiersList);
     const [data, setData] = useState({
         brandId: selectedBrand?.id,
         name: '',
@@ -59,17 +59,20 @@ const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype
     const [err, setErr] = useState('');
 
     useEffect(() => {
-        {
+        if (isEditing) {
+            setSelectedValues(editItem.subItemsAllowedToRedeem.map((item) => item.toString()));
+            tiersList.map((item, index) => {
+                if (index === 0) {
+                    setGorupValue(editItem?.customerGroupId);
+                }
+            });
+        } else {
+            setSelectedValues([]);
             tiersList.map((item, index) => {
                 if (index === 0) {
                     setGorupValue(item.id);
                 }
             });
-        }
-        if (isEditing) {
-            setSelectedValues(editItem.subItemsAllowedToRedeem.map((item) => item.toString()));
-        } else {
-            setSelectedValues([]);
         }
     }, [setModal]);
 
@@ -155,8 +158,8 @@ const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype
                             defaultValue={0}
                             onChange={handleChange}
                         >
-                            {tiersList.map((item) => (
-                                <option key={item.id} value={item.id}>
+                            {tiersList.map((item, index) => (
+                                <option key={index} value={item.id}>
                                     {item.name}
                                 </option>
                             ))}
@@ -170,9 +173,8 @@ const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype
                         <FormGroup>
                             <Grid container>
                                 {subtype?.map((item) => (
-                                    <Grid item>
+                                    <Grid key={item.id} item>
                                         <FormControlLabel
-                                            key={item.id}
                                             control={
                                                 <Checkbox
                                                     checked={selectedValues.includes(item.id.toString())}

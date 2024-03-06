@@ -2,7 +2,7 @@
     height: 100%;
     width: 100%;
     background-color: #fff;
-    padding: 25px;
+    
 }
 .userNameContainer{
     display: flex;
@@ -25,9 +25,11 @@
 }
 .userNameChild input, .userLastNameChild input, .userAddressChild input, .userPhoneChild input, .userEmailChild input, .userPasswordChild input{
     width: 90%;
-    height: 40px;
 }
 .userRolesChild select, .multiSelectUserBranches{
     width: 90%;
     height: 40px;
+}
+.userRolesChild select, .react-select__control{
+    border: 1px solid black;
 }

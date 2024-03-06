@@ -27,8 +27,6 @@ const ProductCard = (props) => {
         setItem({ ...temp });
     };
     const [isModalOpen, setModalOpen] = useState(false);
-    const [loading, setloading] = useState(false);
-
     const handleOpenModal = () => {
         setModalOpen(true);
     };
@@ -66,7 +64,78 @@ const ProductCard = (props) => {
 
     return (
         <>
-            <Card sx={{ maxWidth: 345 }}>
+
+
+            <Box
+                sx={{
+                    width: '100%',
+                    height: '100%',
+                    // backgroundColor:"white",
+                    display: 'flex',
+                    justifyContent: 'center',
+                    px: 2
+                }}
+            >
+                <Box
+                    sx={{
+                        width: '100%',
+                        height: 280,
+                        border: '1px solid lightGrey',
+                        backgroundColor: 'white',
+                        p: 2,
+                        borderRadius: 2
+                    }}
+                    boxShadow={1}
+                    flexDirection="column"
+                    display="flex"
+                >
+                    <img
+                        src={Item.productImage || DefaultImg}
+                        style={{
+                            width: '100%',
+                            height: 150,
+                            objectFit: 'cover',
+                            borderRadius: 12
+                        }}
+                        alt="img"
+                    />
+                    <Box
+                        sx={{
+                            width: '100%',
+                            mt: 1
+                        }}
+                        justifyContent="space-between"
+                        display="flex"
+                    >
+                        <Typography variant="h5" style={{ fontSize: '14px' }}>
+                            {Item?.name}
+                        </Typography>
+                        <EditIcon onClick={() => handleOpenModal()} fontSize="small" />
+                    </Box>
+                    {/* <Typography variant="h7" style={{ fontSize: '14px' }}>
+                        Type: {type?.name}
+                    </Typography> */}
+                    {/* <Typography variant="h7" style={{ fontSize: '14px' }}>
+                        Category: {type?.subTypes?.find((obj) => obj?.id == item?.productSubTypeId)?.name}
+                    </Typography> */}
+                    <Grid container justifyContent="space-between">
+                        <Typography alignSelf="flex-start"> Available Quantity:</Typography>
+                        <Typography alignSelf="flex-end">{Item?.branchQty}</Typography>
+                    </Grid>
+                    <Grid container justifyContent="space-between">
+                    <Typography alignSelf="flex-start"> Change Availability</Typography>
+                    <Box >
+                            <Switch
+                                title="Show Product Availability"
+                                edge="end"
+                                onChange={(event) => handleToggle(event, Item)}
+                                checked={Item.isQtyAvailable}
+                            />
+                        </Box>
+                    </Grid>
+                </Box>
+            </Box>
+            {/* <Card sx={{ maxWidth: 345 }}>
                 <CardMedia sx={{ height: 140 }} image={Item.productImage || DefaultImg} title="green iguana" />
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -96,7 +165,7 @@ const ProductCard = (props) => {
                         <Typography variant="h5">Edit Stock</Typography>
                     </Box>
                 </CardActions>
-            </Card>
+            </Card> */}
             <EditStockModal open={isModalOpen} onClose={handleCloseModal} onUpdateStock={handleUpdateStock} selectedProduct={Item} />
         </>
     );

@@ -341,7 +341,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Order Value"
+                                        label="Sort Order"
                                         variant="outlined"
                                         value={data.orderValue}
                                         type="number"
@@ -349,18 +349,18 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                     />
                                 </Grid>
 
-                                {/* <Grid item xs={4}>
-                  <TextField id="outlined-basic" fullWidth label="Points Of Cost" variant="outlined"
-                    value={data.pointsOfCost}
-                    onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={4}>
+                                <Grid item xs={4}>
+                                    <TextField id="outlined-basic" fullWidth label="Points Of Cost" variant="outlined"
+                                        value={data.pointsOfCost}
+                                        onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
+                                    />
+                                </Grid>
+                {/* <Grid item xs={4}>
                   <TextField id="outlined-basic" fullWidth label="POS ID" variant="outlined"
                     value={data.posId}
                     onChange={(e) => setData({ ...data, posId: e.target.value })}
                   />
-                </Grid> */}
+                </Grid>  */}
 
                                 <Grid item xs={4}>
                                     <TextField
@@ -382,34 +382,50 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                         onChange={(e) => setData({ ...data, punchesForPurchase: e.target.value })}
                                     />
                                 </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        multiline
+                                        label="Product Description"
+                                        variant="outlined"
+                                        type="text"
+                                        value={data.productDescription}
+                                        onChange={(e) => setData({ ...data, productDescription: e.target.value })}
+                                    />
+                                </Grid>
                             </Grid>
                         </Grid>
 
-                        {/* 
+                        
             <Grid item xs={12}>
               <Grid container spacing={2} >
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <TextField id="outlined-basic" fullWidth label="Calories" variant="outlined"
                     value={data.calories}
                     onChange={(e) => setData({ ...data, calories: e.target.value })}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <TextField id="outlined-basic" fullWidth label="Fat" variant="outlined"
                     value={data.fat}
                     onChange={(e) => setData({ ...data, fat: e.target.value })}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <TextField id="outlined-basic" fullWidth label="Protein" variant="outlined"
                     value={data.protien}
                     onChange={(e) => setData({ ...data, protien: e.target.value })}
                   />
                 </Grid>
-
-
+                <Grid item xs={3}>
+                  <TextField id="outlined-basic" fullWidth label="Carbo" variant="outlined"
+                    value={data.carbo}
+                    onChange={(e) => setData({ ...data, carbo: e.target.value })}
+                  />
+                </Grid>
               </Grid>
-            </Grid> */}
+            </Grid>
 
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
@@ -743,20 +759,6 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
               </Grid>
 
             </Grid> */}
-
-                        <Grid item xs={12}>
-                            <TextField
-                                id="outlined-basic"
-                                fullWidth
-                                multiline
-                                label="Product Description"
-                                variant="outlined"
-                                type="text"
-                                value={data.productDescription}
-                                onChange={(e) => setData({ ...data, productDescription: e.target.value })}
-                            />
-                        </Grid>
-
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
                                 {/* <Grid item xs={4}>
