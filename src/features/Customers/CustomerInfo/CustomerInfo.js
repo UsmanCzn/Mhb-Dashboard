@@ -43,7 +43,6 @@ const CustomerInfo = ({ setReload }) => {
             .getCustomerDetail(cid)
             .then((res) => {
                 setData(res?.data?.result);
-                console.log(res?.data?.result,"customer");
             })
             .catch((err) => {
                 console.log(err?.response);

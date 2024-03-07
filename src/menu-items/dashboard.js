@@ -79,7 +79,7 @@ const dashboard = {
             url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN],
+            forUserRoles: [ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
                 {
@@ -107,7 +107,7 @@ const dashboard = {
             url: '/rewardHistory',
             icon: TimelineIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN, BRAND_MANAGER]
         },
         {
             id: 'rewardStats',

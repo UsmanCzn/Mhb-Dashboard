@@ -68,9 +68,7 @@ const UpdateCustomer = ({
   useEffect(
     ()=>{
       getCountries()
-      GetCustomersGroups()
-
-      
+      GetCustomersGroups()   
     }
     ,[]
   )
