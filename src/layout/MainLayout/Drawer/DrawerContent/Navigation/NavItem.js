@@ -6,9 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
-
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // project import
 import { activeItem } from 'store/reducers/menu';
+import IconButton from '@mui/material/IconButton';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
@@ -51,6 +53,10 @@ const NavItem = ({ item, level }) => {
 
     const textColor = 'text.primary';
     const iconSelectedColor = 'primary.main';
+
+    const handleShowChild = (clickedItem) => {
+        clickedItem.isOpen = !clickedItem.isOpen;
+    };
 
     return (
         <ListItemButton
@@ -117,13 +123,21 @@ const NavItem = ({ item, level }) => {
                 </ListItemIcon>
             )}
             {(drawerOpen || (!drawerOpen && level !== 1)) && (
-                <ListItemText
-                    primary={
-                        <Typography variant="h6" sx={{ color: isSelected ? iconSelectedColor : textColor }}>
-                            {item.title}
-                        </Typography>
+                <>
+                    <ListItemText
+                        primary={
+                            <Typography variant="h6" sx={{ color: isSelected ? iconSelectedColor : textColor }} onClick={() => toggleCollapseNavItem(item.id)}>
+                                {item.title}
+                            </Typography>
+                        }
+                    />
+                    {item.type === 'collapse' &&
+                        <IconButton aria-label="expand" onClick={()=>handleShowChild(item)}>
+                            {item.isOpen ? <ExpandLessIcon/> : <ExpandMoreIcon />}
+                        </IconButton>
+
                     }
-                />
+                </>
             )}
             {(drawerOpen || (!drawerOpen && level !== 1)) && item.chip && (
                 <Chip

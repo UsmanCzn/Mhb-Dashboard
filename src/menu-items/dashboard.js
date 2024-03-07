@@ -80,6 +80,7 @@ const dashboard = {
             icon: GradeIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN],
+            isOpen: false,
             children: [
                 {
                     id: 'collect',
@@ -108,15 +109,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
-        // {
-        //     id: 'rewardStats',
-        //     title: 'Rewards Stats',
-        //     type: 'item',
-        //     url: '/rewards-stats',
-        //     icon: icons.DashboardOutlined,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-        // },
+        {
+            id: 'rewardStats',
+            title: 'Rewards Stats',
+            type: 'item',
+            url: '/rewards-stats',
+            icon: icons.DashboardOutlined,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        },
         {
             id: 'levels',
             title: 'Levels',
@@ -134,6 +135,7 @@ const dashboard = {
             icon: PeopleIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRANCH_USER],
+            isOpen: false,
             children: [
                 {
                     id: 'list',
@@ -169,6 +171,7 @@ const dashboard = {
             icon: InventoryIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER],
+            isOpen: false,
             children: [
                 {
                     id: 'category',
@@ -231,6 +234,7 @@ const dashboard = {
             icon: InventoryIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER],
+            isOpen: false,
             children: [
                 {
                     id: 'providers',
@@ -253,7 +257,7 @@ const dashboard = {
         {
             id: 'advertisement',
             title: 'Advertisement',
-            type: 'collapse',
+            type: 'item',
             url: '/advertisement',
             icon: ShopTwoIcon,
             breadcrumbs: false,
