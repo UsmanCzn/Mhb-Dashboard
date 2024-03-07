@@ -79,7 +79,7 @@ const dashboard = {
             url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN],
+            forUserRoles: [ADMIN, BRAND_MANAGER],
             children: [
                 {
                     id: 'collect',
@@ -106,17 +106,17 @@ const dashboard = {
             url: '/rewardHistory',
             icon: TimelineIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN, BRAND_MANAGER]
         },
-        // {
-        //     id: 'rewardStats',
-        //     title: 'Rewards Stats',
-        //     type: 'item',
-        //     url: '/rewards-stats',
-        //     icon: icons.DashboardOutlined,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-        // },
+        {
+            id: 'rewardStats',
+            title: 'Rewards Stats',
+            type: 'item',
+            url: '/rewards-stats',
+            icon: icons.DashboardOutlined,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        },
         {
             id: 'levels',
             title: 'Levels',

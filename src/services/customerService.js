@@ -57,5 +57,9 @@ export default {
         return ApiV1.get('services/app/Store/GetCurrentCustomerOrdersHistoryById', {
             params: data
         })
+    },
+
+    addPointsForCustomer(data){
+        return ApiV1.post('services/app/Store/AddPointsForUserByAdmin', data);
     }
 };

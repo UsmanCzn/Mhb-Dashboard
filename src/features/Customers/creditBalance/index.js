@@ -28,10 +28,21 @@ const CreditBalance = () => {
         expiryDate: '',
         creditBalanceComment: ''
     });
+
+    const [points, setPoints] = useState(0);
     // const [updateModalOpen, setUpdateModalOpen] = useState(false);
     // const [updateFreeItemModalOpen, setUpdateFreeItemModalOpen] = useState(false);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
-
+    const getCustomer = async () => {
+        await customerService
+            .getCustomerDetail(cid)
+            .then((res) => {
+                setPoints(res.data.result.points)
+            })
+            .catch((err) => {
+                console.log(err?.response);
+            });
+    };
     // GET CREDIT DETAILS
     const GetCreditDetails = async () => {
         await customerService
@@ -45,24 +56,36 @@ const CreditBalance = () => {
                 console.log(err?.response?.data);
             });
     };
+
+    // UPDATE CUSTOMER pOINTS
+    const updateCutsomerPoints =async()=>{
+
+        const data = {
+            pointAdded:+points,
+            brandId:selectedBrand.id,
+            customerId:+ cid,
+        }
+        const response = await customerService.addPointsForCustomer(data)
+        if(response){
+            console.log(response);
+        }
+    }
     useEffect(() => {
         if (selectedBrand && selectedBrand.id) {
             GetCreditDetails();
+            getCustomer()
+
         }
     }, [selectedBrand]);
 
     useEffect(() => {
         if (brandsList[0]?.id) {
-            console.log(brandsList[0]?.id, 'gugygyuguygyu');
             setselectedBrand(brandsList[0]);
         } else {
-            console.log('now goes to zero ', 'sb');
         }
     }, [brandsList]);
 
-    useEffect(() => {
-        // GetCreditDetails();
-    }, [reload]);
+
 
     return (
         <Grid container spacing={4}>
@@ -94,18 +117,29 @@ const CreditBalance = () => {
             </Grid>
 
             <Grid item xs={12}>
-                <Grid container spacing={2}>
+                <Grid container >
                     <Grid item xs={3}>
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Credit Balance"
-                            variant="outlined"
-                            value={CreditBalance?.creditBalance}
-                            InputProps={{
-                                readOnly: true
-                            }}
-                        />
+                    <Box sx={{ display: 'flex', gap: '10px'}}>   
+                    <TextField
+                        id="outlined-basic"
+                        fullWidth
+                        label="Credit Balance"
+                        variant="outlined"
+                        value={CreditBalance?.creditBalance}
+                        InputProps={{
+                            readOnly: true
+                        }}
+                    />
+                        <Button
+                        primary
+                        variant="contained"
+                        onClick={() => {
+                            setupdateCreditBalanceModalOpen(true);
+                        }}
+                    >
+                        Update
+                    </Button>
+                    </Box>
                     </Grid>
                     {/* <Grid item xs={3}>
                         <TextField
@@ -121,17 +155,33 @@ const CreditBalance = () => {
                     </Grid> */}
                     <Grid item xs={3} />
                     <Grid item xs={3}>
-                        <Button
-                            primary
-                            variant="contained"
-                            onClick={() => {
-                                setupdateCreditBalanceModalOpen(true);
-                            }}
-                        >
-                            Update
-                        </Button>
+                
                     </Grid>
                 </Grid>
+            </Grid>
+
+            <Grid item xs={12}>
+                <Grid item xs={3}>
+                <Box sx={{ display: 'flex', gap: '10px'}}>
+                <TextField
+                    id="outlined-basic"
+                    fullWidth
+                    label="Points to Redeem"
+                    variant="outlined"
+                    value={points}
+                    onChange={(e)=>{ setPoints(e.target.value)}}
+                />
+                <Button
+                    primary
+                    variant="contained"
+                    onClick={() => {
+                        updateCutsomerPoints()
+                    }}
+                >
+                    Update
+                </Button>
+                </Box>
+            </Grid>
             </Grid>
 
             {/* <Grid item xs={12}>
