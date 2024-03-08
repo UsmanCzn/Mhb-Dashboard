@@ -4,6 +4,11 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
 import { useFetchBranchList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Switch from '@mui/material/Switch';
+import branchServices from 'services/branchServices';
+
+const label = { inputProps: { 'aria-label': 'Size switch demo' } };
+
 export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData }) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -15,16 +20,21 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
 
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
+        
         setBranch(params?.row);
         setAnchorEl(event.currentTarget);
+        // navigate(`${location.pathname}/${params.row?.id}`);
     };
     const handleClose = (data) => {
+        console.log(data);
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
-        } else if (data?.name == 'Edit Branch') {
-            setUpdateData(branch);
-            setUpdate(true);
-            setModalOpen(true);
+        } else if (data?.name == 'Edit Location') {
+            navigate(`${location.pathname}/${branch?.id}`);
+
+            // setUpdateData(branch);
+            // setUpdate(true);
+            // setModalOpen(true);
         }
         setAnchorEl(null);
     };
@@ -41,6 +51,20 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             />
         );
     };
+
+    const hideBranch = async (event,data) => {
+        console.log(data);
+        const tempData = {...data,ishide:event.target.checked}
+        try {
+         const res = await branchServices.editBranch(tempData)
+         if(res) {
+            console.log(res);
+            fetchBranchesList()
+         }
+        }catch (err){
+
+        }
+    }
 
     const columns = [
         {
@@ -59,7 +83,11 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             field: 'ishide',
             headerName: 'Is Hide',
             flex: 1,
-            headerAlign: 'left'
+            headerAlign: 'left',
+            renderCell: (params) => { 
+                return  <Switch {...label} checked={ params.row.ishide } onChange={(event)=>{hideBranch(event,params.row)}} size="small" />  
+                // return params.row.ishide ? <Tooltip title="Hidden"> <CheckCircleIcon  /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon title="false"/></Tooltip> ;
+            }
         },
         {
             field: 'name',
@@ -90,19 +118,19 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             headerName: 'Rewards Program',
             flex: 1,
             headerAlign: 'left'
-        }
-        // {
-        //   field: "isRewardMissisng",
-        //   headerName: "Action",
-        //   sortable: false,
-        //   flex: 0.5,
-        //   headerAlign: "left",
+        },
+        {
+          field: "isRewardMissisng",
+          headerName: "Action",
+          sortable: false,
+          flex: 0.5,
+          headerAlign: "left",
 
-        //   renderCell: (params) => {
-        //         return <MoreVertIcon
-        //             onClick={(event)=>handleClick(event,params)} />
-        //       }
-        // },
+          renderCell: (params) => {
+                return <MoreVertIcon
+                    onClick={(event)=>handleClick(event,params)} />
+              }
+        },
     ];
 
     const options = [
@@ -119,11 +147,11 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         //   modal:false,
         //   route:"branchRewardProgram"
         // },
-        {
-            name: 'Location Timings',
-            modal: false,
-            route: 'branchTimings'
-        }
+        // {
+        //     name: 'Location Timings',
+        //     modal: false,
+        //     route: 'branchTimings'
+        // },
         // {
         //   name:"Branch Users",
         //   modal:false,
@@ -147,7 +175,6 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
                 totalRowCount={totalRowCount}
                 fetchCallback={fetchBranchesList}
                 onRowClick={(row) => {
-                    navigate(`${location.pathname}/${row?.id}`);
                 }}
             />
             <Menu

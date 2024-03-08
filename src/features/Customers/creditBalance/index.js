@@ -7,6 +7,8 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import UpdateWallet from 'components/customers/updateWalletBalance';
 import UpdateFreeItems from 'components/customers/updateFreeItems';
 import UpdateCreditBalance from 'components/customers/updateCreditBalance';
+import LinearProgress from '@mui/material/LinearProgress';
+
 
 const CreditBalance = () => {
     const { cid } = useParams();
@@ -15,7 +17,10 @@ const CreditBalance = () => {
 
     const [selectedBrand, setselectedBrand] = useState({});
     const [walletDetails, setWalletDetails] = useState([]);
+    const [points, setPoints] = useState(0);
     const [reload, setReload] = useState(false);
+    const [loading, setLoading] = useState(false);
+    
     const [brandWallet, setBrandWallet] = useState({
         walletBalance: 0,
         creditBalance: 0,
@@ -29,26 +34,15 @@ const CreditBalance = () => {
         creditBalanceComment: ''
     });
 
-    const [points, setPoints] = useState(0);
     // const [updateModalOpen, setUpdateModalOpen] = useState(false);
     // const [updateFreeItemModalOpen, setUpdateFreeItemModalOpen] = useState(false);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
-    const getCustomer = async () => {
-        await customerService
-            .getCustomerDetail(cid)
-            .then((res) => {
-                setPoints(res.data.result.points)
-            })
-            .catch((err) => {
-                console.log(err?.response);
-            });
-    };
+ 
     // GET CREDIT DETAILS
     const GetCreditDetails = async () => {
         await customerService
             .getCreditDetailsByCustomerId(cid, selectedBrand.id)
             .then((res) => {
-                console.log(res?.data?.result[0], 'wallet dd');
                 setCreditBalance(res.data.result[0]);
                 // setWalletDetails(res?.data?.result);
             })
@@ -57,9 +51,23 @@ const CreditBalance = () => {
             });
     };
 
-    // UPDATE CUSTOMER pOINTS
-    const updateCutsomerPoints =async()=>{
+    // GET CUSTOMER POINTS
+    const getCustomerPoints= async()=>{
+        try {
+        const data= { userId: +cid, brandId: +selectedBrand.id}
+        const res = await customerService.getUserPointsCountByUserIdandBrandId$(data)
+            if (res) {
+                setPoints(res.data.result)
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
+    // UPDATE CUSTOMER POINTS
+    const updateCutsomerPoints =async()=>{
+        setLoading(true)
+        try {
         const data = {
             pointAdded:+points,
             brandId:selectedBrand.id,
@@ -68,13 +76,16 @@ const CreditBalance = () => {
         const response = await customerService.addPointsForCustomer(data)
         if(response){
             console.log(response);
+            setLoading(false)
+        }
+        }catch(err){
+            setLoading(false)
         }
     }
     useEffect(() => {
         if (selectedBrand && selectedBrand.id) {
             GetCreditDetails();
-            getCustomer()
-
+            getCustomerPoints()
         }
     }, [selectedBrand]);
 
@@ -88,8 +99,13 @@ const CreditBalance = () => {
 
 
     return (
+        <>
+        {loading && <Box sx={{ width: '100%' }}>
+                    <LinearProgress />
+                    </Box>
+        }
         <Grid container spacing={4}>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{marginTop:'10px'}}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs="auto">
                         <Typography fontSize={26} fontWeight={600}></Typography>
@@ -229,6 +245,7 @@ const CreditBalance = () => {
                 brandName={brandsList?.find((obj) => obj?.id == selectedBrand?.id)?.name}
             />
         </Grid>
+        </>
     );
 };
 

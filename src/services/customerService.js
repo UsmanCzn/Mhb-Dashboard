@@ -60,6 +60,10 @@ export default {
     },
 
     addPointsForCustomer(data){
-        return ApiV1.post('services/app/Store/AddPointsForUserByAdmin', data);
+        return ApiV1.post(`services/app/Store/AddPointsForUserByAdmin?pointAdded=${data.pointAdded}&brandId=${data.brandId}&customerId=${data.customerId}`);
+    },
+
+    getUserPointsCountByUserIdandBrandId$(data){
+        return ApiV1.get(`services/app/Customer/GetUserPointsCountByUserIdandBrandId?userId=${data.userId}&brandId=${data.brandId}`,)
     }
 };
