@@ -8,18 +8,25 @@ import UpdateWallet from 'components/customers/updateWalletBalance';
 import UpdateFreeItems from 'components/customers/updateFreeItems';
 import UpdateCreditBalance from 'components/customers/updateCreditBalance';
 import LinearProgress from '@mui/material/LinearProgress';
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
+import { useSnackbar } from 'notistack';
 
 
-const CreditBalance = () => {
+const CreditBalance = (props) => {
+    const {user} = props
+    console.log(user,"Credit Balance");
     const { cid } = useParams();
 
     const { brandsList } = useFetchBrandsList(true);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const [selectedBrand, setselectedBrand] = useState({});
+    const [filteredBrand, setFilteredBrand] = useState([]);
     const [walletDetails, setWalletDetails] = useState([]);
     const [points, setPoints] = useState(0);
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [totalPoints, setTotalPoints] = useState(0)
     
     const [brandWallet, setBrandWallet] = useState({
         walletBalance: 0,
@@ -52,12 +59,12 @@ const CreditBalance = () => {
     };
 
     // GET CUSTOMER POINTS
-    const getCustomerPoints= async()=>{
+    const getCustomerPoints= async () =>{
         try {
-        const data= { userId: +cid, brandId: +selectedBrand.id}
-        const res = await customerService.getUserPointsCountByUserIdandBrandId$(data)
+        const res = await customerService.getCustomerDetailV3(+cid, +selectedBrand.id)
             if (res) {
-                setPoints(res.data.result)
+                setPoints(0)
+                setTotalPoints(res.data.result.redeemablePoints)
             }
         } catch(err) {
             console.log(err);
@@ -67,16 +74,24 @@ const CreditBalance = () => {
     // UPDATE CUSTOMER POINTS
     const updateCutsomerPoints =async()=>{
         setLoading(true)
-        try {
+        try {     
         const data = {
-            pointAdded:+points,
-            brandId:selectedBrand.id,
-            customerId:+ cid,
-        }
-        const response = await customerService.addPointsForCustomer(data)
+            id: 0,
+            brandId: selectedBrand.id,
+            customerId: +cid,
+            increaseFreeItemsCount: 0,
+            increasePunchesCount: 0,
+            pointsUsed: +points,
+            pointsEarned: 0,
+            comments: ""
+          }
+        const response = await customerService.updateUsedPoints(data);
         if(response){
-            console.log(response);
             setLoading(false)
+            enqueueSnackbar('Request Has Been Genereated to Add point for this user', {
+                variant: 'success'
+            });
+            getCustomerPoints()
         }
         }catch(err){
             setLoading(false)
@@ -91,7 +106,9 @@ const CreditBalance = () => {
 
     useEffect(() => {
         if (brandsList[0]?.id) {
-            setselectedBrand(brandsList[0]);
+            const temp = brandsList.filter(br => br.companyId === user.companyId);
+            setFilteredBrand(temp);
+            setselectedBrand(temp[0]);
         } else {
         }
     }, [brandsList]);
@@ -123,8 +140,8 @@ const CreditBalance = () => {
                                     setselectedBrand(event.target.value);
                                 }}
                             >
-                                {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                {filteredBrand.map((row, index) => {
+                                    return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
                                 })}
                             </Select>
                         </FormControl>
@@ -179,24 +196,31 @@ const CreditBalance = () => {
             <Grid item xs={12}>
                 <Grid item xs={3}>
                 <Box sx={{ display: 'flex', gap: '10px'}}>
+                <Box>
+                <AccessibilityNewIcon/>   Total User Points {totalPoints}
                 <TextField
+                    sx= {{marginTop: "10px"}}
                     id="outlined-basic"
                     fullWidth
-                    label="Points to Redeem"
+                    label="Add points"
                     variant="outlined"
                     value={points}
                     onChange={(e)=>{ setPoints(e.target.value)}}
                 />
-                <Button
+                </Box>
+        
+                </Box>
+            </Grid>
+            <Grid item xs={3} sx={{marginTop:"10px"}}>
+            <Button
                     primary
                     variant="contained"
                     onClick={() => {
                         updateCutsomerPoints()
                     }}
                 >
-                    Update
+                    Add points
                 </Button>
-                </Box>
             </Grid>
             </Grid>
 

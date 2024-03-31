@@ -28,6 +28,48 @@ const style = {
 const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
     const [p1, setP1] = useState(null);
     const [p2, setP2] = useState(null);
+    const intialData = {
+        name: '',
+        nativeName: '',
+        logoUrl: '',
+        emailAddress: '',
+        phoneNumber: '',
+        currency: '',
+        reportInterval: 0,
+        applicationLanguage: 'en',
+        walletSubTitle: '',
+        walletSubTitleNative: '',
+        companyId: 0,
+        brandManager: {
+            userName: '',
+            name: '',
+            surname: '',
+            password: '',
+            address: '',
+            emailAddress: '',
+            phoneNumber: ''
+        },
+        aboutApplicationNative: '',
+        privacyPolicyNative: '',
+        faqNative: '',
+        termsAndConditionsNative: '',
+        aboutApplication: '',
+        currencyDecimals: 0,
+        privacyPolicy: '',
+        faq: '',
+        initialCustomerBalance: 0,
+        freeItems: 0,
+        useTopUpValues: true,
+        minimumTopUpValue: 0,
+        brandTimeZone: 0,
+        socialFacebookUrl: '',
+        socialInstaUrl: '',
+        socialTwitterUrl: '',
+        contactUsEmailAddress: '',
+        termsAndConditions: '',
+        currencyId: 1,
+        pointsForWalletReplenishment: 0
+    }
 
     const [value, setValue] = React.useState(new Date());
 
@@ -40,48 +82,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
     const handleChange = (event) => {
         setData({ ...data, currency: event.target.value });
     };
-    const [data, setData] = useState({
-        name: '',
-        nativeName: '',
-        logoUrl: '',
-        emailAddress: '',
-        phoneNumber: '',
-        currency: '',
-        reportInterval: 0,
-        applicationLanguage: 'en',
-        walletSubTitle: 'string',
-        walletSubTitleNative: 'string',
-        companyId: 0,
-        brandManager: {
-            userName: '',
-            name: '',
-            surname: '',
-            password: '',
-            address: '',
-            emailAddress: '',
-            phoneNumber: ''
-        },
-        aboutApplicationNative: 'string',
-        privacyPolicyNative: 'string',
-        faqNative: 'string',
-        termsAndConditionsNative: 'string',
-        aboutApplication: 'string',
-        currencyDecimals: 0,
-        privacyPolicy: 'string',
-        faq: 'string',
-        initialCustomerBalance: 0,
-        freeItems: 0,
-        useTopUpValues: true,
-        minimumTopUpValue: 0,
-        brandTimeZone: 0,
-        socialFacebookUrl: 'string',
-        socialInstaUrl: 'string',
-        socialTwitterUrl: 'string',
-        contactUsEmailAddress: 'string',
-        termsAndConditions: 'string',
-        currencyId: 2147483647,
-        pointsForWalletReplenishment: 0
-    });
+    const [data, setData] = useState(intialData);
 
     const myTheme = createTheme({
         // Set up your custom MUI theme here
@@ -102,7 +103,6 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                 console.log(err.response.data);
             });
 
-        console.log(payload, 'payload');
 
         await brandServices
             .createBrand(payload)
@@ -230,6 +230,9 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                 currencyId: updateData?.currencyId,
                 pointsForWalletReplenishment: updateData?.pointsForWalletReplenishment
             });
+        }
+        else{
+            setData(intialData)
         }
     }, [update, updateData]);
 

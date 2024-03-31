@@ -12,8 +12,7 @@ const label = { inputProps: { 'aria-label': 'Size switch demo' } };
 export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData }) {
     const navigate = useNavigate();
     const location = useLocation();
-
-    const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList(reload);
+    const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList({reload});
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [branch, setBranch] = useState({});
@@ -26,7 +25,6 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         // navigate(`${location.pathname}/${params.row?.id}`);
     };
     const handleClose = (data) => {
-        console.log(data);
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
         } else if (data?.name == 'Edit Location') {
@@ -77,7 +75,10 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             field: 'isBusy',
             headerName: 'Is Busy',
             flex: 1,
-            headerAlign: 'left'
+            headerAlign: 'left',
+            renderCell: (params) => { 
+                return  <Switch {...label} checked={ params.row.isBusy }  size="small" />  
+            }
         },
         {
             field: 'ishide',
@@ -117,7 +118,10 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             field: 'isRewardMissing',
             headerName: 'Rewards Program',
             flex: 1,
-            headerAlign: 'left'
+            headerAlign: 'left',
+            renderCell: (params) => { 
+                return  <Switch {...label} checked={ params.row.isRewardMissing }  size="small" />  
+            }
         },
         {
           field: "isRewardMissisng",

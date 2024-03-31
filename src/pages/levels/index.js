@@ -1,17 +1,12 @@
-import { Grid, Typography, InputLabel, FormControl, Select, MenuItem, Menu, Box } from '@mui/material';
-import { TableControl, CustomersTable } from 'features';
+import { Grid, Typography, InputLabel, FormControl, Select, MenuItem, Menu, Box, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import DataGridComponent from 'components/DataGridComponent';
 import { useNavigate, useParams } from 'react-router-dom';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import NewCustomer from 'components/customers/newCustomer';
-import TierTable from 'features/Customers/TierTable/tierTable';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useFetchLevelData } from 'features/Levels/hooks/useFetchLevelsData';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import tiersService from 'services/tiersService';
 
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -26,7 +21,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 export default function LevelForm() {
     const { type } = useParams();
-
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);

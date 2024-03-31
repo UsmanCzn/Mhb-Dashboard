@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { ServiceFactory } from "services/index";
 
 export function useFetchBranchList({reload}){
-
     const [loading, setloading] = useState(false);
 
     const [totalRowCount, setTotalRowCount] = useState(0);

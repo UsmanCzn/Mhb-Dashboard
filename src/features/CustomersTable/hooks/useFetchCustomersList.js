@@ -2,19 +2,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { ServiceFactory } from 'services/index';
 
 export function useFetchCustomerList(props) {
-    const { reload,search,setCustomerStats } = props
+    const { reload,search,setCustomerStats,selectedCompany } = props
+    console.log(selectedCompany,"ss");
     const [loading, setloading] = useState(false);
     const [totalRowCount, setTotalRowCount] = useState(0);
     const [customersList, setCustomersList] = useState([]);
 
     const customerServices = ServiceFactory.get('customer');
-    const fetchCustomersList = useCallback((pageNo,searchexp) => {
+    const fetchCustomersList = useCallback((pageNo,searchexp,compId) => {
         setloading(true);
         customerServices
             .getAllCustomers({
                 Skip: pageNo * 10,
                 Take: 10,
-                SearchExpression:searchexp
+                SearchExpression:searchexp,
+                ApplicationId:compId
             })
             .then(
                 (res) => {
@@ -33,8 +35,8 @@ export function useFetchCustomerList(props) {
     }, []);
 
     useEffect(() => {
-        fetchCustomersList(0,search);
-    }, [fetchCustomersList, reload,search]);
+        fetchCustomersList(0,search,selectedCompany);
+    }, [fetchCustomersList, reload,search,selectedCompany]);
 
     return {
         customersList: customersList || [],

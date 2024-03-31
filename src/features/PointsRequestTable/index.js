@@ -5,34 +5,33 @@ import DataGridComponent from 'components/DataGridComponent';
 import moment from 'moment/moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
+import { useSnackbar } from 'notistack';
 
-const CreditRequestTable = () => {
-    const navigate = useNavigate();
 
-    const location = useLocation();
+const PointsRequestTable = () => {
 
-    const [creditRequest, setCreditRequest] = useState([]);
+    const [pointsRequest, setPointsRequest] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [reload, setreload] = useState(false)
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        getCreditRequest();
+        getPointsRequest();
         // return () => {
         //   second
         // }
     }, []);
 
     // GET CREDIT DETAILS
-    const getCreditRequest = async () => {
+    const getPointsRequest = async () => {
         await customerService
-            .getCreditDetails()
+            .getUsedPointsRequest()
             .then((res) => {
-                console.log(res?.data?.result, 'creditrequest');
-                setCreditRequest(res.data.result);
+                console.log(res?.data?.result, 'request');
+                setPointsRequest(res.data.result);
                 // setWalletDetails(res?.data?.result);
-                setreload(false)
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -48,85 +47,90 @@ const CreditRequestTable = () => {
     };
 
     const handleClose = (data) => {
-        // if (!data.modal && data.route) {
-        //     navigate(`${location.pathname}/${branch?.id}/${data.route}`);
-        // } else if (data?.name == 'Edit Brand') {
-        //     setUpdateData(brand);
-        //     setUpdate(true);
-        //     setModalOpen(true);
-        // }
+        console.log(data);
         if (data.name == 'Accept') {
             const body = {
-                brandId: selectedRow?.brandId,
-                customerId: selectedRow?.customerId,
-                increaseBalanceAmount: selectedRow?.increaseBalanceAmount,
-                walletComments: selectedRow?.walletComments,
-                expiryDate: selectedRow?.expiryDate,
-                id: selectedRow?.id,
-                isAccepted: true
+                "id": selectedRow.id,
+                "brandId": selectedRow?.brandId,
+                "customerId": selectedRow?.customerId,
+                "increaseFreeItemsCount": 0,
+                "increasePunchesCount": 0,
+                "pointsUsed": selectedRow.redeemablePoints,
+                "pointsEarned": 0,
+                "comments": ""
             };
-            updatewalletRequestbyId(body);
+            acceptRequest(body);
         } else {
             const body = {
-                brandId: selectedRow?.brandId,
-                customerId: selectedRow?.customerId,
-                increaseBalanceAmount: selectedRow?.increaseBalanceAmount,
-                walletComments: selectedRow?.walletComments,
-                expiryDate: selectedRow?.expiryDate,
-                id: selectedRow?.id,
-                isAccepted: false
+                "id": selectedRow.id,
+                "brandId": selectedRow?.brandId,
+                "customerId": selectedRow?.customerId,
+                "increaseFreeItemsCount": 0,
+                "increasePunchesCount": 0,
+                "pointsUsed": 0,
+                "pointsEarned": 0,
+                "comments": ""
             };
-            updatewalletRequestbyId(body);
+            rejectRequest(body);
         }
         setAnchorEl(null);
     };
 
-    const updatewalletRequestbyId = async (body) => {
-        setreload(true)
+    const acceptRequest = async (body) => {
         await customerService
-            .UpdateCreditDepositWalletByid(body)
+            .acceptUsedPointsRequest(body)
             .then((res) => {
-                // setCreditBalance(res.data.result[0]);
-                // setWalletDetails(res?.data?.result);
-                getCreditRequest();
+                enqueueSnackbar('Request Accepted', {
+                    variant: 'success',
+                  });
+                getPointsRequest();
+
             })
             .catch((err) => {
                 console.log(err?.response?.data);
             });
     };
 
-    const getStatus =(param)=>{
-        if(param.isAct && param.isAccepted){
-            return "Accepted"
-        }
-        else if(param.isAct && !param.isAccepted){
-            return "Rejected"
-        }
-        else{
-            return "Pending"
-        }
-    }
+    const rejectRequest = async (body) => {
+        await customerService
+            .rejectUsedPointsRequest(body)
+            .then((res) => {
+                enqueueSnackbar('Request Rejected', {
+                    variant: 'error',
+                  });
+                getPointsRequest();
 
+            })
+            .catch((err) => {
+                console.log(err?.response?.data);
+            });
+    };
     const columns = [
         {
-            field: 'fullName',
+            field: 'userName',
             headerName: 'User Name',
             headerAlign: 'left'
         },
         {
-            field: 'emailAddress',
+            field: 'email',
             headerName: 'Email',
             flex: 1,
             headerAlign: 'left'
         },
         {
-            field: 'phoneNumber',
+            field: 'brandName',
+            headerName: 'Brand Name',
+            flex: 1,
+            headerAlign: 'left'
+        },
+        {
+            field: 'phone',
             headerName: 'PhoneNumber',
             flex: 1,
             headerAlign: 'left'
         },
         {
-            field: 'increaseBalanceAmount',
+            field: 'redeemablePoints',
             headerName: 'Amount Request',
             flex: 1,
             headerAlign: 'left'
@@ -138,22 +142,15 @@ const CreditRequestTable = () => {
             headerAlign: 'left'
         },
         {
-            field: 'status',
-            headerName: 'Status',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return getStatus(params.row) ;
-            }
-        },
-        {
             field: 'isRewardMfissisng',
             headerName: 'Action',
             sortable: false,
             flex: 0.5,
             headerAlign: 'left',
+
             renderCell: (params) => {
-                return  !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
+                console.log(params.row.isAct,"ssoopd");
+                return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
         }
     ];
@@ -171,12 +168,12 @@ const CreditRequestTable = () => {
     return (
         <>
             <DataGridComponent
-                rows={creditRequest}
+                rows={pointsRequest}
                 columns={columns}
-                loading={reload}
+                loading={false}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
-                totalRowCount={creditRequest?.length}
+                totalRowCount={pointsRequest?.length}
                 // fetchCallback={getCreditRequest}
             />
 
@@ -201,4 +198,4 @@ const CreditRequestTable = () => {
     );
 };
 
-export default CreditRequestTable;
+export default PointsRequestTable;

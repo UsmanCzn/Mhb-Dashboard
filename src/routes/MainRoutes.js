@@ -39,6 +39,7 @@ import UpdateUser from '../pages/user-management/update-user';
 import RewardStats from 'pages/rewardStats/RewardStats';
 import Offers from 'pages/offers/offers';
 import Advertisement from 'pages/advertisement/advertisement';
+import Campaings from 'pages/campaings/index';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -68,6 +69,7 @@ export default function MainRoutes() {
                     <Route path="/apps" element={<Apps />} />
 
                     <Route path="/brands" element={<Brands />} />
+                    <Route path="/campaigns" element={<Campaings />} />
 
                     <Route path="/locations" element={<Branches />} />
                     <Route path="/locations/:bhid" element={<LocationDetail />} />
@@ -84,6 +86,7 @@ export default function MainRoutes() {
                     <Route path="/user-management" element={<UserList />} />
                     <Route path="/update-user/:id" element={<UpdateUser />} />
                     <Route path="/create-user" element={<CreateUser />} />
+                    <Route path="/create-user/:id" element={<CreateUser />} />
 
                     <Route path="/customers" element={<Customers />} />
                     <Route path="/customers/list" element={<CustomersList />} />

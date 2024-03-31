@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ServiceFactory } from "services/index";
 import rewardService from "services/rewardService";
 
-export function useFetchRewardList(reload,selectedBrand){
+export function useFetchRewardList(reload,selectedBrand, setReload){
 
     const [loading, setloading] = useState(false);
 
@@ -29,7 +29,8 @@ export function useFetchRewardList(reload,selectedBrand){
             (res)=>{  
               setPurchaseCollectionList(res?.data?.result?.purchasesCollectionPrograms)
               setPointsCollectionList(res?.data?.result?.pointsCollectingPrograms)
-              setConstantsCollectionList(res?.data?.result?.constantDiscountPrograms)
+              setConstantsCollectionList(res?.data?.result?.constantDiscountPrograms),
+              setReload(false)
             },
             (err)=>{
               console.log(err,"err");

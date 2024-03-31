@@ -6,17 +6,32 @@ import CustomerInfo from 'features/Customers/CustomerInfo/CustomerInfo';
 import Wallet from 'features/Customers/wallet';
 import CreditBalance from 'features/Customers/creditBalance/index';
 import CustomerOrders from './customers-orders';
+import customerService from 'services/customerService';
 
 export default function CustomerDetail() {
-    const { type } = useParams();
+    const { cid } = useParams();
     const [value, setValue] = React.useState('1');
+    const [user, setuser] = useState(null)
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [reload, setReload] = useState(false);
-
+    useEffect(() => {
+        getCustomer();
+    }, [])
+    
+    const getCustomer = async () => {
+        await customerService
+            .getCustomerDetail(cid)
+            .then((res) => {
+                setuser(res?.data?.result);
+            })
+            .catch((err) => {
+                console.log(err?.response);
+            });
+    };
     return (
         <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
@@ -42,7 +57,7 @@ export default function CustomerDetail() {
                 <TabPanel value="2"> <CustomerOrders/> {/* <PointsCollection pointsCollection={pointsCollection} setReload={setReload} /> */}</TabPanel>
                 <TabPanel value="3">{/* <ConstantsCollection constantCollection={constantCollection} setReload={setReload}/> */}</TabPanel>
                 <TabPanel value="4">
-                    <CreditBalance />
+                    <CreditBalance user={user} />
 
                     {/* <Wallet /> */}
                 </TabPanel>

@@ -18,6 +18,7 @@ const CustomerOrders = () => {
     useEffect(() => {
         if (brandsList[0]?.id) {
             setselectedBrand(brandsList[0]);
+            getCustomerOrders()
         } else {
             console.log('now goes to zero ', 'sb');
         }
@@ -104,14 +105,17 @@ const CustomerOrders = () => {
     ];
 
         const getCustomerOrders =async (pageNo) =>{
+            setloading(true)
             try{
-                const data = {brandId:selectedBrand.id,UserId:cid,skip:pageNo,take:10}
+                const data = {brandIds:brandsList.map(e=> e.id),UserId:cid,skip:pageNo,take:10}
                 const response = await customerService.getCustomerOrdersByBrand(data)
                 if(response){
                     setdata([...response.data.result?.orderHistoryItems])
+                    setloading(false)
                 }
             }catch(error){
-                console.log(error);
+                setdata([]);
+                setloading(false);
             }
         }
 
@@ -121,26 +125,7 @@ const CustomerOrders = () => {
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs="auto">
                         <Typography fontSize={26} fontWeight={600}></Typography>
-                    </Grid>
-
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
-                                }}
-                            >
-                                {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+                    </Grid> 
                 </Grid>
             </Grid>
   <Grid item xs={12}>

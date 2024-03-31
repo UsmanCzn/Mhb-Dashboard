@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Menu } from '@mui/material';
 import userManagementService from 'services/userManagementService';
 
-import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ConfirmationModal from '../../components/confirmation-modal';
+import customerService from 'services/customerService';
 
 const UserList = () => {
     const navigate = useNavigate();
+    const [companies, setcompanies] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState(null)
 
     const headers = [
         { name: 'Name', value: 'name' },
@@ -37,9 +41,30 @@ const UserList = () => {
     const [usersRoles, setUsersRoles] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(null); // State to store the selected user for delete confirmation
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event,data) => {
+    setSelectedUserId(data.userId);
+    setAnchorEl(event.currentTarget);
+    };
+    const handleClose = (action, data,index) => {
+        console.log(action, data ,index, "row click");
+        if(action ==="delete"){
+            handleDeleteUser()
+        }
+        else if(action==='edit'){
+            navigate('/create-user/'+selectedUserId)
+        }
+      setAnchorEl(null);
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setSelectedCompany(value)
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -53,7 +78,7 @@ const UserList = () => {
 
     const getUsersList = async () => {
         try {
-            const response = await userManagementService.getAllUsers();
+            const response = await userManagementService.getAllUsers(selectedCompany);
             if (response && response.data && response.data.result) {
                 setUsers(response.data.result);
             }
@@ -73,10 +98,30 @@ const UserList = () => {
         }
     };
 
+    const getCompanies =async ()=>{
+        try{
+        const res =await customerService.getComapniesByUserRole();
+        if(res){
+          const tempComp = res.data.result;
+          if(tempComp.length){
+            setSelectedCompany(tempComp[0].id)
+            
+          }
+          setcompanies(res.data.result)
+        }
+        }catch(err){
+
+        }
+      }
+
     useEffect(() => {
         getUserRoles();
-        getUsersList();
+        getCompanies();
     }, []);
+    useEffect(() => {
+        getUsersList();
+    }, [selectedCompany])
+    
 
     const mergedUsers = users?.map((user) => {
         const userRole = Array.isArray(usersRoles) && usersRoles?.find((role) => role.id === user.userId);
@@ -86,8 +131,7 @@ const UserList = () => {
         };
     });
 
-    const handleDeleteUser = (userId) => {
-        setSelectedUserId(userId);
+    const handleDeleteUser = () => {
         setDeleteModalOpen(true);
     };
 
@@ -112,9 +156,6 @@ const UserList = () => {
         navigate('/create-user');
     };
 
-    const handleEditUser = (userId) => {
-        navigate(`/update-user/${userId}`);
-    };
 
     return (
         <>
@@ -122,9 +163,28 @@ const UserList = () => {
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs={'auto'}>
-                            <Typography fontSize={22} fontWeight={700}>
-                                Users Management
-                            </Typography>
+                        <div>
+            <label htmlFor="Company">
+             Company
+            </label>
+            </div>
+          <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              fullWidth
+              value={selectedCompany}
+              label={'Company'}
+              name="companyId"
+              onChange={handleInputChange}
+          >
+              {companies.map((row, index) => {
+                return (
+                    <MenuItem key={index} value={row.id}>
+                        {row?.name}
+                    </MenuItem>
+                );
+              })}
+          </Select>
                         </Grid>
                         <Grid item xs={'auto'}>
                             <Button onClick={handleCreateNewUser} size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
@@ -153,14 +213,20 @@ const UserList = () => {
                                             <TableCell>{getUserName(row)}</TableCell>
                                             <TableCell>
                                                 <div>
-                                                    <Button
-                                                        variant="outlined"
-                                                        type="primary"
-                                                        style={{ color: '#DD4D2B', border: 'none' }}
-                                                        onClick={() => handleDeleteUser(row.userId)}
+                                               
+                                                    <MoreVertIcon onClick={(event)=>handleClick(event,row )} />
+                                                    <Menu
+                                                        id="basic-menu"
+                                                        anchorEl={anchorEl}
+                                                        open={open}
+                                                        onClose={handleClose}
+                                                        MenuListProps={{
+                                                        'aria-labelledby': 'basic-button',
+                                                        }}
                                                     >
-                                                        <DeleteIcon />
-                                                    </Button>
+                                                        <MenuItem onClick={()=>handleClose('delete',row ,index)}>Delete</MenuItem>
+                                                        <MenuItem onClick={()=>handleClose('edit',row,index)}>Edit</MenuItem>
+                                                    </Menu>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

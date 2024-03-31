@@ -20,7 +20,6 @@ import tiersService from 'services/tiersService';
 
 const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype, tiersList, isEditing }) => {
     const customerService = ServiceFactory.get('customer');
-    console.log(editItem, isEditing, tiersList);
     const [data, setData] = useState({
         brandId: selectedBrand?.id,
         name: '',

@@ -1,6 +1,6 @@
 import { Chip, Grid, Typography,Menu,MenuItem,Button  } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent'; 
-import React,{useState} from 'react'; 
+import React,{useState, useEffect} from 'react'; 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchRewardList } from '../hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -11,19 +11,26 @@ import moment from 'moment-jalaali';
  import DuplicateReward from "../duplicateReward"
  import rewardService from 'services/rewardService';
 import NewRewardCollection from '../newRewardCollection';
-export default function PointsCollectionTable({ selectedBrand,reload,customerGroups,setReload }) {
+export default function PointsCollectionTable({ selectedBrand,customerGroups, }) {
 
   const navigate = useNavigate();
 
   const location = useLocation();
 
-    const {  PointsCollectionList,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand);
+  const [reload, setReload] = useState(false)
+
+  const {  PointsCollectionList,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand,setReload);
     
-    const {branchesList} =useFetchBranchList(reload)
-    const [modal,setModal] =useState(false) 
-    const [newModal,setNewModal] =useState(false) 
+  const {branchesList} =useFetchBranchList(reload)
+  const [modal,setModal] =useState(false) 
+  const [newModal,setNewModal] =useState(false) 
     
-    const [duplicateModal,setDuplicateModal] =useState(false) 
+  const [duplicateModal,setDuplicateModal] =useState(false) 
+  
+  useEffect(() => {
+    setReload(true)
+
+  }, [])
   
     
     const branchColumnFormater = item => {
@@ -75,14 +82,10 @@ export default function PointsCollectionTable({ selectedBrand,reload,customerGro
     };
   
     const deletePointsCollection=async (id)=>{  
-
-
-      console.log("deleting",id);
       await rewardService.DeleteDiscountProgram(id)
-
       .then((res)=>{
           console.log(res.data,"delete response");
-          setReload(prev=>!prev)
+          setReload(true)
       })
       .catch((err)=>{
           console.log(err?.response?.data);
@@ -98,7 +101,7 @@ export default function PointsCollectionTable({ selectedBrand,reload,customerGro
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (data) => {  
-    if(data.modal&&data?.name=="Edit"){
+    if(data.modal && data?.name=="Edit"){
       setModal(true)
     }
     else  if( data?.name=="Delete"){
@@ -203,7 +206,7 @@ export default function PointsCollectionTable({ selectedBrand,reload,customerGro
                     }
                    }
                    >
-                            Create New Reward Collection
+                    Create New Reward Collection
                  </Button> 
    
                    </Grid>

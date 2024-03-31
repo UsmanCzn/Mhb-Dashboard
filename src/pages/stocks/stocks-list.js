@@ -30,8 +30,6 @@ const StockList = (props) => {
                 setProductList([...products]);
                 setFilteredProductList([...products]);
                 setloading(false);
-
-                console.log(products,"products");
             }
         } catch (error) {
             setloading(false);

@@ -61,32 +61,30 @@ const NewRewardCollection = ({
 
     const createPurchaseCollection = async () => {
         // console.log(data); 
-
+        try{
         let payload = { ...data }
         payload.amount = data.amountPurchaseReward
         payload.brandGroupId = data.groupOfCustomers
         payload.rewardProgramGifts = data.giftPrograms
-        console.log(payload, "paee");
-
-        await rewardService.createPointsCollectionProgram(payload)
-            .then((res) => {
-                console.log("customers groups Edit response Points", res?.data),
-                    setReload(prev => !prev)
-                setModal(false)
-            })
-            .catch((err) => {
-                console.log(err?.response?.data);
-                if (err?.response?.data?.error?.validationErrors?.length > 0) {
-                    enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
-                        variant: 'error',
-                    });
-                }
-                else {
-                    enqueueSnackbar(err?.response?.data?.error?.message, {
-                        variant: 'error',
-                    });
-                }
-            })
+        const res = await rewardService.createPointsCollectionProgram(payload)
+            
+        if (res) {
+            setModal(false)
+            setReload(true)
+        }
+         }
+         catch (err){
+            
+        if (err&&err?.response?.data?.error?.validationErrors?.length > 0) {
+            enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
+                variant: 'error',
+            });
+         }else if(err && err?.response?.data?.error?.message ) {
+            enqueueSnackbar(err?.response?.data?.error?.message, {
+                variant: 'error',
+            });
+        }
+        }
     }
 
     const addNewProgram = () => {
@@ -106,6 +104,7 @@ const NewRewardCollection = ({
             name: ""
         })
     }
+
     const removeProgram = (index) => {
 
         setData(
@@ -119,10 +118,7 @@ const NewRewardCollection = ({
 
     useEffect(
         () => {
-            // console.log(purchaseCollection,"Purchases oo");
             getCustomergroups()
-
-
         }
         , []
     )
@@ -132,7 +128,7 @@ const NewRewardCollection = ({
     return (
         <Modal
             open={modal}
-            onClose={() => setModal(false)}
+            onClose={() =>{setModal(false)}}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
@@ -175,7 +171,8 @@ const NewRewardCollection = ({
                                      
                                 <Typography
                                     required variant="h7">A Point will be given when customer spend: </Typography>
-                                <TextField id="outlined-basic"  label="Amount" variant="outlined"
+                                <TextField id="outlined-basic" onChange={(event)=>{setData({...data,amountPurchaseReward:event.target.value})}}  label="Amount" variant="outlined"
+
                                 //  value={row.name} 
                                 />
                                 </Box>
@@ -329,7 +326,7 @@ const NewRewardCollection = ({
                                     <Box>
                                     <Typography
                                     required variant="h7">Tiers</Typography>
-  <DropDown title="Select Tiers"
+                                    <DropDown title="Select Tiers"
                                     list={customerGroups}
                                     data={data}
                                     setData={setData}

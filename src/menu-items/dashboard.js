@@ -14,6 +14,7 @@ import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER } from 'helper/UserRoles';
+import EventIcon from '@mui/icons-material/Event';
 // icons
 const icons = {
     DashboardOutlined
@@ -54,6 +55,7 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
+ 
         {
             id: 'locations',
             title: 'Locations',
@@ -73,32 +75,41 @@ const dashboard = {
             forUserRoles: [ADMIN, BRAND_MANAGER]
         },
         {
+            id: 'campaings',
+            title: 'Campaigns',
+            type: 'item',
+            url: '/campaigns',
+            icon: EventIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN]
+        },
+        {
             id: 'rewards',
             title: 'Rewards',
-            type: 'collapse',
+            type: 'item',
             url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER, BRAND_MANAGER],
-            isOpen: false,
-            children: [
-                {
-                    id: 'collect',
-                    title: 'Collect',
-                    type: 'item',
-                    url: '/rewardcollection/',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-                },
-                {
-                    id: 'redeem',
-                    title: 'Redeem',
-                    type: 'item',
-                    url: '/rewardredemption/',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-                }
-            ]
+            // isOpen: false,
+            // children: [
+            //     {
+            //         id: 'collect',
+            //         title: 'Collect',
+            //         type: 'item',
+            //         url: '/rewardcollection/',
+            //         breadcrumbs: false,
+            //         forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+            //     },
+            //     {
+            //         id: 'redeem',
+            //         title: 'Redeem',
+            //         type: 'item',
+            //         url: '/rewardredemption/',
+            //         breadcrumbs: false,
+            //         forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+            //     }
+            // ]
         },
         {
             id: 'rewardHistory',
@@ -109,15 +120,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER]
         },
-        {
-            id: 'rewardStats',
-            title: 'Rewards Stats',
-            type: 'item',
-            url: '/rewards-stats',
-            icon: icons.DashboardOutlined,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-        },
+        // {
+        //     id: 'rewardStats',
+        //     title: 'Rewards Stats',
+        //     type: 'item',
+        //     url: '/rewards-stats',
+        //     icon: icons.DashboardOutlined,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        // },
         {
             id: 'levels',
             title: 'Levels',

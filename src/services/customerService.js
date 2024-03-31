@@ -42,7 +42,6 @@ export default {
         return ApiV1.get('services/app/Customer/GetCustomerCreditBalanceByCompanyManager');
     },
     getCreditDetailsByCustomerId(cid, bid) {
-        console.log(bid, 'sads');
         return ApiV1.get(`services/app/Customer/GetCustomerWalletPunchesAndFreeItemsDetails?customerId=${cid}&brandId=${bid}`);
     },
 
@@ -54,9 +53,8 @@ export default {
     },
 
     getCustomerOrdersByBrand(data){
-        return ApiV1.get('services/app/Store/GetCurrentCustomerOrdersHistoryById', {
-            params: data
-        })
+        return ApiV1.post('services/app/Store/GetCurrentCustomerOrdersHistoryById',  data
+        )
     },
 
     addPointsForCustomer(data){
@@ -65,5 +63,33 @@ export default {
 
     getUserPointsCountByUserIdandBrandId$(data){
         return ApiV1.get(`services/app/Customer/GetUserPointsCountByUserIdandBrandId?userId=${data.userId}&brandId=${data.brandId}`,)
+    },
+
+    updateUsedPoints(data){
+        return ApiV1.post('services/app/Customer/InsertUserPunchesInfoDetail', data);
+    },
+
+    acceptUsedPointsRequest(data){
+        return ApiV1.put('services/app/Customer/UpdateCustomerFreeItemsAndPunches', data);
+    },
+
+    rejectUsedPointsRequest(data){
+        return ApiV1.put('services/app/Customer/UpdateRejectCustomerFreeItemsAndPunches', data);
+    },
+    getUsedPointsRequest(){
+        return ApiV1.get('services/app/Customer/GetUserPunchesInfoDetail');
+    },
+    getCustomerDetailV3(userId,brandId) {
+        return ApiV1.get('services/app/Customer/GetCustomerDetailsByIdV3', {
+            params: {
+                userId: userId,
+                brandId:brandId
+            }
+        });
+    },
+
+    getComapniesByUserRole (){
+        return ApiV1.get(`services/app/AdminUserManagement/GetCompaniesForCurrentUserUM`)
     }
+
 };

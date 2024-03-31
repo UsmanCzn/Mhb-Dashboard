@@ -66,7 +66,7 @@ export default function Companies() {
                                 size="small"
                                 variant="contained"
                                 sx={{ textTransform: 'capitalize' }}
-                                onClick={() => setModalOpen(true)}
+                                onClick={() => {setModalOpen(true); setUpdate(false); }}
                             >
                                 Create New Brand
                             </Button>

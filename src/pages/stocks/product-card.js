@@ -31,6 +31,7 @@ const ProductCard = (props) => {
         setModalOpen(true);
     };
 
+
     const handleCloseModal = () => {
         setModalOpen(false);
     };
@@ -90,7 +91,7 @@ const ProductCard = (props) => {
                     display="flex"
                 >
                     <img
-                        src={Item.productImage || DefaultImg}
+                        src={product.productImage || DefaultImg}
                         style={{
                             width: '100%',
                             height: 150,
@@ -108,7 +109,7 @@ const ProductCard = (props) => {
                         display="flex"
                     >
                         <Typography variant="h5" style={{ fontSize: '14px' }}>
-                            {Item?.name}
+                            {product?.name}
                         </Typography>
                         <EditIcon onClick={() => handleOpenModal()} fontSize="small" />
                     </Box>
@@ -120,7 +121,7 @@ const ProductCard = (props) => {
                     </Typography> */}
                     <Grid container justifyContent="space-between">
                         <Typography alignSelf="flex-start"> Available Quantity:</Typography>
-                        <Typography alignSelf="flex-end">{Item?.branchQty}</Typography>
+                        <Typography alignSelf="flex-end">{product?.branchQty}</Typography>
                     </Grid>
                     <Grid container justifyContent="space-between">
                     <Typography alignSelf="flex-start"> Change Availability</Typography>
@@ -128,15 +129,15 @@ const ProductCard = (props) => {
                             <Switch
                                 title="Show Product Availability"
                                 edge="end"
-                                onChange={(event) => handleToggle(event, Item)}
-                                checked={Item.isQtyAvailable}
+                                onChange={(event) => handleToggle(event, product)}
+                                checked={product.isQtyAvailable}
                             />
                         </Box>
                     </Grid>
                 </Box>
             </Box>
             {/* <Card sx={{ maxWidth: 345 }}>
-                <CardMedia sx={{ height: 140 }} image={Item.productImage || DefaultImg} title="green iguana" />
+                <CardMedia sx={{ height: 140 }} image={product.productImage || DefaultImg} title="green iguana" />
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Box sx={{}}>
@@ -166,7 +167,7 @@ const ProductCard = (props) => {
                     </Box>
                 </CardActions>
             </Card> */}
-            <EditStockModal open={isModalOpen} onClose={handleCloseModal} onUpdateStock={handleUpdateStock} selectedProduct={Item} />
+            <EditStockModal open={isModalOpen} onClose={handleCloseModal} onUpdateStock={handleUpdateStock} selectedProduct={product} />
         </>
     );
 };

@@ -1,5 +1,5 @@
 // Import necessary dependencies
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, TextField, Box } from '@mui/material';
 
 import Dialog from '@mui/material/Dialog';
@@ -12,11 +12,17 @@ import Switch from '@mui/material/Switch';
 
 // ConfirmationModal component
 const EditStockModal = ({ open, onClose, onUpdateStock, selectedProduct }) => {
-    const [Amount, setAmount] = useState(selectedProduct?.branchQty || 0);
-    const [available, setavailable] = useState(selectedProduct?.isQtyAvailable);
+    const [Amount, setAmount] = useState(0);
+    const [available, setavailable] = useState(false);
     const isFormValid = () => {
         return Amount !== ''; // Add any other form validation as needed
     };
+    useEffect(() => {
+        setAmount(selectedProduct?.branchQty);
+        setavailable(selectedProduct?.isQtyAvailable)
+
+    }, [selectedProduct])
+    
 
     return (
         <Dialog open={open} onClose={onClose}>

@@ -47,8 +47,6 @@ const App = ({
         })
     }
     const editPointCollection=async ()=>{
-        console.log(data);
- 
         let payload={...pointCollection}
         payload.amount=data.amountPurchaseReward
         payload.brandGroupId=data.groupOfCustomers

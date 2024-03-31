@@ -34,7 +34,19 @@ export default {
     );
   },
    
-   
+  getBrandEvents (brandId) {
+    return ApiV1.get(`services/app/BrandEvent/GetAllByBrandId?brandId=${brandId}`)
+  },
+
+  createBrandEvent(body){
+    return ApiV1.post(`services/app/BrandEvent/Create`,body)
+  },
+  updateBrandEvent(body){
+    return ApiV1.put(`services/app/BrandEvent/Update`,body)
+  },
+  deleteBrandEvent(body){
+    return ApiV1.delete(`services/app/BrandEvent/Delete?Id=${body}`,)
+  }
    
 }
 

@@ -189,7 +189,7 @@ const UpdateUser = ({ match }) => {
                             const responseForBranches = await getDesiredBranch(roleObject.id);
                             const alloctedBranches = userData.allotedIdsList;
 
-                            const alloctedBranchesObj = responseForBranches.filter((item) => alloctedBranches.includes(item.id));
+                            const alloctedBranchesObj = userBranches.filter((item) => alloctedBranches.includes(item.id));
                             let newObjForBranches = [];
                             if (alloctedBranchesObj.length > 0) {
                                 newObjForBranches = alloctedBranchesObj?.map((item) => ({

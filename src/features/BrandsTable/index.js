@@ -66,7 +66,7 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             flex: 1,
             headerAlign: 'left',
             renderCell: (params) => {   
-                return params.row.isHidden ? <Tooltip title="Hidden"> <CheckCircleIcon  /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon title="false"/></Tooltip> ;
+                return params.row.isHidden ? <Tooltip title="Hidden"> <CheckCircleIcon /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon/></Tooltip> ;
             }
         },
 

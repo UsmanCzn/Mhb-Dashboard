@@ -17,7 +17,6 @@ export function useDashboard(reload, brandId, startDate, endDate) {
             const formatedStartDate = `${parsedStartDate.getFullYear()}-${parsedStartDate.getMonth() + 1}-${parsedStartDate.getDate()}`;
             const formatedEndDate = `${parsedEndDate.getFullYear()}-${parsedEndDate.getMonth() + 1}-${parsedEndDate.getDate()}`;
             const isSame = formatedStartDate == formatedEndDate;
-            console.log(isSame, 'Im Here========');
             setloading(true);
             rewardService
                 .getdashBoardData(brandId, isSame ? null : formatedStartDate, isSame ? null : formatedEndDate)

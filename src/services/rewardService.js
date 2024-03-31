@@ -55,5 +55,16 @@ export default {
 
     DuplicateReward(data) {
         return ApiV1.post('services/app/RewardProgram/DuplicateRewardProgramForOtherBranches', data);
+    },
+
+
+    getRewardStats (data){
+        const {
+            brandId,
+            branchId,
+            startDate,
+            endDate,
+        }= data
+        return ApiV1.get(`services/app/Dashboard/GetLiveDashboardReport?brandId=${brandId}&branchId=${branchId}&startDate=${startDate}&endDate=${endDate}`)  
     }
 };

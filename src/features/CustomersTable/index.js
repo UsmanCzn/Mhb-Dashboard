@@ -1,18 +1,26 @@
-import { Chip, Grid, Typography,Menu,MenuItem,TextField  } from '@mui/material';
+import { Chip, Grid, Typography,Menu,MenuItem,TextField,Box,  Select, InputLabel, FormControl,  } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent'; 
-import React,{useState} from 'react'; 
+import React,{useState,useCallback,useEffect} from 'react'; 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchCustomerList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import customerService from 'services/customerService';
 
 export default function CustomerTable({ type,reload,setCustomerStats }) {
 
   const [search, setSearch] = useState("")
+  const [companies, setcompanies] = useState([])
+  const [selectedCompany, setSelectedCompany] = useState(null)
   const navigate = useNavigate();
   const location = useLocation();
 
-    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search,setCustomerStats});
-   
+    const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search,setCustomerStats,selectedCompany});
+
+    useEffect(() => {
+      getCompanies()
+    }, [])
+    
+       
   
     const activeColumnFormater = item => {
         
@@ -31,6 +39,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
       );
     };
     const groupsColumnFormater = item => {
+      console.log(item,"sss");
       return ( <Grid container spacing={1}>
  {
         item?.customerGroups?.map(obj=>{
@@ -44,6 +53,11 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
       </Grid>
       )
     };
+
+    const companyFormatter = (item) =>{
+      const temp = companies.find(com => com.id === item.companyId)
+      return temp?.name || ""
+    }
   
     const [anchorEl, setAnchorEl] =  useState(null);
     const [customer, setCustomer] =  useState({});
@@ -54,8 +68,8 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (data) => {  
-    if(!data.modal&&data.route){
-      navigate(`${location.pathname}/${customer?.id}`);
+    if(!data.modal && data.route){
+      navigate(`/customers/${customer?.id}`);
     }
     setAnchorEl(null);
   };
@@ -77,14 +91,14 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
       },
       {
           field: "customerGroups",
-          headerName: "Groups",
+          headerName: "Company",
           flex: 1.5,
           headerAlign: "left", 
-          renderCell: params => groupsColumnFormater(params.row)
+          renderCell: params => companyFormatter(params.row)
 
       },
       {
-          field: "phoneNumber",
+          field: "displayPhone",
           headerName: "Phone Number",
           flex: 0.7,
           headerAlign: "left"
@@ -119,9 +133,24 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
 
       ]
 
+      const getCompanies =async ()=>{
+        try{
+        const res =await  customerService.getComapniesByUserRole();
+        if(res){
+          const tempComp = res.data.result;
+          if(tempComp.length){
+          }
+          setcompanies(res.data.result)
+        }
+        }catch(err){
+
+        }
+      }
+
 
   return (
     <> 
+    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
     <TextField
       style={{marginBottom:"10px"}}
       id="search"
@@ -132,6 +161,29 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
         setSearch(event.target.value)
       }}
     />
+
+      <FormControl sx={{minWidth:"200px",maxWidth:"200px"}}>
+          <InputLabel id="demo-simple-select-label">{'Companies'}</InputLabel>
+          <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedCompany}
+              label={'Customer Group'}
+              name="customerGroupId"
+              onChange={(e)=>{
+                setSelectedCompany(e.target.value)
+              }}
+          >
+              {companies.map((row, index) => {
+                return (
+                    <MenuItem key={index} value={row.id}>
+                        {row?.name}
+                    </MenuItem>
+                );
+              })}
+          </Select>
+          </FormControl>
+    </Box>
     <DataGridComponent
       rows={customersList}
       columns={columns}
@@ -141,6 +193,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
       totalRowCount={totalRowCount}
       fetchCallback={fetchCustomersList} 
       search={search}
+      customFilter={selectedCompany}
     />
      <Menu
         id="basic-menu"

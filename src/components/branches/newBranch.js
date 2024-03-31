@@ -91,8 +91,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
         await branchService
             .createBranch(payload)
             .then((res) => {
-                console.log(res.data);
-                setReload((prev) => !prev);
+                setReload(true);
                 setModalOpen(false);
             })
             .catch((err) => {
@@ -569,7 +568,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
                                 <Grid item xs={8} />
                                 <Grid container spacing={2} justifyContent="flex-end">
                                     <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                        <Button variant="outlined" onClick={() =>{ setModalOpen(false)}}>
                                             Cancel
                                         </Button>
                                     </Grid>

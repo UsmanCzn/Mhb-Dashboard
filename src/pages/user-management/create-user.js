@@ -3,18 +3,21 @@ import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField 
 import { useAuth } from '../../providers/authProvider';
 // import Select from 'react-select';
 import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate ,useParams } from 'react-router-dom';
 
 import './create-user.css';
 import userManagementService from '../../services/userManagementService';
+import customerService from 'services/customerService';
 
 const CreateUser = () => {
 
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
+    const [companies, setcompanies] = useState([]);
     const [multiSelectValues, setMultiSelectValues] = useState([]);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
+    const { id } = useParams();
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -24,7 +27,8 @@ const CreateUser = () => {
         streetAddress: '',
         email: '',
         roles: '',
-        branches: []
+        branches: [],
+        companyId:""
     });
 
     const [errors, setErrors] = useState({
@@ -47,12 +51,12 @@ const CreateUser = () => {
             newErrors.firstName = '';
         }
 
-        if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Last Name is required';
-            isValid = false;
-        } else {
-            newErrors.lastName = '';
-        }
+        // if (!formData.lastName.trim()) {
+        //     newErrors.lastName = 'Last Name is required';
+        //     isValid = false;
+        // } else {
+        //     newErrors.lastName = '';
+        // }
 
         if (!formData.phoneNumber.trim()) {
             newErrors.phoneNumber = 'Phone Number is required';
@@ -74,7 +78,7 @@ const CreateUser = () => {
         } else {
             newErrors.roles = '';
         }
-        if (!formData.password.trim()) {
+        if ( !id &&!formData.password.trim()) {
             newErrors.password = 'Password is required';
             isValid = false;
         } else {
@@ -101,8 +105,21 @@ const CreateUser = () => {
         });
     };
 
+    const getCompanies =async ()=>{
+        try{
+        const res =await  customerService.getComapniesByUserRole();
+        if(res){
+          const tempComp = res.data.result;
+          if(tempComp.length){
+          }
+          setcompanies(res.data.result)
+        }
+        }catch(err){
+
+        }
+      }
+
     const handleBranchesChange = (selectedBranches) => {
-        console.log(selectedBranches,"selectedBranches");
         setFormData({
             ...formData,
             branches: selectedBranches
@@ -110,6 +127,7 @@ const CreateUser = () => {
     };
 
     const handlePostData = async (postData) => {
+        if(!id){
         try {
             const response = await userManagementService.CreateUser(postData);
             if (response) {
@@ -134,6 +152,21 @@ const CreateUser = () => {
             enqueueSnackbar(error.response.data.error.message, {
                 variant: 'error'
             });
+        }}else{
+            try {
+                const response = await userManagementService.UpdateUser(postData);
+                if (response) {
+          
+                    enqueueSnackbar('User Updated Successfully', {
+                        variant: 'success'
+                    });
+                    navigate('/user-management');
+                }
+            } catch (error) {
+                enqueueSnackbar(error.response.data.error.message, {
+                    variant: 'error'
+                });
+            }
         }
     };
 
@@ -141,16 +174,17 @@ const CreateUser = () => {
         e.preventDefault();
         const allotedBranchIds = formData.branches.map((value) => value);
         const postDataObject = {
-            id: 0,
-            userName: formData.firstName + ' ' + formData.lastName,
+            id: id ? +id :0,
+            userName: formData.phoneNumber ,
             name: formData.firstName,
             surname: formData.lastName,
-            password: formData.password || '123456789',
+            password: formData.password,
             address: formData.streetAddress || null,
             emailAddress: formData.email,
             phoneNumber: formData.phoneNumber,
             roleId: +formData.roles,
-            allotedIdsList: allotedBranchIds
+            allotedIdsList: allotedBranchIds,
+            companyId: +formData.companyId
         };
 
         if (validateForm()) {
@@ -165,6 +199,9 @@ const CreateUser = () => {
             const response = await userManagementService.getUserRoles();
             if (response) {
                 setUsersRoles(response?.data?.result);
+                if(id){
+                    fetchUserData( response?.data?.result)
+                }
             }
         } catch (error) {
             console.error('Error fetching user roles', error);
@@ -183,6 +220,8 @@ const CreateUser = () => {
             }
             if (response) {
                 setUserBranches(response.data.result);
+                return response.data.result;
+                
             }
         } catch (error) {
             console.error('Error fetching user roles', error);
@@ -190,8 +229,11 @@ const CreateUser = () => {
     };
 
     useEffect(() => {
+     
         getUserRoles();
+        getCompanies()
     }, []);
+
 
     useEffect(() => {
         getDesiredBranch(formData.roles);
@@ -207,10 +249,48 @@ const CreateUser = () => {
                 });
             });
         }
-        console.log(branches,"branches");
         setMultiSelectValues(branches);
+        if(id) return
         handleBranchesChange([]);
     }, [userBranches]);
+
+    const fetchUserData = async ( roles) => {
+        if (id) {
+            
+            try {
+                const response = await userManagementService.GetUserId(id);
+
+                if (response?.data?.result) {
+                    const userData = response.data.result;
+                    const roleObject = roles?.find((role) => role.id === userData?.roleId);
+                    if (roleObject) {
+                        const responseForBranches = await getDesiredBranch(roleObject.id);
+                        const alloctedBranches = userData.allotedIdsList ??[];
+
+                        const alloctedBranchesObj = responseForBranches.filter((item) => alloctedBranches.includes(item.id));
+                        let newObjForBranches = [];
+                        if (alloctedBranchesObj.length > 0) {
+                            newObjForBranches = alloctedBranchesObj.map((item) => item.id);
+                        }
+                        console.log(userData,"selected Brancehs");
+                        setFormData({
+                            firstName: userData.name,
+                            lastName: userData.surname,
+                            phoneNumber: userData.phoneNumber,
+                            password: null,
+                            streetAddress: userData.address || '',
+                            email: userData.emailAddress,
+                            roles: roleObject.id,
+                            branches: newObjForBranches,
+                            companyId:userData?.companyId
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data', error);
+            }
+        }
+    };
 
     return (
         <form onSubmit={handleSubmit}>
@@ -293,7 +373,6 @@ const CreateUser = () => {
                 className=""
                 id="branches"
                 name="branches"
-                options={multiSelectValues || null}
                 value={formData.branches}
                 multiple
                 onChange={(event)=>handleBranchesChange(event.target.value)}
@@ -308,10 +387,34 @@ const CreateUser = () => {
             </Select>
             <p className="error">{errors.branches}</p>
             </Grid>
+            <Grid item xs={6}>
+            <div>
+            <label htmlFor="Company">
+             Company
+            </label>
+            </div>
+          <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              fullWidth
+              value={formData.companyId}
+              label={'Company'}
+              name="companyId"
+              onChange={handleInputChange}
+          >
+              {companies.map((row, index) => {
+                return (
+                    <MenuItem key={index} value={row.id}>
+                        {row?.name}
+                    </MenuItem>
+                );
+              })}
+          </Select>
+            </Grid>
 
             <Grid item xs={12} sx={{marginBottom:"10px"}}>
             <Button size="small" type="submit" variant="contained">
-                    Add User
+                    {id ?'Update User':'Add User'}
             </Button>
             </Grid>
             </Grid>

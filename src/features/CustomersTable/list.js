@@ -56,7 +56,7 @@ export default function CustomerTable({ type,reload }) {
   };
   const handleClose = (data) => {  
     if(!data.modal&&data.route){
-      navigate(`${location.pathname}/${customer?.id}`);
+      navigate(`/customers/${customer?.id}`);
     }
     setAnchorEl(null);
   };

@@ -80,7 +80,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                 {
                     name: data?.name,
                     price: data?.price,
-                    pointsOfCost: +data?.pointsOfCost,
+                    pointsOfCost: +data?.pointsOfCost || 0,
                     nativeName: data?.nativeName,
                     productGroups: data?.addongroups?.map((obj) => {
                         return {
@@ -280,7 +280,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
-                                <TextField id="outlined-basic" fullWidth label="Points Of Cost" variant="outlined"
+                                <TextField id="outlined-basic" type="number" fullWidth label="Points Of Cost" variant="outlined"
                                         value={data.pointsOfCost}
                                         onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
                                     />

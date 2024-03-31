@@ -7,15 +7,14 @@ import NewCustomer from 'components/customers/newCustomer';
 
 export default function CustomersList() {
     const { type } = useParams();
-
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false)
     const [reload, setReload] = useState(false)
 
    
 
-  return (
-    <Grid container spacing={2}>
+    return (
+     <Grid container spacing={2}>
  
         
         <Grid item xs={12}>
