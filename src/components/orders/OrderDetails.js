@@ -206,7 +206,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                         Quantity
                                     </Typography>
                                     <Typography variant="h2" fontSize={14} style={{ width: '10%' }}>
-                                        Price{' '}
+                                        Price
                                     </Typography>
                                 </Box>
 

@@ -90,7 +90,7 @@ const dashboard = {
             url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER, BRAND_MANAGER],
+            forUserRoles: [ADMIN, BRAND_MANAGER],
             // isOpen: false,
             // children: [
             //     {
@@ -145,7 +145,7 @@ const dashboard = {
             url: '/customers',
             icon: PeopleIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER],
+            forUserRoles: [ADMIN, BRAND_MANAGER, BRANCH_USER],
             isOpen: false,
             children: [
                 {

@@ -104,7 +104,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
           headerAlign: "left"
       },
       {
-        field: "emailAddress",
+        field: "displayEmailAddress",
         headerName: "Email",
         flex: 1,
         headerAlign: "left"

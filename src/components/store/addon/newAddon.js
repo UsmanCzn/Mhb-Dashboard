@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Box, Typography, TextField, Grid, Button, Switch,RadioGroup,FormControlLabel,Radio,FormControl,FormLabel } from "@mui/material/index";
+import { Modal, Box, Typography, TextField, Grid, Button, Switch,RadioGroup,FormControlLabel,Radio,FormControl,FormLabel, } from "@mui/material/index";
 import DropDown from 'components/dropdown'
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -45,13 +45,15 @@ const NewAddon = ({
     nativeName:"",
     orderValue:0,
     price: 0,
-  pointsOfCost: 0,
-  posId: 0,
-  calories:"",
-  fat:"",
-  protien:"",
-  carbo:"",
-  image:""
+    pointsOfCost: 0,
+    posId: 0,
+    calories:"",
+    fat:"",
+    protien:"",
+    carbo:"",
+    image:"",
+    canBeMultiple:false,
+    maxMultipleValue:0,
   })
   
   const customerServices=ServiceFactory.get("customer")
@@ -71,9 +73,11 @@ useEffect(
         calories:updateData?.calories,
         fat:updateData?.fat,
         protien:updateData?.protien,
-  carbo:updateData?.carbo,
-  productAdditionsGroupId:updateData?.productAdditionsGroupId,
-  image:updateData?.image
+        carbo:updateData?.carbo,
+        productAdditionsGroupId:updateData?.productAdditionsGroupId,
+        image:updateData?.image,
+        canBeMultiple:updateData.canBeMultiple,
+        maxMultipleValue:updateData.maxMultipleValue,
       })
     }
     else {
@@ -87,9 +91,11 @@ useEffect(
             calories:"",
             fat:"",
             protien:"",
-  carbo:"",
-  productAdditionsGroupId:"",
-  image:""
+            carbo:"",
+            productAdditionsGroupId:"",
+            image:"",
+            canBeMultiple:false,
+            maxMultipleValue:0,
 
           })
     }
@@ -210,7 +216,7 @@ image:""
         <Box sx={style} >
         <Grid container spacing={4} >
           <Grid item>
-            <Typography variant="h5" fontSize={26}> { update?"Edit Add-on Group":"Create new Add-on"} </Typography>
+            <Typography variant="h5" fontSize={26}> { update?"Edit Add-on":"Create new Add-on"} </Typography>
           </Grid>
           <Grid item xs={12}>
             <Grid container spacing={2} >
@@ -292,17 +298,54 @@ image:""
                   onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
                 />
               </Grid>
+              { data.canBeMultiple &&
+            <Grid item xs={4}>
+                <TextField id="outlined-basic" fullWidth label="Max value for Addon" variant="outlined"  required
+                  value={data.maxMultipleValue}
+                  onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
+                />
+              </Grid>
+              }
+
               {/* <Grid item xs={4}>
                 <TextField id="outlined-basic" fullWidth label="POS" variant="outlined" required
                   value={data.posId}
                   onChange={(e) => setData({ ...data, posId: e.target.value })}
                 />
               </Grid> */}
-               
-              
-
 
             </Grid>
+          </Grid>
+          <Grid item xs={12}>
+          <Grid container spacing={2} > 
+          
+          <Grid item xs={4}>
+              <Typography required variant="h7">
+                  Allow Multiple
+              </Typography>
+              <Box
+                  sx={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      mt: 2
+                  }}
+              >
+                  <Switch
+                      checked={data.canBeMultiple}
+                      onChange={(event) => {
+                          setData({
+                              ...data,
+                              canBeMultiple: event.target.checked
+                          });
+                      }}
+                  />
+              </Box>
+            </Grid>
+
+          </Grid>
           </Grid>
           <Grid item xs={12}>
             <Grid container spacing={0} >
@@ -346,20 +389,14 @@ image:""
           </Grid>
           <Grid item xs={12}>
             <Grid container spacing={2} >
-           
-         
-         
-               
-              
-
-
+          
             </Grid>
           </Grid>
 
           <Grid item xs={12}>
 
-<Grid container
->
+          <Grid container
+          >
 
   <Grid item xs={4}>
     <Typography variant="h7">Addon Image</Typography>

@@ -42,9 +42,8 @@ export function useFetchLevelData(selectedBrand, reload) {
     }, [response]);
 
     const fetchTiersList = useCallback(
-        (selectedBrand) => {
-            if (selectedBrand?.id) {
-            } else return;
+        () => {
+            if (!selectedBrand?.id) return
             setloading(true);
             tiersService
                 .getTiers(selectedBrand?.id)
@@ -102,7 +101,7 @@ export function useFetchLevelData(selectedBrand, reload) {
     };
 
     useEffect(() => {
-        fetchTiersList(selectedBrand);
+        fetchTiersList();
     }, [fetchTiersList, reload]);
 
     return {

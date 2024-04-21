@@ -42,7 +42,8 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
         nativeName: '',
         orderValue: 0,
         allowMultiple: false,
-        isRequired: false
+        isRequired: false,
+        maxMultipleValue:0
     });
 
     const customerServices = ServiceFactory.get('customer');
@@ -55,7 +56,8 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                 nativeName: updateData?.nativeName,
                 orderValue: updateData?.orderValue,
                 allowMultiple: updateData?.allowMultiple,
-                isRequired: updateData?.isRequired
+                isRequired: updateData?.isRequired,
+                maxMultipleValue: updateData?.maxMultipleValue
             });
         } else {
             setData({
@@ -63,7 +65,8 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                 nativeName: '',
                 orderValue: 0,
                 allowMultiple: false,
-                isRequired: false
+                isRequired: false,
+                maxMultipleValue:0
             });
         }
     }, [update, updateData]);
@@ -175,6 +178,18 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                                         onChange={(e) => setData({ ...data, orderValue: e.target.value })}
                                     />
                                 </Grid>
+                                { data.allowMultiple&&
+                                <Grid item xs={4}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Max Value"
+                                        variant="outlined"
+                                        value={data.maxMultipleValue}
+                                        onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
+                                    />
+                                </Grid>
+                                }
                             </Grid>
                         </Grid>
 
