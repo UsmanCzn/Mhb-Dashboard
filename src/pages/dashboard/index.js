@@ -11,12 +11,12 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import { useDashboard } from 'features/dashbord/hooks/useDashboard';
 import MonthlyLineChart from './MonthlyBarChart';
 import OrdersTable from './OrdersTable';
-
+import { useSnackbar } from 'notistack';
 // assets
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
+import dayjs from 'dayjs';
 // avatar style
 const avatarSX = {
     width: 36,
@@ -58,8 +58,14 @@ const DashboardDefault = () => {
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');
     const [selectedButton, setSelectedButton] = useState(0);
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(() => {
+        const currentDate = new Date();
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        return currentDate;
+      });
     const [endDate, setEndDate] = useState(new Date());
+    
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const handleButtonClick = (buttonNumber) => {
         setSelectedButton(buttonNumber);
@@ -72,11 +78,16 @@ const DashboardDefault = () => {
     const [ordersChartData, setOrdersChartData] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
-
-    const handleDateChange = (newValue) => {
+    const getMaxEndDate = (start) => {
+        return start ? dayjs(start).add(30, 'day') : new Date();
+      };
+      const handleDateChange = (newValue) => {
         setStartDate(newValue);
-    };
-
+        const maxEndDate = getMaxEndDate(newValue);
+        if (!endDate || dayjs(endDate).isAfter(maxEndDate)) {
+          setEndDate(maxEndDate);
+        }
+      };
     const handleEndDateChange = (newValue) => {
         setEndDate(newValue);
     };
@@ -169,7 +180,7 @@ const DashboardDefault = () => {
             </Grid>
 
             <Grid item xs={12}>
-                <Grid container alignItems="center">
+                <Grid container spacing={2} alignItems="center">
                     <Grid item xs={2.2}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
@@ -195,7 +206,7 @@ const DashboardDefault = () => {
                                     handleEndDateChange(newValue);
                                 }}
                                 minDate={new Date(2023, 0, 1)}
-                                maxDate={new Date()}
+                                maxDate={getMaxEndDate(startDate)}
                             />
                         </LocalizationProvider>
                     </Grid>

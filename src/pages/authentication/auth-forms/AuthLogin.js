@@ -1,6 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useBranches } from '../../../providers/branchesProvider';
+import ReCAPTCHA from "react-google-recaptcha";
+import { useSnackbar } from 'notistack';
+
 
 // material-ui
 import {
@@ -33,6 +36,7 @@ import { ServiceFactory } from 'services/index';
 import { useAuth } from 'providers/authProvider';
 
 const AuthLogin = () => {
+    const recaptcha = useRef();
     const { user } = useAuth();
     const [checked, setChecked] = React.useState(false);
     const [ErrorState, setErrorState] = useState(false);
@@ -40,6 +44,7 @@ const AuthLogin = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const { setToken } = useAuth();
     const [loading, setloading] = useState(false);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -51,6 +56,8 @@ const AuthLogin = () => {
 
     const login = async (event, values) => {
         event.preventDefault();
+        // const captchaValue = recaptcha.current.getValue();
+        // if(captchaValue){
         setloading(true);
         await userServices
             .login({
@@ -72,6 +79,12 @@ const AuthLogin = () => {
             .finally(() => {
                 setloading(false);
             });
+        // }
+        //     else{
+        //         enqueueSnackbar("Please verify the Captcha", {
+        //             variant: 'error',
+        //           });
+        //     }
     };
 
     return (
@@ -185,6 +198,8 @@ const AuthLogin = () => {
                                     <FormHelperText error>{errors.submit}</FormHelperText>
                                 </Grid>
                             )}
+
+                     
                             <Grid item xs={12}>
                                 <AnimateButton>
                                     {/* <Button
@@ -213,6 +228,9 @@ const AuthLogin = () => {
                                     </LoadingButton>
                                 </AnimateButton>
                             </Grid>
+                            {/* <Grid item xs={12} sx={{ mt: 1 }}>
+                            <ReCAPTCHA ref={recaptcha} sitekey="6LfVJsspAAAAAHcqt58f-tezRDN2iGkAavZxbhM_" />
+                            </Grid> */}
                         </Grid>
                     </form>
                 )}

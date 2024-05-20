@@ -9,6 +9,7 @@ import { CloudUploadOutlined } from '@ant-design/icons';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 import { ServiceFactory } from 'services/index';
 import fileService from 'services/fileService';
+import { useSnackbar } from 'notistack';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -23,13 +24,13 @@ const style = {
     overflow: 'scroll'
 };
 
-const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload }) => {
+const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,loadCompanies}) => {
     const [value, setValue] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [p1, setP1] = useState(null);
     const [logoUrl, setLogoUrl] = useState(null);
     const [imageChange, setImageChange] = useState(false);
-
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const userServices = ServiceFactory.get('users');
     const [data, setData] = useState({
         name: '',
@@ -49,6 +50,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload }) 
 
     const createNewCompany = async (event) => {
         event.preventDefault();
+        if(data.phoneNumber){
         let payload = {
             name: data.name,
             CategoryName: data.CategoryName,
@@ -83,15 +85,30 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload }) 
             .then((res) => {
                 setModalOpen(false);
                 setReload((prev) => !prev);
+                loadCompanies()
             })
             .catch((err) => {
                 console.log(err.response);
-            });
+                if(err.response.data.error.validationErrors){
+                enqueueSnackbar(err.response.data.error.validationErrors[0].message, {
+                    variant: 'error',
+                  });
+                }
+                  else{
+                    enqueueSnackbar(err.response.data.error.message, {
+                        variant: 'error',
+                      });
+                  }
+            });}
+            else{
+                enqueueSnackbar('Phone Number is required', {
+                    variant: 'error',
+                  });
+            }
     };
 
     const editCompany = async (event) => {
         event.preventDefault();
-
         const payload = {
             id: updateData?.id,
             name: data.name,
@@ -230,6 +247,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload }) 
                                             label="Phone Number"
                                             fullWidth
                                             defaultCountry="KW"
+                                            required
                                             onChange={(value, info) => setData({ ...data, phoneNumber: info.numberValue })}
                                         />
                                     )}

@@ -48,6 +48,7 @@
         "react-dom": "^18.2.0",
         "react-draggable": "^4.4.5",
         "react-element-to-jsx-string": "^15.0.0",
+        "react-google-recaptcha": "^3.1.0",
         "react-icons": "^4.10.1",
         "react-number-format": "^4.9.4",
         "react-perfect-scrollbar": "^1.5.8",

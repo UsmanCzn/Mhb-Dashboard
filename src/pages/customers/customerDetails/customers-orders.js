@@ -61,7 +61,7 @@ const CustomerOrders = () => {
             flex: 1.2,
             headerAlign: 'left',
             renderCell: (params) => {
-                return <Typography>{moment(params?.row?.creationDate).format('DD-MMM-YYYY hh:mm a')}</Typography>;
+                return <Typography>{moment(params?.row?.date).format('DD-MMM-YYYY hh:mm a')}</Typography>;
             }
         },
         // {

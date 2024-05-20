@@ -184,6 +184,19 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     <Typography variant="h6" fontSize={16}>
                                         Date :{' ' + moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}
                                     </Typography>
+                                   
+                                </Box>
+                                <Box
+                                  sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center'
+                                }}
+                                >
+                                <Typography variant="h6" fontSize={16}>
+                                       Payment Method : {data?.paymentMethod}
+                                    </Typography>
                                 </Box>
 
                                 <Box

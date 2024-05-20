@@ -50,7 +50,7 @@ return aYearFromNow
 
     const getCustomergroups=async ()=>{
         await  customerService.GetCustomersGroups()
-
+        
         .then((res)=>{
             setCustomerGroups(res?.data?.result?.data?.data) 
         })
@@ -145,8 +145,8 @@ return aYearFromNow
 
 <Grid item xs={12}>
 <Typography required variant="h5">{  "Create New Constant Collection" }</Typography>
-                    </Grid>
-                    </Grid>
+</Grid>
+</Grid>
 
 
                     <Grid item xs={12} my={1}>
@@ -198,6 +198,7 @@ return aYearFromNow
                 >
                   <DatePicker
                     label="Start Date"
+                    minDate={new Date()}
                     renderInput={(params) => <TextField {...params} error={false}  />}
                     value={data.startDate}
                     onChange={(newValue) => {
@@ -216,7 +217,8 @@ return aYearFromNow
                   localeText={{ start: 'Check-in', end: 'Check-out' }}
                 >
                   <DatePicker
-                    label="Start Date"
+                    label="End Date"
+                    minDate={new Date()}
                     renderInput={(params) => <TextField {...params} error={false} />}
                     value={data.endDate}
                     onChange={(newValue) => {

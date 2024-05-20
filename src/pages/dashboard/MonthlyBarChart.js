@@ -114,22 +114,9 @@ const MonthlyLineChart = (data) => {
         // }
 
         // Group data by month and calculate total sales and total orders
-        const groupedData = data?.data.reduce((result, entry) => {
-            const monthYear = new Date(entry.date).toLocaleString('default', { month: 'short', year: 'numeric' });
-            if (!result[monthYear]) {
-                result[monthYear] = {
-                    totalSales: 0,
-                    totalOrders: 0
-                };
-            }
-            result[monthYear].totalSales += entry.totalSale;
-            result[monthYear].totalOrders += entry.totalOrders;
-            return result;
-        }, {});
-
-        const categories = Object.keys(groupedData);
-        const totalSales = Object.values(groupedData).map((entry) => entry.totalSales);
-        const totalOrders = Object.values(groupedData).map((entry) => entry.totalOrders);
+        const categories = data.data.map(entry => new Date(entry.date).toLocaleDateString('default', { day: 'numeric', month: 'short' }));
+        const totalSales = data.data.map(entry => entry.totalSale);
+        const totalOrders = data.data.map(entry => entry.totalOrders);
 
         setOptions((prevState) => ({
             ...prevState,

@@ -105,9 +105,9 @@ export default function Companies() {
 
 
     const getCompanies=async()=>{
+        console.log('called');
         await userServices.GetAllCompanies()
         .then((res)=>{ 
-            console.log(res.data?.result);
             setCompanies(res.data?.result)
         })
         .catch((err)=>{
@@ -197,7 +197,7 @@ export default function Companies() {
         </Box>
        
                 </MainCard>
-                <NewCompany modalOpen={modalOpen} setModalOpen={setModalOpen} />
+                <NewCompany modalOpen={modalOpen} setModalOpen={setModalOpen} loadCompanies={getCompanies}  />
                 </Grid>
        
     );

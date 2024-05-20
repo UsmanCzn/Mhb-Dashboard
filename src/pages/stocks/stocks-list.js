@@ -10,7 +10,9 @@ const StockList = (props) => {
     const [ProductList, setProductList] = useState([]);
     const [FilteredProductList, setFilteredProductList] = useState([]);
     useEffect(() => {
+        if(branchid){
         getProductsList();
+        }
     }, [brandid, branchid,]);
     useEffect(() => {
    
@@ -119,7 +121,7 @@ const StockList = (props) => {
                     {FilteredProductList.map((ele, index) => {
                         return (
                             <Grid item key={index} xs={3} sx={{ margin: '10px 0 0 0' }}>
-                                <ProductCard product={ele} branchid={4} fetchProduct={getProductsList} />
+                                <ProductCard product={ele} branchid={branchid} fetchProduct={getProductsList} />
                             </Grid>
                         );
                     })}
