@@ -15,7 +15,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
   const location = useLocation();
 
     const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search,setCustomerStats,selectedCompany});
-
+      console.log(totalRowCount, type);
     useEffect(() => {
       getCompanies()
     }, [])

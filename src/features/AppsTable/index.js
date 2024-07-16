@@ -10,7 +10,7 @@ import moment from 'moment';
 export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOpen }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { appsList, fetchAppsList, totalRowCount, loading } = useFetchAppsList(reload);
+    const { appsList, fetchAppsList, totalRowCount, loading } = useFetchAppsList({reload});
 
     const activeColumnFormater = (item) => {
         return (

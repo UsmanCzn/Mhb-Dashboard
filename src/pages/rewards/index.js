@@ -50,14 +50,14 @@ export default function Rewards() {
                 </Grid>
                 <Grid item xs={"auto"}>
                     
-                   <Button size="small" variant="contained" 
+                   {/* <Button size="small" variant="contained" 
                    sx={{ textTransform: 'capitalize' }}
                    onClick={
                     ()=>setModalOpen(true)
                    }
                    >
                                    Add New loyalty
-                 </Button> 
+                 </Button>  */}
    
                    </Grid>
                 {/* <Grid item xs={6}>
@@ -84,7 +84,7 @@ export default function Rewards() {
             {
              brandsList.map((row, index) => {  
                     return (
-                        <MenuItem value={row} >
+                        <MenuItem key={index} value={row} >
                           { row?.name}
                           </MenuItem>
                     )

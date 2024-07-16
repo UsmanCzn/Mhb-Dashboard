@@ -5,6 +5,9 @@ import { Grid, Typography, TextField, Button,Alert,Modal,Box } from '@mui/materi
 
 import Counter from 'components/companies/counter'
 import DropDown from 'components/dropdown'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { ServiceFactory } from "services/index";
@@ -24,7 +27,9 @@ const App = ({
     const [data, setData] = useState({
         amountPurchaseReward:0,
         groupOfCustomers:0,
-        giftPrograms:[]
+        giftPrograms:[],
+        startDate:"",
+        endDate:""
         
     })
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -53,6 +58,8 @@ const App = ({
         payload.amount=data.amountPurchaseReward
         payload.brandGroupId=data.groupOfCustomers
         payload.rewardProgramGifts=data.giftPrograms
+        payload.startDate=data.startDate
+        payload.endDate=data.endDate
         console.log(payload);
 
         await  rewardService.editPurchasesCollectionProgram(payload) 
@@ -123,14 +130,14 @@ const App = ({
       
     useEffect(
         ()=>{
-            console.log(purchaseCollection,"Purchases oo");
             getCustomergroups()   
             setData({
                 ...data,
                 amountPurchaseReward:purchaseCollection?.amount,
                 giftPrograms:purchaseCollection.rewardProgramGifts,
-                groupOfCustomers:purchaseCollection.brandGroupId
-            
+                groupOfCustomers:purchaseCollection.brandGroupId,
+                startDate:purchaseCollection.startDate,
+                endDate: purchaseCollection.endDate
             }) 
         
         }
@@ -176,12 +183,52 @@ const App = ({
                             mt={2}
                             type="customerGroup"
                         />
-
                     </Grid>
                 </Grid>
             </Grid>
 
+            <Grid item xs={12}>
+                <Grid container spacing={2} >
+            <Grid item xs={4} marginTop={1}  >
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  localeText={{ start: 'Check-in', end: 'Check-out' }}
+                >
+                  <DatePicker
+                    label="Start Date"
+                    renderInput={(params) => <TextField {...params} error={false}  />}
+                    value={data.startDate}
+                    onChange={(newValue) => {
+                      setData({
+                        ...data,
+                        startDate: newValue
+                      })
+                    }}
+                  />
+                </LocalizationProvider>
 
+              </Grid>
+              <Grid item xs={4} marginTop={1}  >
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  localeText={{ start: 'Check-in', end: 'Check-out' }}
+                >
+                  <DatePicker
+                    label="End Date"
+                    renderInput={(params) => <TextField {...params} error={false} />}
+                    value={data.endDate}
+                    onChange={(newValue) => {
+                      setData({
+                        ...data,
+                        endDate: newValue
+                      })
+                    }}
+                  />
+                </LocalizationProvider>
+
+              </Grid>
+              </Grid>
+            </Grid>
 
             <Grid item xs={12}>
                 <Typography

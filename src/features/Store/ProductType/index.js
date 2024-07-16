@@ -9,10 +9,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
 import CircleIcon from '@mui/icons-material/Circle';
 export default function ProductType({ selectedBrand, sortOrder }) {
-    console.log(sortOrder, 'pooo');
-    const navigate = useNavigate();
-
-    const location = useLocation();
 
     const [reload, setReload] = useState(false);
     const { productTypes, setProductTypes, fetchProductTypesList, totalRowCount, loading } = useFetchProductTypeList(reload, selectedBrand);

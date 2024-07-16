@@ -15,7 +15,7 @@ const NavGroup = ({ item }) => {
     const { drawerOpen } = menu;
     const { userRole } = useAuth();
 
-    const navCollapse = item.children?.map((menuItem) => {
+    const navCollapse = item.children?.map((menuItem,index ) => {
         // console.log(menuItem?.forUserRoles,"userRolli");
         // console.log(userRole,"userRollyyyyy");
 
@@ -25,7 +25,7 @@ const NavGroup = ({ item }) => {
 
         switch (menuItem.type) {
             case 'collapse':
-                return <CollapseMenu item={menuItem} />;
+                return <CollapseMenu  key={index}item={menuItem} />;
             case 'item':
                 return <NavItem key={menuItem.id} item={menuItem} level={1} />;
             default:

@@ -119,10 +119,7 @@ return aYearFromNow
       
     useEffect(
         ()=>{
-            // console.log(purchaseCollection,"Purchases oo");
             getCustomergroups()   
-            
-      
         }
         ,[]
     )

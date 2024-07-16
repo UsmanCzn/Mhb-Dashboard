@@ -138,7 +138,6 @@ return aYearFromNow
       
     useEffect(
         ()=>{
-            // console.log(purchaseCollection,"Purchases oo");
             getCustomergroups()   
             
       
@@ -233,7 +232,7 @@ return aYearFromNow
                   localeText={{ start: 'Check-in', end: 'Check-out' }}
                 >
                   <DatePicker
-                    label="Start Date"
+                    label="End Date"
                     renderInput={(params) => <TextField {...params} error={false} />}
                     value={data.endDate}
                     onChange={(newValue) => {
@@ -247,7 +246,7 @@ return aYearFromNow
 
               </Grid>
               </Grid>
-              </Grid>
+            </Grid>
 
             <Grid item xs={12}>
                 <Typography

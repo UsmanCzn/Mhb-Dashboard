@@ -17,9 +17,10 @@ export function useCustomerGroup(reload, selectedBrand) {
             setloading(true);
 
             tiersService
-                .getCustomerGroups(0, 100)
+                .getCustomerGroupsV2(100, 0,selectedBrand.id, 1)
                 .then(
                     (res) => {
+                        console.log(res);
                         var customers = [];
                         for (var i = 0; i < res?.data?.result?.data?.data.length; i++) {
                             const item = res?.data?.result?.data?.data[i];

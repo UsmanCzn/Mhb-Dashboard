@@ -40,7 +40,9 @@ import RewardStats from 'pages/rewardStats/RewardStats';
 import Offers from 'pages/offers/offers';
 import Advertisement from 'pages/advertisement/advertisement';
 import Campaings from 'pages/campaings/index';
-
+import VechileType from 'pages/driveThru/vechile-type';
+import VechileBrand from 'pages/driveThru/vechile-brand'
+import VechileColor from 'pages/driveThru/vechile-color';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -96,6 +98,10 @@ export default function MainRoutes() {
                     <Route path="/rewards-stats" element={<RewardStats />} />
 
                     <Route path="/advertisement" element={<Advertisement />} />
+
+                    <Route path="/drive/vechiles" element={<VechileType />} />
+                    <Route path="/drive/brand" element={<VechileBrand />} />
+                    <Route path="/drive/color" element={<VechileColor />} />
 
                     <Route path="/store" element={<Store />} />
                     <Route path="/offers" element={<Offers />} />

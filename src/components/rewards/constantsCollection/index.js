@@ -1,7 +1,6 @@
 import { Chip, Grid, Typography,Menu,MenuItem,Button  } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent'; 
 import React,{useState} from 'react'; 
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchRewardList } from '../hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useFetchBranchList } from 'features/BranchesTable/hooks/useFetchBranchesList';
@@ -11,10 +10,6 @@ import moment from 'moment-jalaali';
  import DuplicateReward from "../duplicateReward"
  import rewardService from 'services/rewardService';
 export default function ConstantsCollectionTable({ selectedBrand,reload,customerGroups,setReload }) {
-
-  const navigate = useNavigate();
-
-  const location = useLocation();
 
     const {ConstantsCollectionList  ,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand);
     
@@ -51,9 +46,9 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
          <Grid item xs="auto">
           {
             
-              item?.rewardProgramGifts?. map(obj=>{
+              item?.rewardProgramGifts?. map((obj, index)=>{
                 return(
-                  <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
+                  <Typography key={index}  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
                   {obj?.name +" - "+obj?.amount }
                   </Typography>
                 )
@@ -154,12 +149,10 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
           }
     },
       ];
+
       const deletePointsCollection=async (id)=>{  
 
-
-        console.log("deleting",id);
         await rewardService.DeleteDiscountProgram(id)
-  
         .then((res)=>{
             console.log(res.data,"delete response");
             setReload(prev=>!prev)

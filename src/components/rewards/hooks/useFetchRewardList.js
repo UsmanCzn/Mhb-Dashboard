@@ -11,6 +11,7 @@ export function useFetchRewardList(reload,selectedBrand, setReload){
     const [PurchaseCollectionList, setPurchaseCollectionList] = useState([]);
     const [PointsCollectionList, setPointsCollectionList] = useState([]);
     const [ConstantsCollectionList, setConstantsCollectionList] = useState([]);
+    const [CouponsCollectionList, setCouponsCollectionList] = useState([]);
  
 
     const fetchRewardList = useCallback(
@@ -30,7 +31,7 @@ export function useFetchRewardList(reload,selectedBrand, setReload){
               setPurchaseCollectionList(res?.data?.result?.purchasesCollectionPrograms)
               setPointsCollectionList(res?.data?.result?.pointsCollectingPrograms)
               setConstantsCollectionList(res?.data?.result?.constantDiscountPrograms),
-              setReload(false)
+              setCouponsCollectionList(res.data?.result?.couponsDiscountPrograms ?? [])
             },
             (err)=>{
               console.log(err,"err");
@@ -53,6 +54,7 @@ export function useFetchRewardList(reload,selectedBrand, setReload){
         PurchaseCollectionList: PurchaseCollectionList || [],
         PointsCollectionList: PointsCollectionList || [],
         ConstantsCollectionList: ConstantsCollectionList || [],
+        CouponsCollectionList: CouponsCollectionList || [],
         fetchRewardList,
         totalRowCount,
         loading, 

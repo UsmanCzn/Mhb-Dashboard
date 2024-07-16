@@ -3,7 +3,6 @@ import { ServiceFactory } from 'services/index';
 
 export function useFetchCustomerList(props) {
     const { reload,search,setCustomerStats,selectedCompany } = props
-    console.log(selectedCompany,"ss");
     const [loading, setloading] = useState(false);
     const [totalRowCount, setTotalRowCount] = useState(0);
     const [customersList, setCustomersList] = useState([]);
@@ -21,8 +20,11 @@ export function useFetchCustomerList(props) {
             .then(
                 (res) => {
                     setCustomersList(res.data.result?.data?.data);
-                    let stats= res.data.result.data 
+                    let stats= res.data.result.data ;
+                    if(setCustomerStats){
                     setCustomerStats({totalDaily:stats.totalDaily,totalMonthly:stats.totalMonthly,totalYearly:stats.totalYearly,totalCount:stats.totalCount})
+                    }
+                    console.log(res.data?.result?.data?.totalCount,'total count');
                     setTotalRowCount(res.data?.result?.data?.totalCount);
 
                     // setTotalRowCount(res.data?.pages);

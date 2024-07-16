@@ -53,9 +53,9 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
          <Grid item xs="auto">
           {
             
-              item?.rewardProgramGifts?. map(obj=>{
+              item?.rewardProgramGifts?. map((obj,index)=>{
                 return(
-                  <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
+                  <Typography key={index}  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
                   {obj?.name +" - "+obj?.amount }
                   </Typography>
                 )
@@ -78,7 +78,6 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
     const deletePointsCollection=async (id)=>{  
 
 
-      console.log("deleting",id);
       await rewardService.DeleteDiscountProgram(id)
 
       .then((res)=>{
@@ -158,7 +157,6 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
       flex: 1,
       headerAlign: "left",
       renderCell: params => dateColumnFormater(params?.row)
-
   },
     {
       field: "isRewardMfissisng",
@@ -175,21 +173,21 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
       ];
 
 
-      const options=[
-        {
-          name:"Edit",
-          modal:true,  
-        },
-        {
-          name:"Duplicate",
-          modal:true,  
-        },
-        {
-          name:"Delete",
-          modal:true,  
-        }
+    const options=[
+      {
+        name:"Edit",
+        modal:true,  
+      },
+      {
+        name:"Duplicate",
+        modal:true,  
+      },
+      {
+        name:"Delete",
+        modal:true,  
+      }
 
-      ]
+    ]
  
 
 
@@ -235,7 +233,7 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )

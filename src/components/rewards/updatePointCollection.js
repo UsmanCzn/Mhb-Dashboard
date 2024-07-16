@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Grid, Typography, TextField, Button,Alert,Modal,Box } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import Counter from 'components/companies/counter'
 import DropDown from 'components/dropdown'
@@ -16,6 +19,7 @@ const App = ({
     modal,
     setModal,
     setReload, 
+    selectedBrand
 }) => {
 
 
@@ -38,9 +42,9 @@ const App = ({
 
     const getCustomergroups=async ()=>{
         await  customerService.GetCustomersGroups()
-
+        const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)??[]
         .then((res)=>{
-            setCustomerGroups(res?.data?.result?.data?.data) 
+            setCustomerGroups(filteredGroups) 
         })
         .catch((err)=>{
             console.log(err?.response?.data);
@@ -51,7 +55,8 @@ const App = ({
         payload.amount=data.amountPurchaseReward
         payload.brandGroupId=data.groupOfCustomers
         payload.rewardProgramGifts=data.giftPrograms
-        console.log(payload);
+        payload.startDate=data.startDate
+        payload.endDate=data.endDate
 
         await  rewardService.editPointCollectionProgram(payload) 
         .then((res)=>{ 
@@ -111,7 +116,9 @@ const App = ({
                 ...data,
                 amountPurchaseReward:pointCollection?.amount,
                 giftPrograms:pointCollection.rewardProgramGifts,
-                groupOfCustomers:pointCollection.brandGroupId
+                groupOfCustomers:pointCollection.brandGroupId,
+                startDate:pointCollection.startDate,
+                endDate:pointCollection.endDate
             
             }) 
         
@@ -163,7 +170,48 @@ const App = ({
                 </Grid>
             </Grid>
 
+            <Grid item xs={12}>
+                        <Grid container spacing={2} >
+                            <Grid item xs={4} marginTop={1}  >
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
+                                >
+                                    <DatePicker
+                                        label="Start Date"
+                                        renderInput={(params) => <TextField {...params} error={false} />}
+                                        value={data.startDate}
+                                        onChange={(newValue) => {
+                                            setData({
+                                                ...data,
+                                                startDate: newValue
+                                            })
+                                        }}
+                                    />
+                                </LocalizationProvider>
 
+                            </Grid>
+                            <Grid item xs={4} marginTop={1}  >
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
+                                >
+                                    <DatePicker
+                                        label="End Date"
+                                        renderInput={(params) => <TextField {...params} error={false} />}
+                                        value={data.endDate}
+                                        onChange={(newValue) => {
+                                            setData({
+                                                ...data,
+                                                endDate: newValue
+                                            })
+                                        }}
+                                    />
+                                </LocalizationProvider>
+
+                            </Grid>
+                        </Grid>
+                    </Grid>
 
             <Grid item xs={12}>
                 <Typography

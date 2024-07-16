@@ -33,6 +33,9 @@ export default {
     editConstantCollectionProgram(data) {
         return ApiV1.post('services/app/RewardProgram/EditConstantDiscountProgram', data);
     },
+    editCouponsDiscountProgram(data) {
+        return ApiV1.post('services/app/RewardProgram/EditCouponsDiscountProgram', data);
+    },
 
     createPointsCollectionProgram(data) {
         return ApiV1.post('services/app/RewardProgram/CreatePointsCollectionProgram', data);
@@ -43,6 +46,9 @@ export default {
 
     createConstantsCollectionProgram(data) {
         return ApiV1.post('services/app/RewardProgram/CreateConstantDiscountProgram', data);
+    },
+    createCouponDiscountCollection(data) {
+        return ApiV1.post('services/app/RewardProgram/CreateCouponDiscountProgram', data);
     },
 
     DeleteDiscountProgram(id) {

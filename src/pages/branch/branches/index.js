@@ -3,15 +3,15 @@ import { TableControl, BranchesTable } from 'features';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import NewBranch from 'components/branches/newBranch';
-
+import { useSnackbar } from 'notistack';
 export default function Branches() {
     const { type } = useParams();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [modalOpen, setModalOpen] = useState(false);
     const [reload, setReload] = useState(false);
     const navigate = useNavigate();
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
-
     return (
         <>
             <Grid container spacing={2}>
@@ -19,7 +19,7 @@ export default function Branches() {
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs={'auto'}>
                             <Typography fontSize={22} fontWeight={700}>
-                                Locations
+                                Stores
                             </Typography>
                         </Grid>
                         <Grid item xs={'auto'}>
@@ -29,7 +29,7 @@ export default function Branches() {
                                 sx={{ textTransform: 'capitalize' }}
                                 onClick={() =>{ setModalOpen(true)}}
                             >
-                                Create New Location
+                                Create New Store
                             </Button>
                         </Grid>
                     </Grid>

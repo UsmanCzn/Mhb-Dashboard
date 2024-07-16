@@ -29,7 +29,6 @@ aYearFromNow.setFullYear(aYearFromNow.getFullYear() + 1);
 return aYearFromNow
     }
     const customerService=ServiceFactory.get('customer')
-    const branchService=ServiceFactory.get('branch') 
     const [data, setData] = useState({
         amountPurchaseReward:0,
         groupOfCustomers:0,
@@ -121,13 +120,9 @@ return aYearFromNow
       
     useEffect(
         ()=>{
-            // console.log(purchaseCollection,"Purchases oo");
             getCustomergroups()   
             
-      
-        }
-        ,[]
-    )
+        },[])
  
 
     

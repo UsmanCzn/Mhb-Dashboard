@@ -8,6 +8,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 import { ServiceFactory } from 'services/index';
+import { useSnackbar } from 'notistack';
 
 const style = {
     position: 'absolute',
@@ -27,6 +28,8 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
     const brandService = ServiceFactory.get('brands');
     const branchService = ServiceFactory.get('branch');
     const fileService = ServiceFactory.get('file');
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const [brands, setBrands] = useState([]);
     const [p1, setP1] = useState(null);
 
@@ -95,11 +98,16 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
                 setModalOpen(false);
             })
             .catch((err) => {
+                if(err.message){
+                    enqueueSnackbar(err.response.data.error.message, {
+                        variant: 'error',
+                      });
+                }
                 console.log(err.response.data);
             })
             .finally(() => {
                 setModalOpen(false);
-                setReload((prev) => !prev);
+                setReload(true);
             });
     };
     const updateBranch = async (event) => {

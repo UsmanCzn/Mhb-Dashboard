@@ -51,12 +51,21 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
     };
 
     const hideBranch = async (event,data) => {
-        console.log(data);
         const tempData = {...data,ishide:event.target.checked}
         try {
          const res = await branchServices.editBranch(tempData)
          if(res) {
-            console.log(res);
+            fetchBranchesList()
+         }
+        }catch (err){
+
+        }
+    }
+    const branchSwitch = async (event,data) => {
+        const tempData = {...data,isBusy:event.target.checked}
+        try {
+         const res = await branchServices.editBranch(tempData)
+         if(res) {
             fetchBranchesList()
          }
         }catch (err){
@@ -77,7 +86,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             flex: 1,
             headerAlign: 'left',
             renderCell: (params) => { 
-                return  <Switch {...label} checked={ params.row.isBusy }  size="small" />  
+                return  <Switch {...label} checked={ params.row.isBusy }  onChange={(event)=>{branchSwitch(event,params.row)}} size="small" />  
             }
         },
         {

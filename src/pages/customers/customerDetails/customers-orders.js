@@ -10,7 +10,8 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 
 const CustomerOrders = () => {
     const [loading, setloading] = useState(false)
-    const [data, setdata] = useState([])
+    const [data, setdata] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [page, setpage] = useState(0)
     const { cid } = useParams();
     const { brandsList } = useFetchBrandsList(true);
@@ -107,10 +108,12 @@ const CustomerOrders = () => {
         const getCustomerOrders =async (pageNo) =>{
             setloading(true)
             try{
-                const data = {brandIds:brandsList.map(e=> e.id),UserId:cid,skip:pageNo,take:10}
+                const data = {brandIds:brandsList.map(e=> e.id),UserId:cid,skip:pageNo*10,take:10}
                 const response = await customerService.getCustomerOrdersByBrand(data)
                 if(response){
+                    console.log(response);
                     setdata([...response.data.result?.orderHistoryItems])
+                    setTotalCount(response.data.result?.itemsLeft)
                     setloading(false)
                 }
             }catch(error){
@@ -135,7 +138,7 @@ const CustomerOrders = () => {
       loading={loading} 
       getRowId={(row)=>row.id}
       rowsPerPageOptions={[10]}
-      totalRowCount={data.length}
+      totalRowCount={totalCount}
       fetchCallback={(page)=>setpage(page)} 
     />
     </Grid>

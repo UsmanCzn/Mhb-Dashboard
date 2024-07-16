@@ -63,7 +63,6 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
         await rewardService
             .DeleteDiscountProgram(id)
             .then((res) => {
-                console.log(res.data, 'delete response');
                 setReload((prev) => !prev);
             })
             .catch((err) => {
@@ -132,18 +131,18 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
             flex: 1,
             headerAlign: 'left'
         },
-        {
-            field: 'numberOfCustomers',
-            headerName: 'Number of Customers',
-            flex: 1.2,
-            headerAlign: 'left'
-        },
-        {
-            field: 'sendNotification',
-            headerName: 'Send Notification',
-            flex: 1,
-            headerAlign: 'left'
-        },
+        // {
+        //     field: 'numberOfCustomers',
+        //     headerName: 'Number of Customers',
+        //     flex: 1.2,
+        //     headerAlign: 'left'
+        // },
+        // {
+        //     field: 'sendNotification',
+        //     headerName: 'Send Notification',
+        //     flex: 1,
+        //     headerAlign: 'left'
+        // },
 
         {
             field: 'isRewardMfissisng',
@@ -297,8 +296,8 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                 modal={newModal}
                 setModal={setNewModal}
                 selectedBrand={selectedBrand}
-                setReload={setReload}
                 editItem={pointCollection}
+                setReload ={setReload}
             />
         </>
     );

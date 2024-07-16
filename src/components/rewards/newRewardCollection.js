@@ -19,7 +19,8 @@ const NewRewardCollection = ({
     modal,
     setModal,
     setReload,
-    branchesList
+    branchesList,
+    selectedBrand
 }) => {
 
 
@@ -52,7 +53,8 @@ const NewRewardCollection = ({
         await customerService.GetCustomersGroups()
 
             .then((res) => {
-                setCustomerGroups(res?.data?.result?.data?.data)
+                const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)
+                setCustomerGroups(filteredGroups)
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -120,7 +122,7 @@ const NewRewardCollection = ({
         () => {
             getCustomergroups()
         }
-        , []
+        , [selectedBrand]
     )
 
 
@@ -193,7 +195,7 @@ const NewRewardCollection = ({
                         </Grid>
                     </Grid>
 
-                    {/* <Grid item xs={12}>
+                    <Grid item xs={12}>
                         <Grid container spacing={2} >
                             <Grid item xs={4} marginTop={1}  >
                                 <LocalizationProvider
@@ -220,7 +222,7 @@ const NewRewardCollection = ({
                                     localeText={{ start: 'Check-in', end: 'Check-out' }}
                                 >
                                     <DatePicker
-                                        label="Start Date"
+                                        label="End Date"
                                         renderInput={(params) => <TextField {...params} error={false} />}
                                         value={data.endDate}
                                         onChange={(newValue) => {
@@ -234,7 +236,7 @@ const NewRewardCollection = ({
 
                             </Grid>
                         </Grid>
-                    </Grid> */}
+                    </Grid>
 
                     {/* <Grid item xs={12}>
                         <Typography
@@ -325,8 +327,9 @@ const NewRewardCollection = ({
 
                                     <Box>
                                     <Typography
-                                    required variant="h7">Tiers</Typography>
-                                    <DropDown title="Select Tiers"
+                                    required variant="h7">Group of customers</Typography>
+                                    <DropDown 
+                                    title="Select the group of customers"
                                     list={customerGroups}
                                     data={data}
                                     setData={setData}

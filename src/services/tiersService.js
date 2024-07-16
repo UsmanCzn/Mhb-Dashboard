@@ -2,7 +2,7 @@ import { ApiV1 } from 'helper/api';
 
 export default {
     getTiers(bid) {
-        return ApiV1.get('services/app/CustomersGroups/GetCustomersGroups', {
+        return ApiV1.get('services/app/CustomersGroups/GetCustomersGroupsV2', {
             params: {
                 brandId: bid,
                 GroupType: 5
@@ -20,6 +20,9 @@ export default {
 
     getCustomerGroups(take, skip) {
         return ApiV1.get('services/app/CustomersGroups/GetCustomersGroups?Skip=' + skip + '&Take=' + take + '&Sort.Desc=true', {});
+    },
+    getCustomerGroupsV2(take, skip,brandId,grouptype) {
+        return ApiV1.get(`services/app/CustomersGroups/GetCustomersGroupsV2?BrandId=${brandId}&GroupType=${grouptype}&Skip=${skip}&Take=${take}`, {});
     },
 
     updateCustomerGroup(data) {

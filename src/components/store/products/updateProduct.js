@@ -27,6 +27,8 @@ import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
 import { useFetchAddonList } from 'features/Store/Addons/hooks/useFetchAddonList';
 import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
+import imageCompression from 'browser-image-compression';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const style = {
     position: 'absolute',
@@ -44,9 +46,9 @@ const style = {
 
 const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, update, updateData }) => {
     const [p1, setP1] = useState(null);
-    const [p2, setP2] = useState(null);
+    // const [p2, setP2] = useState(null);
     const { productTypes, fetchProductTypesList } = useFetchProductTypeList(true, selectedBrand);
-
+        const [ImageUpload, setImageUpload] = useState(false);
     const { addonList } = useFetchAddonList(true);
     const { addonGroupList } = useFetchAddonGroupList(true, selectedBrand);
 
@@ -91,59 +93,50 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
     const updateProductData = async (event) => {
         event.preventDefault();
-
+    
         let payload = {
             ...data,
             productId: updateData?.id,
-            // isTopProduct:true,
-            productQtyWithBranchs: data?.productQtyWithBranchs?.map((obj) => {
-                return {
-                    availabilityQtyIn: 1000,
-                    availabilityQty: 1000,
-                    branchid: obj,
-                    isSuggest: false,
-                    productId: updateData?.productId,
-                    isQtyAvailable: true
-                };
-            }),
-            productGroups: data?.productGroups?.map((obj) => {
-                return {
-                    prodGroupId: obj
-                };
-            })
+            productQtyWithBranchs: data?.productQtyWithBranchs?.map((branchId) => ({
+                availabilityQtyIn: 1000,
+                availabilityQty: 1000,
+                branchid: branchId,
+                isSuggest: false,
+                productId: updateData?.productId,
+                isQtyAvailable: true
+            })),
+            productGroups: data?.productGroups?.map((prodGroupId) => ({
+                prodGroupId: prodGroupId
+            }))
         };
-
-        await fileService
-            .uploadProductImage(p1)
-            .then((res) => {
-                payload.productImage = res.data?.result;
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            });
-
-        // await fileService.uploadProductImage(p2)
-        // .then((res)=>{
-        //   payload.productSecondImage=res.data?.result
-        // })
-        // .catch((err)=>{
-        //   console.log(err.response.data);
-        // })
-
-        await storeServices
-            .updateProduct(payload)
-
-            .then((res) => {
-                console.log(res?.data, 'updateddddddd');
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
-                setReload((prev) => !prev);
-                setModalOpen(false);
-            });
+    
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+    
+        try {
+            if (p1) {
+                setImageUpload(true);
+    
+                const compressedFile = await imageCompression(p1, options);
+                const imageResponse = await fileService.uploadProductImage(compressedFile);
+                payload.productImage = imageResponse.data?.result;
+            }
+    
+            const updateResponse = await storeServices.updateProduct(payload);
+            console.log(updateResponse?.data, 'updateddddddd');
+    
+        } catch (error) {
+            console.error(error.response?.data || error.message || error);
+        } finally {
+            setImageUpload(false);
+            setReload((prev) => !prev);
+            setModalOpen(false);
+        }
     };
+    
 
     const deleteProduct = async () => {
         await storeServices
@@ -266,7 +259,11 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
+            
             <form onSubmit={updateProductData}>
+                {ImageUpload && <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+                </Box>}
                 <Box sx={style}>
                     <Grid container spacing={4}>
                         <Grid item>

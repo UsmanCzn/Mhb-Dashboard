@@ -79,7 +79,7 @@ const DashboardDefault = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
     const getMaxEndDate = (start) => {
-        return start ? dayjs(start).add(30, 'day') : new Date();
+        return start ? dayjs(start).add(31, 'day') : new Date();
       };
       const handleDateChange = (newValue) => {
         setStartDate(newValue);

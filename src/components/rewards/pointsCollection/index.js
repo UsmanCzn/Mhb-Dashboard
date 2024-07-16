@@ -59,9 +59,9 @@ export default function PointsCollectionTable({ selectedBrand,customerGroups, })
          <Grid item xs="auto">
           {
             
-              item?.rewardProgramGifts?. map(obj=>{
+              item?.rewardProgramGifts?. map((obj, index)=>{
                 return(
-                  <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
+                  <Typography key={index} variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >  
                   {obj?.name +" - "+obj?.amount }
                   </Typography>
                 )
@@ -243,8 +243,8 @@ export default function PointsCollectionTable({ selectedBrand,customerGroups, })
 
       </Menu>
 
-      <UpdatePointCollection  modal={modal} setModal={setModal}   pointCollection={pointCollection} setReload={setReload}  />
-      <NewRewardCollection  modal={newModal} setModal={setNewModal} branchesList={branchesList}   setReload={setReload}  />
+      <UpdatePointCollection  modal={modal} setModal={setModal}   pointCollection={pointCollection} setReload={setReload} selectedBrand={selectedBrand}  />
+      <NewRewardCollection  modal={newModal} setModal={setNewModal} branchesList={branchesList}   setReload={setReload} selectedBrand={selectedBrand}  />
       <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={branchesList} reward={pointCollection}   setReload={setReload}  />
      
     </>

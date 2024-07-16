@@ -58,7 +58,7 @@ const dashboard = {
  
         {
             id: 'locations',
-            title: 'Locations',
+            title: 'Stores',
             type: 'item',
             url: '/locations',
             icon: StoreIcon,
@@ -86,39 +86,48 @@ const dashboard = {
         {
             id: 'rewards',
             title: 'Rewards',
-            type: 'item',
+            type: 'collapse',
             url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER],
-            // isOpen: false,
-            // children: [
-            //     {
-            //         id: 'collect',
-            //         title: 'Collect',
-            //         type: 'item',
-            //         url: '/rewardcollection/',
-            //         breadcrumbs: false,
-            //         forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-            //     },
-            //     {
-            //         id: 'redeem',
-            //         title: 'Redeem',
-            //         type: 'item',
-            //         url: '/rewardredemption/',
-            //         breadcrumbs: false,
-            //         forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-            //     }
-            // ]
-        },
-        {
-            id: 'rewardHistory',
-            title: 'Rewards History',
-            type: 'item',
-            url: '/rewardHistory',
-            icon: TimelineIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER]
+            isOpen: false,
+            children: [
+                {
+                    id: 'rewardHistory',
+                    title: 'Rewards History',
+                    type: 'item',
+                    url: '/rewardHistory',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, BRAND_MANAGER]
+                },
+                {
+                    id: 'levels',
+                    title: 'Levels',
+                    type: 'item',
+                    url: '/levels',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN]
+                },
+                // {
+                //     id: 'collect',
+                //     title: 'Collect',
+                //     type: 'item',
+                //     url: '/rewardcollection/',
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                // },
+                // {
+                //     id: 'redeem',
+                //     title: 'Redeem',
+                //     type: 'item',
+                //     url: '/rewardredemption/',
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                // }
+            ]
         },
         // {
         //     id: 'rewardStats',
@@ -129,15 +138,7 @@ const dashboard = {
         //     breadcrumbs: false,
         //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
         // },
-        {
-            id: 'levels',
-            title: 'Levels',
-            type: 'item',
-            url: '/levels',
-            icon: TimelineIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN]
-        },
+
         {
             id: 'customers',
             title: 'Customers',
@@ -148,14 +149,14 @@ const dashboard = {
             forUserRoles: [ADMIN, BRAND_MANAGER, BRANCH_USER],
             isOpen: false,
             children: [
-                {
-                    id: 'list',
-                    title: 'List',
-                    type: 'item',
-                    url: '/customers/list',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
-                },
+                // {
+                //     id: 'list',
+                //     title: 'List',
+                //     type: 'item',
+                //     url: '/customers/list',
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                // },
                 {
                     id: 'tiers',
                     title: 'Tiers',
@@ -218,7 +219,6 @@ const dashboard = {
                 }
             ]
         },
-
         {
             id: 'orders',
             title: 'Orders',
@@ -236,6 +236,41 @@ const dashboard = {
             icon: CardGiftcardIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER]
+        },
+        {
+            id: 'drive',
+            title: 'Drive-Thru',
+            type: 'collapse',
+            icon: InventoryIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, BRAND_MANAGER,BRANCH_USER],
+            isOpen: false,
+            children: [
+                {
+                    id: 'vechiles',
+                    title: 'Vehicle Type',
+                    type: 'item',
+                    url: '/drive/vechiles',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, BRAND_MANAGER,BRANCH_USER]
+                },
+                {
+                    id: 'brand',
+                    title: 'Vehicle Brand',
+                    type: 'item',
+                    url: '/drive/brand',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,BRAND_MANAGER,BRANCH_USER]
+                },
+                {
+                    id: 'color',
+                    title: 'Vehicle Color',
+                    type: 'item',
+                    url: '/drive/color',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,BRAND_MANAGER,BRANCH_USER]
+                }
+            ]
         },
         {
             id: 'payment',
@@ -273,8 +308,7 @@ const dashboard = {
             icon: ShopTwoIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, BRAND_MANAGER],
-        },
-        
+        },     
         {
             id: 'CreditBalance',
             title: 'All Request',

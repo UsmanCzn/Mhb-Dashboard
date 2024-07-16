@@ -13,7 +13,6 @@ export function useFetchAppsList({ reload }) {
 
     const fetchAppsList = useCallback((pageNo) => {
         setloading(true);
-        console.log(pageNo);
         userServices
             .GetAllCompanies()
             .then(

@@ -9,7 +9,8 @@ import { ApiV1 } from 'helper/api';
 // import PurchaseCollection from 'components/branches/purchaseCollection'
 import PurchaseCollection from 'components/rewards/purchaseCollection'
 import PointsCollection from 'components/rewards/pointsCollection'
-import ConstantsCollection from 'components/rewards/constantsCollection'
+import ConstantsCollection from 'components/rewards/constantsCollection';
+import CouponDiscount from 'components/rewards/couponDiscount'
 
 // import PointsCollection from 'components/branches/pointsCollection'
 // import ConstantsCollection from 'components/branches/constantsCollection'
@@ -31,6 +32,7 @@ export default function RewardProgram({
     const [purchaseCollection,setPurchaseCollection]=useState([])
     const [pointsCollection,setPointCollection]=useState([])
     const [constantCollection,setConstantCollection]=useState([])
+    const [couponCollection,setCouponCollection]=useState([])
     const [reload,setReload]=useState(false)
  
     const [customerGroups,setCustomerGroups]=useState([])
@@ -89,6 +91,7 @@ export default function RewardProgram({
                 <Tab label="Purchases Collection" value="1" />
                 <Tab label="Points Collection" value="2" />
                 <Tab label="Constants Collection" value="3" /> 
+                <Tab label="Coupon Collection" value="4" /> 
             </TabList>
         </Box>
         <TabPanel value="1">
@@ -101,6 +104,9 @@ export default function RewardProgram({
         </TabPanel>
         <TabPanel value="3">
           <ConstantsCollection selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups} />
+        </TabPanel>
+        <TabPanel value="4">
+        <CouponDiscount selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups}></CouponDiscount>
         </TabPanel>
         
     </TabContext>

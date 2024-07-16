@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography, TextField, Button, Alert, Modal, Box, Checkbox } from '@mui/material';
+import { Grid, Typography, TextField, Button, Alert, Modal, Box, Checkbox,FormControl, InputLabel, Select,MenuItem  } from '@mui/material';
 
 import Counter from 'components/companies/counter';
 import DropDown from 'components/dropdown';
@@ -10,24 +10,42 @@ import rewardService from 'services/rewardService';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 
 import { useSnackbar } from 'notistack';
 import tiersService from 'services/tiersService';
 
-const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
+const NewTier = ({ modal, setModal, editItem,setReload, }) => {
     const customerService = ServiceFactory.get('customer');
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedBrand, setselectedBrand] = useState({});
     const [data, setData] = useState({
-        brandId: selectedBrand?.id,
+        brandId: selectedBrand?.id ?? 0,
         name: '',
         nativeName: '',
         bottomLimit: '',
         topLimit: 0,
         punchesForFreeItems: 0
     });
+    // const [reload, setReload] = useState(false);
+
+    const { brandsList } = useFetchBrandsList(true);
+
+
+    useEffect(() => {
+        if (brandsList[0]?.id) {
+            setselectedBrand(brandsList[0]);
+        } else if(editItem !== undefined) {
+            console.log('now goes to zero ', 'sb');
+            const localBrand = brandsList.find((brand)=> brand.id ===editItem.brandId) ;
+            setselectedBrand(brandsList[localBrand.id]);
+        }
+    }, [brandsList]);
 
     useEffect(() => {
         if (editItem !== undefined) {
+            const localBrand = brandsList.find((brand)=> brand.id ===editItem.brandId) ;
+            setselectedBrand(localBrand);
             setData({
                 ...data,
                 name: editItem.name,
@@ -74,12 +92,11 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                     setReload((prev) => !prev);
                 })
                 .catch((err) => {
-                    console.log(err?.response?.data);
                     if (err?.response?.data?.error?.validationErrors?.length > 0) {
                         enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
                             variant: 'error'
                         });
-                    } else {
+                    } else if(err?.response?.data?.error?.message) {
                         enqueueSnackbar(err?.response?.data?.error?.message, {
                             variant: 'error'
                         });
@@ -93,7 +110,7 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                         ...data,
                         name: '',
                         nativeName: '',
-                        id: 0,
+                        // id: 0,
                         bottomLimit: '',
                         topLimit: '',
                         punchesForFreeItems: ''
@@ -107,7 +124,7 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                         enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
                             variant: 'error'
                         });
-                    } else {
+                    } else if(err?.response?.data?.error?.message) {
                         enqueueSnackbar(err?.response?.data?.error?.message, {
                             variant: 'error'
                         });
@@ -166,7 +183,26 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                         }}
                     />
                 </Grid>
-
+                <Grid item xs={6}>
+                <Typography sx={{mt:1}} variant="h7">Brand</Typography>
+                <FormControl fullWidth>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={selectedBrand}
+                    onChange={(event) => {
+                        setselectedBrand(event.target.value);
+                    }}
+                    sx={{
+                        mb: 2
+                    }}
+                >
+                    {brandsList.map((row, index) => {
+                        return <MenuItem value={row}>{row?.name}</MenuItem>;
+                    })}
+                </Select>
+                </FormControl>
+                </Grid>
                 <Grid item xs={6}>
                     <Typography variant="h7">Points required </Typography>
                     <Box
@@ -185,7 +221,7 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                             onChange={(e) => {
                                 setData({
                                     ...data,
-                                    bottomLimit: e.target.value
+                                    bottomLimit: +e.target.value
                                 });
                             }}
                             sx={{
@@ -205,7 +241,7 @@ const NewTier = ({ modal, setModal, setReload, selectedBrand, editItem }) => {
                             onChange={(e) => {
                                 setData({
                                     ...data,
-                                    topLimit: e.target.value
+                                    topLimit: +e.target.value
                                 });
                             }}
                             sx={{
