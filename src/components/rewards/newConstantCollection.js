@@ -35,7 +35,9 @@ return aYearFromNow
         giftPrograms:[],
         branchIds:[],
         startDate:new Date(),
-        endDate:getNextYearDate()
+        endDate:getNextYearDate(),
+        limitPerMonth:0,
+        limitPerYear:0,
         
     })
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -63,12 +65,17 @@ return aYearFromNow
  
         let payload={...data}
         payload.discountPercentage=data.amountPurchaseReward
-        payload.brandGroupId=data.groupOfCustomers
-        payload.rewardProgramGifts=data.giftPrograms
-        payload .limitPerMonth= 10000,
-        payload .limitPerYear= 10000,
-        console.log(payload,"paee");
+        payload.brandGroupId=data.groupOfCustomers;
+        payload.rewardProgramGifts=data.giftPrograms;
+        payload .limitPerMonth= +data.limitPerMonth;
+        payload .limitPerYear= +data.limitPerYear;
 
+        if(data.limitPerYear< data.limitPerMonth){
+            enqueueSnackbar('Limit per year show be grater than limit per month', {
+                variant: 'error',
+              });
+              return
+        }
         await  rewardService.createConstantsCollectionProgram(payload) 
         .then((res)=>{ 
             console.log("customers groups Edit response Points", res?.data),
@@ -127,222 +134,211 @@ return aYearFromNow
 
     
     return (
-        <Modal
-        open={modal}  
-        onClose={() => setModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description" 
-      >
-<Box sx={style} > 
-
-
-<Grid container spacing={4} mb={2}>
-
-<Grid item xs={12}>
-<Typography required variant="h5">{  "Create New Constant Collection" }</Typography>
-</Grid>
-</Grid>
-
-
-                    <Grid item xs={12} my={1}>
-
-                    <Typography  variant="h7">Branches</Typography> 
-                <DropDown title="Select Branches"
-                            list={branchesList}
-                            data={data}
-                            setData={setData}
-                            keyo={"branchIds"}
-                            mt={2}
-                            type="groups"
-                            notRequired={true}
-                        />
-
-                </Grid>
-
-        <Grid container spacing={4}>
-
-            <Grid item xs={12}>
-                <Grid container spacing={2} >
-                    <Grid item xs={6}>
-                        <Counter title="Set discount percentage"
-                            value="amountPurchaseReward" data={data} setData={setData}
-                        />
-                    </Grid> 
-                    <Grid item xs={6}>
-                        <Typography
-                            required variant="h7">Group of customers</Typography>
-                        <DropDown title="Select the group of customers"
-                            list={customerGroups}
-                            data={data}
-                            setData={setData}
-                            keyo={"groupOfCustomers"}
-                            mt={2}
-                            type="customerGroup"
-                        />
-
-                    </Grid>
-                </Grid>
+<Modal
+   open={modal}  
+   onClose={() =>
+   setModal(false)}
+   aria-labelledby="modal-modal-title"
+   aria-describedby="modal-modal-description" 
+   >
+   <Box sx={style} >
+      <Grid container spacing={4} mb={2}>
+         <Grid item xs={12}>
+            <Typography required variant="h5">{  "Create New Constant Collection" }</Typography>
+         </Grid>
+      </Grid>
+      <Grid container spacing={4}>
+         <Grid item xs={12}>
+            <Grid container spacing={2} >
+               <Grid item xs={6}>
+                  <Typography  variant="h7">Branches</Typography>
+                  <DropDown title="Select Branches"
+                     list={branchesList}
+                     data={data}
+                     setData={setData}
+                     keyo={"branchIds"}
+                     mt={2}
+                     type="groups"
+                     notRequired={true}
+                     />
+               </Grid>
+               <Grid item xs={6}>
+                  <Typography
+                     required variant="h7">Group of customers</Typography>
+                  <DropDown title="Select the group of customers"
+                     list={customerGroups}
+                     data={data}
+                     setData={setData}
+                     keyo={"groupOfCustomers"}
+                     mt={2}
+                     type="customerGroup"
+                     />
+               </Grid>
+               <Grid item xs={6}>
+                  <Counter title="Set discount percentage"
+                     value="amountPurchaseReward" data={data} setData={setData}
+                     />
+               </Grid>
             </Grid>
-
-            <Grid item xs={12}>
-                <Grid container spacing={2} >
-            <Grid item xs={4} marginTop={1}  >
-                <LocalizationProvider
+         </Grid>
+         <Grid item xs={12}>
+            <Grid container spacing={2} >
+               <Grid item xs={6} marginTop={1}  >
+                  <LocalizationProvider
                   dateAdapter={AdapterDayjs}
                   localeText={{ start: 'Check-in', end: 'Check-out' }}
-                >
+                  >
                   <DatePicker
-                    label="Start Date"
-                    minDate={new Date()}
-                    renderInput={(params) => <TextField {...params} error={false}  />}
-                    value={data.startDate}
-                    onChange={(newValue) => {
-                      setData({
-                        ...data,
-                        startDate: newValue
-                      })
-                    }}
+                  label="Start Date"
+                  fullWidth
+                  minDate={new Date()}
+                  renderInput={(params) => 
+                  <TextField {...params} fullWidth error={false}  />
+                  }
+                  value={data.startDate}
+                  onChange={(newValue) => {
+                  setData({
+                  ...data,
+                  startDate: newValue
+                  })
+                  }}
                   />
-                </LocalizationProvider>
-
-              </Grid>
-              <Grid item xs={4} marginTop={1}  >
-                <LocalizationProvider
+                  </LocalizationProvider>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <LocalizationProvider
                   dateAdapter={AdapterDayjs}
                   localeText={{ start: 'Check-in', end: 'Check-out' }}
-                >
+                  >
                   <DatePicker
-                    label="End Date"
-                    minDate={new Date()}
-                    renderInput={(params) => <TextField {...params} error={false} />}
-                    value={data.endDate}
-                    onChange={(newValue) => {
-                      setData({
-                        ...data,
-                        endDate: newValue
-                      })
-                    }}
+                  label="End Date"
+                  minDate={new Date()}
+                  renderInput={(params) => 
+                  <TextField  {...params} fullWidth error={false} />
+                  }
+                  value={data.endDate}
+                  onChange={(newValue) => {
+                  setData({
+                  ...data,
+                  endDate: newValue
+                  })
+                  }}
                   />
-                </LocalizationProvider>
-
-              </Grid>
-              </Grid>
-              </Grid>
-
-            <Grid item xs={12}>
-                <Typography
-                    required variant="h7">Gift Programs</Typography>
-                <Grid container spacing={2} >
-
-                    <Grid item xs={1}>
-                        <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
-                        value={reward.amount}
-                        onChange={
-                            (e)=>{
-                                setReward({
-                                    ...reward,
-                                    amount:e.target.value
-                                })
-                            }
-                        }
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
-                         value={reward.name}
-                         onChange={
-                             (e)=>{
-                                 setReward({
-                                     ...reward,
-                                     name:e.target.value
-                                 })
-                             }
-                         }
-                        />
-                        {
-                            err?
-                            <Alert severity="error">{err}</Alert>
-                            :
-                            null
-                        }
-                         
-                    </Grid>
-                    <Grid item xs={3}>
-                     
-                        <Button onClick={addNewProgram} >
-                            Add new
-                        </Button>
- 
-                     </Grid>
-                     
-                </Grid> 
-
-                {
-                    data?.giftPrograms?.map((row,index)=>{
-                        return(
-                            <Grid container spacing={2} my={1} >
-
-                            <Grid item xs={1}>
-                                <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
-                                value={row.amount}
-                                editable={false}
-
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
-                                 value={row.name}
-                                 editable={false}
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                             
-                                <Button onClick={()=>removeProgram(index)} color="error" >
-                                    remove
-                                </Button>
-         
-                             </Grid>
-                             
-                        </Grid>
-                        )
-                    })
-                }
-              
+                  </LocalizationProvider>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <TextField id="outlined-basic"
+                     type="number"
+                     onChange={(newValue) =>
+                  {
+                  setData({
+                  ...data,
+                  limitPerYear: newValue.target.value
+                  })
+                  }}
+                  value={data.limitPerYear} fullWidth label="Limit per Year" variant="outlined"/>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <TextField id="outlined-basic"
+                     type="number"
+                     onChange={(newValue) =>
+                  {
+                  setData({
+                  ...data,
+                  limitPerMonth: newValue.target.value
+                  })
+                  }}
+                  value={data.limitPerMonth} fullWidth label="Limit per Month" variant="outlined" />
+               </Grid>
             </Grid>
-
-
-
-            <Grid item xs={12}>
-                <Grid container >
-
-                    <Grid item xs={8} />
-                    <Grid container spacing={2}
-
-                        justifyContent="flex-end"
-                    >
-
-                        {/* <Grid item>
-                            <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
-                        </Grid> */}
-                        <Grid item>
-                            <Button primay variant="contained" onClick={createConstantCollection} >Save</Button>
-                        </Grid>
-
-                    </Grid>
-
-
-                </Grid>
-
+         </Grid>
+         <Grid item xs={12}>
+            <Typography
+               required variant="h7">Gift Programs</Typography>
+            <Grid container spacing={2} >
+               <Grid item xs={1}>
+                  <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
+                  value={reward.amount}
+                  onChange={
+                  (e)=>{
+                  setReward({
+                  ...reward,
+                  amount:e.target.value
+                  })
+                  }
+                  }
+                  />
+               </Grid>
+               <Grid item xs={3}>
+                  <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
+                  value={reward.name}
+                  onChange={
+                  (e)=>{
+                  setReward({
+                  ...reward,
+                  name:e.target.value
+                  })
+                  }
+                  }
+                  />
+                  {
+                  err?
+                  <Alert severity="error">{err}</Alert>
+                  :
+                  null
+                  }
+               </Grid>
+               <Grid item xs={3}>
+                  <Button onClick={addNewProgram} >
+                  Add new
+                  </Button>
+               </Grid>
             </Grid>
-
-
-
-        </Grid>
-
-
-
-        </Box>
-
+            {
+            data?.giftPrograms?.map((row,index)=>{
+            return(
+            <Grid container key={index} spacing={2} my={1} >
+               <Grid item xs={1}>
+                  <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
+                     value={row.amount}
+                     editable={false}
+                     />
+               </Grid>
+               <Grid item xs={3}>
+                  <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
+                     value={row.name}
+                     editable={false}
+                     />
+               </Grid>
+               <Grid item xs={3}>
+                  <Button onClick={()=>removeProgram(index)} color="error" >
+                  remove
+                  </Button>
+               </Grid>
+            </Grid>
+            )
+            })
+            }
+         </Grid>
+         <Grid item xs={12}>
+            <Grid container >
+               <Grid item xs={8} />
+               <Grid container spacing={2}
+                  justifyContent="flex-end"
+                  >
+                  {/* 
+                  <Grid item>
+                     <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
+                  </Grid>
+                  */}
+                  <Grid item>
+                     <Button primay variant="contained" onClick={createConstantCollection} >Save</Button>
+                  </Grid>
+               </Grid>
+            </Grid>
+         </Grid>
+      </Grid>
+   </Box>
 </Modal>
     )
 }

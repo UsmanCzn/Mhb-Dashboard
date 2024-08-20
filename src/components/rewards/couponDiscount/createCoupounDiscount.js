@@ -57,6 +57,10 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
     };
 
     const createCouponDiscount = async () => {
+        if(data.limitPerMonth>data.limitPerYear){
+            enqueueSnackbar('Limit for years should be greater than month', { variant: 'error' });
+            return
+        }
         let payload = {
              ...data,
             discountPercentage: data.discountPercentage,
@@ -79,9 +83,11 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
             enqueueSnackbar(errorMessage, { variant: 'error' });
         }
     }else{
-        payload['id']=coupon.id,
+        payload['id']= coupon.id,
         payload['branchId']=data.branchIds[0]
+        payload['minimumAmountIsCart'] = +data.minimumAmountIsCart
         delete payload.branchIds 
+        delete payload.groupOfCustomers
         try {
             await rewardService.editCouponsDiscountProgram(payload);
             setReload(prev => !prev);
@@ -188,6 +194,7 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
                 onChange={handleInputChange}
                 />
                 </Grid> 
+                {!coupon &&
                 <Grid item xs={6}>
                     <DropDown
                         title="Select Stores"
@@ -199,7 +206,7 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
                         type={!coupon ?"groups" :"brands"}
                         notRequired={true}
                     />
-                </Grid>
+                </Grid>}
 
                 <Grid item xs={6}>
                 <TextField

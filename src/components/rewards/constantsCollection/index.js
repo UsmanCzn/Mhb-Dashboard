@@ -195,7 +195,7 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
                     }
                    }
                    >
-                                  Create New Constant Collection
+                                  Create New Constant Collection 
                  </Button> 
    
                    </Grid>

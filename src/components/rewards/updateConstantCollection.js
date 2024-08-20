@@ -10,6 +10,9 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { ServiceFactory } from "services/index";
 import rewardService from "services/rewardService";
 import { useSnackbar } from 'notistack';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';    
 
 const App = ({
     constantCollection,
@@ -24,6 +27,10 @@ const App = ({
     const [data, setData] = useState({
         amountPurchaseReward:0,
         groupOfCustomers:0,
+        limitPerMonth:0,
+        limitPerYear:0,
+        startDate: new Date(),
+        endDate: new Date(),
         giftPrograms:[]
         
     })
@@ -47,12 +54,14 @@ const App = ({
         })
     }
     const editConstantCollection=async ()=>{
-        console.log(data);
- 
         let payload={...constantCollection}
         payload.discountPercentage=data.amountPurchaseReward
         payload.brandGroupId=data.groupOfCustomers
         payload.rewardProgramGifts=data.giftPrograms
+        payload.limitPerMonth=data.limitPerMonth
+        payload.limitPerYear=data.limitPerYear
+        payload.startDate=data.startDate
+        payload.endDate = data.endDate
         console.log(payload);
 
         await  rewardService.editConstantCollectionProgram(payload) 
@@ -113,7 +122,11 @@ const App = ({
                 ...data,
                 amountPurchaseReward:constantCollection?.discountPercentage,
                 giftPrograms:constantCollection.rewardProgramGifts,
-                groupOfCustomers:constantCollection.brandGroupId
+                groupOfCustomers:constantCollection.brandGroupId,
+                limitPerMonth: constantCollection.limitPerMonth,
+                limitPerYear: constantCollection.limitPerYear,
+                startDate:constantCollection.startDate,
+                endDate:constantCollection.endDate
             
             }) 
         
@@ -144,12 +157,7 @@ const App = ({
 
             <Grid item xs={12}>
                 <Grid container spacing={2} >
-                    <Grid item xs={6}>
-                        <Counter title="Set amount of points to get reward"
-                            value="amountPurchaseReward" data={data} setData={setData}
-                        />
-                    </Grid> 
-                    <Grid item xs={6}>
+                <Grid item xs={6}>
                         <Typography
                             required variant="h7">Group of customers</Typography>
                         <DropDown title="Select the group of customers"
@@ -160,9 +168,80 @@ const App = ({
                             mt={2}
                             type="customerGroup"
                         />
-
                     </Grid>
-                </Grid>
+                    <Grid item xs={6}>
+                        <Counter title="Set amount of points to get reward"
+                            value="amountPurchaseReward" data={data} setData={setData}
+                        />
+                    </Grid> 
+                    <Grid item xs={6} marginTop={1}  >
+                  <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  localeText={{ start: 'Check-in', end: 'Check-out' }}
+                  >
+                  <DatePicker
+                  label="Start Date"
+                  fullWidth
+                  minDate={new Date()}
+                  renderInput={(params) => 
+                  <TextField {...params} fullWidth error={false}  />
+                  }
+                  value={data.startDate}
+                  onChange={(newValue) => {
+                  setData({
+                  ...data,
+                  startDate: newValue
+                  })
+                  }}
+                  />
+                  </LocalizationProvider>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  localeText={{ start: 'Check-in', end: 'Check-out' }}
+                  >
+                  <DatePicker
+                  label="End Date"
+                  minDate={new Date()}
+                  renderInput={(params) => 
+                  <TextField  {...params} fullWidth error={false} />
+                  }
+                  value={data.endDate}
+                  onChange={(newValue) => {
+                  setData({
+                  ...data,
+                  endDate: newValue
+                  })
+                  }}
+                  />
+                  </LocalizationProvider>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <TextField id="outlined-basic"
+                     type="number"
+                     onChange={(newValue) =>
+                  {
+                  setData({
+                  ...data,
+                  limitPerYear: newValue.target.value
+                  })
+                  }}
+                  value={data.limitPerYear} fullWidth label="Limit per Year" variant="outlined"/>
+               </Grid>
+               <Grid item xs={6} marginTop={1}  >
+                  <TextField id="outlined-basic"
+                     type="number"
+                     onChange={(newValue) =>
+                  {
+                  setData({
+                  ...data,
+                  limitPerMonth: newValue.target.value
+                  })
+                  }}
+                  value={data.limitPerMonth} fullWidth label="Limit per Month" variant="outlined" />
+               </Grid>
+                </Grid >
             </Grid>
 
 
