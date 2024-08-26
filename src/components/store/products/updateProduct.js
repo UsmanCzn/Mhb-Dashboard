@@ -76,6 +76,8 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         isQtyAvailable: true,
         isTopProduct: false,
         isFeaturedProduct: false,
+        dontMissOutProduct: false,
+         
         punchesForPurchase: 0,
         commentAllowed: true,
         productDescription: '',
@@ -210,7 +212,10 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             productGroups: updateData?.productAddOnGroups?.map((obj) => obj?.productAdditionsGroupId),
             addonGroup: '',
             isTopProduct: updateData?.isTopProduct,
-            isFeaturedProduct: updateData?.isFeaturedProduct
+            isFeaturedProduct: updateData?.isFeaturedProduct,
+            dontMissOutProduct: updateData?.dontMissOutProduct
+
+             
         });
 
         setP1(null);
@@ -646,6 +651,31 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                         setData((prev) => ({
                                             ...prev,
                                             isFeaturedProduct: event.target.checked
+                                        }));
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Typography required variant="h7">
+                                Don't Miss out Product
+                            </Typography>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    mt: 2
+                                }}
+                            >
+                                <Switch
+                                    checked={data.dontMissOutProduct}
+                                    onChange={(event) => {
+                                        setData((prev) => ({
+                                            ...prev,
+                                            dontMissOutProduct: event.target.checked
                                         }));
                                     }}
                                 />
