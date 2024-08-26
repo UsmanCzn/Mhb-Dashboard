@@ -75,6 +75,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         isEligibleForFreeItem: true,
         isQtyAvailable: true,
         isTopProduct: false,
+        isFeaturedProduct: false,
         punchesForPurchase: 0,
         commentAllowed: true,
         productDescription: '',
@@ -208,7 +209,8 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             productTypeId: updateData?.productTypeId,
             productGroups: updateData?.productAddOnGroups?.map((obj) => obj?.productAdditionsGroupId),
             addonGroup: '',
-            isTopProduct: updateData?.isTopProduct
+            isTopProduct: updateData?.isTopProduct,
+            isFeaturedProduct: updateData?.isFeaturedProduct
         });
 
         setP1(null);
@@ -474,7 +476,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                 </Grid> */}
                                 <Grid item xs={3}>
                                     <Typography required variant="h7">
-                                        is Eligible For Free Item
+                                        Eligible For Free Item
                                     </Typography>
                                     <Box
                                         sx={{
@@ -523,7 +525,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
                                 <Grid item xs={3}>
                                     <Typography required variant="h7">
-                                        is Product Image Deleted
+                                        Product Image Deleted
                                     </Typography>
                                     <Box
                                         sx={{
@@ -548,7 +550,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                 </Grid>
                                 <Grid item xs={3}>
                                     <Typography required variant="h7">
-                                        is Qty Available
+                                        Quantity Available
                                     </Typography>
                                     <Box
                                         sx={{
@@ -601,7 +603,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
                         <Grid item xs={3}>
                             <Typography required variant="h7">
-                                is Top Product
+                                 Top Selling Product
                             </Typography>
                             <Box
                                 sx={{
@@ -624,7 +626,31 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                 />
                             </Box>
                         </Grid>
-
+                        <Grid item xs={3}>
+                            <Typography required variant="h7">
+                                Featured Product
+                            </Typography>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    mt: 2
+                                }}
+                            >
+                                <Switch
+                                    checked={data.isFeaturedProduct}
+                                    onChange={(event) => {
+                                        setData((prev) => ({
+                                            ...prev,
+                                            isFeaturedProduct: event.target.checked
+                                        }));
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
                                 {/* <Grid item xs={3}>

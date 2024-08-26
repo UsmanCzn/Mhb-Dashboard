@@ -112,6 +112,15 @@ const dashboard = {
                     forUserRoles: [ADMIN]
                 },
                 // {
+                //     id: 'bundles',
+                //     title: 'Bundles',
+                //     type: 'item',
+                //     url: '/bundles',
+                //     icon: TimelineIcon,
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN]
+                // },
+                // {
                 //     id: 'collect',
                 //     title: 'Collect',
                 //     type: 'item',

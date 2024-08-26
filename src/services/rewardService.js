@@ -72,5 +72,20 @@ export default {
             endDate,
         }= data
         return ApiV1.get(`services/app/Dashboard/GetLiveDashboardReport?brandId=${brandId}&branchId=${branchId}&startDate=${startDate}&endDate=${endDate}`)  
-    }
+    },
+
+    getAllBundles (brandId){ 
+        return ApiV1.get(`services/app/Bundle/GetAllBundlesByBrandId`,{
+            params:{
+                brandId
+            }
+        })  
+    },
+    addNewBundle (body){ 
+        return ApiV1.post(`services/app/Bundle/CreateBundle`,body)  
+    },
+    updateBundle (body){ 
+        return ApiV1.put(`services/app/Bundle/UpdateBundle`,body)  
+    },
+
 };

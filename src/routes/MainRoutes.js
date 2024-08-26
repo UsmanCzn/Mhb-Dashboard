@@ -29,6 +29,7 @@ import CustomersList from 'pages/customers/list';
 import CustomerGroups from 'pages/customers/groups';
 import Credit from 'pages/Credit/index';
 import LevelIndex from 'pages/levels';
+import Bundles from 'pages/bundles';
 import Stocks from 'pages/stocks';
 import Paymentprovider from 'pages/payment-settings/payment-provider';
 import PaymentMethods from 'pages/payment-settings/payment-methods';
@@ -119,6 +120,7 @@ export default function MainRoutes() {
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/credit" element={<Credit />} />
                     <Route path="/levels" element={<LevelIndex />} />
+                    <Route path="/bundles" element={<Bundles />} />
                 </Route>
             </Route>
 
