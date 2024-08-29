@@ -56,10 +56,7 @@ const Paymentprovider = () => {
             // Replace 'yourBrandId' with the actual brandId you want to pass
             const response = await paymentServices.GetPaymentById(id);
             const temp = { ...response.data.result };
-            console.log(
-                PaymentsTypes.find((e) => e.id == temp.paymentSystemId),
-                'asdas'
-            );
+
             setData({
                 sandBoxKey: temp.sandBoxSecretKey,
                 liveKey: temp.liveSecretKey,
@@ -91,7 +88,7 @@ const Paymentprovider = () => {
                     livePublicKey: '',
                     liveSecretKey: data.liveKey,
                     sandBoxPubicKey: '',
-                    sandBoxSecretKey: data.sandboxApi,
+                    sandBoxSecretKey: data.sandBoxKey,
                     merchantId: data.merchantid,
                     apiCurrencyCode: data.CurrencyCode,
                     code: '',
@@ -120,6 +117,35 @@ const Paymentprovider = () => {
                 console.error('Error fetching brand payments:', error);
             }
         } else {
+            const body = {
+                id: 0,
+                brandId: selectedBranch?.id,
+                paymentSystemName: data.paymentSystemName,
+                paymentSystemAr: data.paymentSystemName,
+                paymentSystemId: data.paymentid,
+                isUsedForTopUp: true,
+                isUsedForCheckOut: true,
+                livePublicKey: '',
+                liveSecretKey: data.liveKey,
+                sandBoxPubicKey: '',
+                sandBoxSecretKey: data.sandBoxKey,
+                merchantId: data.merchantid,
+                apiCurrencyCode: data.CurrencyCode,
+                code: '',
+                liveServerDomain: data.liveApi,
+                sandBoxServerDomain: data.sandboxApi
+            }
+            body.id =id;
+            console.log(body);
+            
+            const response = await paymentServices.UpdatePaymentMethods(body);
+            if (response) {
+
+                enqueueSnackbar('Action Performed Successfully', {
+                    variant: 'success'
+                });
+                // navigate('/payments-settings/methods');
+            }
         }
     };
 
@@ -256,7 +282,7 @@ const Paymentprovider = () => {
 
                     <Grid item xs="auto">
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
