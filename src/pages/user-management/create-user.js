@@ -17,7 +17,7 @@ const CreateUser = () => {
     const [multiSelectValues, setMultiSelectValues] = useState([]);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { id,cid } = useParams();
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -154,6 +154,8 @@ const CreateUser = () => {
             });
         }}else{
             try {
+                console.log(postData,'posrdata');
+                
                 const response = await userManagementService.UpdateUser(postData);
                 if (response) {
           
@@ -184,9 +186,9 @@ const CreateUser = () => {
             phoneNumber: formData.phoneNumber,
             roleId: +formData.roles,
             allotedIdsList: allotedBranchIds,
-            companyId: +formData.companyId
+            companyId: +cid
         };
-
+        debugger
         if (validateForm()) {
             await handlePostData(postDataObject);
         } else {
@@ -199,6 +201,8 @@ const CreateUser = () => {
             const response = await userManagementService.getUserRoles();
             if (response) {
                 setUsersRoles(response?.data?.result);
+                console.log(id,"user");
+                
                 if(id){
                     fetchUserData( response?.data?.result)
                 }
@@ -231,7 +235,7 @@ const CreateUser = () => {
     useEffect(() => {
      
         getUserRoles();
-        getCompanies()
+        // getCompanies()
     }, []);
 
 
@@ -255,6 +259,8 @@ const CreateUser = () => {
     }, [userBranches]);
 
     const fetchUserData = async ( roles) => {
+        console.log(id,"userid");
+        
         if (id) {
             
             try {
@@ -387,7 +393,7 @@ const CreateUser = () => {
             </Select>
             <p className="error">{errors.branches}</p>
             </Grid>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
             <div>
             <label htmlFor="Company">
              Company
@@ -410,7 +416,7 @@ const CreateUser = () => {
                 );
               })}
           </Select>
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} sx={{marginBottom:"10px"}}>
             <Button size="small" type="submit" variant="contained">

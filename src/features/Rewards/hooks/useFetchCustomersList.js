@@ -15,7 +15,6 @@ export function useFetchCustomerList({reload}){
       (pageNo) => {
         
         setloading(true);
-           console.log(pageNo);
         customerServices.getAllCustomers({
             Skip:pageNo*10,
             Take:(pageNo+1)+10

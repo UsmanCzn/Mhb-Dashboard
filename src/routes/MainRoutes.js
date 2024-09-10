@@ -88,8 +88,8 @@ export default function MainRoutes() {
 
                     <Route path="/user-management" element={<UserList />} />
                     <Route path="/update-user/:id" element={<UpdateUser />} />
-                    <Route path="/create-user" element={<CreateUser />} />
-                    <Route path="/create-user/:id" element={<CreateUser />} />
+                    <Route path="/create-user/:cid" element={<CreateUser />} />
+                    <Route path="/create-user/:cid/:id" element={<CreateUser />} />
 
                     <Route path="/customers" element={<Customers />} />
                     <Route path="/customers/list" element={<CustomersList />} />

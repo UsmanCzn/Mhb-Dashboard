@@ -19,6 +19,7 @@ const App = ({
     modal,
     setModal,
     setReload, 
+    selectedBrand
 }) => {
 
 

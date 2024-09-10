@@ -108,7 +108,7 @@ const DashboardDefault = () => {
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce title="Total Order" count={dashbaordBoardData?.totalOrders} percentage={27.4} extra="1,943" />
+                    <AnalyticEcommerce title="Total Order" count={dashbaordBoardData?.totalOrders??0} percentage={27.4} extra="1,943" />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
@@ -135,7 +135,7 @@ const DashboardDefault = () => {
     useEffect(() => {
         if (brandsList[0]?.id) {
             if(brandsList && brandsList.length>2){
-            setselectedBrand(brandsList[1]);
+            setselectedBrand(brandsList[0]);
             }
             else{
                 setselectedBrand(brandsList[0]);
@@ -171,7 +171,7 @@ const DashboardDefault = () => {
                                 }}
                             >
                                 {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                    return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
                                 })}
                             </Select>
                         </FormControl>

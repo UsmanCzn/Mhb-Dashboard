@@ -42,8 +42,9 @@ const App = ({
 
     const getCustomergroups=async ()=>{
         await  customerService.GetCustomersGroups()
-        const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)??[]
+
         .then((res)=>{
+            const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)??[]
             setCustomerGroups(filteredGroups) 
         })
         .catch((err)=>{
@@ -123,7 +124,7 @@ const App = ({
             }) 
         
         }
-        ,[pointCollection]
+        ,[pointCollection,selectedBrand]
     )
 
 

@@ -47,7 +47,11 @@ export default function TiersList() {
                                 }}
                             >
                                 {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                    return (
+                                        <MenuItem key={index} value={row}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
                                 })}
                             </Select>
                         </FormControl>

@@ -20,14 +20,14 @@ const App = ({
     modal,
     setModal,
     setReload, 
-    branchesList
+    branchesList,
+    selectedBrand
 }) => {
-
-
+ 
     const getNextYearDate=()=>{
         const aYearFromNow = new Date();
-aYearFromNow.setFullYear(aYearFromNow.getFullYear() + 1);
-return aYearFromNow
+        aYearFromNow.setFullYear(aYearFromNow.getFullYear() + 1);
+        return aYearFromNow
     }
     const customerService=ServiceFactory.get('customer')
     const branchService=ServiceFactory.get('branch') 
@@ -53,7 +53,9 @@ return aYearFromNow
         await  customerService.GetCustomersGroups()
 
         .then((res)=>{
-            setCustomerGroups(res?.data?.result?.data?.data) 
+            const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)
+
+            setCustomerGroups(filteredGroups) 
         })
         .catch((err)=>{
             console.log(err?.response?.data);
@@ -85,11 +87,11 @@ return aYearFromNow
         payload.amount=data.amountPurchaseReward
         payload.brandGroupId=data.groupOfCustomers
         payload.rewardProgramGifts=data.giftPrograms
-        console.log(payload,"paee");
+     
 
         await  rewardService.createPurchasesCollectionProgram(payload) 
         .then((res)=>{ 
-            console.log("customers groups Edit response", res?.data),
+            console.log("customers groups Create response", res?.data),
             setReload(prev=>!prev)
             setModal(false)
         })
@@ -142,7 +144,7 @@ return aYearFromNow
             
       
         }
-        ,[]
+        ,[selectedBrand]
     )
  
 
@@ -191,8 +193,8 @@ return aYearFromNow
                     </Grid> 
                     <Grid item xs={6}>
                         <Typography
-                            required variant="h7">Group of customers</Typography>
-                        <DropDown title="Select the group of customers"
+                            required variant="h7"> Customers Groups & Tiers</Typography>
+                        <DropDown title="Select the group of customers & Tiers"
                             list={customerGroups}
                             data={data}
                             setData={setData}

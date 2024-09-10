@@ -126,7 +126,7 @@ const NavItem = ({ item, level }) => {
                 <>
                     <ListItemText
                         primary={
-                            <Typography variant="h6" sx={{ color: isSelected ? iconSelectedColor : textColor }} onClick={() => toggleCollapseNavItem(item.id)}>
+                            <Typography variant="h6" sx={{ color: isSelected ? iconSelectedColor : textColor }} >
                                 {item.title}
                             </Typography>
                         }

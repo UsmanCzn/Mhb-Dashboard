@@ -53,7 +53,7 @@ const UserList = () => {
             handleDeleteUser()
         }
         else if(action==='edit'){
-            navigate('/create-user/'+selectedUserId)
+            navigate(`/create-user/${selectedCompany}/${selectedUserId}`)
         }
       setAnchorEl(null);
     };
@@ -153,7 +153,7 @@ const UserList = () => {
     };
 
     const handleCreateNewUser = () => {
-        navigate('/create-user');
+        navigate(`/create-user/${selectedCompany}`);
     };
 
 

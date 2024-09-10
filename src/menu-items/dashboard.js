@@ -13,7 +13,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
-import { ADMIN, BRANCH_USER, BRAND_MANAGER } from 'helper/UserRoles';
+import { ADMIN, BRANCH_USER, BRAND_MANAGER,COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
 // icons
 const icons = {
@@ -34,7 +34,7 @@ const dashboard = {
             url: '/dashboard/',
             icon: icons.DashboardOutlined,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
 
         {
@@ -53,7 +53,7 @@ const dashboard = {
             url: '/brands',
             icon: LocalOfferIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN,COMPANY_ADMIN]
         },
  
         {
@@ -63,7 +63,7 @@ const dashboard = {
             url: '/locations',
             icon: StoreIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER]
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
         },
         {
             id: 'user-management',
@@ -72,7 +72,7 @@ const dashboard = {
             url: '/user-management',
             icon: AccessibilityIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER]
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
         },
         {
             id: 'campaings',
@@ -81,18 +81,26 @@ const dashboard = {
             url: '/campaigns',
             icon: EventIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN,COMPANY_ADMIN]
         },
         {
             id: 'rewards',
             title: 'Rewards',
             type: 'collapse',
-            url: '/rewards',
             icon: GradeIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER],
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
+                {
+                    id: 'rewards',
+                    title: 'Rewards',
+                    type: 'item',
+                    url: '/rewards',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
+                },
                 {
                     id: 'rewardHistory',
                     title: 'Rewards History',
@@ -100,17 +108,9 @@ const dashboard = {
                     url: '/rewardHistory',
                     icon: TimelineIcon,
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
                 },
-                {
-                    id: 'levels',
-                    title: 'Levels',
-                    type: 'item',
-                    url: '/levels',
-                    icon: TimelineIcon,
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN]
-                },
+
                 // {
                 //     id: 'bundles',
                 //     title: 'Bundles',
@@ -118,7 +118,7 @@ const dashboard = {
                 //     url: '/bundles',
                 //     icon: TimelineIcon,
                 //     breadcrumbs: false,
-                //     forUserRoles: [ADMIN]
+                //     forUserRoles: [ADMIN,COMPANY_ADMIN]
                 // },
                 // {
                 //     id: 'collect',
@@ -126,7 +126,7 @@ const dashboard = {
                 //     type: 'item',
                 //     url: '/rewardcollection/',
                 //     breadcrumbs: false,
-                //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 // },
                 // {
                 //     id: 'redeem',
@@ -134,7 +134,7 @@ const dashboard = {
                 //     type: 'item',
                 //     url: '/rewardredemption/',
                 //     breadcrumbs: false,
-                //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 // }
             ]
         },
@@ -145,7 +145,7 @@ const dashboard = {
         //     url: '/rewards-stats',
         //     icon: icons.DashboardOutlined,
         //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+        //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         // },
 
         {
@@ -155,7 +155,7 @@ const dashboard = {
             url: '/customers',
             icon: PeopleIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER, BRANCH_USER],
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER, BRANCH_USER],
             isOpen: false,
             children: [
                 // {
@@ -172,7 +172,7 @@ const dashboard = {
                     type: 'item',
                     url: '/customers/tiers',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 },
                 {
                     id: 'groups',
@@ -180,7 +180,7 @@ const dashboard = {
                     type: 'item',
                     url: '/customers/groups',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 }
             ]
         },
@@ -191,7 +191,7 @@ const dashboard = {
             url: '/products',
             icon: InventoryIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER],
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER],
             isOpen: false,
             children: [
                 {
@@ -200,7 +200,7 @@ const dashboard = {
                     type: 'item',
                     url: '/categories/',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 },
                 {
                     id: 'products',
@@ -208,7 +208,7 @@ const dashboard = {
                     type: 'item',
                     url: '/products/',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 },
                 {
                     id: 'addon',
@@ -216,7 +216,7 @@ const dashboard = {
                     type: 'item',
                     url: '/addons/',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 },
                 {
                     id: 'stocks',
@@ -224,7 +224,7 @@ const dashboard = {
                     type: 'item',
                     url: '/stocks/',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
                 }
             ]
         },
@@ -235,16 +235,35 @@ const dashboard = {
             url: '/orders',
             icon: RestaurantIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
         {
             id: 'offer',
             title: 'Offers',
-            type: 'item',
-            url: '/offers',
+            type: 'collapse',
             icon: CardGiftcardIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER]
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER],
+            children: [
+                {
+                    id: 'offers',
+                    title: 'Offers',
+                    type: 'item',
+                    url: '/offers',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
+                },
+                {
+                    id: 'levels',
+                    title: 'Levels',
+                    type: 'item',
+                    url: '/levels',
+  
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,COMPANY_ADMIN]
+                },
+  
+            ]
         },
         {
             id: 'drive',
@@ -252,7 +271,7 @@ const dashboard = {
             type: 'collapse',
             icon: InventoryIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER,BRANCH_USER],
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER,BRANCH_USER],
             isOpen: false,
             children: [
                 {
@@ -261,7 +280,7 @@ const dashboard = {
                     type: 'item',
                     url: '/drive/vechiles',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRAND_MANAGER,BRANCH_USER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER,BRANCH_USER]
                 },
                 {
                     id: 'brand',
@@ -269,7 +288,7 @@ const dashboard = {
                     type: 'item',
                     url: '/drive/brand',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN,BRAND_MANAGER,BRANCH_USER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER,BRANCH_USER]
                 },
                 {
                     id: 'color',
@@ -277,7 +296,7 @@ const dashboard = {
                     type: 'item',
                     url: '/drive/color',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN,BRAND_MANAGER,BRANCH_USER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER,BRANCH_USER]
                 }
             ]
         },
@@ -288,7 +307,7 @@ const dashboard = {
             url: '/payments-settings/methods',
             icon: InventoryIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER],
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
                 {
@@ -297,7 +316,7 @@ const dashboard = {
                     type: 'item',
                     url: '/payments-settings/providers',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
                 },
                 {
                     id: 'methods',
@@ -305,7 +324,7 @@ const dashboard = {
                     type: 'item',
                     url: '/payments-settings/methods',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN,BRAND_MANAGER]
+                    forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
                 }
             ]
         },
@@ -316,7 +335,7 @@ const dashboard = {
             url: '/advertisement',
             icon: ShopTwoIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRAND_MANAGER],
+            forUserRoles: [ADMIN,],
         },     
         {
             id: 'CreditBalance',
@@ -325,7 +344,7 @@ const dashboard = {
             url: '/credit',
             icon: CreditCardIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, BRANCH_USER, BRAND_MANAGER]
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         }
     ]
 };

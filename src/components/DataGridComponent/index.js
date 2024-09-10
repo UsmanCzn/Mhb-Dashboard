@@ -16,10 +16,12 @@ export default function DataGridComponent(props) {
         onCellEditStop,
         initialState,
         search="",
-        customFilter=""
+        customFilter="",
+        pSize=10,
+        pMode='server'
     } = props;
 
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(pSize);
 
     const [page, setPage] = useState(0);
 
@@ -54,7 +56,7 @@ export default function DataGridComponent(props) {
                 rowCount={rowCountState}
                 page={page}
                 onRowClick={onRowClick}
-                paginationMode="server"
+                paginationMode={pMode}
                 onPageChange={(newPage) => setPage(newPage)}
                 getRowHeight={() => 'auto'}
                 experimentalFeatures={{ newEditingApi: true }}
