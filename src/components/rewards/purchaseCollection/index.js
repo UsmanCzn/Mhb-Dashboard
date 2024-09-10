@@ -21,6 +21,8 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
     const {  PurchaseCollectionList,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand);
     
     const {branchesList} =useFetchBranchList(reload)
+    const filteredBranches = branchesList.filter(branch => branch.brandId === selectedBrand.id);
+
     const [modal,setModal] =useState(false) 
     const [newModal,setNewModal] =useState(false) 
     const [duplicateModal,setDuplicateModal] =useState(false) 
@@ -242,9 +244,9 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
 
       </Menu>
 
-      <UpdatePurchaseCollection  modal={modal} setModal={setModal}   purchaseCollection={purchaseCollection} setReload={setReload}  />
-      <NewPurchaseCollection  modal={newModal} setModal={setNewModal} branchesList={branchesList}   setReload={setReload}  />
-      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={branchesList} reward={purchaseCollection}   setReload={setReload}  />
+      <UpdatePurchaseCollection  modal={modal} setModal={setModal}   purchaseCollection={purchaseCollection} setReload={setReload} selectedBrand={selectedBrand}   />
+      <NewPurchaseCollection  modal={newModal} setModal={setNewModal} branchesList={filteredBranches}   setReload={setReload} selectedBrand={selectedBrand}   />
+      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={filteredBranches} reward={purchaseCollection}   setReload={setReload}  />
        
     </>
   );

@@ -16,7 +16,8 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
     const location = useLocation();
 
     const { brandsList, fetchBrandsList, totalRowCount, loading } = useFetchBrandsList();
-
+    console.log(totalRowCount, brandsList,"count");
+    
     const [anchorEl, setAnchorEl] = useState(null);
     const [brand, setBrand] = useState({});
 
@@ -140,8 +141,10 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
                 loading={loading}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
-                totalRowCount={totalRowCount}
-                fetchCallback={fetchBrandsList}
+                totalRowCount={brandsList?.length ??0}
+                // fetchCallback={fetchBrandsList}
+                pSize={10}
+                pMode={'client'}
             />
             <Menu
                 id="basic-menu"
@@ -154,7 +157,7 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

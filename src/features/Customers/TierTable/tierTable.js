@@ -40,9 +40,9 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
         return (
             <Grid container spacing={1}>
                 <Grid item xs="auto">
-                    {item?.rewardProgramGifts?.map((obj) => {
+                    {item?.rewardProgramGifts?.map((obj,index) => {
                         return (
-                            <Typography variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
+                            <Typography key={index} variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
                                 {obj?.name + ' - ' + obj?.amount}
                             </Typography>
                         );
@@ -203,7 +203,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );
@@ -295,7 +295,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
             <NewTier
                 modal={newModal}
                 setModal={setNewModal}
-                selectedBrand={selectedBrand}
+                brand={selectedBrand}
                 editItem={pointCollection}
                 setReload ={setReload}
             />
@@ -337,8 +337,8 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                         }
                     }}
                 >
-                    {options.map((option) => (
-                        <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+                    {options.map((option,index) => (
+                        <MenuItem key={index} selected={option === 'Pyxis'} onClick={handleClose}>
                             {option}
                         </MenuItem>
                     ))}

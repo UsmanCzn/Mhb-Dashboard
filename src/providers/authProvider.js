@@ -1,5 +1,5 @@
 // import { useSendLoginSlackMessage } from "app/modules/Auth/methods/sendLoginSlackMessage";
-import { ADMIN, BRANCH_USER, BRAND_MANAGER } from 'helper/UserRoles';
+import { ADMIN, BRANCH_USER, BRAND_MANAGER,COMPANY_ADMIN } from 'helper/UserRoles';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import userServices from 'services/userServices';
@@ -20,6 +20,9 @@ export function useAuth() {
             switch (data?.data?.result?.roleId) {
                 case 2:
                     setUserRole(ADMIN);
+                    break;
+                case 3:
+                    setUserRole(COMPANY_ADMIN);
                     break;
                 case 5:
                     setUserRole(BRAND_MANAGER);

@@ -185,10 +185,12 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
                 loading={loading}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
-                totalRowCount={totalRowCount}
-                fetchCallback={fetchBranchesList}
+                totalRowCount={branchesList?.length ??0}
+                // fetchCallback={fetchBranchesList}
                 onRowClick={(row) => {
                 }}
+                pSize={10}
+                pMode={'client'}
             />
             <Menu
                 id="basic-menu"
@@ -201,7 +203,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

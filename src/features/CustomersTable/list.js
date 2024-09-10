@@ -34,8 +34,8 @@ export default function CustomerTable({ type,reload }) {
     const groupsColumnFormater = item => {
       return ( <Grid container spacing={1}>
  {
-        item?.customerGroups?.map(obj=>{
-          return <Grid item xs="auto"> <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >
+        item?.customerGroups?.map((obj,index)=>{
+          return <Grid key={index} item xs="auto"> <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >
           {obj}
         </Typography>
         </Grid>
@@ -145,7 +145,7 @@ export default function CustomerTable({ type,reload }) {
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )

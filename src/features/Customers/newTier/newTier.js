@@ -15,10 +15,10 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import { useSnackbar } from 'notistack';
 import tiersService from 'services/tiersService';
 
-const NewTier = ({ modal, setModal, editItem,setReload, }) => {
+const NewTier = ({ modal, setModal,brand, editItem,setReload }) => {
     const customerService = ServiceFactory.get('customer');
     const [isEditing, setIsEditing] = useState(false);
-    const [selectedBrand, setselectedBrand] = useState({});
+    const [selectedBrand, setselectedBrand] = useState(brand);
     const [data, setData] = useState({
         brandId: selectedBrand?.id ?? 0,
         name: '',
@@ -32,15 +32,6 @@ const NewTier = ({ modal, setModal, editItem,setReload, }) => {
     const { brandsList } = useFetchBrandsList(true);
 
 
-    useEffect(() => {
-        if (brandsList[0]?.id) {
-            setselectedBrand(brandsList[0]);
-        } else if(editItem !== undefined) {
-            console.log('now goes to zero ', 'sb');
-            const localBrand = brandsList.find((brand)=> brand.id ===editItem.brandId) ;
-            setselectedBrand(brandsList[localBrand.id]);
-        }
-    }, [brandsList]);
 
     useEffect(() => {
         if (editItem !== undefined) {
@@ -57,6 +48,7 @@ const NewTier = ({ modal, setModal, editItem,setReload, }) => {
             });
             setIsEditing(true);
         } else {
+            setselectedBrand(brand)
             setData({
                 ...data,
                 name: '',
@@ -66,8 +58,9 @@ const NewTier = ({ modal, setModal, editItem,setReload, }) => {
                 punchesForFreeItems: '',
                 id: 0
             });
+            setIsEditing(false);
         }
-    }, [editItem]);
+    }, [editItem,brand]);
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [err, setErr] = useState('');
@@ -183,7 +176,7 @@ const NewTier = ({ modal, setModal, editItem,setReload, }) => {
                         }}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                 <Typography sx={{mt:1}} variant="h7">Brand</Typography>
                 <FormControl fullWidth>
                 <Select
@@ -198,11 +191,11 @@ const NewTier = ({ modal, setModal, editItem,setReload, }) => {
                     }}
                 >
                     {brandsList.map((row, index) => {
-                        return <MenuItem value={row}>{row?.name}</MenuItem>;
+                        return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
                     })}
                 </Select>
                 </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={6}>
                     <Typography variant="h7">Points required </Typography>
                     <Box

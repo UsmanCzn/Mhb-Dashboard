@@ -13,7 +13,10 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
 
     const {ConstantsCollectionList  ,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand);
     
-    const {branchesList} =useFetchBranchList(reload)
+    const {branchesList} =useFetchBranchList(reload);
+    const filteredBranches = branchesList.filter(branch => branch.brandId === selectedBrand.id);
+
+
     const [modal,setModal] =useState(false) 
     const [newModal,setNewModal] =useState(false) 
     const [duplicateModal,setDuplicateModal] =useState(false) 
@@ -232,9 +235,9 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
 
       </Menu>
 
-      <UpdateConstantCollection  modal={modal} setModal={setModal}   constantCollection={constantCollection} setReload={setReload}  />
-      <NewconstantCollection  modal={newModal} setModal={setNewModal} branchesList={branchesList}   setReload={setReload}  />
-      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={branchesList} reward={constantCollection}   setReload={setReload}  />
+      <UpdateConstantCollection  modal={modal} setModal={setModal}   constantCollection={constantCollection} setReload={setReload} selectedBrand={selectedBrand}  />
+      <NewconstantCollection  modal={newModal} setModal={setNewModal} branchesList={filteredBranches}   setReload={setReload} selectedBrand={selectedBrand}  />
+      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={filteredBranches} reward={constantCollection}   setReload={setReload}  />
      
     </>
   );

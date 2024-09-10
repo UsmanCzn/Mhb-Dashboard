@@ -72,7 +72,7 @@ const NewRewardCollection = ({
             
         if (res) {
             setModal(false)
-            setReload(true)
+            setReload(prev=>!prev)
         }
          }
          catch (err){
@@ -172,8 +172,8 @@ const NewRewardCollection = ({
                                  }}>
                                      
                                 <Typography
-                                    required variant="h7">A Point will be given when customer spend: </Typography>
-                                <TextField id="outlined-basic" onChange={(event)=>{setData({...data,amountPurchaseReward:event.target.value})}}  label="Amount" variant="outlined"
+                                    required variant="h7">Points will be given per KD purchase: </Typography>
+                                <TextField id="outlined-basic" onChange={(event)=>{setData({...data,amountPurchaseReward:event.target.value})}}  label="Points" variant="outlined"
 
                                 //  value={row.name} 
                                 />
@@ -327,9 +327,9 @@ const NewRewardCollection = ({
 
                                     <Box>
                                     <Typography
-                                    required variant="h7">Group of customers</Typography>
+                                    required variant="h7">Customers Groups & Tiers</Typography>
                                     <DropDown 
-                                    title="Select the group of customers"
+                                    title="Select the group of customers and tiers"
                                     list={customerGroups}
                                     data={data}
                                     setData={setData}
