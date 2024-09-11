@@ -11,7 +11,7 @@ import moment from 'moment-jalaali';
  import DuplicateReward from "../duplicateReward"
  import rewardService from 'services/rewardService';
 import NewRewardCollection from '../newRewardCollection';
-export default function PointsCollectionTable({ selectedBrand,customerGroups, }) {
+export default function PointsCollectionTable({ selectedBrand, customerGroups, }) {
 
   const navigate = useNavigate();
 
@@ -22,6 +22,8 @@ export default function PointsCollectionTable({ selectedBrand,customerGroups, })
   const {  PointsCollectionList,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand,setReload);
     
   const {branchesList} =useFetchBranchList(reload)
+  const filteredBranches = branchesList.filter(branch => branch.brandId === selectedBrand.id);
+
   const [modal,setModal] =useState(false) 
   const [newModal,setNewModal] =useState(false) 
     
@@ -206,7 +208,7 @@ export default function PointsCollectionTable({ selectedBrand,customerGroups, })
                     }
                    }
                    >
-                    Create New Reward Collection
+                    Create New Point Collection
                  </Button> 
    
                    </Grid>
@@ -244,8 +246,8 @@ export default function PointsCollectionTable({ selectedBrand,customerGroups, })
       </Menu>
 
       <UpdatePointCollection  modal={modal} setModal={setModal}   pointCollection={pointCollection} setReload={setReload} selectedBrand={selectedBrand}  />
-      <NewRewardCollection  modal={newModal} setModal={setNewModal} branchesList={branchesList}   setReload={setReload} selectedBrand={selectedBrand}  />
-      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={branchesList} reward={pointCollection}   setReload={setReload}  />
+      <NewRewardCollection  modal={newModal} setModal={setNewModal} branchesList={filteredBranches}   setReload={setReload} selectedBrand={selectedBrand}  />
+      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={filteredBranches} reward={pointCollection}   setReload={setReload}  />
      
     </>
   );

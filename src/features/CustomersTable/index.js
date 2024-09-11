@@ -15,7 +15,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
   const location = useLocation();
 
     const { customersList, fetchCustomersList, totalRowCount, loading } = useFetchCustomerList({reload,search,setCustomerStats,selectedCompany});
-      console.log(totalRowCount, type);
+      // console.log(totalRowCount, type);
     useEffect(() => {
       getCompanies()
     }, [])
@@ -42,8 +42,8 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
       console.log(item,"sss");
       return ( <Grid container spacing={1}>
  {
-        item?.customerGroups?.map(obj=>{
-          return <Grid item xs="auto"> <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >
+        item?.customerGroups?.map((obj,index)=>{
+          return <Grid key={index} item xs="auto"> <Typography  variant="h6" px={2} mr={1} border={0.6} borderRadius={1} >
           {obj}
         </Typography>
         </Grid>
@@ -208,7 +208,7 @@ export default function CustomerTable({ type,reload,setCustomerStats }) {
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ServiceFactory } from "services/index";
 import rewardService from "services/rewardService";
 
-export function useFetchRewardList(reload,selectedBrand, setReload){
+export function useFetchRewardList(reload,selectedBrand, ){
 
     const [loading, setloading] = useState(false);
 

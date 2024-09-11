@@ -53,12 +53,12 @@ export default function Products() {
 
                     <Grid item xs="auto">
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={selectedBranch}
-                                label={'Branch'}
+                                label={'Brand'}
                                 onChange={(event) => {
                                     setselectedBranch(event.target.value);
                                 }}

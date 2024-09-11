@@ -27,10 +27,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 import fileService from 'services/fileService';
 import offerServices from 'services/offerServices';
 
-const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
+const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) => {
     const [Image, setImage] = useState(null);
     const [ViewImage, setViewImage] = useState(null);
-    const [actionItems, setActionItems] = useState([])
+    const [actionItems, setActionItems] = useState([]);
     const intialData = {
         id: 0,
         brandId: 0,
@@ -76,34 +76,29 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
         // setOffer(intialData);
     };
 
-    const getMenuActions = async(action , id)=>{
-        if(action === 1 || action ===2 ){
-        try{
-        const response = await storeServices.getProductTypes(id);
-        if (response) {
-            switch(action){
-                case 1:
-                setActionItems(response.data.result);
-                break;
-                case 2:
-                setActionItems(getAllSubTypes(response.data.result))
-                break;
-              default:
-                setActionItems([])
-            }
+    const getMenuActions = async (action, id) => {
+        if (action === 1 || action === 2) {
+            try {
+                const response = await storeServices.getProductTypes(id);
+                if (response) {
+                    switch (action) {
+                        case 1:
+                            setActionItems(response.data.result);
+                            break;
+                        case 2:
+                            setActionItems(getAllSubTypes(response.data.result));
+                            break;
+                        default:
+                            setActionItems([]);
+                    }
+                }
+            } catch (error) {}
+        } else if (action === 3) {
+            getAllProductsByBrandId(id);
+        } else {
+            setActionItems([]);
         }
-        }catch(error){
-
-        }
-    }
-    else if(action===3){
-        getAllProductsByBrandId(id)
-    }
-    else{
-        setActionItems([])
-
-    }
-    }
+    };
 
     useEffect(() => {
         if (brandsList[0]?.id) {
@@ -116,43 +111,42 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
             const temp = { ...offer };
             setOffer({ ...offer });
             setViewImage(temp.offerImageUrl);
-            getMenuActions(offer.actionType,offer.brandId)
+            getMenuActions(offer.actionType, offer.brandId);
         } else {
             setOffer({ ...intialData });
             setViewImage(null);
         }
     }, [offer]);
-    useEffect(() => {
+    useEffect(() => {}, [Offer]);
 
-    }, [Offer])
-    
-    
-    const getAllSubTypes =(items)=> {
+    const getAllSubTypes = (items) => {
         let allSubTypes = [];
-        
-        items.forEach(item => {
+
+        items.forEach((item) => {
             if (item.hasOwnProperty('subTypes')) {
                 allSubTypes = allSubTypes.concat(item.subTypes);
             }
         });
-        
-        return allSubTypes;
-    }
-    const getAllProductsByBrandId = async (brandId) =>{
-        try{
-        const response = await storeServices.getProductNameandIdByBrandid(brandId)
-        if (response) {
-            const products= response.data.result.map(product => {return {
-                id:product.productId,
-                ...product
-              }})
 
-            setActionItems(products)   
+        return allSubTypes;
+    };
+    const getAllProductsByBrandId = async (brandId) => {
+        try {
+            const response = await storeServices.getProductNameandIdByBrandid(brandId);
+            if (response) {
+                const products = response.data.result.map((product) => {
+                    return {
+                        id: product.productId,
+                        ...product
+                    };
+                });
+
+                setActionItems(products);
+            }
+        } catch (error) {
+            setActionItems([]);
         }
-    }catch(error){
-         setActionItems([]) 
-    }
-    }
+    };
     const submitForm = async () => {
         setload(true);
         if (!offer) {
@@ -161,7 +155,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                 const uploadRes = await fileService.uploadProductImage(Image);
                 const payload = {
                     id: 0,
-                    brandId: Offer.brandId,
+                    brandId: brand.id,
                     branchId: 0,
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
@@ -187,36 +181,34 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                 console.error(err);
             }
         } else {
-            if(Image){
+            if (Image) {
                 const uploadRes = await fileService.uploadProductImage(Image);
                 const payload = {
                     ...offer,
-                    brandId: Offer.brandId,
+                    brandId: brand.id,
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId,
+                    actionId: Offer.actionId
                 };
                 await offerServices.UpdateOffer(payload);
                 setImage(null);
                 setload(false);
                 handleClose();
-            }
-            else{
+            } else {
                 const payload = {
                     ...offer,
                     brandId: Offer.brandId,
                     offerName: Offer.offerName,
                     offerImageUrl: Offer.offerImageUrl,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId,
+                    actionId: Offer.actionId
                 };
                 await offerServices.UpdateOffer(payload);
                 setImage(null);
                 setload(false);
-                handleClose();  
+                handleClose();
             }
-            
         }
     };
 
@@ -250,7 +242,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <TextField
                                 fullWidth
                                 required
@@ -265,7 +257,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                                 variant="outlined"
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        {/* <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
                                 <Select
@@ -287,7 +279,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                                     })}
                                 </Select>
                             </FormControl>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-label">{'Action'}</InputLabel>
@@ -297,8 +289,8 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                                     value={Offer?.actionType}
                                     label={'Action'}
                                     onChange={(event) => {
-                                        setOffer({ ...Offer,actionType: event.target.value,  });
-                                        getMenuActions(event.target.value,Offer.brandId)
+                                        setOffer({ ...Offer, actionType: event.target.value });
+                                        getMenuActions(event.target.value, Offer.brandId);
                                     }}
                                 >
                                     {actions.map((row, index) => {
@@ -312,7 +304,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <FormControl fullWidth >
+                            <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-label">{'Action Items'}</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
@@ -320,7 +312,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                                     value={Offer?.actionId}
                                     label={'Action Item'}
                                     onChange={(event) => {
-                                        setOffer({ ...Offer,actionId: event.target.value, });
+                                        setOffer({ ...Offer, actionId: event.target.value });
                                     }}
                                 >
                                     {actionItems.map((row, index) => {
@@ -333,7 +325,6 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null }) => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        
                     </Grid>
                 </DialogContent>
                 <DialogActions>

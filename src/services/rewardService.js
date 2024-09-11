@@ -87,5 +87,12 @@ export default {
     updateBundle (body){ 
         return ApiV1.put(`services/app/Bundle/UpdateBundle`,body)  
     },
+    
+    getRewardHistory({ Take, Skip, BranchId,SearchExpression }) {
+        // Conditionally include BranchId only if it is defined
+        const branchIdParam = BranchId !== undefined && BranchId !== null ? `&BranchId=${BranchId}` : '';
+        
+        return ApiV1.get(`services/app/Store/GetDiscountedOrdersForRewardHistory?Take=${Take}&Skip=${Skip}${branchIdParam}&SearchExpression=${SearchExpression}`);
+    }
 
 };

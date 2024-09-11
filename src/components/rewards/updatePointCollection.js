@@ -42,8 +42,9 @@ const App = ({
 
     const getCustomergroups=async ()=>{
         await  customerService.GetCustomersGroups()
-        const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)??[]
+
         .then((res)=>{
+            const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)??[]
             setCustomerGroups(filteredGroups) 
         })
         .catch((err)=>{
@@ -123,60 +124,54 @@ const App = ({
             }) 
         
         }
-        ,[pointCollection]
+        ,[pointCollection,selectedBrand]
     )
 
 
     
     return (
-        <Modal
-        open={modal}  
-        onClose={() => setModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-<Box sx={style} > 
-
-
-<Grid container spacing={4} mb={2}>
-
-<Grid item xs={12}>
-<Typography required variant="h5">{  "Edit Point Collection" }</Typography>
-                    </Grid>
-                    </Grid>
-
-        <Grid container spacing={4}>
-
-            <Grid item xs={12}>
-                <Grid container spacing={2} >
-                    <Grid item xs={6}>
-                        <Counter title="Set amount of points to get reward"
-                            value="amountPurchaseReward" data={data} setData={setData}
-                        />
-                    </Grid> 
-                    <Grid item xs={6}>
-                        <Typography
-                            required variant="h7">Group of customers</Typography>
-                        <DropDown title="Select the group of customers"
-                            list={customerGroups}
-                            data={data}
-                            setData={setData}
-                            keyo={"groupOfCustomers"}
-                            mt={2}
-                            type="customerGroup"
-                        />
-
+        <Modal open={modal} onClose={() => setModal(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+            <Box sx={style}>
+                <Grid container spacing={4} mb={2}>
+                    <Grid item xs={12}>
+                        <Typography required variant="h5">
+                            {'Edit Point Collection'}
+                        </Typography>
                     </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid item xs={12}>
-                        <Grid container spacing={2} >
-                            <Grid item xs={4} marginTop={1}  >
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
-                                >
+                <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Typography required variant="h7">
+                                    Group of customers
+                                </Typography>
+                                <DropDown
+                                    title="Select the group of customers"
+                                    list={customerGroups}
+                                    data={data}
+                                    setData={setData}
+                                    keyo={'groupOfCustomers'}
+                                    mt={2}
+                                    type="customerGroup"
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Counter
+                                    title="Set amount of points to get reward"
+                                    value="amountPurchaseReward"
+                                    data={data}
+                                    setData={setData}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={4} marginTop={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
                                     <DatePicker
                                         label="Start Date"
                                         renderInput={(params) => <TextField {...params} error={false} />}
@@ -185,17 +180,13 @@ const App = ({
                                             setData({
                                                 ...data,
                                                 startDate: newValue
-                                            })
+                                            });
                                         }}
                                     />
                                 </LocalizationProvider>
-
                             </Grid>
-                            <Grid item xs={4} marginTop={1}  >
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
-                                >
+                            <Grid item xs={4} marginTop={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
                                     <DatePicker
                                         label="End Date"
                                         renderInput={(params) => <TextField {...params} error={false} />}
@@ -204,131 +195,107 @@ const App = ({
                                             setData({
                                                 ...data,
                                                 endDate: newValue
-                                            })
+                                            });
                                         }}
                                     />
                                 </LocalizationProvider>
-
                             </Grid>
                         </Grid>
                     </Grid>
 
-            <Grid item xs={12}>
-                <Typography
-                    required variant="h7">Gift Programs</Typography>
-                <Grid container spacing={2} >
-
-                    <Grid item xs={1}>
-                        <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
-                        value={reward.amount}
-                        onChange={
-                            (e)=>{
-                                setReward({
-                                    ...reward,
-                                    amount:e.target.value
-                                })
-                            }
-                        }
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
-                         value={reward.name}
-                         onChange={
-                             (e)=>{
-                                 setReward({
-                                     ...reward,
-                                     name:e.target.value
-                                 })
-                             }
-                         }
-                        />
-                        {
-                            err?
-                            <Alert severity="error">{err}</Alert>
-                            :
-                            null
-                        }
-                         
-                    </Grid>
-                    <Grid item xs={3}>
-                     
-                        <Button onClick={addNewProgram} >
-                            Add new
-                        </Button>
- 
-                     </Grid>
-                     
-                </Grid> 
-
-                {
-                    data?.giftPrograms?.map((row,index)=>{
-                        return(
-                            <Grid container spacing={2} my={1} >
-
+                    <Grid item xs={12}>
+                        <Typography required variant="h7">
+                            Gift Programs
+                        </Typography>
+                        <Grid container spacing={2}>
                             <Grid item xs={1}>
-                                <TextField id="outlined-basic" fullWidth label="amount" variant="outlined" 
-                                value={row.amount}
-                                editable={false}
-
+                                <TextField
+                                    id="outlined-basic"
+                                    fullWidth
+                                    label="amount"
+                                    variant="outlined"
+                                    value={reward.amount}
+                                    onChange={(e) => {
+                                        setReward({
+                                            ...reward,
+                                            amount: e.target.value
+                                        });
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={3}>
-                                <TextField id="outlined-basic" fullWidth label="Gift name" variant="outlined" 
-                                 value={row.name}
-                                 editable={false}
+                                <TextField
+                                    id="outlined-basic"
+                                    fullWidth
+                                    label="Gift name"
+                                    variant="outlined"
+                                    value={reward.name}
+                                    onChange={(e) => {
+                                        setReward({
+                                            ...reward,
+                                            name: e.target.value
+                                        });
+                                    }}
                                 />
+                                {err ? <Alert severity="error">{err}</Alert> : null}
                             </Grid>
                             <Grid item xs={3}>
-                             
-                                <Button onClick={()=>removeProgram(index)} color="error" >
-                                    remove
-                                </Button>
-         
-                             </Grid>
-                             
+                                <Button onClick={addNewProgram}>Add new</Button>
+                            </Grid>
                         </Grid>
-                        )
-                    })
-                }
-              
-            </Grid>
 
+                        {data?.giftPrograms?.map((row, index) => {
+                            return (
+                                <Grid container spacing={2} my={1}>
+                                    <Grid item xs={1}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="amount"
+                                            variant="outlined"
+                                            value={row.amount}
+                                            editable={false}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Gift name"
+                                            variant="outlined"
+                                            value={row.name}
+                                            editable={false}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <Button onClick={() => removeProgram(index)} color="error">
+                                            remove
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
 
-
-            <Grid item xs={12}>
-                <Grid container >
-
-                    <Grid item xs={8} />
-                    <Grid container spacing={2}
-
-                        justifyContent="flex-end"
-                    >
-
-                        {/* <Grid item>
+                    <Grid item xs={12}>
+                        <Grid container>
+                            <Grid item xs={8} />
+                            <Grid container spacing={2} justifyContent="flex-end">
+                                {/* <Grid item>
                             <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
                         </Grid> */}
-                        <Grid item>
-                            <Button primay variant="contained" onClick={editPointCollection} >Save</Button>
+                                <Grid item>
+                                    <Button primay variant="contained" onClick={editPointCollection}>
+                                        Save
+                                    </Button>
+                                </Grid>
+                            </Grid>
                         </Grid>
-
                     </Grid>
-
-
                 </Grid>
-
-            </Grid>
-
-
-
-        </Grid>
-
-
-
-        </Box>
-
-</Modal>
-    )
+            </Box>
+        </Modal>
+    );
 }
 
 

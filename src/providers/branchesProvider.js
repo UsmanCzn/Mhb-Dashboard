@@ -17,7 +17,6 @@ const BranchesProvider = ({ children }) => {
             .getAllBranches()
             .then(
                 (res) => {
-                    console.log('here');
 
                     setBranchesList(res.data.result);
                 },

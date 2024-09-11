@@ -18,7 +18,6 @@ import { useSnackbar } from 'notistack';
 import { ReversedPayementGateWayEnum } from '../../helper/constants';
 
 const PaymentMethodsListing = (props) => {
-    console.log(ReversedPayementGateWayEnum);
     const { methods, brand } = props;
     const [PaymentMehtods, setPaymentMehtods] = useState([]);
     const [selectedItem, setSelectedItem] = useState('');
@@ -54,7 +53,6 @@ const PaymentMethodsListing = (props) => {
     };
     useEffect(() => {
         const tempMethods = methods.map((ele) => {
-            console.log(ele);
             return {
                 image: '',
                 name: ele?.paymentSystemName,

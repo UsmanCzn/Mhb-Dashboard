@@ -9,14 +9,15 @@ export function useFetchCustomerList(props){
 
     const [customersList, setCustomersList] = useState([]);
 
-    const customerServices=ServiceFactory.get("customer")
+    const customerServices = ServiceFactory.get("customer")
+
 
     const fetchCustomersList = useCallback(
       (pageNo,searchexp) => {
         setloading(true);
         customerServices.getAllCustomers({
             Skip:pageNo*10,
-            Take:(pageNo+1)+10,
+            Take:10,
             SearchExpression:searchexp
         })
         .then(

@@ -20,7 +20,6 @@ const PaymentMethods = () => {
             // Replace 'yourBrandId' with the actual brandId you want to pass
             const response = await paymentServices.getAllBrandPaymentByBrandId(brandid);
             setBrandPayments(response.data.result);
-            console.log(response);
         } catch (error) {
             console.error('Error fetching brand payments:', error);
         }
@@ -31,7 +30,6 @@ const PaymentMethods = () => {
         if (brandsList.length > 0) {
             const initialBrand = brandsList[0];
             setselectedBrand(initialBrand);
-            console.log(brandsList[0]);
             fetchData(initialBrand.id);
         }
     }, [brandsList]);

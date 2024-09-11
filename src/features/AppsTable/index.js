@@ -97,7 +97,7 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
             flex: 1,
             headerAlign: 'left',
             renderCell: (params) => {
-                // console.log(params?.row);
+                return params?.row?.categoryName;
             }
         },
 
@@ -136,8 +136,10 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
                 loading={loading}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
-                totalRowCount={totalRowCount}
-                fetchCallback={fetchAppsList}
+                totalRowCount={appsList?.length ?? 0}
+                // fetchCallback={fetchAppsList}
+                pSize={10}
+                pMode={'client'}
             />
             <Menu
                 id="basic-menu"
@@ -150,7 +152,7 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

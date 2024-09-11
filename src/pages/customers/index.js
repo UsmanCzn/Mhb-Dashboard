@@ -14,16 +14,16 @@ export default function Customers() {
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Today" count={Stats.totalDaily} percentage={27.4} />
+            <Grid item xs={12} sm={3} md={3} lg={3}>
+                <AnalyticEcommerce title="Today" count={Stats.totalDaily} percentage={27.3} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="This month" count={Stats.totalMonthly} percentage={27.4} />
+            <Grid item xs={12} sm={3} md={3} lg={3}>
+                <AnalyticEcommerce title="This month" count={Stats.totalMonthly} percentage={27.3} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="This Year" count={Stats.totalYearly} percentage={27.4} />
+            <Grid item xs={12} sm={3} md={3} lg={3}>
+                <AnalyticEcommerce title="This Year" count={Stats.totalYearly} percentage={27.3} />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
                 <AnalyticEcommerce title="All" count={Stats.totalCount} percentage={27.4} />
             </Grid>
 

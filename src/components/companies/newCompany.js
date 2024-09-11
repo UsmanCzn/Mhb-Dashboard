@@ -125,7 +125,6 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,lo
                 .UploadCompanyLogoImage(p1)
                 .then((res) => {
                     setLogoUrl(res.data?.result);
-                    console.log(res.data.result);
                     payload.logoUrl = res.data?.result;
                 })
                 .catch((err) => {
@@ -134,6 +133,8 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,lo
             await userServices
                 .UpdateCompany(payload)
                 .then((res) => {
+   
+                    setReload((prev) => !prev);
                     setModalOpen(false);
                 })
                 .catch((err) => {
@@ -151,10 +152,10 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,lo
                 notificationsLimit: data.NoNotifications,
                 giftCardsLimit: data.giftCardsLimit
             };
-            console.log(JSON.stringify(payload));
             await userServices
                 .UpdateCompany(payload)
                 .then((res) => {
+                    setReload((prev) => !prev);
                     setModalOpen(false);
                 })
                 .catch((err) => {

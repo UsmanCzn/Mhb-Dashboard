@@ -53,7 +53,7 @@ const UserList = () => {
             handleDeleteUser()
         }
         else if(action==='edit'){
-            navigate('/create-user/'+selectedUserId)
+            navigate(`/create-user/${selectedCompany}/${selectedUserId}`)
         }
       setAnchorEl(null);
     };
@@ -104,7 +104,12 @@ const UserList = () => {
         if(res){
           const tempComp = res.data.result;
           if(tempComp.length){
-            setSelectedCompany(tempComp[0].id)
+            let index = tempComp.findIndex((e) => e.name === 'Holmes Bakehouse');
+            if (index >= 0) {
+                setSelectedCompany(tempComp[index].id);
+            } else {
+                setSelectedCompany(tempComp[0].id);
+            }
             
           }
           setcompanies(res.data.result)
@@ -153,7 +158,7 @@ const UserList = () => {
     };
 
     const handleCreateNewUser = () => {
-        navigate('/create-user');
+        navigate(`/create-user/${selectedCompany}`);
     };
 
 

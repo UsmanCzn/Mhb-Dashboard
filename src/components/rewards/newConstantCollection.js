@@ -19,7 +19,8 @@ const App = ({
     modal,
     setModal,
     setReload, 
-    branchesList
+    branchesList,
+    selectedBrand
 }) => {
 
 
@@ -53,7 +54,8 @@ return aYearFromNow
         await  customerService.GetCustomersGroups()
         
         .then((res)=>{
-            setCustomerGroups(res?.data?.result?.data?.data) 
+         const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)
+         setCustomerGroups(filteredGroups)
         })
         .catch((err)=>{
             console.log(err?.response?.data);
@@ -129,7 +131,7 @@ return aYearFromNow
         ()=>{
             getCustomergroups()   
             
-        },[])
+        },[selectedBrand])
  
 
     

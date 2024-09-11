@@ -575,7 +575,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Grid container>
                                 <Grid item xs={4}>
                                     <Typography variant="h7">Upload Banner</Typography>
@@ -607,11 +607,11 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                                     </Box>
                                 </Grid>
                             </Grid>
-                        </Grid>
+                        </Grid> */}
 
                         <Grid item xs={12}></Grid>
 
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Box
                                 sx={{
                                     width: 1,
@@ -623,7 +623,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                             >
                                 <MUIRichTextEditor label="Frequently Asked Questions ..." inlineToolbar={true} />
                             </Box>
-                        </Grid>
+                        </Grid> */}
 
                         <Grid item xs={12}>
                             <Grid container spacing={2}>

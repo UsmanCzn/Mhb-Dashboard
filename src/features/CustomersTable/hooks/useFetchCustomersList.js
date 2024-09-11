@@ -24,7 +24,7 @@ export function useFetchCustomerList(props) {
                     if(setCustomerStats){
                     setCustomerStats({totalDaily:stats.totalDaily,totalMonthly:stats.totalMonthly,totalYearly:stats.totalYearly,totalCount:stats.totalCount})
                     }
-                    console.log(res.data?.result?.data?.totalCount,'total count');
+                
                     setTotalRowCount(res.data?.result?.data?.totalCount);
 
                     // setTotalRowCount(res.data?.pages);

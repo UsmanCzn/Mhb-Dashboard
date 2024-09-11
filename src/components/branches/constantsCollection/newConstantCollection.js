@@ -246,7 +246,7 @@ const NewConstantCollection = ({
             <Grid container spacing={2} >
               <Grid item xs={3}>
                 <Typography
-                  required variant="h6">Select the group of customers </Typography>
+                  required variant="h6">Select the group of customers and tiers </Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography
