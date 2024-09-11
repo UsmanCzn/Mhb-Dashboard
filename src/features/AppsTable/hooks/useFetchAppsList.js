@@ -4,7 +4,7 @@ import userServices from 'services/userServices';
 
 export function useFetchAppsList({ reload }) {
     const [loading, setloading] = useState(false);
-
+    
     const [totalRowCount, setTotalRowCount] = useState(0);
 
     const [appsList, setAppsList] = useState([]);

@@ -61,7 +61,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
 
     const { branchesList } = useFetchBranchList(true);
     const { addonGroupList } = useFetchAddonGroupList(true, selectedBrand);
-
+    const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
     const [types, setTypes] = useState([]);
     const [categories, setCategories] = useState([]);
 
@@ -236,7 +236,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                 <Grid item xs={4}>
                                     <DropDown
                                         title="Assign to Branches"
-                                        list={branchesList}
+                                        list={filteredBranch}
                                         data={data}
                                         setData={setData}
                                         keyo={'branches'}

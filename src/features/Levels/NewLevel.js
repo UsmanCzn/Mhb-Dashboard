@@ -144,12 +144,12 @@ const NewLevel = ({ modal, setModal, setReload, selectedBrand, editItem, subtype
 
                 <Grid item xs={6}>
                     <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Group</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Tiers</InputLabel>
                         <NativeSelect
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={group}
-                            label="Group"
+                            label="Tiers"
                             inputProps={{
                                 name: 'age',
                                 id: 'uncontrolled-native'

@@ -3,8 +3,7 @@ import { ServiceFactory } from "services/index";
 import rewardService from "services/rewardService";
 
 export function useFetchRewardList(reload,selectedBrand, ){
-  console.log(reload,'pop');
-  
+
     const [loading, setloading] = useState(false);
 
     const [totalRowCount, setTotalRowCount] = useState(0);

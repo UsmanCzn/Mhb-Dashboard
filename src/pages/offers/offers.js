@@ -213,6 +213,7 @@ const Offers = () => {
                 setModalOpen={setModalOpen}
                 setReload={setReload}
                 offer={selectedOffer}
+                brand = {selectedBrand}
             />
         </>
     );

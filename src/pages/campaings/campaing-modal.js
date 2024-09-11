@@ -160,7 +160,7 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
     try{
     const response = await  tiersService.getCustomerGroups(0, 100)
     if(response){
-      const tempgroups = response.data.result.data.data.filter(e=> e.type ==="Base")
+      const tempgroups = response.data.result.data.data.filter(e=> e.type ==="Base" && e.brandId ===brandId)
       setCustomersGroups(tempgroups)
     }
     }catch(error){
@@ -185,7 +185,7 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
     else{
       setFormData(initialState)
     }
-  }, [campaing])
+  }, [campaing, brandId])
   
   return (
     <Dialog open={openModal} onClose={()=>onCloseModal(false)}>

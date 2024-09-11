@@ -104,7 +104,12 @@ const UserList = () => {
         if(res){
           const tempComp = res.data.result;
           if(tempComp.length){
-            setSelectedCompany(tempComp[0].id)
+            let index = tempComp.findIndex((e) => e.name === 'Holmes Bakehouse');
+            if (index >= 0) {
+                setSelectedCompany(tempComp[index].id);
+            } else {
+                setSelectedCompany(tempComp[0].id);
+            }
             
           }
           setcompanies(res.data.result)
