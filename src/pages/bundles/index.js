@@ -30,7 +30,7 @@ export default function BundlesForm() {
 
     const { brandsList } = useFetchBrandsList(reload);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const [selectedBrand, setselectedBrand] = useState({});
+    const [selectedBrand, setSelectedBrand] = useState({});
     const [bundleItem, setBundleItem] = useState();
     const [deleteAlert, setDeleteAlert] = React.useState(false);
     const [newModal, setNewModal] = useState(false);
@@ -79,8 +79,9 @@ export default function BundlesForm() {
 
     const open = Boolean(anchorEl);
     useEffect(() => {
+
         if (brandsList[0]?.id) {
-            setselectedBrand(brandsList[0]);
+            setSelectedBrand(brandsList[0]);
         } else {
             console.log('now goes to zero ', 'sb');
         }
@@ -201,6 +202,7 @@ export default function BundlesForm() {
             modal: false
         }
     ]; 
+ 
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>

@@ -50,9 +50,15 @@ const NewBundle = ({ modal, setModal, setReload, selectedBrand, editItem,isEditi
 
     const [groupValue, setGroupValue] = useState(null);
     const [productValue, setProductValue] = useState(null);
+    const [productSubtypes,setProductSubtypes]=useState([])
     
-     
-
+    useEffect(() => {
+        if (productTypes) {
+          // Extract all subTypes into a single array
+          const extractedSubtypes = productTypes.flatMap((type) => type.subTypes || []);
+          setProductSubtypes(extractedSubtypes);
+        }
+      }, [productTypes]); 
     const handleChange = (event) => {
         setGroupValue(event.target.value);
     };
@@ -81,6 +87,7 @@ const NewBundle = ({ modal, setModal, setReload, selectedBrand, editItem,isEditi
         if(isEditing&&editItem !== undefined){
             setData({ 
                 ...data,
+                id:editItem?.id,
                 brandId: selectedBrand?.id,
                 // bundleImageUrl:editItem?.bundleImageUrl,
                 bundleName: editItem?.bundleName, 
@@ -114,11 +121,10 @@ const NewBundle = ({ modal, setModal, setReload, selectedBrand, editItem,isEditi
 
 
     const addProduct = ()=>{
-        if(data?.bundleItems?.find(obj=>obj?.id==productValue?.id)?.id)
-        return  
+       
  const newProduct = {
-    productSubCategory: productValue?.productSubTypeId || 0,   
-    productId: productValue?.id || 0, 
+    productSubCategory:  null,   
+    productId: productValue?.id  , 
     "orderValue": 1,                      
     ...productValue,   
 };
@@ -128,6 +134,27 @@ setData((prevData) => ({
     bundleItems: [...prevData.bundleItems, newProduct]
 }));
     }
+
+  
+     
+    const addProductSubType = ()=>{
+      
+ const newProduct = {
+    productSubCategory: groupValue?.id,   
+    subCategoryName:groupValue?.name,
+    name:groupValue?.name,
+    subCategoryImage:groupValue?.imageUrl,
+    productId: null, 
+    "orderValue": 1,                      
+    // ...productValue,   
+};
+ 
+setData((prevData) => ({
+    ...prevData,
+    bundleItems: [...prevData.bundleItems, newProduct]
+}));
+    }
+
     const removeItemFromBundle = (itemId) => {
         setData((prevData) => ({
             ...prevData,
@@ -136,16 +163,21 @@ setData((prevData) => ({
     };
     const createNewBundle = async () => {
         // Create a new payload by copying the data and modifying the bundleItems array
-        console.log(data,"da");
+      
         let payload = {
             ...data,
             brandId:selectedBrand?.id,
             bundleItems: data.bundleItems.map((item) => ({
-                productSubCategory: item.productSubTypeId || 0, // Set productSubCategory from productSubTypeId
-                productId: item.id || 0,    
-                orderValue:1                    // Set productId from id
+                productSubCategory: item.productSubCategory || 0, // Set productSubCategory from productSubTypeId
+                productId: item.productId || 0,    
+                // ...item,
+                orderValue:1,
+                
+                // Set productId from id
             }))
         };
+        // console.log(payload,"paooo");
+         
         if(p1!=null){ 
     
         await fileService
@@ -181,11 +213,7 @@ setData((prevData) => ({
         let payload = {
             ...data,
             brandId:selectedBrand?.id,
-            bundleItems: data.bundleItems.map((item) => ({
-                productSubCategory: item.productSubTypeId || 0, // Set productSubCategory from productSubTypeId
-                productId: item.id || 0,    
-                orderValue:1                    // Set productId from id
-            }))
+            bundleItems: data.bundleItems 
         };
     
         if(p1!=null){ 
@@ -288,7 +316,10 @@ setData((prevData) => ({
                                  
                             </Grid>
                         </Grid>
-
+{ 
+isEditing?
+null
+:
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
                                 <Grid item xs={4} mt={2}>
@@ -304,7 +335,7 @@ setData((prevData) => ({
           onChange={handleChange}
         >
             {
-             productTypes?.map((row, index) => { 
+             productSubtypes?.map((row, index) => { 
                     return (
                         <MenuItem value={ 
                         row
@@ -320,6 +351,22 @@ setData((prevData) => ({
         </Select>
         </FormControl>
                                 </Grid>
+                                
+                                <Grid item xs={4} mt={2}> 
+                                            <Button onClick={() => addProductSubType()}  >
+                                                Save
+                                            </Button> 
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        }
+                        { 
+isEditing?
+null
+:
+                        <Grid item xs={12}>
+                            <Grid container spacing={2}>
+                                 
                                 <Grid item xs={4} mt={2}>
                                 <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">{"Select Item"}</InputLabel>
@@ -333,7 +380,7 @@ setData((prevData) => ({
           onChange={handleProductChange}
         >
             {
-             productsList?.filter(obj=>obj?.productTypeId==groupValue?.id)?.map((row, index) => { 
+             productsList?.map((row, index) => { 
                     return (
                         <MenuItem value={ 
                         row
@@ -356,9 +403,9 @@ setData((prevData) => ({
                                 </Grid>
                             </Grid>
                         </Grid>
-                        
+                        }
 
-                        {data?.bundleItems?.map((row, index) => {
+                        { !isEditing && data?.bundleItems?.map((row, index) => {
                                 return (
                                     <Grid container spacing={2} my={1}>
                                         <Grid item xs={3}>
@@ -379,7 +426,7 @@ setData((prevData) => ({
                                 );
                             })}
 
-<Grid item xs={12}>
+<Grid item xs={12} >
                             <Box
                                 sx={{
                                     width: '60%',
@@ -413,7 +460,7 @@ setData((prevData) => ({
                                 />
                             </Box>
                         </Grid>
-                <Grid container spacing={4}>
+                <Grid container spacing={4}  mt={2}>
                     <Grid item xs={12}>
                         <Grid container>
                             <Grid item xs={8} />
@@ -444,6 +491,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '70%',
+    maxHeight:'90%',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
