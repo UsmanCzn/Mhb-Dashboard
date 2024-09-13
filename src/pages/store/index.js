@@ -48,7 +48,7 @@ export default function Store() {
 
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs="auto">
-                            <Typography fontSize={26} fontWeight={600}>
+                            <Typography fontSize={22} fontWeight={700}>
                                 Store
                             </Typography>
                         </Grid>

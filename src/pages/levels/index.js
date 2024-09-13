@@ -173,38 +173,36 @@ export default function LevelForm() {
                             Levels
                         </Typography>
                     </Grid>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
-                                    fetchTiersList(event.target.value);
-                                }}
-                            >
-                                {brandsList.map((row, index) => {
-                                    return (
-                                        <MenuItem key={index} value={row}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid container alignItems="center" justifyContent="space-between" my={2}>
-                        <Grid item xs={6}></Grid>
+                    <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
+                        <Grid item xs="auto">
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={selectedBrand}
+                                    label={'Brand'}
+                                    onChange={(event) => {
+                                        setselectedBrand(event.target.value);
+                                        fetchTiersList(event.target.value);
+                                    }}
+                                >
+                                    {brandsList.map((row, index) => {
+                                        return (
+                                            <MenuItem key={index} value={row}>
+                                                {row?.name}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
                         <Grid item xs={'auto'}>
                             <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
                                 Add New Level
                             </Button>
                         </Grid>
-                    </Grid>
+                    </Box>
                 </Grid>
 
                 <Box my={2}>

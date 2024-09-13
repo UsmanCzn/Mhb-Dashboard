@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography, Menu, MenuItem, Button } from '@mui/material';
+import { Chip, Grid, Typography, Menu, MenuItem, Button,Box ,FormControl, InputLabel,Select} from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
 import NewProductType from 'components/store/productType/newProductType';
 import EditCategory from 'features/Store/Category';
@@ -8,20 +8,27 @@ import { useFetchProductTypeList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
 import CircleIcon from '@mui/icons-material/Circle';
-export default function ProductType({ selectedBrand, sortOrder }) {
+import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+export default function ProductType({sortOrder }) {
 
     const [reload, setReload] = useState(false);
+    const [selectedBrand, setselectedBrand] = useState({});
     const { productTypes, setProductTypes, fetchProductTypesList, totalRowCount, loading } = useFetchProductTypeList(reload, selectedBrand);
     const [modalOpen, setModalOpen] = useState(false);
     const [editCategoryModalOpen, setEditCategoryModalOpen] = useState(false);
-
+    const { brandsList } = useFetchBrandsList(reload);
+    useEffect(() => {
+        if (brandsList[0]?.id) {
+            setselectedBrand(brandsList[0]);
+        }
+    }, [brandsList]);
     const groupsColumnFormater = (item) => {
         return (
             <Grid container spacing={1} direction="column">
                 <Typography component="ul">
-                    {item?.subTypes?.map((obj) => {
+                    {item?.subTypes?.map((obj, index) => {
                         return (
-                            <li>
+                            <li key={index}>
                                 <Typography variant="h6">{obj?.name}</Typography>
                             </li>
                         );
@@ -153,9 +160,28 @@ export default function ProductType({ selectedBrand, sortOrder }) {
             <Grid item xs={12} mb={2}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
-                        <Typography variant="h4" fontSize={24}>
+                    <Typography fontSize={22} fontWeight={700}> 
                             Categories
-                        </Typography>
+                    </Typography>
+                    </Grid>
+                    <Box alignItems="center" sx={{display:'flex', gap:'10px'}}>
+                    <Grid item xs="auto">
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={selectedBrand}
+                                label={'Brand'}
+                                onChange={(event) => {
+                                    setselectedBrand(event.target.value);
+                                }}
+                            >
+                                {brandsList.map((row, index) => {
+                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                })}
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={'auto'}>
                         <Button
@@ -171,6 +197,8 @@ export default function ProductType({ selectedBrand, sortOrder }) {
                             Add New Product Type
                         </Button>
                     </Grid>
+
+                    </Box>
                 </Grid>
             </Grid>
             <DataGridComponent
@@ -193,7 +221,7 @@ export default function ProductType({ selectedBrand, sortOrder }) {
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

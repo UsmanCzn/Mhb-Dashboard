@@ -188,7 +188,6 @@ const CreateUser = () => {
             allotedIdsList: allotedBranchIds,
             companyId: +cid
         };
-        debugger
         if (validateForm()) {
             await handlePostData(postDataObject);
         } else {

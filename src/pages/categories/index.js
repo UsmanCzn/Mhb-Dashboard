@@ -9,7 +9,6 @@ import { useFetchOrdersList } from 'features/OrdersTable/hooks/useFetchOrdersLis
 import { useFetchBranchList } from 'features/BranchesTable/hooks/useFetchBranchesList';
 import orderServices from 'services/orderServices';
 import storeServices from 'services/storeServices';
-import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 
 export default function Products() {
     const { type } = useParams();
@@ -32,9 +31,6 @@ export default function Products() {
         }
     ]);
 
-    const { brandsList } = useFetchBrandsList(reload);
-
-    const [selectedBranch, setselectedBranch] = useState({});
     const [statustypes, setStatusTypes] = useState([]);
     const [sortOrder, setSortOrder] = useState(0);
 
@@ -43,11 +39,7 @@ export default function Products() {
         { value: 1, label: 'Descending' }
     ];
 
-    useEffect(() => {
-        if (brandsList[0]?.id) {
-            setselectedBranch(brandsList[0]);
-        }
-    }, [brandsList]);
+
 
     return (
         <Grid container spacing={2}>
@@ -73,30 +65,6 @@ export default function Products() {
 
             </Grid> */}
 
-            <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs="auto"></Grid>
-
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBranch}
-                                label={'Branch'}
-                                onChange={(event) => {
-                                    setselectedBranch(event.target.value);
-                                }}
-                            >
-                                {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid>
-            </Grid>
 
             {/* <Grid item xs={12}>
                 <Grid item xs={3}>
@@ -122,7 +90,6 @@ export default function Products() {
             <Grid item xs={12}>
                 <CategoryGrid
                     reload={reload}
-                    selectedBrand={selectedBranch}
                     setData={setData}
                     data={data}
                     sortOrder={sortOrder}

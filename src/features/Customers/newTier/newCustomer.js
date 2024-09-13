@@ -22,7 +22,8 @@ const NewCustomer = ({ modal, setModal, setReload, selectedBrand, editItem }) =>
         brandId: selectedBrand?.id,
         name: '',
         nativeName: '',
-        id: 0
+        id: 0,
+        groupType:1,
     });
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();

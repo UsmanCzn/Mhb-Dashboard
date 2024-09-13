@@ -44,13 +44,6 @@ export default function Products() {
                             Products
                         </Typography>
                     </Grid>
-                </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs="auto"></Grid>
-
                     <Grid item xs="auto">
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>

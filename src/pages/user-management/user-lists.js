@@ -8,11 +8,12 @@ import userManagementService from 'services/userManagementService';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ConfirmationModal from '../../components/confirmation-modal';
 import customerService from 'services/customerService';
+import { alignments } from '../../../../../AppData/Local/Microsoft/TypeScript/5.5/node_modules/@floating-ui/utils/dist/floating-ui.utils';
 
 const UserList = () => {
     const navigate = useNavigate();
     const [companies, setcompanies] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState(null)
+    const [selectedCompany, setSelectedCompany] = useState(null);
 
     const headers = [
         { name: 'Name', value: 'name' },
@@ -21,20 +22,20 @@ const UserList = () => {
         { name: 'Role', value: 'role' },
         { name: 'Action', value: 'action' }
     ];
-    const roles =  [
+    const roles = [
         {
-            "id": 3,
-            "name": "Company Admin"
+            id: 3,
+            name: 'Company Admin'
         },
         {
-            "id": 5,
-            "name": "Brand Manager"
+            id: 5,
+            name: 'Brand Manager'
         },
         {
-            "id": 7,
-            "name": "Branch User"
+            id: 7,
+            name: 'Branch User'
         }
-    ]
+    ];
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [users, setUsers] = useState([]);
@@ -43,19 +44,18 @@ const UserList = () => {
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const handleClick = (event,data) => {
-    setSelectedUserId(data.userId);
-    setAnchorEl(event.currentTarget);
+    const handleClick = (event, data) => {
+        setSelectedUserId(data.userId);
+        setAnchorEl(event.currentTarget);
     };
-    const handleClose = (action, data,index) => {
-        console.log(action, data ,index, "row click");
-        if(action ==="delete"){
-            handleDeleteUser()
+    const handleClose = (action, data, index) => {
+        console.log(action, data, index, 'row click');
+        if (action === 'delete') {
+            handleDeleteUser();
+        } else if (action === 'edit') {
+            navigate(`/create-user/${selectedCompany}/${selectedUserId}`);
         }
-        else if(action==='edit'){
-            navigate(`/create-user/${selectedCompany}/${selectedUserId}`)
-        }
-      setAnchorEl(null);
+        setAnchorEl(null);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -64,7 +64,7 @@ const UserList = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setSelectedCompany(value)
+        setSelectedCompany(value);
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -72,9 +72,9 @@ const UserList = () => {
         setPage(0);
     };
 
-    const getUserName = (user)=> {
-        return  roles.find((role)=> user.roles[0] === role.id).name
-    }
+    const getUserName = (user) => {
+        return roles.find((role) => user.roles[0] === role.id).name;
+    };
 
     const getUsersList = async () => {
         try {
@@ -98,26 +98,23 @@ const UserList = () => {
         }
     };
 
-    const getCompanies =async ()=>{
-        try{
-        const res =await customerService.getComapniesByUserRole();
-        if(res){
-          const tempComp = res.data.result;
-          if(tempComp.length){
-            let index = tempComp.findIndex((e) => e.name === 'Holmes Bakehouse');
-            if (index >= 0) {
-                setSelectedCompany(tempComp[index].id);
-            } else {
-                setSelectedCompany(tempComp[0].id);
+    const getCompanies = async () => {
+        try {
+            const res = await customerService.getComapniesByUserRole();
+            if (res) {
+                const tempComp = res.data.result;
+                if (tempComp.length) {
+                    let index = tempComp.findIndex((e) => e.name === 'Holmes Bakehouse');
+                    if (index >= 0) {
+                        setSelectedCompany(tempComp[index].id);
+                    } else {
+                        setSelectedCompany(tempComp[0].id);
+                    }
+                }
+                setcompanies(res.data.result);
             }
-            
-          }
-          setcompanies(res.data.result)
-        }
-        }catch(err){
-
-        }
-      }
+        } catch (err) {}
+    };
 
     useEffect(() => {
         getUserRoles();
@@ -125,8 +122,7 @@ const UserList = () => {
     }, []);
     useEffect(() => {
         getUsersList();
-    }, [selectedCompany])
-    
+    }, [selectedCompany]);
 
     const mergedUsers = users?.map((user) => {
         const userRole = Array.isArray(usersRoles) && usersRoles?.find((role) => role.id === user.userId);
@@ -161,41 +157,44 @@ const UserList = () => {
         navigate(`/create-user/${selectedCompany}`);
     };
 
-
     return (
         <>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
-                        <Grid item xs={'auto'}>
-                        <div>
-            <label htmlFor="Company">
-             Company
-            </label>
-            </div>
-          <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              fullWidth
-              value={selectedCompany}
-              label={'Company'}
-              name="companyId"
-              onChange={handleInputChange}
-          >
-              {companies.map((row, index) => {
-                return (
-                    <MenuItem key={index} value={row.id}>
-                        {row?.name}
-                    </MenuItem>
-                );
-              })}
-          </Select>
-                        </Grid>
-                        <Grid item xs={'auto'}>
-                            <Button onClick={handleCreateNewUser} size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
-                                Create New User
-                            </Button>
-                        </Grid>
+                        <Typography fontSize={22} fontWeight={700}>
+                            User Management
+                        </Typography>
+                        <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
+                            <Grid item xs={'auto'}>
+                                {/* <div>
+                                    <label htmlFor="Company">Company</label>
+                                </div> */}
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    fullWidth
+                                    title="Company"
+                                    value={selectedCompany}
+                                    label="Company"
+                                    name="companyId"
+                                    onChange={handleInputChange}
+                                >
+                                    {companies.map((row, index) => {
+                                        return (
+                                            <MenuItem key={index} value={row.id}>
+                                                {row?.name}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                            </Grid>
+                            <Grid item xs={'auto'}>
+                                <Button onClick={handleCreateNewUser} size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
+                                    Create New User
+                                </Button>
+                            </Grid>
+                        </Box>
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
@@ -218,19 +217,18 @@ const UserList = () => {
                                             <TableCell>{getUserName(row)}</TableCell>
                                             <TableCell>
                                                 <div>
-                                               
-                                                    <MoreVertIcon onClick={(event)=>handleClick(event,row )} />
+                                                    <MoreVertIcon onClick={(event) => handleClick(event, row)} />
                                                     <Menu
                                                         id="basic-menu"
                                                         anchorEl={anchorEl}
                                                         open={open}
                                                         onClose={handleClose}
                                                         MenuListProps={{
-                                                        'aria-labelledby': 'basic-button',
+                                                            'aria-labelledby': 'basic-button'
                                                         }}
                                                     >
-                                                        <MenuItem onClick={()=>handleClose('delete',row ,index)}>Delete</MenuItem>
-                                                        <MenuItem onClick={()=>handleClose('edit',row,index)}>Edit</MenuItem>
+                                                        <MenuItem onClick={() => handleClose('delete', row, index)}>Delete</MenuItem>
+                                                        <MenuItem onClick={() => handleClose('edit', row, index)}>Edit</MenuItem>
                                                     </Menu>
                                                 </div>
                                             </TableCell>

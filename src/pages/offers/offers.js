@@ -143,6 +143,7 @@ const Offers = () => {
                                 Offers
                             </Typography>
                         </Grid>
+                        <Box alignItems="center" sx={{display:'flex', gap:'10px'}}>
                         <Grid item xs={'auto'}>
                             <Button
                                 size="small"
@@ -156,9 +157,7 @@ const Offers = () => {
                                 Create New Offer
                             </Button>
                         </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} justifyContent="flex-end">
+                        <Grid item xs={6} justifyContent="flex-end">
                     <FormControl>
                         <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
                         <Select
@@ -180,6 +179,10 @@ const Offers = () => {
                         </Select>
                     </FormControl>
                 </Grid>
+                        </Box>
+                    </Grid>
+                </Grid>
+ 
 
                 <Grid item xs={12}>
                     <TableContainer component={Paper}>

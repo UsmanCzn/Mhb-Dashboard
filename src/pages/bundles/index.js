@@ -214,13 +214,8 @@ export default function BundlesForm() {
                     </Grid>
                     <Grid item xs="auto">
     <Grid container direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-        <Grid item>
-            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
-                Add New Bundle
-            </Button>
-        </Grid>
-
-        <Grid item xs={12} sm="auto">
+        
+    <Grid item xs={12} sm="auto">
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
                 <Select
@@ -241,6 +236,12 @@ export default function BundlesForm() {
                 </Select>
             </FormControl>
         </Grid>
+        <Grid item>
+            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
+                Add New Bundle
+            </Button>
+        </Grid>
+
     </Grid>
 </Grid>
 

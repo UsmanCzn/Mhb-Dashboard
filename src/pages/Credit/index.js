@@ -18,7 +18,7 @@ const Credit = () => {
             <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
-                        <Typography fontSize={26} variant="h5">
+                    <Typography fontSize={22} fontWeight={700}>
                             All  Requests 
                         </Typography>
                     </Grid>

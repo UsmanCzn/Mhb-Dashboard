@@ -58,7 +58,9 @@ export default function Companies() {
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs="auto">
-                            <Typography variant="h5">Brands</Typography>
+                        <Typography fontSize={22} fontWeight={700}>
+                                Brands
+                            </Typography>
                         </Grid>
 
                         <Grid item xs="auto">

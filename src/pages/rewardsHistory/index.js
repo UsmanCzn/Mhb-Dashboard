@@ -54,6 +54,53 @@ export default function RewardsHistory() {
                         </Typography>
                     </Grid>
                     <Grid item xs={'auto'}>
+                        <Box sx={{ display: 'flex', gap: '15px' }}>
+                            <Grid item xs="auto">
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={selectedBrand}
+                                        label={'Brand'}
+                                        onChange={(event) => {
+                                            setselectedBrand(event.target.value);
+                                            changeFilteredBranches(event.target.value);
+                                        }}
+                                    >
+                                        {brandsList.map((row, index) => {
+                                            return (
+                                                <MenuItem key={index} value={row}>
+                                                    {row?.name}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs="auto">
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={selectedBranch}
+                                        label={'Branch'}
+                                        onChange={(event) => {
+                                            setselectedBranch(event.target.value);
+                                        }}
+                                    >
+                                        {filteredBranches.map((row, index) => {
+                                            return (
+                                                <MenuItem key={index} value={row}>
+                                                    {row?.name}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Box>
                         {/* <Button size="small" variant="contained" 
             sx={{ textTransform: 'capitalize' }} >
                             Add New loyalty
@@ -75,53 +122,6 @@ export default function RewardsHistory() {
                     }}
                 />
                 {/* <TableControl  type="filter"/> */}
-                <Box sx={{ display: 'flex', gap: '15px' }}>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
-                                    changeFilteredBranches(event.target.value);
-                                }}
-                            >
-                                {brandsList.map((row, index) => {
-                                    return (
-                                        <MenuItem key={index} value={row}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBranch}
-                                label={'Branch'}
-                                onChange={(event) => {
-                                    setselectedBranch(event.target.value);
-                                }}
-                            >
-                                {filteredBranches.map((row, index) => {
-                                    return (
-                                        <MenuItem key={index} value={row}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Box>
             </Grid>
 
             <Grid item xs={12}>

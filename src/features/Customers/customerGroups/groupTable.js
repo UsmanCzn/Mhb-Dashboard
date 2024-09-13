@@ -1,6 +1,6 @@
 import { Chip, Grid, Typography, Menu, MenuItem, Button, Card, Box } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchRewardList } from '../hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -13,7 +13,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useCustomerGroup } from '../hooks/useCustomerGroups';
 
-export default function CustomerGroupTable({ selectedBrand, reload, customerGroups, setReload }) {
+const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, setReload }, ref) => {
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -31,6 +31,7 @@ export default function CustomerGroupTable({ selectedBrand, reload, customerGrou
     const handleImageError = () => {
         setImageError(true);
     };
+
     const groupsColumnFormater = (item) => {
         return (
             <Grid container spacing={1}>
@@ -182,19 +183,22 @@ export default function CustomerGroupTable({ selectedBrand, reload, customerGrou
         setPointCollection();
         setNewModal(true);
     };
+    useImperativeHandle(ref, () => ({
+        showAddNew
+    }));
     return (
         <>
             <Grid container mb={2} justifyContent="flex-end">
                 <Grid item xs={'auto'}></Grid>
             </Grid>
-            <Grid container alignItems="center" justifyContent="space-between">
+            {/* <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item xs={6}></Grid>
                 <Grid item xs={'auto'}>
                     <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
                         Add New Customer Group
                     </Button>
                 </Grid>
-            </Grid>
+            </Grid> */}
             <Grid container mb={2} justifyContent="flex-end"></Grid>
             {/* <DataGridComponent
                 rows={tiersList}
@@ -312,4 +316,5 @@ export default function CustomerGroupTable({ selectedBrand, reload, customerGrou
             />
         </>
     );
-}
+});
+export default CustomerGroupTable;

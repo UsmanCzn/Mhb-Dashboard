@@ -27,25 +27,9 @@ export default function Customers() {
                 <AnalyticEcommerce title="All" count={Stats.totalCount} percentage={27.4} />
             </Grid>
 
+
             <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs={6}>
-                        <Typography fontSize={22} fontWeight={700}>
-                            Customers
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={'auto'}>
-                        <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => setModalOpen(true)}>
-                            Add New Customer
-                        </Button>
-                    </Grid>
-                    {/* <Grid item xs={6}>
-                    <TableControl type="Customer"/>
-                </Grid> */}
-                </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <CustomersTable type="Customer" reload={reload} setCustomerStats={setStats} />
+                <CustomersTable type="Customer" reload={reload} setCustomerStats={setStats} modalOpen={modalOpen} setModalOpen={setModalOpen} />
             </Grid>
             <NewCustomer modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} />
         </Grid>

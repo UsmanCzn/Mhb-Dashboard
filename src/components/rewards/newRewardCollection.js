@@ -197,14 +197,14 @@ const NewRewardCollection = ({
 
                     <Grid item xs={12}>
                         <Grid container spacing={2} >
-                            <Grid item xs={4} marginTop={1}  >
+                            <Grid item xs={6} marginTop={1}  >
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs}
                                     localeText={{ start: 'Check-in', end: 'Check-out' }}
                                 >
                                     <DatePicker
                                         label="Start Date"
-                                        renderInput={(params) => <TextField {...params} error={false} />}
+                                        renderInput={(params) => <TextField fullWidth  {...params} error={false} />}
                                         value={data.startDate}
                                         onChange={(newValue) => {
                                             setData({
@@ -216,14 +216,14 @@ const NewRewardCollection = ({
                                 </LocalizationProvider>
 
                             </Grid>
-                            <Grid item xs={4} marginTop={1}  >
+                            <Grid item xs={6} marginTop={1}  >
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs}
                                     localeText={{ start: 'Check-in', end: 'Check-out' }}
                                 >
                                     <DatePicker
                                         label="End Date"
-                                        renderInput={(params) => <TextField {...params} error={false} />}
+                                        renderInput={(params) => <TextField fullWidth {...params} error={false} />}
                                         value={data.endDate}
                                         onChange={(newValue) => {
                                             setData({

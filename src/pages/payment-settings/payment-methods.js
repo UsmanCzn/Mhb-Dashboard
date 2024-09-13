@@ -43,7 +43,9 @@ const PaymentMethods = () => {
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs="auto">
-                            <Typography variant="h4">Payment Methods</Typography>
+                            <Typography fontSize={22} fontWeight={700}>
+                                Payment Methods
+                            </Typography>
                         </Grid>
                         <Box sx={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                             <Grid item xs="auto"></Grid>

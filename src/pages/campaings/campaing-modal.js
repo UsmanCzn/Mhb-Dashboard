@@ -45,6 +45,7 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
 
   const [customersGroups, setCustomersGroups] = useState([])
   const { branchesList } = useBranches();
+  const filteredBranchLish = branchesList.filter((e)=>e.brandId ===  brandId)
   const [loading, setloading] = useState(false)
 
   const [errors, setErrors] = useState({
@@ -331,7 +332,7 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
               name="branchId"
               onChange={handleChange}
           >
-              {branchesList.map((row, index) => {
+              {filteredBranchLish.map((row, index) => {
                 return (
                     <MenuItem key={index} value={row.id}>
                         {row?.name}

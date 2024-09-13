@@ -1,6 +1,6 @@
-import { Grid, Typography, InputLabel, FormControl, Select, MenuItem, Button } from '@mui/material';
+import { Grid, Typography, InputLabel, FormControl, Select, MenuItem, Button, Box } from '@mui/material';
 import { TableControl, CustomersTable } from 'features';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import CustomerGroupTable from 'features/Customers/customerGroups/groupTable';
 
@@ -12,7 +12,7 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 
 export default function CustomerGroups() {
     const { type } = useParams();
-
+    const childComp = useRef(null);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [reload, setReload] = useState(false);
@@ -47,24 +47,36 @@ export default function CustomerGroups() {
                             Customer Groups
                         </Typography>
                     </Grid>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
-                                }}
+                    <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
+                        <Grid item xs="auto">
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={selectedBrand}
+                                    label={'Brand'}
+                                    onChange={(event) => {
+                                        setselectedBrand(event.target.value);
+                                    }}
+                                >
+                                    {brandsList.map((row, index) => {
+                                        return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={'auto'}>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                sx={{ textTransform: 'capitalize' }}
+                                onClick={() => childComp.current?.showAddNew()}
                             >
-                                {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+                                Add New Customer Group
+                            </Button>
+                        </Grid>
+                    </Box>
                     {/* <Grid item xs={6}>
                         <TableControl type="Customer" />
                     </Grid> */}
@@ -72,7 +84,7 @@ export default function CustomerGroups() {
             </Grid>
 
             <Grid item xs={12}>
-                <CustomerGroupTable type="Customer" reload={reload} selectedBrand={selectedBrand} setReload={reloadData} />
+                <CustomerGroupTable ref={childComp} type="Customer" reload={reload} selectedBrand={selectedBrand} setReload={reloadData} />
             </Grid>
         </Grid>
     );

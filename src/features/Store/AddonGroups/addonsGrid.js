@@ -13,7 +13,7 @@ import storeServices from 'services/storeServices';
 import AddonTable from 'components/Addon/addonTable';
 
 export default function AddonsGroups({  
-  selectedBrand
+  
  }) {
 
   const navigate = useNavigate();
@@ -24,8 +24,9 @@ export default function AddonsGroups({
   const [modalOpen,setModalOpen]=useState(false)
  
   const [selectedProduct,setselectedProduct]=useState({})
+  
 
-    
+  const [selectedBrand, setselectedBrand] = useState({}) 
  
    
    
@@ -44,7 +45,15 @@ export default function AddonsGroups({
   };
  
   const {brandsList}=useFetchBrandsList(reload) 
- 
+  useEffect(
+    () => {
+
+        if (brandsList[0]?.id) {
+          setselectedBrand(brandsList[0])
+        }
+    }
+    , [brandsList]
+)
 //   console.log(selectedProduct,"selectedProduct in index");s
 
 const handleClose = (data) => {  
@@ -80,31 +89,44 @@ const handleClose = (data) => {
 
 
   return (
-    <> 
-      <Grid item xs={12} mb={2}>
+      <>
+          <Grid item xs={12} mb={2}>
+              <Grid container alignItems="center" justifyContent="space-between">
+                  <Grid item xs={6}>
+                      <Typography fontSize={22} fontWeight={700}>
+                          Add-Ons
+                      </Typography>
+                  </Grid>
+                  <Grid item xs="auto">
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{"Brand"}</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={selectedBrand}
+                                label={"Brand"}
+                                onChange={(event) => {
+                                  setselectedBrand(event.target.value)
+                                }}
+                            >
+                                {
+                                    brandsList.map((row, index) => {
+                                        return (
+                                            <MenuItem value={row} >
+                                                {row?.name}
+                                            </MenuItem>
+                                        )
+                                    }
+                                    )
+                                }
 
-<Grid container  alignItems="center" justifyContent="space-between">
-    <Grid item xs={6}>
-        <Typography  variant="h5" fontSize={33}>
-           Add-Ons
-        </Typography>
-    </Grid>
-   
- 
-</Grid>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+              </Grid>
+          </Grid>
 
-</Grid>
-    
-    <AddonTable 
-       selectedBrand={selectedBrand}
-    reload={reload}
-    setReload={setReload}
-
-       />
-      
-    
-       
- 
-    </>
+          <AddonTable selectedBrand={selectedBrand} reload={reload} setReload={setReload} />
+      </>
   );
 }

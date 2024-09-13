@@ -277,7 +277,7 @@ const Paymentprovider = () => {
             <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs="auto">
-                        <Typography variant="h4">Payment Provider</Typography>
+                    <Typography fontSize={22} fontWeight={700}>Payment Provider</Typography>
                     </Grid>
 
                     <Grid item xs="auto">

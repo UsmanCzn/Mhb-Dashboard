@@ -63,32 +63,7 @@ export default function Products() {
 
                     </Grid>
 
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{"Branch"}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBranch}
-                                label={"Brand"}
-                                onChange={(event) => {
-                                    setselectedBranch(event.target.value)
-                                }}
-                            >
-                                {
-                                    brandsList.map((row, index) => {
-                                        return (
-                                            <MenuItem value={row} >
-                                                {row?.name}
-                                            </MenuItem>
-                                        )
-                                    }
-                                    )
-                                }
 
-                            </Select>
-                        </FormControl>
-                    </Grid>
                 </Grid>
             </Grid>
 

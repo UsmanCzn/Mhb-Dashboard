@@ -135,80 +135,81 @@ const open = Boolean(anchorEl);
         getCampaings(selectedBrand.id)
     }
 return (
-  <Grid container spacing={2}>
-    <Grid item xs={12}>
-        <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item xs={6}>
-                <Typography fontSize={22} fontWeight={700}>
-                    Campaings
-                </Typography>
-            </Grid>
-            <Grid item xs="auto">
-                <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={selectedBrand}
-                        label={'Brand'}
-                        onChange={(event) => {
-                          // getCampaings(event.target.value.id)
-                                setselectedBrand(event.target.value)
-                        }}
-                    >
-                        {brandsList.map((row, index) => {
-                            return (
-                                <MenuItem key={index} value={row}>
-                                    {row?.name}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
-                </FormControl>
-            </Grid>
-
-            <Grid container alignItems="center" justifyContent="space-between" my={2}>
-                <Grid item xs={6}></Grid>
-                <Grid item xs={'auto'}>
-                    <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={()=>addNewCampaing()}>
-                        Add New Campaings
-                    </Button>
+    <Grid container spacing={2}>
+        <Grid item xs={12}>
+            <Grid container alignItems="center" justifyContent="space-between">
+                <Grid item xs={6}>
+                    <Typography fontSize={22} fontWeight={700}>
+                        Campaings
+                    </Typography>
+                </Grid>
+                <Box alignItems='center' sx={{display:'flex', gap:'10px'}}>
+                    <Grid item xs="auto">
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={selectedBrand}
+                                label={'Brand'}
+                                onChange={(event) => {
+                                    // getCampaings(event.target.value.id)
+                                    setselectedBrand(event.target.value);
+                                }}
+                            >
+                                {brandsList.map((row, index) => {
+                                    return (
+                                        <MenuItem key={index} value={row}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={'auto'}>
+                        <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => addNewCampaing()}>
+                            Add New Campaings
+                        </Button>
+                    </Grid>
+                </Box>
+                <Grid container alignItems="center" justifyContent="space-between" my={2}>
+                    <Grid item xs={6}></Grid>
                 </Grid>
             </Grid>
-        </Grid>
 
-        <Box my={2}>
-            <DataGridComponent
-                columns={columns}
-                loading={loading}
-                rows={campaings}
-                getRowId={(row) => row.id}
-                rowsPerPageOptions={[10]}
-                totalRowCount={campaings.length}
-                fetchCallback={()=>getCampaings}
-            />
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                }}
-            >
-                {options.map((row, index) => {
-                    return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
-                            {row.name}
-                        </MenuItem>
-                    );
-                })}
-            </Menu>
-        </Box>
+            <Box my={2}>
+                <DataGridComponent
+                    columns={columns}
+                    loading={loading}
+                    rows={campaings}
+                    getRowId={(row) => row.id}
+                    rowsPerPageOptions={[10]}
+                    totalRowCount={campaings.length}
+                    fetchCallback={() => getCampaings}
+                />
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button'
+                    }}
+                >
+                    {options.map((row, index) => {
+                        return (
+                            <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                                {row.name}
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+            </Box>
+        </Grid>
+        <CampaingModal openModal={openModal} onCloseModal={onCloseModal} campaing={selectedCampaings} brandId={selectedBrand.id} />
     </Grid>
-    <CampaingModal openModal={openModal} onCloseModal={onCloseModal}  campaing={selectedCampaings} brandId={selectedBrand.id}/>
-    </Grid>
-  )
+);
 }
 
 export default Campaings

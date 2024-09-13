@@ -13,51 +13,52 @@ import { FaPencilAlt } from 'react-icons/fa';
 
 import LinearProgress from '@mui/material/LinearProgress';
 
-export default function TierTable({ selectedBrand, reload, customerGroups, setReload }) {
+export default function TierTable({ selectedBrand, reload, customerGroups, setReload, newModal, setNewModal, setPointCollectionRef,pointCollectionRef }) {
     const navigate = useNavigate();
     const location = useLocation();
 
     const { tiersList, fetchTiersList, totalRowCount, loading } = useTiers(reload, selectedBrand);
-    
+
     const [modal, setModal] = useState(false);
-    const [newModal, setNewModal] = useState(false);
+
+    // const [newModal, setNewModal] = useState(false);
     const upperMarin = 0.5;
     const [myLoading, setloading] = useState(true);
 
-    const groupsColumnFormater = (item) => {
-        return (
-            <Grid container spacing={1}>
-                <Grid item xs="auto">
-                    <Typography variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
-                        {customerGroups?.find((obj) => obj?.id == item?.brandGroupId)?.name}
-                    </Typography>
-                </Grid>
-            </Grid>
-        );
-    };
+    // const groupsColumnFormater = (item) => {
+    //     return (
+    //         <Grid container spacing={1}>
+    //             <Grid item xs="auto">
+    //                 <Typography variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
+    //                     {customerGroups?.find((obj) => obj?.id == item?.brandGroupId)?.name}
+    //                 </Typography>
+    //             </Grid>
+    //         </Grid>
+    //     );
+    // };
 
-    const rewardsColumnFormater = (item) => {
-        return (
-            <Grid container spacing={1}>
-                <Grid item xs="auto">
-                    {item?.rewardProgramGifts?.map((obj,index) => {
-                        return (
-                            <Typography key={index} variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
-                                {obj?.name + ' - ' + obj?.amount}
-                            </Typography>
-                        );
-                    })}
-                </Grid>
-            </Grid>
-        );
-    };
-    const dateColumnFormater = (item) => {
-        return (
-            <Typography variant="h6">
-                {moment(item?.startDate).format('DD/MM/YYYY') + ' - ' + moment(item?.endDate)?.format('DD/MM/YYYY')}
-            </Typography>
-        );
-    };
+    // const rewardsColumnFormater = (item) => {
+    //     return (
+    //         <Grid container spacing={1}>
+    //             <Grid item xs="auto">
+    //                 {item?.rewardProgramGifts?.map((obj, index) => {
+    //                     return (
+    //                         <Typography key={index} variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
+    //                             {obj?.name + ' - ' + obj?.amount}
+    //                         </Typography>
+    //                     );
+    //                 })}
+    //             </Grid>
+    //         </Grid>
+    //     );
+    // };
+    // const dateColumnFormater = (item) => {
+    //     return (
+    //         <Typography variant="h6">
+    //             {moment(item?.startDate).format('DD/MM/YYYY') + ' - ' + moment(item?.endDate)?.format('DD/MM/YYYY')}
+    //         </Typography>
+    //     );
+    // };
 
     const deletePointsCollection = async (id) => {
         await rewardService
@@ -75,6 +76,8 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
         setPointCollection(params?.row);
+
+        setPointCollectionRef(false);
         setAnchorEl(event.currentTarget);
     };
     const setSelectedItem = (item) => {
@@ -98,6 +101,12 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
     useEffect(() => {
         setloading(loading);
     }, [loading]);
+    useEffect(() => {
+
+        if (pointCollectionRef) {
+            setPointCollection();
+        }
+    }, [pointCollectionRef]);
     const showLoader = () => {
         if (myLoading) {
             return (
@@ -167,7 +176,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
     return (
         <>
             {/* {myLoading ? showLoader() : <></>} */}
-            <Grid container mb={2} justifyContent="flex-end">
+            {/* <Grid container mb={2} justifyContent="flex-end">
                 <Grid item xs={'auto'}>
                     <Button
                         size="small"
@@ -181,7 +190,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                         Add New Tier
                     </Button>
                 </Grid>
-            </Grid>
+            </Grid> */}
 
             <DataGridComponent
                 rows={tiersList}
@@ -292,13 +301,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                 ))}
             </Grid> */}
 
-            <NewTier
-                modal={newModal}
-                setModal={setNewModal}
-                brand={selectedBrand}
-                editItem={pointCollection}
-                setReload ={setReload}
-            />
+            <NewTier modal={newModal} setModal={setNewModal} brand={selectedBrand} editItem={pointCollection} setReload={setReload} />
         </>
     );
 
@@ -337,7 +340,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                         }
                     }}
                 >
-                    {options.map((option,index) => (
+                    {options.map((option, index) => (
                         <MenuItem key={index} selected={option === 'Pyxis'} onClick={handleClose}>
                             {option}
                         </MenuItem>

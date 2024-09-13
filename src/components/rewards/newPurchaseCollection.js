@@ -190,6 +190,41 @@ const App = ({
                         />
                     </Grid>
                 </Grid>
+                <Grid sx={{ marginTop: '10px', marginBottom: '10px' }} item xs={12}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} marginTop={1}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
+                                <DatePicker
+                                    label="Start Date"
+                                    renderInput={(params) => <TextField fullWidth {...params} error={false} />}
+                                    value={data.startDate}
+                                    onChange={(newValue) => {
+                                        setData({
+                                            ...data,
+                                            startDate: newValue
+                                        });
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={6} marginTop={1}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
+                                <DatePicker
+                                    label="End Date"
+                                    renderInput={(params) => <TextField fullWidth {...params} error={false} />}
+                                    value={data.endDate}
+                                    onChange={(newValue) => {
+                                        setData({
+                                            ...data,
+                                            endDate: newValue
+                                        });
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
                 <Grid container spacing={4}>
                     <Grid item xs={12}>
                         <Grid container spacing={2}>
@@ -200,41 +235,6 @@ const App = ({
                                     data={data}
                                     setData={setData}
                                 />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={4} marginTop={1}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
-                                    <DatePicker
-                                        label="Start Date"
-                                        renderInput={(params) => <TextField {...params} error={false} />}
-                                        value={data.startDate}
-                                        onChange={(newValue) => {
-                                            setData({
-                                                ...data,
-                                                startDate: newValue
-                                            });
-                                        }}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={4} marginTop={1}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
-                                    <DatePicker
-                                        label="End Date"
-                                        renderInput={(params) => <TextField {...params} error={false} />}
-                                        value={data.endDate}
-                                        onChange={(newValue) => {
-                                            setData({
-                                                ...data,
-                                                endDate: newValue
-                                            });
-                                        }}
-                                    />
-                                </LocalizationProvider>
                             </Grid>
                         </Grid>
                     </Grid>

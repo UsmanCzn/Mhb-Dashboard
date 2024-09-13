@@ -37,20 +37,39 @@ export default function Rewards() {
         ,[brandsList]
     )
   return (
-    <Grid container spacing={2}>
- 
-        
-        <Grid item xs={12}>
+      <Grid container spacing={2}>
+          <Grid item xs={12}>
+              <Grid container alignItems="center" justifyContent="space-between">
+                  <Grid item xs={6}>
+                      <Typography fontSize={22} fontWeight={700}>
+                          Rewards
+                      </Typography>
+                  </Grid>
+                  <Grid item xs="auto">
+                      <FormControl fullWidth>
+                          <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                          <Select
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={selectedBrand}
+                              label={'Brand'}
+                              onChange={(event) => {
+                                  setselectedBrand(event.target.value);
+                              }}
+                          >
+                              {brandsList.map((row, index) => {
+                                  return (
+                                      <MenuItem key={index} value={row}>
+                                          {row?.name}
+                                      </MenuItem>
+                                  );
+                              })}
+                          </Select>
+                      </FormControl>
+                  </Grid>
+                  {/* <Grid item xs={"auto"}> */}
 
-            <Grid container  alignItems="center" justifyContent="space-between">
-                <Grid item xs={6}>
-                    <Typography fontSize={22} fontWeight={700}>
-                       Rewards
-                    </Typography>
-                </Grid>
-                <Grid item xs={"auto"}>
-                    
-                   {/* <Button size="small" variant="contained" 
+                  {/* <Button size="small" variant="contained" 
                    sx={{ textTransform: 'capitalize' }}
                    onClick={
                     ()=>setModalOpen(true)
@@ -58,49 +77,19 @@ export default function Rewards() {
                    >
                                    Add New loyalty
                  </Button>  */}
-   
-                   </Grid>
-                {/* <Grid item xs={6}>
+
+                  {/* </Grid> */}
+                  {/* <Grid item xs={6}>
                     <TableControl type="Customer"/>
                 </Grid> */}
-            </Grid>
+              </Grid>
+          </Grid>
 
-
-
-
-        </Grid>
-        <Grid item xs="auto">
-                        <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">{"Brand"}</InputLabel>
-             <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select" 
-          value={selectedBrand}
-          label={"Brand"} 
-          onChange={(event)=>{ 
-            setselectedBrand(event.target.value)
-          }}
-        >
-            {
-             brandsList.map((row, index) => {  
-                    return (
-                        <MenuItem key={index} value={row} >
-                          { row?.name}
-                          </MenuItem>
-                    )
-             }
-             )
-            }
-           
-        </Select>
-        </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-            {/* <RewardsTable  reload={reload}/> */}
-            <RewardProgram  selectedBrand={selectedBrand} />
-        </Grid>
-        <NewReward modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} branchesList={branchesList} />
-
-    </Grid>
+          <Grid item xs={12}>
+              {/* <RewardsTable  reload={reload}/> */}
+              <RewardProgram selectedBrand={selectedBrand} />
+          </Grid>
+          <NewReward modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} branchesList={branchesList} />
+      </Grid>
   );
 }

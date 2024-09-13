@@ -18,32 +18,32 @@ const Advertisement = () => {
     setReload(true)
   };
   return (
-    <>
-    <Grid container spacing={2}>
-        <Grid item xs={12}>
-            <Grid container alignItems="center" justifyContent="space-between">
-                <Grid item xs={'auto'}>
-                    <Typography fontSize={22} fontWeight={700}>
-                    Advertisement
-                    </Typography>
-                </Grid>
-                <Grid item xs={'auto'}>
-                    <Button
-                        size="small"
-                        variant="contained"
-                        sx={{ textTransform: 'capitalize' }}
-                        onClick={() => handleOpenDialog()}
-                    >
-                        Create New Advertisement
-                    </Button>
-                </Grid>
-            </Grid>
-        </Grid>
-        <AdvertisementTable selectAdvertisement={setSelectedAdvertisement} setModalOpen={setOpenDialog} reload={reload} setreload={setReload}/>
-        <AdvertisementDialog open={openDialog} onClose={handleCloseDialog} advertisement={selectedAdvertisement?.row}/>
-        </Grid>
-        </>
-  )
+      <>
+          <Grid container spacing={2}>
+              <Grid sx={{ marginBottom: '10px' }} item xs={12}>
+                  <Grid container alignItems="center" justifyContent="space-between">
+                      <Grid item xs={'auto'}>
+                          <Typography fontSize={22} fontWeight={700}>
+                              Advertisement
+                          </Typography>
+                      </Grid>
+                      <Grid item xs={'auto'}>
+                          <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => handleOpenDialog()}>
+                              Create New Advertisement
+                          </Button>
+                      </Grid>
+                  </Grid>
+              </Grid>
+              <AdvertisementTable
+                  selectAdvertisement={setSelectedAdvertisement}
+                  setModalOpen={setOpenDialog}
+                  reload={reload}
+                  setreload={setReload}
+              />
+              <AdvertisementDialog open={openDialog} onClose={handleCloseDialog} advertisement={selectedAdvertisement?.row} />
+          </Grid>
+      </>
+  );
 }
 
 export default Advertisement
