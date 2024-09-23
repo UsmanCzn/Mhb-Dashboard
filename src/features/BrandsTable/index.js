@@ -16,8 +16,7 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
     const location = useLocation();
 
     const { brandsList, fetchBrandsList, totalRowCount, loading } = useFetchBrandsList();
-    console.log(totalRowCount, brandsList,"count");
-    
+
     const [anchorEl, setAnchorEl] = useState(null);
     const [brand, setBrand] = useState({});
 
@@ -38,6 +37,28 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
     };
 
     const columns = [
+        {
+            field: 'image',
+            headerName: 'Image',
+            headerAlign: 'left',
+            renderCell: ({ row }) => {
+                const handleError = (event) => {
+                    event.target.src = 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'; // Provide a fallback image
+                };
+
+                return (
+                    <img
+                        style={{
+                            width: 40,
+                            height: 40
+                        }}
+                        onError={handleError}
+                        src={row.logoUrl || 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'}
+                        alt="brand logo"
+                    />
+                );
+            }
+        },
         {
             field: 'name',
             headerName: 'Brand Name',
@@ -66,8 +87,17 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             headerName: 'Hidden',
             flex: 1,
             headerAlign: 'left',
-            renderCell: (params) => {   
-                return params.row.isHidden ? <Tooltip title="Hidden"> <CheckCircleIcon /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon/></Tooltip> ;
+            renderCell: (params) => {
+                return params.row.isHidden ? (
+                    <Tooltip title="Hidden">
+                        {' '}
+                        <CheckCircleIcon />{' '}
+                    </Tooltip>
+                ) : (
+                    <Tooltip title="Not Hidden">
+                        <CancelIcon />
+                    </Tooltip>
+                );
             }
         },
 

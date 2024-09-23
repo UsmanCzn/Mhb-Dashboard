@@ -1,6 +1,6 @@
 import React from 'react';
 import { Chip, Grid, Typography, Box, MenuItem, Button, ButtonBase } from '@mui/material';
-
+import DefaultImage from '../../assets/images/users/default-image.png';
 const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData }) => {
     const handleClick = async () => {
         setModalOpen(true);

@@ -227,16 +227,38 @@ export default function Orders() {
             <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
-                        <Typography fontSize={26} variant="h5">
+                        <Typography fontSize={22} fontWeight={700}>
                             All Orders
                         </Typography>
                     </Grid>
-                    <Grid item xs={'auto'}>
-                        {/* <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }}
-                                   onClick={() => setModalOpen(true)}
-                               >
-                                   Download Report
-                 </Button> */}
+                    <Grid item xs="auto" justifyContent="space-between">
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={selectedBranch}
+                                label={'Branch'}
+                                onChange={(event) => {
+                                    setselectedBranch(event.target.value);
+                                    setChecked(event.target.value.isBusy);
+                                }}
+                            >
+                                {branchZero.map((row, index) => {
+                                    return (
+                                        <MenuItem value={row} key={index}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </FormControl>
+                        {selectedBranch.id != 0 && (
+                            <FormControlLabel
+                                control={<Switch checked={checked} onChange={(e) => makeBranchBusy(e)} />}
+                                label="Make Branch Busy"
+                            />
+                        )}
                     </Grid>
                     {/* <Grid item xs={6}>
                     <TableControl type="Customer"/>
@@ -261,7 +283,7 @@ export default function Orders() {
                             </Grid>
                             <Grid item xs={2}>
                                 <AnalyticBox
-                                    title="New Orders (Pending)"
+                                    title="Pending Orders"
                                     count={analytics?.pending}
                                     value={'Open'}
                                     filter={filter}
@@ -308,39 +330,6 @@ export default function Orders() {
                                 />
                             </Grid>
                         </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs="auto" justifyContent="space-between">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBranch}
-                                label={'Branch'}
-                                onChange={(event) => {
-                                    setselectedBranch(event.target.value);
-                                    setChecked(event.target.value.isBusy);
-                                }}
-                            >
-                                {branchZero.map((row, index) => {
-                                    return (
-                                        <MenuItem value={row} key={index}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                        {selectedBranch.id != 0 && (
-                            <FormControlLabel
-                                control={<Switch checked={checked} onChange={(e) => makeBranchBusy(e)} />}
-                                label="Make Branch Busy"
-                            />
-                        )}
                     </Grid>
                 </Grid>
             </Grid>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Box, OutlinedInput, Button, CircularProgress } from '@mui/material';
+import React, { useState, useEffect, useMemo, memo } from 'react';
+import { Grid, Box, OutlinedInput, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useFetchProductsList } from 'features/Store/Products/hooks/useFetchProductsList';
 import GridItem from 'components/products/gridItem';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
@@ -9,11 +9,22 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
     const { productTypes } = useFetchProductTypeList(true, selectedBranch);
 
+    const [category, setCategory] = useState();
+    const [subCategory, setSubCategory] = useState();
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
     const [SortedProductList, setSortedProductList] = useState([]);
+    const reset = useMemo(() => {
+        setSubCategory();
+        setCategory();
+    }, [selectedBranch]);
+
+    const subTypes = useMemo(() => {
+        const temp = productTypes.find((e) => e.id === category?.id);
+        return temp ? temp?.subTypes : [];
+    }, [category]);
 
     const sortByProperty = (array, propertyName, sortOrder = 0) => {
         return array.sort((a, b) => {
@@ -30,12 +41,48 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
         });
     };
 
-    const searchProducts =(search)=>{
+    const searchProducts = (search) => {
         const searchNameLower = search.toLowerCase();
-        const result = productsList.filter(item => item.name.toLowerCase().includes(searchNameLower));
+
+        // Filter based on search term, category, and subcategory
+        let result = productsList.filter((item) => item.name.toLowerCase().includes(searchNameLower));
+
+        if (category && subCategory !== undefined) {
+            if (subCategory !== 0) {
+                result = result.filter((item) => item.productTypeId === category?.id && item.productSubTypeId === subCategory);
+            } else {
+                result = result.filter((item) => item.productTypeId === category?.id);
+            }
+        }
+ru
         setSortedProductList(result);
-    }
-    
+    };
+
+    const filterByCategory = useMemo(() => {
+        console.log(subCategory);
+        if (category && subCategory !== undefined) {
+            if (subCategory !== 0) {
+                const result = productsList.filter((item) => item.productTypeId === category?.id && item.productSubTypeId === subCategory);
+                setSortedProductList(result);
+            } else {
+                setSortedProductList(productsList);
+            }
+        } else if (category) {
+            const result = productsList.filter((item) => item.productTypeId === category?.id);
+            setSortedProductList(result);
+        } else {
+            setSortedProductList([]);
+        }
+    }, [category, subCategory]);
+
+    const handleSubCategoryChange = (event) => {
+        const selectedValue = event.target.value;
+
+        // Check if "All SubCategories" is selected based on id (id: 0)
+
+        setSubCategory(selectedValue);
+    };
+
     useEffect(() => {
         const temp = sortByProperty(productsList, sortBy, sortOrder);
         setSortedProductList([...temp]);
@@ -56,11 +103,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
         >
             <Box
                 sx={{
-                    // backgroundColor:"red",
-                    // border: '1px solid lightGrey',
                     borderRadius: 2,
-                    // mx: 2,
-                    // py: 2,
                     px: 2,
                     width: '100%'
                 }}
@@ -69,16 +112,60 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 xs={12}
                 boxShadow={0}
             >
-                <OutlinedInput
-                    id="email-login"
-                    type="text"
-                    name="Search"
-                    placeholder="Search by Product name"
-                    sx={{
-                        width: '30%'
-                    }}
-                    onChange={(event)=>{ searchProducts(event.target.value)}}
-                />
+                <Box sx={{ display: 'flex', gap: '20px' }}>
+                    <OutlinedInput
+                        id="email-login"
+                        type="text"
+                        name="Search"
+                        placeholder="Search by Product name"
+                        // sx={{
+                        //     width: '30%'
+                        // }}
+                        onChange={(event) => {
+                            searchProducts(event.target.value);
+                        }}
+                    />
+                    <FormControl sx={{ width: '150px' }}>
+                        <InputLabel id="demo-simple-select-label">{'Category'}</InputLabel>
+                        <Select
+                            placeholder=" Select Category"
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={category}
+                            label={'Category'}
+                            onChange={(event) => {
+                                setCategory(event.target.value);
+                            }}
+                        >
+                            {productTypes.map((row, index) => {
+                                return (
+                                    <MenuItem key={index} value={row}>
+                                        {row?.name}
+                                    </MenuItem>
+                                );
+                            })}
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ width: '150px' }}>
+                        <InputLabel id="demo-simple-select-label">SubCategory</InputLabel>
+                        <Select
+                            placeholder="Select Category"
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={subCategory}
+                            label="SubCategory"
+                            onChange={handleSubCategoryChange}
+                        >
+                            {subTypes && subTypes.length > 0 && <MenuItem value={0}>All SubCategories</MenuItem>}
+
+                            {subTypes?.map((row, index) => (
+                                <MenuItem key={row.id || index} value={row.id}>
+                                    {row?.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
                 <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => setModalOpen(true)}>
                     Add new Product
                 </Button>

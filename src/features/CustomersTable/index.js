@@ -25,10 +25,14 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
     }, []);
 
     const activeColumnFormater = (item) => {
+        const handleError = (e) => {
+            e.target.src = 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'; // Replace with your fallback image URL
+        };
         return (
             <img
                 alt="img"
                 src={item?.userAvatar}
+                onError={handleError}
                 style={{
                     width: 40,
                     height: 40

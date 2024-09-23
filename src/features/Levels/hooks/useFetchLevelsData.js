@@ -20,6 +20,7 @@ export function useFetchLevelData(selectedBrand, reload) {
             const arrayTwoWithNames = response.map((item) => {
                 const customerGroupId = item.customerGroupId;
                 const foundItem = tiersList.find((entry) => entry.id === customerGroupId);
+
                 return {
                     ...item,
                     name: foundItem ? foundItem.name : '' // If a match is found, assign the name, otherwise an empty string
@@ -37,37 +38,35 @@ export function useFetchLevelData(selectedBrand, reload) {
                     itemNames
                 };
             });
+
             setRegeneratedResponse(arrayTwoWithItemNames);
         }
-    }, [response]);
+    }, [response,selectedBrand]);
 
-    const fetchTiersList = useCallback(
-        () => {
-            if (!selectedBrand?.id) return
-            setloading(true);
-            tiersService
-                .getTiers(selectedBrand?.id)
-                .then(
-                    (res) => {
-                        var tiers = [];
-                        for (var i = 0; i < res?.data?.result?.data?.data.length; i++) {
-                            const item = res?.data?.result?.data?.data[i];
-                            if (item.type === 'Dynamic points') {
-                                tiers.push(item);
-                            }
+    const fetchTiersList = useCallback(() => {
+        if (!selectedBrand?.id) return;
+        setloading(true);
+        tiersService
+            .getTiers(selectedBrand?.id)
+            .then(
+                (res) => {
+                    var tiers = [];
+                    for (var i = 0; i < res?.data?.result?.data?.data.length; i++) {
+                        const item = res?.data?.result?.data?.data[i];
+                        if (item.type === 'Dynamic points') {
+                            tiers.push(item);
                         }
-                        setTiersList(tiers);
-                        setTotalRowCount(res?.data?.result?.data?.totalCount);
-                        fetchCategories();
-                    },
-                    (err) => {
-                        console.log(err, 'err');
                     }
-                )
-                .finally(() => {});
-        },
-        [selectedBrand]
-    );
+                    setTiersList(tiers);
+                    setTotalRowCount(res?.data?.result?.data?.totalCount);
+                    fetchCategories();
+                },
+                (err) => {
+                    console.log(err, 'err');
+                }
+            )
+            .finally(() => {});
+    }, [selectedBrand]);
 
     const fetchLevels = () => {
         tiersService
@@ -89,7 +88,6 @@ export function useFetchLevelData(selectedBrand, reload) {
             .getProductTypes(selectedBrand?.id)
             .then((res) => {
                 setProductTypes(res?.data?.result);
-
                 fetchLevels();
             })
             .catch((err) => {
