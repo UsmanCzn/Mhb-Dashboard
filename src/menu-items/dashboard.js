@@ -13,7 +13,8 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
-import { ADMIN, BRANCH_USER, BRAND_MANAGER,COMPANY_ADMIN } from 'helper/UserRoles';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 // icons
@@ -335,6 +336,32 @@ const dashboard = {
             icon: ShopTwoIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN]
+        },
+        {
+            id: 'notifcations',
+            title: 'Notifications',
+            type: 'collapse',
+            icon: NotificationsIcon ,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
+            children: [
+                {
+                    id: 'allNotifcation',
+                    title: 'All Notfications',
+                    type: 'item',
+                    url: '/notification',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                },
+                {
+                    id: 'customer-notification',
+                    title: 'Customer Notification',
+                    type: 'item',
+                    url: '/customerNotification',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN]
+                }
+            ]
         },
         {
             id: 'CreditBalance',
