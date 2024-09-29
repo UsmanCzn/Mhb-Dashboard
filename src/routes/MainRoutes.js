@@ -44,6 +44,8 @@ import Campaings from 'pages/campaings/index';
 import VechileType from 'pages/driveThru/vechile-type';
 import VechileBrand from 'pages/driveThru/vechile-brand'
 import VechileColor from 'pages/driveThru/vechile-color';
+import CustomerNotification from 'pages/customer-notification/customer-notifcation';
+import CreateNotification from '../pages/customer-notification/create-notification';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -121,6 +123,8 @@ export default function MainRoutes() {
                     <Route path="/credit" element={<Credit />} />
                     <Route path="/levels" element={<LevelIndex />} />
                     <Route path="/bundles" element={<Bundles />} />
+                    <Route path="/customernotification" element={<CustomerNotification />} />
+                    <Route path="/createNotification" element={<CreateNotification />} />
                 </Route>
             </Route>
 
