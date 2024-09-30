@@ -39,8 +39,6 @@ const style = {
 };
 
 const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes }) => {
-    console.log(data, 'data Order DEtails 000000000000000');
-
     function printBox() {
         const box = document.getElementById('my-box');
         window.print(box);
@@ -143,7 +141,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     }}
                                 >
                                     <Typography variant="h6" fontSize={16}>
-                                        Customer :{' ' + data?.customerName + ' ' + data?.customerSurname}
+                                        Customer :{' ' + (data?.customerName || data.name) + ' ' + (data?.customerSurname || data.surname)}
                                     </Typography>
                                     {/* <Typography variant="h7" fontSize={16}> {" "+data?.customerName+" "+data?.customerSurname}  </Typography> */}
                                 </Box>
@@ -156,7 +154,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     }}
                                 >
                                     <Typography variant="h6" fontSize={16}>
-                                        Mobile :{' ' + data?.customerPhoneNumber}
+                                        Mobile :{' ' + (data?.customerPhoneNumber ?? data?.displayPhoneNumber)}
                                     </Typography>
                                 </Box>
 
@@ -169,7 +167,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     }}
                                 >
                                     <Typography variant="h6" fontSize={16}>
-                                        Email : {' ' + data?.customerEmail}
+                                        Email : {' ' + (data?.customerEmail ?? data?.displayEmailAddress)}
                                     </Typography>
                                 </Box>
 
@@ -184,18 +182,17 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     <Typography variant="h6" fontSize={16}>
                                         Date :{' ' + moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}
                                     </Typography>
-                                   
                                 </Box>
                                 <Box
-                                  sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center'
-                                }}
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center'
+                                    }}
                                 >
-                                <Typography variant="h6" fontSize={16}>
-                                       Payment Method : {data?.paymentMethod}
+                                    <Typography variant="h6" fontSize={16}>
+                                        Payment Method : {data?.paymentMethod}
                                     </Typography>
                                 </Box>
 
@@ -243,7 +240,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                                 }}
                                             >
                                                 <Typography variant="h2" fontSize={14} style={{ width: '50%' }}>
-                                                    {obj?.name}
+                                                    {obj?.name} ff
                                                 </Typography>
                                                 <Typography variant="h2" fontSize={14} style={{ width: '10%' }}>
                                                     {' '}
@@ -254,7 +251,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                                 </Typography>
                                             </Box>
 
-                                            {obj?.additions?.map((obj_) => {
+                                            {(obj?.additions ?? obj?.addOnsList)?.map((obj_) => {
                                                 return (
                                                     <Box
                                                         sx={{

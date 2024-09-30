@@ -54,7 +54,9 @@ export default function CustomerDetail() {
                 <TabPanel value="1">
                     <CustomerInfo />
                 </TabPanel>
-                <TabPanel value="2"> <CustomerOrders/> {/* <PointsCollection pointsCollection={pointsCollection} setReload={setReload} /> */}</TabPanel>
+                <TabPanel value="2">
+                    <CustomerOrders user={user} /> {/* <PointsCollection pointsCollection={pointsCollection} setReload={setReload} /> */}
+                </TabPanel>
                 <TabPanel value="3">{/* <ConstantsCollection constantCollection={constantCollection} setReload={setReload}/> */}</TabPanel>
                 <TabPanel value="4">
                     <CreditBalance user={user} />

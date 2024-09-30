@@ -83,172 +83,169 @@ export default function PointsCollectionTable({ selectedBrand, customerGroups, }
       )
     };
   
-    const deletePointsCollection=async (id)=>{  
-      await rewardService.DeleteDiscountProgram(id)
-      .then((res)=>{
-          console.log(res.data,"delete response");
-          setReload(true)
-      })
-      .catch((err)=>{
-          console.log(err?.response?.data);
-      }) 
-   
-}
-    const [anchorEl, setAnchorEl] =  useState(null);
-    const [pointCollection, setPointCollection] =  useState({});
+    const deletePointsCollection = async (id) => {
+        await rewardService
+            .DeleteDiscountProgram(id)
+            .then((res) => {
+                console.log(res.data, 'delete response');
+                setReload(true);
+            })
+            .catch((err) => {
+                console.log(err?.response?.data);
+            });
+    };
+    const [pointCollection, setPointCollection] = useState({});
+    const [anchorEl, setAnchorEl] = useState(null);
 
-  const open = Boolean(anchorEl);
-  const handleClick = (event,params) => {
-    setPointCollection(params?.row); 
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = (data) => {  
-    if(data.modal && data?.name=="Edit"){
-      setModal(true)
-    }
-    else  if( data?.name=="Delete"){
-      deletePointsCollection(pointCollection?.id)
-    } 
-    else  if( data?.name=="Duplicate"){
-      setDuplicateModal(true)
-    }
-  
-    setAnchorEl(null);
-  };
-    
- 
-    const columns = [
-      {
-          field: "id",
-          headerName: "ID",
-          headerAlign: "left", 
-      },
-      {
-          field: "amount",
-          headerName: "Amount",
-          flex: 0.7,
-          headerAlign: "left",  
-      },
-      {
-          field: "branchId",
-          headerName: "Branch",
-          flex: 1,
-          headerAlign: "left", 
-          renderCell: params => branchColumnFormater(params.row)
-
-      },
-      {
-          field: "brandGroupId",
-          headerName: "Customer Group",
-          flex: 1.2,
-          headerAlign: "left",
-         renderCell: params => groupsColumnFormater(params?.row)
-
-      },
-      {
-        field: "emailAddresds",
-        headerName: "Rewards Program Gifts",
-        flex: 1,
-        headerAlign: "left",
-         renderCell: params =>rewardsColumnFormater(params?.row)
-
-    },
-    {
-      field: "emailAddress",
-      headerName: "Date Range",
-      flex: 1,
-      headerAlign: "left",
-      renderCell: params => dateColumnFormater(params?.row)
-
-  },
-    {
-      field: "isRewardMfissisng",
-      headerName: "Action",
-      sortable: false,
-      flex: 0.5,
-      headerAlign: "left",
-      
-      renderCell: (params) => { 
-            return <MoreVertIcon 
-                onClick={(event)=>handleClick(event,params)} />
-          }
-    },
-      ];
-
-
-      const options=[
-        {
-          name:"Edit",
-          modal:true,  
-        },
-        {
-          name:"Duplicate",
-          modal:true,  
-        },
-        {
-          name:"Delete",
-          modal:true,  
+    const open = Boolean(anchorEl);
+    const handleClick = (event, params) => {
+        setPointCollection(params?.row);
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = (data) => {
+        if (data.modal && data?.name == 'Edit') {
+            setModal(true);
+        } else if (data?.name == 'Delete') {
+            deletePointsCollection(pointCollection?.id);
+        } else if (data?.name == 'Duplicate') {
+            setDuplicateModal(true);
         }
 
-      ]
- 
+        setAnchorEl(null);
+    };
 
+    const columns = [
+        {
+            field: 'id',
+            headerName: 'ID',
+            headerAlign: 'left'
+        },
+        {
+            field: 'amount',
+            headerName: 'Amount',
+            flex: 0.7,
+            headerAlign: 'left'
+        },
+        {
+            field: 'branchId',
+            headerName: 'Branch',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => branchColumnFormater(params.row)
+        },
+        {
+            field: 'brandGroupId',
+            headerName: 'Customer Group',
+            flex: 1.2,
+            headerAlign: 'left',
+            renderCell: (params) => groupsColumnFormater(params?.row)
+        },
+        {
+            field: 'emailAddresds',
+            headerName: 'Rewards Program Gifts',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => rewardsColumnFormater(params?.row)
+        },
+        {
+            field: 'emailAddress',
+            headerName: 'Date Range',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => dateColumnFormater(params?.row)
+        },
+        {
+            field: 'isRewardMfissisng',
+            headerName: 'Action',
+            sortable: false,
+            flex: 0.5,
+            headerAlign: 'left',
 
-  return (
-    <> 
-     <Grid container   mb={2} justifyContent="flex-end">
-                
-                <Grid item xs={"auto"}>
-                    
-                   <Button size="small" variant="contained" 
-                   sx={{ textTransform: 'capitalize' }}
-                   onClick={
-                    ()=>{ 
-                      setNewModal(true)
-                    }
-                   }
-                   >
-                    Create New Point Collection
-                 </Button> 
-   
-                   </Grid>
-               
-            </Grid>
-    <DataGridComponent
-      rows={PointsCollectionList}
-      columns={columns}
-      loading={loading} 
-      getRowId={(row)=>row.id}
-      rowsPerPageOptions={[10]}
-      totalRowCount={totalRowCount}
-      fetchCallback={fetchRewardList} 
-    />
-     <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-         
-          {
-            options.map((row, index) => { 
-                   return (
-                       <MenuItem onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
-                   )
+            renderCell: (params) => {
+                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
-            )
-           }
-        
+        }
+    ];
 
-      </Menu>
+    const options = [
+        {
+            name: 'Edit',
+            modal: true
+        },
+        {
+            name: 'Duplicate',
+            modal: true
+        },
+        {
+            name: 'Delete',
+            modal: true
+        }
+    ];
 
-      <UpdatePointCollection  modal={modal} setModal={setModal}   pointCollection={pointCollection} setReload={setReload} selectedBrand={selectedBrand}  />
-      <NewRewardCollection  modal={newModal} setModal={setNewModal} branchesList={filteredBranches}   setReload={setReload} selectedBrand={selectedBrand}  />
-      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={filteredBranches} reward={pointCollection}   setReload={setReload}  />
-     
-    </>
-  );
+    return (
+        <>
+            <Grid container mb={2} justifyContent="flex-end">
+                <Grid item xs={'auto'}>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        sx={{ textTransform: 'capitalize' }}
+                        onClick={() => {
+                            setNewModal(true);
+                        }}
+                    >
+                        Create New Point Collection
+                    </Button>
+                </Grid>
+            </Grid>
+            <DataGridComponent
+                rows={PointsCollectionList}
+                columns={columns}
+                loading={loading}
+                getRowId={(row) => row.id}
+                rowsPerPageOptions={[10]}
+                totalRowCount={totalRowCount}
+                fetchCallback={fetchRewardList}
+            />
+            <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button'
+                }}
+            >
+                {options.map((row, index) => {
+                    return (
+                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                            {row.name}
+                        </MenuItem>
+                    );
+                })}
+            </Menu>
+
+            <UpdatePointCollection
+                modal={modal}
+                setModal={setModal}
+                pointCollection={pointCollection}
+                setReload={setReload}
+                selectedBrand={selectedBrand}
+            />
+            <NewRewardCollection
+                modal={newModal}
+                setModal={setNewModal}
+                branchesList={filteredBranches}
+                setReload={setReload}
+                selectedBrand={selectedBrand}
+            />
+            <DuplicateReward
+                modal={duplicateModal}
+                setModal={setDuplicateModal}
+                branchesList={filteredBranches}
+                reward={pointCollection}
+                setReload={setReload}
+            />
+        </>
+    );
 }
