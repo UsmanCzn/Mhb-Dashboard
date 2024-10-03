@@ -354,7 +354,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     </Typography>
                                 </Box>
 
-                                {data?.pointsRedeemed && (
+                                {data?.pointsRedeeme && data.pointsRedeeme > 0 && (
                                     <Box
                                         style={{
                                             width: '100%',
@@ -374,7 +374,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                         </Typography>
                                     </Box>
                                 )}
-                                {data?.creditUsed && (
+                                {data?.creditUsed !== undefined && data?.creditUsed !== null && data?.creditUsed !== 0 && (
                                     <Box
                                         style={{
                                             width: '100%',

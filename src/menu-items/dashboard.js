@@ -346,7 +346,7 @@ const dashboard = {
         },
         {
             id: 'CustomerNotification',
-            title: 'Customer Notification',
+            title: 'Notifications',
             type: 'item',
             url: '/customernotification',
             icon: CreditCardIcon,

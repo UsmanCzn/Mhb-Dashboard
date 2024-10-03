@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Chip, IconButton, Menu, MenuItem } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
-import moment from 'moment/moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
+import moment from 'moment-jalaali';
 
 const CreditRequestTable = () => {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const CreditRequestTable = () => {
     const [creditRequest, setCreditRequest] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [reload, setreload] = useState(false)
+    const [reload, setreload] = useState(false);
     const open = Boolean(anchorEl);
 
     useEffect(() => {
@@ -32,7 +32,7 @@ const CreditRequestTable = () => {
                 console.log(res?.data?.result, 'creditrequest');
                 setCreditRequest(res.data.result);
                 // setWalletDetails(res?.data?.result);
-                setreload(false)
+                setreload(false);
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -82,7 +82,7 @@ const CreditRequestTable = () => {
     };
 
     const updatewalletRequestbyId = async (body) => {
-        setreload(true)
+        setreload(true);
         await customerService
             .UpdateCreditDepositWalletByid(body)
             .then((res) => {
@@ -95,17 +95,15 @@ const CreditRequestTable = () => {
             });
     };
 
-    const getStatus =(param)=>{
-        if(param.isAct && param.isAccepted){
-            return "Accepted"
+    const getStatus = (param) => {
+        if (param.isAct && param.isAccepted) {
+            return 'Accepted';
+        } else if (param.isAct && !param.isAccepted) {
+            return 'Rejected';
+        } else {
+            return 'Pending';
         }
-        else if(param.isAct && !param.isAccepted){
-            return "Rejected"
-        }
-        else{
-            return "Pending"
-        }
-    }
+    };
 
     const columns = [
         {
@@ -126,6 +124,15 @@ const CreditRequestTable = () => {
             headerAlign: 'left'
         },
         {
+            field: 'creationTime',
+            headerName: 'Created Date',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => {
+                return <p>{moment(params.row?.creationTime).format('DD/MM/YYYY')}</p>;
+            }
+        },
+        {
             field: 'increaseBalanceAmount',
             headerName: 'Amount Request',
             flex: 1,
@@ -143,7 +150,7 @@ const CreditRequestTable = () => {
             flex: 1,
             headerAlign: 'left',
             renderCell: (params) => {
-                return getStatus(params.row) ;
+                return getStatus(params.row);
             }
         },
         {
@@ -153,7 +160,7 @@ const CreditRequestTable = () => {
             flex: 0.5,
             headerAlign: 'left',
             renderCell: (params) => {
-                return  !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
+                return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
         }
     ];

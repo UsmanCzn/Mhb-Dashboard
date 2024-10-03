@@ -1,4 +1,5 @@
 import { ApiV1 } from 'helper/api';
+import CreateNotification from 'pages/customer-notification/create-notification';
 
 export default {
     getAllCustomers(data) {
@@ -6,10 +7,25 @@ export default {
             params: data
         });
     },
+
     GetCustomersGroups() {
         return ApiV1.get('services/app/CustomersGroups/GetCustomersGroups');
     },
-
+    GetCustomersGroupsTree() {
+        return ApiV1.get('services/app/CustomersGroups/GetCustomersGroupsTreeView');
+    },
+    GetAllCustomerNotification() {
+        return ApiV1.get('services/app/Notifications/GetAllNotificationsRequests');
+    },
+    CreateNotification(payload) {
+        return ApiV1.post(`services/app/Notifications/NotificationsRequests`, payload);
+    },
+    AcceptNotification(payload) {
+        return ApiV1.post(`services/app/Notifications/SendWebAdminNotifications`, payload);
+    },
+    RejectNotification(payload) {
+        return ApiV1.post(`services/app/Notifications/RejectNotificationsRequests`, payload);
+    },
     getCountries() {
         return ApiV1.get('services/app/Country/GetCountriesDictionary');
     },
@@ -52,44 +68,44 @@ export default {
         return ApiV1.put('services/app/Customer/UpdateCustomerCreditWalletBalance', data);
     },
 
-    getCustomerOrdersByBrand(data){
-        return ApiV1.post('services/app/Store/GetCurrentCustomerOrdersHistoryById',  data
-        )
+    getCustomerOrdersByBrand(data) {
+        return ApiV1.post('services/app/Store/GetCurrentCustomerOrdersHistoryById', data);
     },
 
-    addPointsForCustomer(data){
-        return ApiV1.post(`services/app/Store/AddPointsForUserByAdmin?pointAdded=${data.pointAdded}&brandId=${data.brandId}&customerId=${data.customerId}`);
+    addPointsForCustomer(data) {
+        return ApiV1.post(
+            `services/app/Store/AddPointsForUserByAdmin?pointAdded=${data.pointAdded}&brandId=${data.brandId}&customerId=${data.customerId}`
+        );
     },
 
-    getUserPointsCountByUserIdandBrandId$(data){
-        return ApiV1.get(`services/app/Customer/GetUserPointsCountByUserIdandBrandId?userId=${data.userId}&brandId=${data.brandId}`,)
+    getUserPointsCountByUserIdandBrandId$(data) {
+        return ApiV1.get(`services/app/Customer/GetUserPointsCountByUserIdandBrandId?userId=${data.userId}&brandId=${data.brandId}`);
     },
 
-    updateUsedPoints(data){
+    updateUsedPoints(data) {
         return ApiV1.post('services/app/Customer/InsertUserPunchesInfoDetail', data);
     },
 
-    acceptUsedPointsRequest(data){
+    acceptUsedPointsRequest(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerFreeItemsAndPunches', data);
     },
 
-    rejectUsedPointsRequest(data){
+    rejectUsedPointsRequest(data) {
         return ApiV1.put('services/app/Customer/UpdateRejectCustomerFreeItemsAndPunches', data);
     },
-    getUsedPointsRequest(){
+    getUsedPointsRequest() {
         return ApiV1.get('services/app/Customer/GetUserPunchesInfoDetail');
     },
-    getCustomerDetailV3(userId,brandId) {
+    getCustomerDetailV3(userId, brandId) {
         return ApiV1.get('services/app/Customer/GetCustomerDetailsByIdV3', {
             params: {
                 userId: userId,
-                brandId:brandId
+                brandId: brandId
             }
         });
     },
 
-    getComapniesByUserRole (){
-        return ApiV1.get(`services/app/AdminUserManagement/GetCompaniesForCurrentUserUM`)
+    getComapniesByUserRole() {
+        return ApiV1.get(`services/app/AdminUserManagement/GetCompaniesForCurrentUserUM`);
     }
-
 };

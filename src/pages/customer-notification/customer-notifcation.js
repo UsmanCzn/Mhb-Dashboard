@@ -1,93 +1,171 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Grid, Typography, Button, Box, FormControl, InputLabel, Menu, MenuItem, Select, Avatar, Tooltip } from '@mui/material';
+import {
+    Grid,
+    Typography,
+    Button,
+    Box,
+    FormControl,
+    InputLabel,
+    Menu,
+    MenuItem,
+    Select,
+    Avatar,
+    Tooltip,
+    Chip,
+    Stack
+} from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import DataGridComponent from 'components/DataGridComponent';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ServiceFactory } from 'services/index';
+import moment from 'moment-jalaali';
 const CustomerNotification = () => {
     const [selectedBrand, setselectedBrand] = useState({});
     const [reload, setReload] = useState(false);
+    const [customerGroup, setCustomerGroup] = useState([]);
+    const customerService = ServiceFactory.get('customer');
+
     const navigate = useNavigate();
 
-    const [notifications, setNotifications] = useState([
-        {
-            title: 'tile',
-            image: 'https://syyve.blob.core.windows.net/users-avatar/default-user.png',
-            text: 'text here text here',
-            groups: [{ name: 'Group 1' }, { name: 'Group 2' }],
-            date: 'sads',
-            id: 1
-        }
-    ]);
+    const [notifications, setNotifications] = useState([]);
+    const [selectedNotification, setselectedNotification] = useState();
     const [anchorEl, setAnchorEl] = useState(null);
-    const { brandsList } = useFetchBrandsList(reload);
     const open = Boolean(anchorEl);
-    const fetchNotifications = async () => {};
+    const fetchData = async () => {
+        setReload(true);
+        try {
+            const [customerGroupsResponse, notificationsResponse] = await Promise.all([
+                customerService.GetCustomersGroups(),
+                customerService.GetAllCustomerNotification()
+            ]);
+
+            // Process customer groups
+            if (customerGroupsResponse) {
+                const tempGroup = customerGroupsResponse.data.result.data.data.filter((group) => group.type === 'Base');
+                setCustomerGroup(tempGroup);
+            }
+
+            // Process notifications
+            if (notificationsResponse) {
+                setNotifications(notificationsResponse.data.result);
+            }
+            setReload(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    const acceptNotification = async (data) => {
+        try {
+            const response = await customerService.AcceptNotification(data);
+            if (response) {
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const rejecttNotification = async (data) => {
+        try {
+            const response = await customerService.RejectNotification(data);
+            if (response) {
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, []);
     const handleClick = (event, params) => {
+        setselectedNotification(params.row);
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (data) => {
-        if (!data.modal && data.route) {
-            navigate(`/createNotification`);
-        } else if (data?.name == 'Edit Brand') {
-            setUpdateData(brand);
-            setUpdate(true);
-            setModalOpen(true);
+        console.log(data);
+        const payload = {
+            notificationMessage: selectedNotification.notificationMessage,
+            notificationTitle: selectedNotification.notificationTitle,
+            notificationMessageNative: selectedNotification.notificationMessageNative,
+            notificationTitleNative: selectedNotification.notificationMessageNative,
+            notificationRequestid: selectedNotification.id,
+            comments: selectedNotification.comments,
+            notificationType: selectedNotification.notificationType,
+            branchId: selectedNotification.branchId,
+            brandId: selectedNotification.brandId ?? 0,
+            notificationDate: selectedNotification.notificationDate,
+            customersGroups: selectedNotification.requestGroup.map((e) => e.requestGroupID)
+        };
+        if (data.name === 'Accept') {
+            acceptNotification(payload);
+        } else if (data.name === 'Reject') {
+            rejecttNotification(payload);
         }
+
         setAnchorEl(null);
     };
-    useEffect(() => {
-        if (brandsList[0]?.id) {
-            setselectedBrand(brandsList[0]);
-        }
-    }, [brandsList]);
 
     const columns = [
         {
-            field: 'image',
-            headerName: 'Image',
-            headerAlign: 'left',
-            renderCell: ({ row }) => {
-                const handleError = (event) => {
-                    event.target.src = 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'; // Provide a fallback image
-                };
-
-                return (
-                    <img
-                        style={{
-                            width: 40,
-                            height: 40
-                        }}
-                        onError={handleError}
-                        src={row.logoUrl || 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'}
-                        alt="brand logo"
-                    />
-                );
-            }
-        },
-        {
-            field: 'title',
+            field: 'notificationTitle',
             headerName: 'Title',
-            headerAlign: 'left'
+            headerAlign: 'left',
+            flex: 1
         },
         {
-            field: 'text',
+            field: 'notificationMessage',
             headerName: 'Text',
             flex: 1,
             headerAlign: 'left'
         },
         {
-            field: 'groups',
-            headerName: 'Group of Customers',
+            field: 'comments',
+            headerName: 'Comments',
             flex: 1,
             headerAlign: 'left'
         },
         {
-            field: 'date',
-            headerName: 'Date & Time',
+            field: 'notificationDate',
+            headerName: 'Date',
             flex: 1,
-            headerAlign: 'left'
+            headerAlign: 'left',
+            renderCell: (params) => {
+                return <p>{moment(params.row?.notificationDate).format('DD/MM/YYYY')}</p>;
+            }
         },
+        {
+            field: 'groups',
+            headerName: 'Group of Customers',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => {
+                // Find all matching customer groups based on requestGroupID
+                const matchedGroups = customerGroup.filter((group) =>
+                    params.row.requestGroup.some((request) => request?.requestGroupID === group.id)
+                );
+
+                return (
+                    <div sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {matchedGroups.length > 0 ? (
+                            matchedGroups.map((group) => (
+                                <Chip color="primary" key={group.id} label={group.name} style={{ margin: '2px' }} />
+                            ))
+                        ) : (
+                            <Stack direction="row" sx={{ display: 'flex' }} spacing={1}>
+                                <Chip label={group.name} color="primary" />
+                            </Stack>
+                        )}
+                    </div>
+                );
+            }
+        },
+        // {
+        //     field: 'date',
+        //     headerName: 'Date & Time',
+        //     flex: 1,
+        //     headerAlign: 'left'
+        // },
 
         {
             field: 'isRewardMfissisng',
@@ -97,20 +175,24 @@ const CustomerNotification = () => {
             headerAlign: 'left',
 
             renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
+                return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
         }
     ];
 
     const options = [
         {
-            name: 'Edit Brand',
+            name: 'Accept',
+            modal: true
+        },
+        {
+            name: 'Reject',
             modal: true
         }
     ];
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={'auto'}>
                         <Typography fontSize={22} fontWeight={700}>
@@ -154,15 +236,15 @@ const CustomerNotification = () => {
                         </Grid>
                     </Box>
                 </Grid>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
                 <DataGridComponent
-                    rows={brandsList}
+                    rows={notifications}
                     columns={columns}
-                    loading={false}
+                    loading={reload}
                     getRowId={(row) => row.id}
                     rowsPerPageOptions={[10]}
-                    totalRowCount={brandsList?.length ?? 0}
+                    totalRowCount={notifications?.length ?? 0}
                     // fetchCallback={fetchBrandsList}
                     pSize={10}
                     pMode={'client'}

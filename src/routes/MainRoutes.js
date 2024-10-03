@@ -123,8 +123,7 @@ export default function MainRoutes() {
                     <Route path="/credit" element={<Credit />} />
                     <Route path="/levels" element={<LevelIndex />} />
                     <Route path="/bundles" element={<Bundles />} />
-                    <Route path="/customernotification" element={<CustomerNotification />} />
-                    <Route path="/createNotification" element={<CreateNotification />} />
+                    <Route path="/customernotification" element={<CreateNotification />} />
                 </Route>
             </Route>
 
