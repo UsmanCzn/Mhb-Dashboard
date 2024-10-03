@@ -343,6 +343,15 @@ const dashboard = {
             icon: CreditCardIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
+        },
+        {
+            id: 'CustomerNotification',
+            title: 'Notifications',
+            type: 'item',
+            url: '/customernotification',
+            icon: CreditCardIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
         }
     ]
 };
