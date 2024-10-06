@@ -15,6 +15,7 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER,COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 // icons
 const icons = {
     DashboardOutlined
@@ -349,7 +350,7 @@ const dashboard = {
             title: 'Notifications',
             type: 'item',
             url: '/customernotification',
-            icon: CreditCardIcon,
+            icon: NotificationsIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
         }

@@ -46,8 +46,7 @@ import VechileBrand from 'pages/driveThru/vechile-brand'
 import VechileColor from 'pages/driveThru/vechile-color';
 import CustomerNotification from 'pages/customer-notification/customer-notifcation';
 import CreateNotification from '../pages/customer-notification/create-notification';
-import CustomerNotification from 'pages/customer-notification/customer-notifcation';
-import CreateNotification from '../pages/customer-notification/create-notification';
+
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));

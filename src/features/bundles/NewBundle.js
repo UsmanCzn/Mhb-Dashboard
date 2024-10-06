@@ -35,30 +35,31 @@ const NewBundle = ({ modal, setModal, setReload, selectedBrand, editItem,isEditi
 
     const [data, setData] = useState({
         brandId: selectedBrand?.id,
-        bundleImageUrl:null,
-        bundleName: '', 
+        bundleImageUrl: null,
+        bundleName: '',
+        bundleNameNative: '',
         price: 0,
-         validityDays: 0,
-  quantity: 0,
-  discountUpTo: 0,
-  startDate: new Date(),
-  endDate: getNextYearDate(),
-        bundleItems:[]
+        validityDays: 0,
+        quantity: 0,
+        discountUpTo: 0,
+        startDate: new Date(),
+        endDate: getNextYearDate(),
+        bundleItems: []
     });
     const { productTypes } = useFetchProductTypeList(true, selectedBrand);
     const { productsList } = useFetchProductsList(true, selectedBrand);
 
     const [groupValue, setGroupValue] = useState(null);
     const [productValue, setProductValue] = useState(null);
-    const [productSubtypes,setProductSubtypes]=useState([])
-    
+    const [productSubtypes, setProductSubtypes] = useState([]);
+
     useEffect(() => {
         if (productTypes) {
-          // Extract all subTypes into a single array
-          const extractedSubtypes = productTypes.flatMap((type) => type.subTypes || []);
-          setProductSubtypes(extractedSubtypes);
+            // Extract all subTypes into a single array
+            const extractedSubtypes = productTypes.flatMap((type) => type.subTypes || []);
+            setProductSubtypes(extractedSubtypes);
         }
-      }, [productTypes]); 
+    }, [productTypes]);
     const handleChange = (event) => {
         setGroupValue(event.target.value);
     };
@@ -82,164 +83,157 @@ const NewBundle = ({ modal, setModal, setReload, selectedBrand, editItem,isEditi
     const getSelectedValuesString = () => {
         return selectedValues.join(', ');
     };
- 
+
     useEffect(() => {
-        if(isEditing&&editItem !== undefined){
-            setData({ 
+        if (isEditing && editItem !== undefined) {
+            setData({
                 ...data,
-                id:editItem?.id,
+                id: editItem?.id,
                 brandId: selectedBrand?.id,
                 // bundleImageUrl:editItem?.bundleImageUrl,
-                bundleName: editItem?.bundleName, 
+                bundleName: editItem?.bundleName,
+                bundleNameNative: editItem?.bundleNameNative,
                 price: editItem?.price,
-                 validityDays: editItem?.validityDays,
-          quantity: editItem?.quantity,
-          discountUpTo: editItem?.discountUpTo,
-          startDate: editItem?.startDate,
-          endDate: editItem?.endDate,
-                bundleItems:editItem?.bundleItems
-            })
-        }
-        else{
+                validityDays: editItem?.validityDays,
+                quantity: editItem?.quantity,
+                discountUpTo: editItem?.discountUpTo,
+                startDate: editItem?.startDate,
+                endDate: editItem?.endDate,
+                bundleItems: editItem?.bundleItems
+            });
+        } else {
             setData({
                 brandId: selectedBrand?.id,
-                bundleImageUrl:null,
-                bundleName: '', 
+                bundleImageUrl: null,
+                bundleName: '',
+                bundleNameNative: '',
                 price: 0,
-                 validityDays: 0,
-          quantity: 0,
-          discountUpTo: 0,
-          startDate: new Date(),
-          endDate: getNextYearDate(),
-                bundleItems:[]
-            })
+                validityDays: 0,
+                quantity: 0,
+                discountUpTo: 0,
+                startDate: new Date(),
+                endDate: getNextYearDate(),
+                bundleItems: []
+            });
         }
-    }, [editItem,isEditing]);
+    }, [editItem, isEditing]);
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [err, setErr] = useState('');
 
+    const addProduct = () => {
+        const newProduct = {
+            productSubCategory: null,
+            productId: productValue?.id,
+            orderValue: 1,
+            ...productValue
+        };
 
-    const addProduct = ()=>{
-       
- const newProduct = {
-    productSubCategory:  null,   
-    productId: productValue?.id  , 
-    "orderValue": 1,                      
-    ...productValue,   
-};
- 
-setData((prevData) => ({
-    ...prevData,
-    bundleItems: [...prevData.bundleItems, newProduct]
-}));
-    }
+        setData((prevData) => ({
+            ...prevData,
+            bundleItems: [...prevData.bundleItems, newProduct]
+        }));
+    };
 
-  
-     
-    const addProductSubType = ()=>{
-      
- const newProduct = {
-    productSubCategory: groupValue?.id,   
-    subCategoryName:groupValue?.name,
-    name:groupValue?.name,
-    subCategoryImage:groupValue?.imageUrl,
-    productId: null, 
-    "orderValue": 1,                      
-    // ...productValue,   
-};
- 
-setData((prevData) => ({
-    ...prevData,
-    bundleItems: [...prevData.bundleItems, newProduct]
-}));
-    }
+    const addProductSubType = () => {
+        const newProduct = {
+            productSubCategory: groupValue?.id,
+            subCategoryName: groupValue?.name,
+            name: groupValue?.name,
+            subCategoryImage: groupValue?.imageUrl,
+            productId: null,
+            orderValue: 1
+            // ...productValue,
+        };
+
+        setData((prevData) => ({
+            ...prevData,
+            bundleItems: [...prevData.bundleItems, newProduct]
+        }));
+    };
 
     const removeItemFromBundle = (itemId) => {
         setData((prevData) => ({
             ...prevData,
-            bundleItems: prevData.bundleItems.filter((item) => item.id !== itemId),
+            bundleItems: prevData.bundleItems.filter((item) => item.id !== itemId)
         }));
     };
     const createNewBundle = async () => {
         // Create a new payload by copying the data and modifying the bundleItems array
-      
+
         let payload = {
             ...data,
-            brandId:selectedBrand?.id,
+            brandId: selectedBrand?.id,
             bundleItems: data.bundleItems.map((item) => ({
                 productSubCategory: item.productSubCategory || 0, // Set productSubCategory from productSubTypeId
-                productId: item.productId || 0,    
+                productId: item.productId || 0,
                 // ...item,
-                orderValue:1,
-                
+                orderValue: 1
+
                 // Set productId from id
             }))
         };
         // console.log(payload,"paooo");
-         
-        if(p1!=null){ 
-    
-        await fileService
-        .uploadBranchLogo(p1)
-        .then((res) => {
-            payload.bundleImageUrl = res.data?.result;
-        })
-        .catch((err) => {
-            console.log(err.response.data);
-        });
-    }
+
+        if (p1 != null) {
+            await fileService
+                .uploadBranchLogo(p1)
+                .then((res) => {
+                    payload.bundleImageUrl = res.data?.result;
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                });
+        }
         // Call the reward service to add a new bundle
-        await rewardService.addNewBundle(payload)
+        await rewardService
+            .addNewBundle(payload)
             .then((res) => {
-                setReload(prev => !prev);
+                setReload((prev) => !prev);
                 setModal(false);
             })
             .catch((err) => {
                 console.log(err);
                 enqueueSnackbar(
-                    err?.response?.data?.error?.message
-                        ? err?.response?.data?.error?.message
-                        : "Something went wrong, try again!",
+                    err?.response?.data?.error?.message ? err?.response?.data?.error?.message : 'Something went wrong, try again!',
                     {
-                        variant: 'error',
+                        variant: 'error'
                     }
                 );
             });
     };
     const updateBundle = async () => {
         // Create a new payload by copying the data and modifying the bundleItems array
-        console.log(data,"da");
+        console.log(data, 'da');
         let payload = {
             ...data,
-            brandId:selectedBrand?.id,
-            bundleItems: data.bundleItems 
+            brandId: selectedBrand?.id,
+            bundleItems: data.bundleItems
         };
-    
-        if(p1!=null){ 
-        await fileService
-        .uploadBranchLogo(p1)
-        .then((res) => {
-            payload.bundleImageUrl = res.data?.result;
-        })
-        .catch((err) => {
-            console.log(err.response.data);
-        });
-    }
+
+        if (p1 != null) {
+            await fileService
+                .uploadBranchLogo(p1)
+                .then((res) => {
+                    payload.bundleImageUrl = res.data?.result;
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                });
+        }
         // Call the reward service to add a new bundle
-        await rewardService.updateBundle(payload)
+        await rewardService
+            .updateBundle(payload)
             .then((res) => {
-                setReload(prev => !prev);
+                setReload((prev) => !prev);
                 setModal(false);
             })
             .catch((err) => {
                 console.log(err);
                 enqueueSnackbar(
-                    err?.response?.data?.error?.message
-                        ? err?.response?.data?.error?.message
-                        : "Something went wrong, try again!",
+                    err?.response?.data?.error?.message ? err?.response?.data?.error?.message : 'Something went wrong, try again!',
                     {
-                        variant: 'error',
+                        variant: 'error'
                     }
                 );
             });
@@ -256,211 +250,185 @@ setData((prevData) => ({
                 </Grid>
 
                 <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Bundle Name"
-                                        variant="outlined"
-                                        value={data.bundleName}
-                                        onChange={(e) => setData({ ...data, bundleName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        type="number"
-                                        label="Bundle Price"
-                                        variant="outlined"
-                                        value={data.price}
-                                        onChange={(e) => setData({ ...data, price: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        type="number"
-                                        fullWidth
-                                        label="Bundle Validity (Days)"
-                                        variant="outlined"
-                                        value={data.validityDays}
-                                        onChange={(e) => setData({ ...data, validityDays: e.target.value })}
-                                    />
-                                </Grid>
-                            </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Bundle Name"
+                                variant="outlined"
+                                value={data.bundleName}
+                                onChange={(e) => setData({ ...data, bundleName: e.target.value })}
+                            />
                         </Grid>
-                        <Grid item xs={12} my={2}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Quantity"
-                                        variant="outlined"
-                                        value={data.quantity}
-                                        onChange={(e) => setData({ ...data, quantity: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Discount"
-                                        variant="outlined"
-                                        value={data.discountUpTo}
-                                        onChange={(e) => setData({ ...data, discountUpTo: e.target.value })}
-                                    />
-                                </Grid>
-                                 
-                            </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Bundle Native Name"
+                                variant="outlined"
+                                value={data.bundleNameNative}
+                                onChange={(e) => setData({ ...data, bundleNameNative: e.target.value })}
+                            />
                         </Grid>
-{ 
-isEditing?
-null
-:
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4} mt={2}>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                type="number"
+                                label="Bundle Price"
+                                variant="outlined"
+                                value={data.price}
+                                onChange={(e) => setData({ ...data, price: e.target.value })}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                type="number"
+                                fullWidth
+                                label="Bundle Validity (Days)"
+                                variant="outlined"
+                                value={data.validityDays}
+                                onChange={(e) => setData({ ...data, validityDays: e.target.value })}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} my={2}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Quantity"
+                                variant="outlined"
+                                value={data.quantity}
+                                onChange={(e) => setData({ ...data, quantity: e.target.value })}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Discount"
+                                variant="outlined"
+                                value={data.discountUpTo}
+                                onChange={(e) => setData({ ...data, discountUpTo: e.target.value })}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                {isEditing ? null : (
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={4} mt={2}>
                                 <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">{"Select Category"}</InputLabel>
-             <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          multiple={ false}
-          value={groupValue}
-          label={"Select Category"}
-          required={ true}
-          onChange={handleChange}
-        >
-            {
-             productSubtypes?.map((row, index) => { 
-                    return (
-                        <MenuItem value={ 
-                        row
-                        } >
-                          { row?.name  
-                          }
-                          </MenuItem>
-                    )
-             }
-             )
-            }
-           
-        </Select>
-        </FormControl>
-                                </Grid>
-                                
-                                <Grid item xs={4} mt={2}> 
-                                            <Button onClick={() => addProductSubType()}  >
-                                                Save
-                                            </Button> 
-                                </Grid>
+                                    <InputLabel id="demo-simple-select-label">{'Select Category'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        multiple={false}
+                                        value={groupValue}
+                                        label={'Select Category'}
+                                        required={true}
+                                        onChange={handleChange}
+                                    >
+                                        {productSubtypes?.map((row, index) => {
+                                            return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={4} mt={2}>
+                                <Button onClick={() => addProductSubType()}>Save</Button>
                             </Grid>
                         </Grid>
-                        }
-                        { 
-isEditing?
-null
-:
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                 
-                                <Grid item xs={4} mt={2}>
+                    </Grid>
+                )}
+                {isEditing ? null : (
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={4} mt={2}>
                                 <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">{"Select Item"}</InputLabel>
-             <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          multiple={ false}
-          value={productValue}
-          label={"Select Item"}
-          required={ true}
-          onChange={handleProductChange}
-        >
-            {
-             productsList?.map((row, index) => { 
-                    return (
-                        <MenuItem value={ 
-                        row
-                        } >
-                          { row?.name  
-                          }
-                          </MenuItem>
-                    )
-             }
-             )
-            }
-           
-        </Select>
-        </FormControl>
-                                </Grid>
-                                <Grid item xs={4} mt={2}> 
-                                            <Button onClick={() => addProduct()}  >
-                                                Save
-                                            </Button> 
-                                </Grid>
+                                    <InputLabel id="demo-simple-select-label">{'Select Item'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        multiple={false}
+                                        value={productValue}
+                                        label={'Select Item'}
+                                        required={true}
+                                        onChange={handleProductChange}
+                                    >
+                                        {productsList?.map((row, index) => {
+                                            return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={4} mt={2}>
+                                <Button onClick={() => addProduct()}>Save</Button>
                             </Grid>
                         </Grid>
-                        }
+                    </Grid>
+                )}
 
-                        { !isEditing && data?.bundleItems?.map((row, index) => {
-                                return (
-                                    <Grid container spacing={2} my={1}>
-                                        <Grid item xs={3}>
-                                             
-                                            <Box border={0.8} borderRadius={1} p={1}>
-                                                <Typography variant="body1">
-                                                    {row?.name}
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                        
-                                        <Grid item xs={3}>
-                                            <Button onClick={() =>  removeItemFromBundle(row?.id)} color="error">
-                                                remove
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                );
-                            })}
+                {!isEditing &&
+                    data?.bundleItems?.map((row, index) => {
+                        return (
+                            <Grid container spacing={2} my={1}>
+                                <Grid item xs={3}>
+                                    <Box border={0.8} borderRadius={1} p={1}>
+                                        <Typography variant="body1">{row?.name}</Typography>
+                                    </Box>
+                                </Grid>
 
-<Grid item xs={12} >
-                            <Box
-                                sx={{
-                                    width: '60%',
-                                    height: 200,
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    mt: 2,
-                                    backgroundColor: '#eee',
-                                    ml: '20%'
-                                }}
-                            >
-                                <img
-                                    src={data?.bundleImageUrl}
-                                    style={{
-                                        width: 100,
-                                        height: 70
-                                    }}
-                                    alt="img"
-                                />
+                                <Grid item xs={3}>
+                                    <Button onClick={() => removeItemFromBundle(row?.id)} color="error">
+                                        remove
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        );
+                    })}
 
-                                <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
+                <Grid item xs={12}>
+                    <Box
+                        sx={{
+                            width: '60%',
+                            height: 200,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            mt: 2,
+                            backgroundColor: '#eee',
+                            ml: '20%'
+                        }}
+                    >
+                        <img
+                            src={data?.bundleImageUrl}
+                            style={{
+                                width: 100,
+                                height: 70
+                            }}
+                            alt="img"
+                        />
 
-                                <input
-                                    type="file"
-                                    value={data.bundleImageUrl}
-                                    onChange={async (e) => {
-                                        setP1(e.currentTarget.files[0]);
-                                    }}
-                                />
-                            </Box>
-                        </Grid>
-                <Grid container spacing={4}  mt={2}>
+                        <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
+
+                        <input
+                            type="file"
+                            value={data.bundleImageUrl}
+                            onChange={async (e) => {
+                                setP1(e.currentTarget.files[0]);
+                            }}
+                        />
+                    </Box>
+                </Grid>
+                <Grid container spacing={4} mt={2}>
                     <Grid item xs={12}>
                         <Grid container>
                             <Grid item xs={8} />
@@ -471,7 +439,7 @@ null
                                     </Button>
                                 </Grid>
                                 <Grid item>
-                                    <Button primay variant="contained" onClick={isEditing?updateBundle:createNewBundle}>
+                                    <Button primay variant="contained" onClick={isEditing ? updateBundle : createNewBundle}>
                                         Save
                                     </Button>
                                 </Grid>

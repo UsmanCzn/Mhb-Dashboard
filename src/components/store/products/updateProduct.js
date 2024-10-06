@@ -81,6 +81,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         punchesForPurchase: 0,
         commentAllowed: true,
         productDescription: '',
+        productDescriptionNative:'',
         productQtyWithBranchs: [],
         productSubTypeId: 0,
         type: 0,
@@ -206,6 +207,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             punchesForPurchase: updateData?.punchesForPurchase,
             commentAllowed: updateData?.commentAllowed,
             productDescription: updateData?.productDescription ? updateData?.productDescription : '',
+            productDescriptionNative: updateData?.productDescriptionNative ? updateData?.productDescriptionNative : '',
             productQtyWithBranchs: updateData?.productQtyWithBranchs?.map((obj) => obj?.branchid),
             productSubTypeId: updateData?.productSubTypeId,
             productTypeId: updateData?.productTypeId,
@@ -396,6 +398,18 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                         type="text"
                                         value={data.productDescription}
                                         onChange={(e) => setData({ ...data, productDescription: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        multiline
+                                        label="Product Description Native"
+                                        variant="outlined"
+                                        type="text"
+                                        value={data.productDescriptionNative}
+                                        onChange={(e) => setData({ ...data, productDescriptionNative: e.target.value })}
                                     />
                                 </Grid>
                             </Grid>
