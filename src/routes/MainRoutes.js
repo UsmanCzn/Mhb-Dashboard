@@ -46,7 +46,7 @@ import VechileBrand from 'pages/driveThru/vechile-brand'
 import VechileColor from 'pages/driveThru/vechile-color';
 import CustomerNotification from 'pages/customer-notification/customer-notifcation';
 import CreateNotification from '../pages/customer-notification/create-notification';
-
+import SystemNotification from '../pages/notification/systemNotification';
 import AllNotification from 'pages/notification/all-notification';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -126,8 +126,8 @@ export default function MainRoutes() {
                     <Route path="/levels" element={<LevelIndex />} />
                     <Route path="/bundles" element={<Bundles />} />
                     <Route path="/customernotification" element={<CreateNotification />} />
-                    <Route path="/notification" element={<AllNotification />} />
-                    {/* <Route path="/notification" element={<Bundles />} /> */}
+                    <Route path="/all-notifications" element={<AllNotification />} />
+                    <Route path="/notification" element={<SystemNotification />} />
                 </Route>
             </Route>
 

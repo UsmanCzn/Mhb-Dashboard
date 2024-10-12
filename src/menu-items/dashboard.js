@@ -16,7 +16,7 @@ import ShopTwoIcon from '@mui/icons-material/ShopTwo';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import AddAlertIcon from '@mui/icons-material/AddAlert';
 // icons
 const icons = {
     DashboardOutlined
@@ -339,29 +339,13 @@ const dashboard = {
         },
         {
             id: 'notifcations',
-            title: 'Notifications',
-            type: 'collapse',
-            icon: NotificationsIcon ,
+            title: 'System Notifications',
+            type: 'item',
+            url: '/notification',
+            type: 'item',
+            icon: AddAlertIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
-            children: [
-                {
-                    id: 'allNotifcation',
-                    title: 'All Notfications',
-                    type: 'item',
-                    url: '/notification',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
-                },
-                {
-                    id: 'customer-notification',
-                    title: 'Customer Notification',
-                    type: 'item',
-                    url: '/customerNotification',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN]
-                }
-            ]
+            forUserRoles: [ADMIN]
         },
         {
             id: 'CreditBalance',
