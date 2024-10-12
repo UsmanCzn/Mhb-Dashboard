@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -19,10 +19,12 @@ import {
     Typography,
     useMediaQuery
 } from '@mui/material';
-
+import userServices from 'services/userServices';
 // project import
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 // assets
 import { BellOutlined, CloseOutlined, GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
@@ -48,12 +50,108 @@ const actionSX = {
 
 const Notification = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
-
+    const [cookies, setCookie] = useCookies();
+    const [notificationCount, setnotificationCount] = useState(0);
+    const userId = cookies['userId'];
+    const getNotifications = async () => {
+        const response = await userServices.getSystemNotifications(userId);
+        if (response) {
+            const noOfNotification = response.data.result.filter((e) => !e.isRead).length ?? 0;
+            setnotificationCount(noOfNotification);
+            response.data.result.slice(0, 4);
+            setNotifications(response.data.result);
+            // setNotifications([
+            //     {
+            //         id: 1,
+            //         notificationTypeId: 1,
+            //         receiverId: 101,
+            //         receiverName: 'John Doe',
+            //         notificationMessage: 'Your order has been shipped.',
+            //         notificationMessageNative: 'Su pedido ha sido enviado.',
+            //         creationTime: '2024-10-08T04:35:05.711Z',
+            //         isSent: true,
+            //         sentTime: '2024-10-08T04:35:05.711Z',
+            //         isAdminNotification: false,
+            //         isRead: false
+            //     },
+            //     {
+            //         id: 2,
+            //         notificationTypeId: 2,
+            //         receiverId: 102,
+            //         receiverName: 'Jane Smith',
+            //         notificationMessage: 'Your account has been activated.',
+            //         notificationMessageNative: 'Su cuenta ha sido activada.',
+            //         creationTime: '2024-10-07T11:20:30.111Z',
+            //         isSent: true,
+            //         sentTime: '2024-10-07T11:25:45.711Z',
+            //         isAdminNotification: true,
+            //         isRead: true
+            //     },
+            //     {
+            //         id: 3,
+            //         notificationTypeId: 3,
+            //         receiverId: 103,
+            //         receiverName: 'Michael Brown',
+            //         notificationMessage: 'Your password has been reset.',
+            //         notificationMessageNative: 'Tu contraseña ha sido restablecida.',
+            //         creationTime: '2024-10-06T14:45:20.611Z',
+            //         isSent: true,
+            //         sentTime: '2024-10-06T14:50:10.711Z',
+            //         isAdminNotification: false,
+            //         isRead: true
+            //     },
+            //     {
+            //         id: 4,
+            //         notificationTypeId: 1,
+            //         receiverId: 104,
+            //         receiverName: 'Emily Davis',
+            //         notificationMessage: 'A new promotion is available.',
+            //         notificationMessageNative: 'Una nueva promoción está disponible.',
+            //         creationTime: '2024-10-05T09:10:00.511Z',
+            //         isSent: true,
+            //         sentTime: '2024-10-05T09:15:30.711Z',
+            //         isAdminNotification: false,
+            //         isRead: false
+            //     },
+            //     {
+            //         id: 5,
+            //         notificationTypeId: 2,
+            //         receiverId: 105,
+            //         receiverName: 'Chris Johnson',
+            //         notificationMessage: 'Your subscription has been renewed.',
+            //         notificationMessageNative: 'Su suscripción ha sido renovada.',
+            //         creationTime: '2024-10-04T16:00:50.411Z',
+            //         isSent: true,
+            //         sentTime: '2024-10-04T16:05:00.711Z',
+            //         isAdminNotification: true,
+            //         isRead: true
+            //     }
+            // ]);
+        }
+    };
+    useEffect(() => {
+        getNotifications();
+    }, []);
+    useEffect(() => {}, [notificationCount]);
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
+        ReadNotifications();
+    };
+    const ReadNotifications = async () => {
+        try {
+            const unreadNotifications = notifications.filter((e) => !e.isRead);
+            await Promise.all(unreadNotifications.map((notification) => userServices.updateReadNotification(notification.id, userId)));
+            // All notifications are updated
+        } catch (error) {
+            console.error('Error updating notifications:', error);
+        }
+        getNotifications();
     };
 
     const handleClose = (event) => {
@@ -61,6 +159,29 @@ const Notification = () => {
             return;
         }
         setOpen(false);
+    };
+    const getRelativeTime = (date) => {
+        const now = new Date();
+        const elapsed = now.getTime() - date.getTime();
+
+        const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+        const units = [
+            { unit: 'year', ms: 1000 * 60 * 60 * 24 * 365 },
+            { unit: 'month', ms: 1000 * 60 * 60 * 24 * 30 },
+            { unit: 'day', ms: 1000 * 60 * 60 * 24 },
+            { unit: 'hour', ms: 1000 * 60 * 60 },
+            { unit: 'minute', ms: 1000 * 60 },
+            { unit: 'second', ms: 1000 }
+        ];
+
+        for (const { unit, ms } of units) {
+            const value = Math.floor(elapsed / ms);
+            if (value !== 0) {
+                return rtf.format(-value, unit);
+            }
+        }
+        return 'just now';
     };
 
     const iconBackColorOpen = 'grey.300';
@@ -71,14 +192,14 @@ const Notification = () => {
             <IconButton
                 disableRipple
                 color="secondary"
-                sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor }}
+                sx={{ color: 'text.primary' }}
                 aria-label="open profile"
                 ref={anchorRef}
                 aria-controls={open ? 'profile-grow' : undefined}
                 aria-haspopup="true"
                 onClick={handleToggle}
             >
-                <Badge badgeContent={4} color="primary">
+                <Badge badgeContent={notificationCount} color="primary">
                     <BellOutlined />
                 </Badge>
             </IconButton>
@@ -136,127 +257,41 @@ const Notification = () => {
                                             }
                                         }}
                                     >
-                                        <ListItemButton>
-                                            <ListItemAvatar>
-                                                <Avatar
-                                                    sx={{
-                                                        color: 'success.main',
-                                                        bgcolor: 'success.lighter'
-                                                    }}
-                                                >
-                                                    <GiftOutlined />
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="h6">
-                                                        It&apos;s{' '}
-                                                        <Typography component="span" variant="subtitle1">
-                                                            Cristina danny&apos;s
-                                                        </Typography>{' '}
-                                                        birthday today.
-                                                    </Typography>
-                                                }
-                                                secondary="2 min ago"
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <Typography variant="caption" noWrap>
-                                                    3:00 AM
-                                                </Typography>
-                                            </ListItemSecondaryAction>
-                                        </ListItemButton>
-                                        <Divider />
-                                        <ListItemButton>
-                                            <ListItemAvatar>
-                                                <Avatar
-                                                    sx={{
-                                                        color: 'primary.main',
-                                                        bgcolor: 'primary.lighter'
-                                                    }}
-                                                >
-                                                    <MessageOutlined />
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="h6">
-                                                        <Typography component="span" variant="subtitle1">
-                                                            Aida Burg
-                                                        </Typography>{' '}
-                                                        commented your post.
-                                                    </Typography>
-                                                }
-                                                secondary="5 August"
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <Typography variant="caption" noWrap>
-                                                    6:00 PM
-                                                </Typography>
-                                            </ListItemSecondaryAction>
-                                        </ListItemButton>
-                                        <Divider />
-                                        <ListItemButton>
-                                            <ListItemAvatar>
-                                                <Avatar
-                                                    sx={{
-                                                        color: 'error.main',
-                                                        bgcolor: 'error.lighter'
-                                                    }}
-                                                >
-                                                    <SettingOutlined />
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="h6">
-                                                        Your Profile is Complete &nbsp;
-                                                        <Typography component="span" variant="subtitle1">
-                                                            60%
-                                                        </Typography>{' '}
-                                                    </Typography>
-                                                }
-                                                secondary="7 hours ago"
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <Typography variant="caption" noWrap>
-                                                    2:45 PM
-                                                </Typography>
-                                            </ListItemSecondaryAction>
-                                        </ListItemButton>
-                                        <Divider />
-                                        <ListItemButton>
-                                            <ListItemAvatar>
-                                                <Avatar
-                                                    sx={{
-                                                        color: 'primary.main',
-                                                        bgcolor: 'primary.lighter'
-                                                    }}
-                                                >
-                                                    C
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="h6">
-                                                        <Typography component="span" variant="subtitle1">
-                                                            Cristina Danny
-                                                        </Typography>{' '}
-                                                        invited to join{' '}
-                                                        <Typography component="span" variant="subtitle1">
-                                                            Meeting.
-                                                        </Typography>
-                                                    </Typography>
-                                                }
-                                                secondary="Daily scrum meeting time"
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <Typography variant="caption" noWrap>
-                                                    9:10 PM
-                                                </Typography>
-                                            </ListItemSecondaryAction>
-                                        </ListItemButton>
-                                        <Divider />
-                                        <ListItemButton sx={{ textAlign: 'center', py: `${12}px !important` }}>
+                                        {notifications.length > 0 ? (
+                                            notifications.slice(0, 4).map((item) => (
+                                                <React.Fragment key={item.id}>
+                                                    {' '}
+                                                    {/* Ensure to use a unique key for each item */}
+                                                    <ListItemButton>
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography variant="h6">
+                                                                    <Typography component="span" variant="subtitle1">
+                                                                        {item.notificationTitle}
+                                                                    </Typography>
+                                                                </Typography>
+                                                            }
+                                                            secondary={item.notificationMessage}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <Typography variant="caption" noWrap>
+                                                                {getRelativeTime(new Date(item.creationTime))}
+                                                            </Typography>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItemButton>
+                                                    <Divider />
+                                                </React.Fragment>
+                                            ))
+                                        ) : (
+                                            <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+                                                No Notifications
+                                            </Typography>
+                                        )}
+
+                                        <ListItemButton
+                                            onClick={() => navigate('/all-notifications')}
+                                            sx={{ textAlign: 'center', py: `${12}px !important` }}
+                                        >
                                             <ListItemText
                                                 primary={
                                                     <Typography variant="h6" color="primary">

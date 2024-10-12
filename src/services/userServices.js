@@ -25,6 +25,13 @@ export default {
     },
 
     getSystemNotifications(id) {
-        return ApiV1.get(`Notifications/GetAllForAdminUserId?currentUserId=${id}`);
+      return ApiV1.get(`services/app/Notifications/GetAllForAdminUserId?currentUserId=${id}`);
+    },
+
+    createSystemNotifications(payload){
+      return ApiV1.post(`services/app/Notifications/CreateNotificationAndSentToAdmins`,payload)
+    },
+    updateReadNotification(nId,cId){
+        return ApiV1.put(`services/app/Notifications/UpdateMarkAsReadByAdmin?notificationId=${nId}&currentUserId=${cId}`)
     }
 };

@@ -135,6 +135,25 @@ const CustomerNotification = () => {
             }
         },
         {
+            field: 'actionTime',
+            headerName: 'Action Time',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => {
+                const actionTime = params.row?.actionTime;
+                const actionType = params.row?.type; // Assuming `type` is available in the row data
+
+                // Handle null or undefined case for actionTime
+                const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+
+                return (
+                    <p>
+                        {formattedTime} {actionType ? `(${actionType})` : ''}
+                    </p>
+                );
+            }
+        },
+        {
             field: 'groups',
             headerName: 'Group of Customers',
             flex: 1,

@@ -13,9 +13,10 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
-import { ADMIN, BRANCH_USER, BRAND_MANAGER,COMPANY_ADMIN } from 'helper/UserRoles';
-import EventIcon from '@mui/icons-material/Event';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
+import EventIcon from '@mui/icons-material/Event';
+import AddAlertIcon from '@mui/icons-material/AddAlert';
 // icons
 const icons = {
     DashboardOutlined
@@ -333,6 +334,16 @@ const dashboard = {
             type: 'item',
             url: '/advertisement',
             icon: ShopTwoIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN]
+        },
+        {
+            id: 'notifcations',
+            title: 'System Notifications',
+            type: 'item',
+            url: '/notification',
+            type: 'item',
+            icon: AddAlertIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },

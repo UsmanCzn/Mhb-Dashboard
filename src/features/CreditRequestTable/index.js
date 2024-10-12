@@ -66,7 +66,7 @@ const CreditRequestTable = () => {
                 isAccepted: true
             };
             updatewalletRequestbyId(body);
-        } else {
+        } else if (data.name === 'Reject') {
             const body = {
                 brandId: selectedRow?.brandId,
                 customerId: selectedRow?.customerId,
@@ -132,6 +132,26 @@ const CreditRequestTable = () => {
                 return <p>{moment(params.row?.creationTime).format('DD/MM/YYYY')}</p>;
             }
         },
+        {
+            field: 'actionTime',
+            headerName: 'Action Time',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => {
+                const actionTime = params.row?.actionTime;
+                const actionType = params.row?.type; // Assuming `type` is available in the row data
+
+                // Handle null or undefined case for actionTime
+                const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+
+                return (
+                    <p>
+                        {formattedTime} {actionType ? `(${actionType})` : ''}
+                    </p>
+                );
+            }
+        },
+
         {
             field: 'increaseBalanceAmount',
             headerName: 'Amount Request',

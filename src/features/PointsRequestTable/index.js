@@ -50,26 +50,26 @@ const PointsRequestTable = () => {
         console.log(data);
         if (data.name == 'Accept') {
             const body = {
-                "id": selectedRow.id,
-                "brandId": selectedRow?.brandId,
-                "customerId": selectedRow?.customerId,
-                "increaseFreeItemsCount": 0,
-                "increasePunchesCount": 0,
-                "pointsUsed": selectedRow.redeemablePoints,
-                "pointsEarned": 0,
-                "comments": ""
+                id: selectedRow.id,
+                brandId: selectedRow?.brandId,
+                customerId: selectedRow?.customerId,
+                increaseFreeItemsCount: 0,
+                increasePunchesCount: 0,
+                pointsUsed: selectedRow.redeemablePoints,
+                pointsEarned: 0,
+                comments: ''
             };
             acceptRequest(body);
-        } else {
+        } else if (data.name == 'Reject') {
             const body = {
-                "id": selectedRow.id,
-                "brandId": selectedRow?.brandId,
-                "customerId": selectedRow?.customerId,
-                "increaseFreeItemsCount": 0,
-                "increasePunchesCount": 0,
-                "pointsUsed": 0,
-                "pointsEarned": 0,
-                "comments": ""
+                id: selectedRow.id,
+                brandId: selectedRow?.brandId,
+                customerId: selectedRow?.customerId,
+                increaseFreeItemsCount: 0,
+                increasePunchesCount: 0,
+                pointsUsed: 0,
+                pointsEarned: 0,
+                comments: ''
             };
             rejectRequest(body);
         }
@@ -81,10 +81,9 @@ const PointsRequestTable = () => {
             .acceptUsedPointsRequest(body)
             .then((res) => {
                 enqueueSnackbar('Request Accepted', {
-                    variant: 'success',
-                  });
+                    variant: 'success'
+                });
                 getPointsRequest();
-
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -96,10 +95,9 @@ const PointsRequestTable = () => {
             .rejectUsedPointsRequest(body)
             .then((res) => {
                 enqueueSnackbar('Request Rejected', {
-                    variant: 'error',
-                  });
+                    variant: 'error'
+                });
                 getPointsRequest();
-
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -130,6 +128,25 @@ const PointsRequestTable = () => {
             headerAlign: 'left'
         },
         {
+            field: 'actionTime',
+            headerName: 'Action Time',
+            flex: 1,
+            headerAlign: 'left',
+            renderCell: (params) => {
+                const actionTime = params.row?.actionTime;
+                const actionType = params.row?.type; // Assuming `type` is available in the row data
+
+                // Handle null or undefined case for actionTime
+                const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+
+                return (
+                    <p>
+                        {formattedTime} {actionType ? `(${actionType})` : ''}
+                    </p>
+                );
+            }
+        },
+        {
             field: 'redeemablePoints',
             headerName: 'Amount Request',
             flex: 1,
@@ -149,7 +166,7 @@ const PointsRequestTable = () => {
             headerAlign: 'left',
 
             renderCell: (params) => {
-                console.log(params.row.isAct,"ssoopd");
+                console.log(params.row.isAct, 'ssoopd');
                 return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
         }
