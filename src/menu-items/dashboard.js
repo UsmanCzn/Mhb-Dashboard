@@ -17,6 +17,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 // icons
 const icons = {
     DashboardOutlined
@@ -364,6 +365,26 @@ const dashboard = {
             icon: NotificationsIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+        },
+        {
+            id: 'subscription',
+            title: 'Subscriptions',
+            type: 'collapse',
+            url: '/subscription',
+            icon: SubscriptionsIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
+            isOpen: false,
+            children: [
+                {
+                    id: 'invoices',
+                    title: 'Invoices',
+                    type: 'item',
+                    url: '/invoices',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER, BRANCH_USER]
+                }
+            ]
         }
     ]
 };
