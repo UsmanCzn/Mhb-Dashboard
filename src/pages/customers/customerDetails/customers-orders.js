@@ -112,11 +112,11 @@ const CustomerOrders = ({ user }) => {
             headerAlign: 'left'
         },
         {
-            field: 'creationDate',
+            field: 'date',
             headerName: 'Date',
             flex: 1.2,
             headerAlign: 'left',
-            renderCell: (params) => <Typography>{moment(params?.row?.creationDate).format('DD-MMM-YYYY hh:mm a')}</Typography>
+            renderCell: (params) => <Typography>{moment(params?.row?.date).format('DD-MMM-YYYY hh:mm a')}</Typography>
         },
         {
             field: 'isHiddven',

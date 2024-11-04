@@ -180,7 +180,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                     }}
                                 >
                                     <Typography variant="h6" fontSize={16}>
-                                        Date :{' ' + moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}
+                                        Date :{' ' + moment(data?.date).format('DD-MMM-YYYY hh:mm a')}
                                     </Typography>
                                 </Box>
                                 <Box

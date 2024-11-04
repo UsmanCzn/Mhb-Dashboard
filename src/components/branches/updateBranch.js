@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Box, Typography, TextField, Grid, Button, Switch } from '@mui/material/index';
+import { Modal, Box, Typography, TextField, Grid, Button, Switch, FormControl, InputLabel, Select, MenuItem } from '@mui/material/index';
 import DropDown from 'components/dropdown';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -46,6 +46,9 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         openTime: '',
         closeTime: '',
         isDelivery: false,
+        DeliveryDistanceKM: 0,
+        DeliveryFee: 0,
+        UsedDeliverySystem: 0,
         user: {
             userName: '',
             name: '',
@@ -176,10 +179,15 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
 
     useEffect(() => {
         if (update) {
+            console.log(updateData, 'updated');
+
             setData({
                 ...data,
                 id: updateData?.id,
                 isDelivery: updateData?.isDelivery,
+                DeliveryDistanceKM: updateData?.deliveryDistanceKM,
+                DeliveryFee: updateData?.deliveryFee,
+                UsedDeliverySystem: updateData?.usedDeliverySystem,
                 name: updateData?.name,
                 nativeName: updateData?.nativeName,
                 selectedCompany: updateData?.selectedCompany,
@@ -499,7 +507,10 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                                     onChange={(event) => {
                                         setData((prev) => ({
                                             ...prev,
-                                            isDelivery: event.target.checked
+                                            isDelivery: event.target.checked,
+                                            DeliveryDistanceKM: 0,
+                                            DeliveryFee: 0,
+                                            UsedDeliverySystem: 0
                                         }));
                                     }}
                                 />
@@ -507,7 +518,49 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                         </Grid>
                     </Grid>
                 </Grid>
-
+                {data.isDelivery && (
+                    <>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Delivery distance in KM"
+                                variant="outlined"
+                                type="number"
+                                value={data.DeliveryDistanceKM}
+                                onChange={(e) => setData({ ...data, DeliveryDistanceKM: e.target.value })}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextField
+                                id="outlined-basic"
+                                fullWidth
+                                label="Delivery Fee"
+                                variant="outlined"
+                                type="number"
+                                value={data.DeliveryFee}
+                                onChange={(e) => setData({ ...data, DeliveryFee: e.target.value })}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <FormControl fullWidth>
+                                <InputLabel id="used-delivery-system-label">Used Delivery System</InputLabel>
+                                <Select
+                                    labelId="used-delivery-system-label"
+                                    id="used-delivery-system-select"
+                                    value={data.UsedDeliverySystem}
+                                    label="Used Delivery System"
+                                    onChange={(e) => setData({ ...data, UsedDeliverySystem: e.target.value })}
+                                >
+                                    <MenuItem value={0}>Manual</MenuItem>
+                                    <MenuItem value={1}>Verdi</MenuItem>
+                                    <MenuItem value={2}>Any</MenuItem>
+                                    {/* Add more options as needed */}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </>
+                )}
                 <Grid item xs={12}>
                     <TextField
                         id="outlined-basic"

@@ -24,6 +24,8 @@ export default function LocationDetail() {
 
         await branchServices.getBranchById(bhid)
             .then((res) => {
+                console.log(res?.data?.result, 'branch');
+                
                 setBranch(res?.data?.result)
             })
             .catch((err) => {

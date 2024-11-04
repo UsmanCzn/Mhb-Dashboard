@@ -15,7 +15,7 @@ import AuthBackground from 'assets/images/auth/AuthBackground';
 
 const AuthWrapper = ({ children }) => (
     <Box sx={{ minHeight: '100vh' }}>
-        <AuthBackground />
+        {/* <AuthBackground /> */}
         <Grid
             container
             direction="column"
@@ -24,9 +24,8 @@ const AuthWrapper = ({ children }) => (
                 minHeight: '100vh'
             }}
         >
-            <Grid item xs={12} sx={{ ml: 3, mt: 3 }}>
-            <Typography variant="h2">AvoRewards</Typography>
-
+            <Grid item xs={12} sx={{ ml: 3, mt: 3, display: 'flex', justifyContent: 'center' }}>
+                <img src="https://syyveprod.blob.core.windows.net/manual/Logo.png" alt="logo" width="200px" />
             </Grid>
             <Grid item xs={12}>
                 <Grid
