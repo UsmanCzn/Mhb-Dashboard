@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@mui/material';
 import { Margin } from '../../../node_modules/@mui/icons-material/index';
 
-const InvoiceTable = () => {
+const InvoiceTable = ({ membershipInvoces }) => {
     // Sample data
     const invoices = [
         {
@@ -38,15 +38,17 @@ const InvoiceTable = () => {
                             <TableCell>Invoice Number</TableCell>
                             <TableCell>Invoice Amount</TableCell>
                             <TableCell>Due Date</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>Invoice PDF</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {invoices.map((invoice, index) => (
+                        {membershipInvoces?.map((invoice, index) => (
                             <TableRow key={index}>
                                 <TableCell>{invoice.invoiceDate}</TableCell>
                                 <TableCell>{invoice.invoiceNumber}</TableCell>
                                 <TableCell>{invoice.invoiceAmount}</TableCell>
+                                <TableCell>{invoice.invoiceAmount}</TableCell> 
                                 <TableCell>{invoice.dueDate}</TableCell>
                                 <TableCell>
                                     <Link href="#" color="primary">
