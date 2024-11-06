@@ -370,19 +370,26 @@ const dashboard = {
             id: 'subscription',
             title: 'Subscriptions',
             type: 'collapse',
-            url: '/subscription',
             icon: SubscriptionsIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
                 {
-                    id: 'invoices',
-                    title: 'Invoices',
+                    id: 'membership',
+                    title: 'Membership',
                     type: 'item',
-                    url: '/invoices',
+                    url: '/membership',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER, BRANCH_USER]
+                    forUserRoles: [ADMIN]
+                },
+                {
+                    id: 'membership-details',
+                    title: 'Membership Details',
+                    type: 'item',
+                    url: '/membership-detail',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
                 }
             ]
         }

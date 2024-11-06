@@ -7,8 +7,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import rewardService from 'services/rewardService';
 import { bindKey } from 'lodash';
 export default function RewardsHistoryTable({ reload, search ,branchId=5 }) {
-  console.log(search);
-  
+
     const navigate = useNavigate();
     const location = useLocation();
     const [loading, setloading] = useState(true)
@@ -69,8 +68,8 @@ export default function RewardsHistoryTable({ reload, search ,branchId=5 }) {
         );
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
     const [customer, setCustomer] = useState({});
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
