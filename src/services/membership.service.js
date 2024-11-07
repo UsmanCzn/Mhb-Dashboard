@@ -10,7 +10,9 @@ export default {
         return ApiV1.post(`services/app/MemberShip/CreateMemberShip`, payload);
     },
     CreateMembershipInvoice(payload) {
-        return ApiV1.post(`services/app/MemberShip/CreateMemberShipInvoice`, payload);
+        return ApiV1.post(
+            `services/app/MemberShip/CreateMemberShipInvoice?memberShipId=${payload.memberShipId}&companyId=${payload.companyId}`
+        );
     },
     getCompanyMembershipById(id) {
         return ApiV1.get(`services/app/MemberShip/GetByCompanyId?companyId=${id}`);
@@ -23,5 +25,8 @@ export default {
     },
     getAllActiveMembershipForAdmin() {
         return ApiV1.get(`services/app/MemberShip/GetAllActiveMemberShipsForAdmin`);
+    },
+    markAspaid(iId,isPaid){
+        return ApiV1.post(`services/app/MemberShip/MarkInvoicePaid?invoiceId=${iId}&isPaid=${isPaid}`)
     }
 };
