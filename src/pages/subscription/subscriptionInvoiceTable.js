@@ -1,66 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Link } from '@mui/material';
 import { Margin } from '../../../node_modules/@mui/icons-material/index';
+import BillingDetailsPopup from './billing-modal';
+import moment from 'moment-jalaali';
+const InvoiceTable = ({ membershipInvoces, getCompanyMembership, getCompanyMembershipInvoices }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [SelectedInvoice, setSelectedInvoice] = useState();
 
-const InvoiceTable = ({ membershipInvoces }) => {
-    // Sample data
-    const invoices = [
-        {
-            invoiceDate: '03/27/2024',
-            invoiceNumber: '009976123',
-            invoiceAmount: 'KWD 40',
-            dueDate: '03/27/2024',
-            invoicePDF: 'View Invoice'
-        },
-        {
-            invoiceDate: '03/27/2024',
-            invoiceNumber: '009976123',
-            invoiceAmount: 'KWD 40',
-            dueDate: '03/27/2024',
-            invoicePDF: 'View Invoice'
-        },
-        {
-            invoiceDate: '03/27/2024',
-            invoiceNumber: '009976123',
-            invoiceAmount: 'KWD 40',
-            dueDate: '03/27/2024',
-            invoicePDF: 'View Invoice'
-        }
-    ];
+    const toggleModal = (invoice) => {
+        setSelectedInvoice(invoice);
+        setIsModalOpen((prev) => !prev);
+    };
 
     return (
-        <Box display="flex" sx={{ marginTop: '15px' }}>
-            <TableContainer component={Paper} sx={{ maxWidth: '90%' }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Invoice Date</TableCell>
-                            <TableCell>Invoice Number</TableCell>
-                            <TableCell>Invoice Amount</TableCell>
-                            <TableCell>Due Date</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Invoice PDF</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {membershipInvoces?.map((invoice, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{invoice.invoiceDate}</TableCell>
-                                <TableCell>{invoice.invoiceNumber}</TableCell>
-                                <TableCell>{invoice.invoiceAmount}</TableCell>
-                                <TableCell>{invoice.invoiceAmount}</TableCell> 
-                                <TableCell>{invoice.dueDate}</TableCell>
-                                <TableCell>
-                                    <Link href="#" color="primary">
-                                        {invoice.invoicePDF}
-                                    </Link>
-                                </TableCell>
+        <>
+            <Box display="flex" sx={{ marginTop: '15px' }}>
+                <TableContainer component={Paper} sx={{ maxWidth: '90%' }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Invoice Date</TableCell>
+                                <TableCell>Invoice Number</TableCell>
+                                <TableCell>Invoice Amount</TableCell>
+                                <TableCell>Due Date</TableCell>
+                                <TableCell>Invoice PDF</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                        </TableHead>
+                        <TableBody>
+                            {membershipInvoces?.map((invoice, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{moment(invoice.creationTime).format('DD/MM/YYYY')}</TableCell>
+                                    <TableCell>{invoice.invoiceNumber}</TableCell>
+                                    <TableCell>{invoice.billableAmount} KWD</TableCell>
+                                    <TableCell>{moment(invoice.dueDate).format('DD/MM/YYYY')}</TableCell>
+                                    <TableCell>
+                                        <Link href="#" onClick={() => toggleModal(invoice)} color="primary">
+                                            View Invoice
+                                            {/* {invoice.invoicePDF} */}
+                                        </Link>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+            <BillingDetailsPopup
+                open={isModalOpen}
+                onClose={toggleModal}
+                invoice={SelectedInvoice}
+                getCompanyMembership={getCompanyMembership}
+                getCompanyMembershipInvoices={getCompanyMembershipInvoices}
+            />
+        </>
     );
 };
 

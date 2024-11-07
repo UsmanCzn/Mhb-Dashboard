@@ -3,9 +3,11 @@ import { Grid, Box, Typography, Button, Card, CardContent, CardHeader } from '@m
 import InvoiceTable from './subscriptionInvoiceTable';
 import { useParams } from 'react-router-dom';
 import membershipService from 'services/membership.service';
-
+import { useAuth, useUser } from 'providers/authProvider';
+import moment from 'moment-jalaali';
 const Subscription = () => {
     const { id } = useParams();
+    const user = useAuth();
     const [membership, setmembership] = useState();
     const [membershipInvoces, setMembershipInvoices] = useState([]);
     useEffect(() => {
@@ -15,7 +17,7 @@ const Subscription = () => {
 
     const getComapnyMembership = async () => {
         try {
-            const resp = await membershipService.getCompanyMembershipById(id);
+            const resp = await membershipService.getCompanyMembershipById(id || user?.user?.companyId);
             setmembership(resp.data.result);
         } catch (err) {
             console.log(err);
@@ -31,9 +33,18 @@ const Subscription = () => {
             console.log(err);
         }
     };
+
+    const getBillingDate = (billdate) => {
+        const creationTime = billdate;
+        const date = new Date(creationTime);
+
+        const month = date.toLocaleString('default', { month: 'long' }); // "November"
+        const year = date.getFullYear(); // 2024
+        return `${month}  ${year}`;
+    };
     return (
         <>
-            <Typography fontSize={22} fontWeight={700}>
+            <Typography fontSize={22} sx={{ marginBottom: '10px' }} fontWeight={700}>
                 Subscription
             </Typography>
             <Box display="flex" gap={4}>
@@ -47,9 +58,9 @@ const Subscription = () => {
                         subheader=""
                     />
                     <CardContent>
-                        <Typography variant="body1">
+                        {/* <Typography variant="body1">
                             <strong>User ID:</strong> 009976123
-                        </Typography>
+                        </Typography> */}
                         <Typography variant="body1">
                             {' '}
                             <strong>Company Name:</strong> {membership?.companyName}
@@ -86,24 +97,28 @@ const Subscription = () => {
                     />
                     <CardContent>
                         <Typography variant="body1">
-                            <strong>Billing Month:</strong> March 2024
+                            <strong>Billing Month:</strong> {getBillingDate(membershipInvoces[0]?.creationTime) ?? 'NA'}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Due Date:</strong> 03/27/2024
+                            <strong>Due Date:</strong> {moment(membershipInvoces[0]?.dueDate).format('DD/MM/YYYY')}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Payable Amount:</strong> KWD 40
+                            <strong>Payable Amount:</strong> KWD{membershipInvoces[0]?.totalAmount}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Last Paid Amount:</strong> KWD 40
+                            <strong>Last Paid Amount:</strong> KWD {membershipInvoces[0]?.totalAmount}
                         </Typography>
-                        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                        {/* <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                             Pay Now
-                        </Button>
+                        </Button> */}
                     </CardContent>
                 </Card>
             </Box>
-            <InvoiceTable membershipInvoces={membershipInvoces}/>
+            <InvoiceTable
+                membershipInvoces={membershipInvoces}
+                getCompanyMembership={getComapnyMembership}
+                getCompanyMembershipInvoices={getComapnyMembershipInovices}
+            />
         </>
     );
 };

@@ -389,7 +389,7 @@ const dashboard = {
                     type: 'item',
                     url: '/membership-detail',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                    forUserRoles: [COMPANY_ADMIN, BRAND_MANAGER]
                 }
             ]
         }
