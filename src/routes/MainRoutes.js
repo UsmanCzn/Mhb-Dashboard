@@ -48,6 +48,10 @@ import CustomerNotification from 'pages/customer-notification/customer-notifcati
 import CreateNotification from '../pages/customer-notification/create-notification';
 import SystemNotification from '../pages/notification/systemNotification';
 import AllNotification from 'pages/notification/all-notification';
+import Subscription from 'pages/subscription/subscription-details';
+import MembershipForm from 'pages/subscription/create-subscriptions';
+import Membership from 'pages/subscription/memberships';
+import pages from 'menu-items/pages';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -128,6 +132,9 @@ export default function MainRoutes() {
                     <Route path="/customernotification" element={<CreateNotification />} />
                     <Route path="/all-notifications" element={<AllNotification />} />
                     <Route path="/notification" element={<SystemNotification />} />
+                    <Route path="/membership-detail" element={<Subscription />} />
+                    <Route path="/membership-detail/:id" element={<Subscription />} />
+                    <Route path="/membership" element={<Membership />} />
                 </Route>
             </Route>
 
