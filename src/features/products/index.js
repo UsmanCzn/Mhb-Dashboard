@@ -87,8 +87,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
             })
             .then((response) => {
                 setReload((prev) => !prev);
-                console.log('Product duplicated successfully:', response);
-                // Optionally, you could update the state here to refresh the list if needed
+  
             })
             .catch((error) => {
                 console.error('Error duplicating product:', error);

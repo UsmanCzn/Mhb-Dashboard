@@ -298,7 +298,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,lo
                                         <TextField
                                             id="outlined-basic"
                                             fullWidth
-                                            label="Last Number"
+                                            label="Last  Name"
                                             variant="outlined"
                                             required
                                             value={data.LastName}
