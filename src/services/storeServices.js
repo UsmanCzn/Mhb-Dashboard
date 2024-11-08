@@ -206,6 +206,9 @@ getProductNameandIdByBrandid(id){
     }
   }
   );
+},
+DuplicateProducts(payload){
+  return ApiV1.post(`services/app/Products/DuplicateProductV2`,payload)
 }
 
 

@@ -4,7 +4,7 @@ import { useFetchProductsList } from 'features/Store/Products/hooks/useFetchProd
 import GridItem from 'components/products/gridItem';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
 import UpdateProduct from 'components/store/products/updateProduct';
-
+import storeServices from 'services/storeServices';
 const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrder, sortBy }) => {
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
     const { productTypes } = useFetchProductTypeList(true, selectedBranch);
@@ -54,12 +54,10 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 result = result.filter((item) => item.productTypeId === category?.id);
             }
         }
-ru
         setSortedProductList(result);
     };
 
     const filterByCategory = useMemo(() => {
-        console.log(subCategory);
         if (category && subCategory !== undefined) {
             if (subCategory !== 0) {
                 const result = productsList.filter((item) => item.productTypeId === category?.id && item.productSubTypeId === subCategory);
@@ -81,6 +79,20 @@ ru
         // Check if "All SubCategories" is selected based on id (id: 0)
 
         setSubCategory(selectedValue);
+    };
+    const duplicateProduct = (item) => {
+        storeServices
+            .DuplicateProducts({
+                productId: item.id
+            })
+            .then((response) => {
+                setReload((prev) => !prev);
+                console.log('Product duplicated successfully:', response);
+                // Optionally, you could update the state here to refresh the list if needed
+            })
+            .catch((error) => {
+                console.error('Error duplicating product:', error);
+            });
     };
 
     useEffect(() => {
@@ -187,6 +199,7 @@ ru
                                 setUpdateData={setUpdateData}
                                 setUpdate={setUpdate}
                                 setModalOpen={setUpdateModalOpen}
+                                duplicateProduct={duplicateProduct}
                             />
                         );
                     })}
