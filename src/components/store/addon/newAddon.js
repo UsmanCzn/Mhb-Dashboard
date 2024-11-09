@@ -205,298 +205,292 @@ image:""
 
 
   return (
-    <Modal
-      open={modalOpen}
-      onClose={() => setModalOpen(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <form onSubmit={update?EditType:createNewType}>
-        
-        <Box sx={style} >
-        <Grid container spacing={4} >
-          <Grid item>
-            <Typography variant="h5" fontSize={26}> { update?"Edit Add-on":"Create new Add-on"} </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-            <Grid item xs={4}>
-                    <Typography variant="h6" sx={{textTransform: 'capitalize'}} >Brand : {selectedBrand?.name} </Typography>
+      <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+      >
+          <form onSubmit={update ? EditType : createNewType}>
+              <Box sx={style}>
+                  <Grid container spacing={4}>
+                      <Grid item>
+                          <Typography variant="h5" fontSize={26}>
+                              {' '}
+                              {update ? 'Edit Add-on' : 'Create new Add-on'}{' '}
+                          </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                  <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
+                                      Brand : {selectedBrand?.name}{' '}
+                                  </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                  {/* <Typography variant="h6">Product : {selectedProduct?.name} </Typography> */}
+                              </Grid>
+                          </Grid>
+                      </Grid>
 
-              </Grid>
-              <Grid item xs={4}>
-            {/* <Typography variant="h6">Product : {selectedProduct?.name} </Typography> */}
-               
-               
-              </Grid>
-             
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                  <DropDown
+                                      title="Add-on Group"
+                                      list={addonGroupList}
+                                      data={data}
+                                      setData={setData}
+                                      keyo={'productAdditionsGroupId'}
+                                      type="normal"
+                                  />
+                              </Grid>
+                          </Grid>
+                      </Grid>
 
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Sort Order"
+                                      variant="outlined"
+                                      value={data.orderValue}
+                                      onChange={(e) => setData({ ...data, orderValue: e.target.value })}
+                                  />
+                              </Grid>
+                              <Grid item xs={4}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Add-on Group Name"
+                                      variant="outlined"
+                                      required
+                                      value={data.name}
+                                      onChange={(e) => setData({ ...data, name: e.target.value })}
+                                  />
+                              </Grid>
+                              <Grid item xs={4}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Add-on Group Native Name"
+                                      variant="outlined"
+                                      value={data.nativeName}
+                                      onChange={(e) => setData({ ...data, nativeName: e.target.value })}
+                                  />
+                              </Grid>
+                          </Grid>
+                      </Grid>
 
-            </Grid>
-          </Grid>
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Price"
+                                      variant="outlined"
+                                      required
+                                      value={data.price}
+                                      onChange={(e) => setData({ ...data, price: e.target.value })}
+                                  />
+                              </Grid>
+                              <Grid item xs={4}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Points of cost"
+                                      variant="outlined"
+                                      required
+                                      value={data.pointsOfCost}
+                                      onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
+                                  />
+                              </Grid>
+                              {data.canBeMultiple && (
+                                  <Grid item xs={4}>
+                                      <TextField
+                                          id="outlined-basic"
+                                          fullWidth
+                                          label="Max value for Addon"
+                                          variant="outlined"
+                                          required
+                                          value={data.maxMultipleValue}
+                                          onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
+                                      />
+                                  </Grid>
+                              )}
 
-
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-            <Grid item xs={4}>
-            <DropDown title="Add-on Group"
-                  list={addonGroupList}
-                  data={data}
-                  setData={setData}
-                  keyo={"productAdditionsGroupId"}
-                  type="normal"
-                />
-
-              </Grid>
-              
-            
-              
-
-
-            </Grid>
-          </Grid>
-
-
-
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-            <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Sort Order" variant="outlined" 
-                  value={data.orderValue}
-                  onChange={(e) => setData({ ...data, orderValue: e.target.value })}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Add-on Group Name" variant="outlined" required
-                  value={data.name}
-                  onChange={(e) => setData({ ...data, name: e.target.value })}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Add-on Group Native Name" variant="outlined" 
-                  value={data.nativeName}
-                  onChange={(e) => setData({ ...data, nativeName: e.target.value })}
-                />
-              </Grid>
-              
-
-
-            </Grid>
-          </Grid>
-        
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-            <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Price" variant="outlined" required
-                  value={data.price}
-                  onChange={(e) => setData({ ...data, price: e.target.value })}
-                />
-              </Grid>
-            <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Points of cost" variant="outlined"  required
-                  value={data.pointsOfCost}
-                  onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
-                />
-              </Grid>
-              { data.canBeMultiple &&
-            <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Max value for Addon" variant="outlined"  required
-                  value={data.maxMultipleValue}
-                  onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
-                />
-              </Grid>
-              }
-
-              {/* <Grid item xs={4}>
+                              {/* <Grid item xs={4}>
                 <TextField id="outlined-basic" fullWidth label="POS" variant="outlined" required
                   value={data.posId}
                   onChange={(e) => setData({ ...data, posId: e.target.value })}
                 />
               </Grid> */}
+                          </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                  <Typography required variant="h7">
+                                      Allow Multiple
+                                  </Typography>
+                                  <Box
+                                      sx={{
+                                          width: '100%',
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          flexDirection: 'row',
+                                          alignItems: 'center',
+                                          mt: 2
+                                      }}
+                                  >
+                                      <Switch
+                                          checked={data.canBeMultiple}
+                                          onChange={(event) => {
+                                              setData({
+                                                  ...data,
+                                                  canBeMultiple: event.target.checked
+                                              });
+                                          }}
+                                      />
+                                  </Box>
+                              </Grid>
+                          </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                          <Grid container spacing={0}>
+                              <Grid item xs={4}>
+                                  <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
+                                      Nutrition Facts :
+                                  </Typography>
+                              </Grid>
+                          </Grid>
+                      </Grid>
 
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-          <Grid container spacing={2} > 
-          
-          <Grid item xs={4}>
-              <Typography required variant="h7">
-                  Allow Multiple
-              </Typography>
-              <Box
-                  sx={{
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      mt: 2
-                  }}
-              >
-                  <Switch
-                      checked={data.canBeMultiple}
-                      onChange={(event) => {
-                          setData({
-                              ...data,
-                              canBeMultiple: event.target.checked
-                          });
-                      }}
-                  />
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                              <Grid item xs={3}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Calories"
+                                      variant="outlined"
+                                      value={data.calories}
+                                      onChange={(e) => setData({ ...data, calories: e.target.value })}
+                                  />
+                              </Grid>
+                              <Grid item xs={3}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Fat"
+                                      variant="outlined"
+                                      value={data.fat}
+                                      onChange={(e) => setData({ ...data, fat: e.target.value })}
+                                  />
+                              </Grid>
+                              <Grid item xs={3}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Protein"
+                                      variant="outlined"
+                                      value={data.protien}
+                                      onChange={(e) => setData({ ...data, protien: e.target.value })}
+                                  />
+                              </Grid>
+
+                              <Grid item xs={3}>
+                                  <TextField
+                                      id="outlined-basic"
+                                      fullWidth
+                                      label="Carbo"
+                                      variant="outlined"
+                                      value={data.carbo}
+                                      onChange={(e) => setData({ ...data, carbo: e.target.value })}
+                                  />
+                              </Grid>
+                          </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                          <Grid container spacing={2}></Grid>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                          <Grid container>
+                              <Grid item xs={4}>
+                                  <Typography variant="h7">Addon Image</Typography>
+                              </Grid>
+                              <Grid item xs={8} />
+
+                              <Grid item xs={12}>
+                                  <Box
+                                      sx={{
+                                          width: '60%',
+                                          height: 170,
+                                          display: 'flex',
+                                          justifyContent: 'center',
+                                          flexDirection: 'column',
+                                          alignItems: 'center',
+                                          mt: 2,
+                                          backgroundColor: '#eee',
+                                          ml: '20%'
+                                      }}
+                                  >
+                                      <img
+                                          src={data?.image}
+                                          style={{
+                                              width: 100,
+                                              height: 70
+                                          }}
+                                          alt="img"
+                                      />
+                                      <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
+
+                                      <input
+                                          type="file"
+                                          onChange={async (e) => {
+                                              setP1(e.currentTarget.files[0]);
+                                          }}
+                                      />
+                                  </Box>
+                              </Grid>
+                          </Grid>
+                      </Grid>
+
+                      {/* Footer */}
+
+                      <Grid item xs={12}>
+                          <Grid container>
+                              <Grid container spacing={2} justifyContent="space-between">
+                                  <Grid item>
+                                      {/* <Button variant="outlined" color="error" onClick={() => deleteAddon()}>Delete this product</Button> */}
+                                  </Grid>
+
+                                  <Grid item>
+                                      <Grid container spacing={2}>
+                                          <Grid item>
+                                              <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                                  Cancel
+                                              </Button>
+                                          </Grid>
+                                          <Grid item>
+                                              <Button primay variant="contained" type="Submit">
+                                                  {update ? 'Edit Add-on' : 'Create new Add-on'}
+                                              </Button>
+                                          </Grid>
+                                      </Grid>
+                                  </Grid>
+                              </Grid>
+                          </Grid>
+                      </Grid>
+                  </Grid>
               </Box>
-            </Grid>
-
-          </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={0} >
-            <Grid item xs={4}>
-                    <Typography variant="h6" sx={{textTransform: 'capitalize'}} >Nutrition Facts :</Typography>
-              </Grid>
-               
-            </Grid>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-            <Grid item xs={3}>
-                <TextField id="outlined-basic" fullWidth label="Calories" variant="outlined" 
-                  value={data.calories}
-                  onChange={(e) => setData({ ...data, calories: e.target.value })}
-                />
-              </Grid>
-            <Grid item xs={3}>
-                <TextField id="outlined-basic" fullWidth label="Fat" variant="outlined" 
-                  value={data.fat}
-                  onChange={(e) => setData({ ...data, fat: e.target.value })}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField id="outlined-basic" fullWidth label="Protein" variant="outlined" 
-                  value={data.protien}
-                  onChange={(e) => setData({ ...data, protien: e.target.value })}
-                />
-              </Grid>
-               
-              <Grid item xs={3}>
-                <TextField id="outlined-basic" fullWidth label="Carbo" variant="outlined" 
-                  value={data.carbo}
-                  onChange={(e) => setData({ ...data, carbo: e.target.value })}
-                />
-              </Grid>
-
-
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={2} >
-          
-            </Grid>
-          </Grid>
-
-          <Grid item xs={12}>
-
-          <Grid container
-          >
-
-  <Grid item xs={4}>
-    <Typography variant="h7">Addon Image</Typography>
-  </Grid>
-  <Grid item xs={8} />
-
-  <Grid item xs={12}
-  >
-  
-
-    <Box sx={{
-      width: '60%',
-      height: 170,
-      display: 'flex',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      alignItems: 'center',
-      mt: 2,
-      backgroundColor: '#eee',
-      ml: '20%'
-    }}>
-        <img src={ data?.image } 
-   style={{
-    width:100,
-    height:70
-  }}
-
-   alt="img"
-   />
-      <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
-
-      <input type="file" 
-      
-      onChange={
-      async  (e) => { 
-        setP1(e.currentTarget.files[0]) 
-        }
-      } />
-    </Box>
-
-  </Grid>
-
-</Grid>
-
-</Grid>
-
-          {/* Footer */}
-
-
-
-          <Grid item xs={12}>
-            <Grid container >
-
-            <Grid container spacing={2}
-
-justifyContent="space-between"
-> 
-
-              <Grid item>
-  <Button variant="outlined" color="error" onClick={() => deleteAddon()}>Delete this product</Button>
-</Grid>
-
-
-<Grid item>
-
-              <Grid container spacing={2}
- 
-              >
-
-                <Grid item>
-                  <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
-                </Grid>
-                <Grid item>
-                  <Button primay variant="contained" type="Submit" >
-                    {
-                      update?"Edit Add-on":
-                      "Create new Add-on"
-                    }
-                     </Button>
-                </Grid>
-
-              </Grid>
-              </Grid>
-
-              </Grid>
-
-
-            </Grid>
-
-          </Grid>
-
-
-        </Grid>
-
-      </Box>
-      </form>
-
-    </Modal>
-
-  )
+          </form>
+      </Modal>
+  );
 }
 
 export default NewAddon
