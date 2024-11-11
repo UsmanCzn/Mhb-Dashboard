@@ -12,10 +12,9 @@ import { BorderBottom } from '../../../node_modules/@mui/icons-material/index';
 
 const AddonTable = ({ reload, selectedBrand, setReload }) => {
     const { addonGroupList, loading: gLoading } = useFetchAddonGroupList(reload, selectedBrand);
-    console.log(addonGroupList, 'groups');
-
+    const [AddsonReload, setAddsonReload] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
-    const { addonList, loading } = useFetchAddonList(reload, selectedGroup?.id, selectedBrand);
+    const { addonList, loading } = useFetchAddonList(AddsonReload, selectedGroup?.id, selectedBrand);
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -23,6 +22,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
     const closeMenu = () => {
         setAnchorEl(null);
     };
+
     const [modalOpen, setModalOpen] = useState(false);
     const [modalOpenA, setModalOpenA] = useState(false);
 
@@ -105,7 +105,12 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                     Create Group
                                 </Button>
                             </Grid>
-                            <Divider />
+                            <Divider
+                                sx={{
+                                    borderColor: 'lightGrey', // Set your desired color
+                                    borderWidth: '1px' // Increase the width to make it bolder
+                                }}
+                            />
                             <Box
                                 sx={{
                                     maxHeight: 'calc(100vh - 320px)', // Set the max height for scrolling
@@ -156,6 +161,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                         setUpdate(true);
                                         setUpdateData(selectedGroup);
                                         setModalOpen(true);
+                                        closeMenu();
                                     }}
                                 >
                                     Edit
@@ -166,7 +172,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                     )}
                 </Grid>
 
-                <Grid item xs={8}>
+                <Grid item xs={7.5}>
                     <Box
                         sx={{
                             width: '100%',
@@ -195,7 +201,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                     px: 2
                                 }}
                             >
-                                Addons
+                                Add-On's
                             </Typography>
                             <Button
                                 variant="contained"
@@ -204,10 +210,15 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                     setModalOpenA(true);
                                 }}
                             >
-                                Add new Addon
+                                Add new Add-On's
                             </Button>
                         </Grid>
-                        <Divider />
+                        <Divider
+                            sx={{
+                                borderColor: 'lightGrey', // Set your desired color
+                                borderWidth: '1px' // Increase the width to make it bolder
+                            }}
+                        />
 
                         {/* <Grid container spacing={2} px={2} justifyContent="space-between" mt={2}>
                             <Button
@@ -227,19 +238,19 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                         </Grid> */}
 
                         {
-                            <Grid container spacing={2} mt={1} px={2} justifyContent="space-between">
+                            <Grid container spacing={2} mt={1} px={2} gap={10}>
                                 <Grid item>
-                                    <Typography variant="h6" fontSize={17}>
+                                    <Typography variant="h2" fontSize={17}>
                                         ID : {selectedGroup?.id}
                                     </Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="h6" fontSize={17}>
+                                    <Typography variant="h2" fontSize={17}>
                                         Allow Multiple : {selectedGroup?.allowMultiple ? 'YES' : 'NO'}
                                     </Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="h6" fontSize={17}>
+                                    <Typography variant="h2" fontSize={17}>
                                         IS Required : {selectedGroup?.isRequired ? 'YES' : 'NO'}
                                     </Typography>
                                 </Grid>
@@ -266,6 +277,8 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                             setModalOpen={setModalOpenA}
                                             setUpdate={setUpdateA}
                                             setUpdateData={setUpdateDataA}
+                                            modalOpenA={modalOpenA}
+                                            setAddsonReload={setAddsonReload}
                                         />
                                     );
                                 })}
@@ -293,6 +306,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                 update={updateA}
                 updateData={updateDataA}
                 addonGroupList={addonGroupList}
+                setAddsonReload={setAddsonReload}
             />
         </Box>
     );

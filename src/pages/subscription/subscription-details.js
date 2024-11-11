@@ -103,10 +103,10 @@ const Subscription = () => {
                             <strong>Due Date:</strong> {moment(membershipInvoces[0]?.dueDate).format('DD/MM/YYYY')}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Payable Amount:</strong> KWD{membershipInvoces[0]?.totalAmount}
+                            <strong>Payable Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Last Paid Amount:</strong> KWD {membershipInvoces[0]?.totalAmount}
+                            <strong>Last Paid Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
                         </Typography>
                         {/* <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                             Pay Now
