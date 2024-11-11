@@ -64,7 +64,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
     const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
     const [types, setTypes] = useState([]);
     const [categories, setCategories] = useState([]);
-
+    console.log(addonGroupList);
+    
     const [p1, setP1] = useState(null);
 
     const createNewProduct = async (event) => {

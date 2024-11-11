@@ -11,7 +11,8 @@ import {
     FormControlLabel,
     Radio,
     FormControl,
-    FormLabel
+    FormLabel,
+    
 } from '@mui/material/index';
 import DropDown from 'components/dropdown';
 
@@ -36,14 +37,14 @@ const style = {
     overflow: 'scroll'
 };
 
-const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData, selectedBrand, selectedProduct }) => {
+const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData, selectedBrand, selectedProduct, closeMenu }) => {
     const [data, setData] = useState({
         name: '',
         nativeName: '',
         orderValue: 0,
         allowMultiple: false,
         isRequired: false,
-        maxMultipleValue:0
+        maxMultipleValue: 0
     });
 
     const customerServices = ServiceFactory.get('customer');
@@ -66,7 +67,7 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                 orderValue: 0,
                 allowMultiple: false,
                 isRequired: false,
-                maxMultipleValue:0
+                maxMultipleValue: 0
             });
         }
     }, [update, updateData]);
@@ -106,15 +107,14 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
 
         await storeServices
             .updateProductAdditionGroup(payload, selectedBrand?.id)
-
             .then((res) => {
-                console.log(res?.data);
+                closeMenu();
             })
             .catch((err) => {
                 console.log(err);
             })
             .finally(() => {
-                setReload((prev) => !prev);
+                // setReload((prev) => !prev);
                 setModalOpen(false);
             });
     };
@@ -178,18 +178,18 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
                                         onChange={(e) => setData({ ...data, orderValue: e.target.value })}
                                     />
                                 </Grid>
-                                { data.allowMultiple&&
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Max Value"
-                                        variant="outlined"
-                                        value={data.maxMultipleValue}
-                                        onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
-                                    />
-                                </Grid>
-                                }
+                                {data.allowMultiple && (
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Max Value"
+                                            variant="outlined"
+                                            value={data.maxMultipleValue}
+                                            onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
+                                        />
+                                    </Grid>
+                                )}
                             </Grid>
                         </Grid>
 

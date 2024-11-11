@@ -92,6 +92,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
     });
 
     const { branchesList } = useFetchBranchList(true);
+    const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
     const [types, setTypes] = useState([]);
     const [categories, setCategories] = useState([]);
 
@@ -839,7 +840,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                     {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
                                     <DropDown
                                         title="Available Branches"
-                                        list={branchesList}
+                                        list={filteredBranch}
                                         data={data}
                                         setData={setData}
                                         keyo={'productQtyWithBranchs'}

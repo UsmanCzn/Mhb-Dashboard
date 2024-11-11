@@ -24,7 +24,8 @@ export function useFetchAddonGroupList(
         storeServices.getProductAdditionGroupList(selectedBrand?.id)
         .then(
             (res)=>{
-      
+                console.log(res.data.result);
+                
                 setaddonGroupList(res.data.result);   
 
                 // console.log(res.data.result,"res.data.result");
