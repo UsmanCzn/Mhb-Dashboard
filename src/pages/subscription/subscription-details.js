@@ -8,6 +8,7 @@ import moment from 'moment-jalaali';
 const Subscription = () => {
     const { id } = useParams();
     const user = useAuth();
+
     const [membership, setmembership] = useState();
     const [membershipInvoces, setMembershipInvoices] = useState([]);
     useEffect(() => {
@@ -25,7 +26,7 @@ const Subscription = () => {
     };
     const getComapnyMembershipInovices = async () => {
         try {
-            const resp = await membershipService.getCompanyMembershipInvoicesById(id);
+            const resp = await membershipService.getCompanyMembershipInvoicesById(id || user?.user?.companyId);
             if (resp) {
                 setMembershipInvoices(resp.data.result);
             }
@@ -87,37 +88,40 @@ const Subscription = () => {
                 </Card>
 
                 {/* Billing Details Card */}
-                <Card sx={{ minWidth: 305, boxShadow: 2 }}>
-                    <CardHeader
-                        sx={{
-                            backgroundColor: '#f5f5f5'
-                        }}
-                        title="Billing Details"
-                        subheader=""
-                    />
-                    <CardContent>
-                        <Typography variant="body1">
-                            <strong>Billing Month:</strong> {getBillingDate(membershipInvoces[0]?.creationTime) ?? 'NA'}
-                        </Typography>
-                        <Typography variant="body1">
-                            <strong>Due Date:</strong> {moment(membershipInvoces[0]?.dueDate).format('DD/MM/YYYY')}
-                        </Typography>
-                        <Typography variant="body1">
-                            <strong>Payable Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
-                        </Typography>
-                        <Typography variant="body1">
-                            <strong>Last Paid Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
-                        </Typography>
-                        {/* <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                {membershipInvoces.length > 0 && (
+                    <Card sx={{ minWidth: 305, boxShadow: 2 }}>
+                        <CardHeader
+                            sx={{
+                                backgroundColor: '#f5f5f5'
+                            }}
+                            title="Billing Details"
+                            subheader=""
+                        />
+                        <CardContent>
+                            <Typography variant="body1">
+                                <strong>Billing Month:</strong> {getBillingDate(membershipInvoces[0]?.creationTime) ?? 'NA'}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Due Date:</strong> {moment(membershipInvoces[0]?.dueDate).format('DD/MM/YYYY')}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Payable Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Last Paid Amount:</strong> {membershipInvoces[0]?.totalAmount} KWD
+                            </Typography>
+                            {/* <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                             Pay Now
                         </Button> */}
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
             </Box>
             <InvoiceTable
                 membershipInvoces={membershipInvoces}
                 getCompanyMembership={getComapnyMembership}
                 getCompanyMembershipInvoices={getComapnyMembershipInovices}
+                user={user}
             />
         </>
     );

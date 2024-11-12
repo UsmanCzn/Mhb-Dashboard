@@ -4,7 +4,7 @@ import moment from 'moment-jalaali';
 import membershipService from 'services/membership.service';
 import { useSnackbar } from 'notistack';
 
-const BillingDetailsPopup = ({ open, onClose, invoice, getCompanyMembership, getCompanyMembershipInvoices }) => {
+const BillingDetailsPopup = ({ open, onClose, invoice, getCompanyMembership, getCompanyMembershipInvoices, user }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const markAsPaid = async () => {
@@ -42,7 +42,7 @@ const BillingDetailsPopup = ({ open, onClose, invoice, getCompanyMembership, get
                             <strong>Due Date:</strong> {moment(invoice?.dueDate).format('DD/MM/YYYY')}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            <strong>Payable Amount:</strong> {invoice?.totalAmount}
+                            <strong>Payable Amount:</strong> {invoice?.totalAmount} KWD
                         </Typography>
                         <Typography variant="body1" gutterBottom>
                             <strong>Status</strong> {invoice?.isPaid ? ' Paid' : 'Unpaid'}
@@ -53,7 +53,7 @@ const BillingDetailsPopup = ({ open, onClose, invoice, getCompanyMembership, get
 
             {/* Add DialogActions for the button at the bottom */}
             <DialogActions>
-                {!invoice?.isPaid && (
+                {!invoice?.isPaid && user.userRole === 'ADMIN' && (
                     <Button variant="contained" color="primary" onClick={() => markAsPaid()}>
                         Mark as Paid
                     </Button>

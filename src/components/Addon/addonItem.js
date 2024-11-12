@@ -107,7 +107,7 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                         <Typography sx={{ px: 1 }}>{item?.price + ' ' + brand?.currency}</Typography>
                     </ButtonBase> */}
                     <Card sx={{ maxWidth: 345 }}>
-                        <CardMedia sx={{ height: 130 }} image={item?.image} title="green iguana" />
+                        <CardMedia sx={{ height: 130 }} image={item?.image || DefaultImage} title="green iguana" />
                         <CardContent
                             sx={{
                                 display: 'flex',

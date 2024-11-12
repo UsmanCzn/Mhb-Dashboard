@@ -151,7 +151,7 @@ const CustomerInfo = ({ setReload }) => {
                             label="Phone"
                             variant="outlined"
                             required
-                            value={data.phoneNumber}
+                            value={data.displayPhoneNumber}
                             onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
                         />
                     </Grid>

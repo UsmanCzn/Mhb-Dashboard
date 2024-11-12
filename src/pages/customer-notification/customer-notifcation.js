@@ -111,7 +111,7 @@ const CustomerNotification = () => {
             field: 'notificationTitle',
             headerName: 'Title',
             headerAlign: 'left',
-            flex: 1
+            flex: 0.5
         },
         {
             field: 'notificationMessage',
@@ -128,7 +128,7 @@ const CustomerNotification = () => {
         {
             field: 'notificationDate',
             headerName: 'Date',
-            flex: 1,
+            flex: 0.5,
             headerAlign: 'left',
             renderCell: (params) => {
                 return <p>{moment(params.row?.notificationDate).format('DD/MM/YYYY')}</p>;
@@ -137,7 +137,7 @@ const CustomerNotification = () => {
         {
             field: 'actionTime',
             headerName: 'Action Time',
-            flex: 1,
+            flex: 0.5,
             headerAlign: 'left',
             renderCell: (params) => {
                 const actionTime = params.row?.actionTime;
@@ -190,7 +190,7 @@ const CustomerNotification = () => {
             field: 'isRewardMfissisng',
             headerName: 'Action',
             sortable: false,
-            flex: 0.5,
+            flex: 1,
             headerAlign: 'left',
 
             renderCell: (params) => {

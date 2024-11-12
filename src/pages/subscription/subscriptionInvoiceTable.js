@@ -3,7 +3,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import { Margin } from '../../../node_modules/@mui/icons-material/index';
 import BillingDetailsPopup from './billing-modal';
 import moment from 'moment-jalaali';
-const InvoiceTable = ({ membershipInvoces, getCompanyMembership, getCompanyMembershipInvoices }) => {
+const InvoiceTable = ({ membershipInvoces, getCompanyMembership, getCompanyMembershipInvoices, user }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [SelectedInvoice, setSelectedInvoice] = useState();
 
@@ -51,6 +51,7 @@ const InvoiceTable = ({ membershipInvoces, getCompanyMembership, getCompanyMembe
                 invoice={SelectedInvoice}
                 getCompanyMembership={getCompanyMembership}
                 getCompanyMembershipInvoices={getCompanyMembershipInvoices}
+                user={user}
             />
         </>
     );

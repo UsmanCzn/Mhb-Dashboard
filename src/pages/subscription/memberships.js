@@ -44,7 +44,12 @@ const Membership = () => {
                 memberShipId: selectedMembership?.id,
                 companyId: selectedMembership?.companyId
             });
-            if (response) {
+            console.log(response.data.result.item2);
+            if (response.data.result.item2 === 'Already Exist') {
+                enqueueSnackbar(`Invoice already exists `, {
+                    variant: 'error'
+                });
+            } else {
                 enqueueSnackbar(`Invoice has been generated for ${selectedMembership.companyName}`, {
                     variant: 'success'
                 });
@@ -63,8 +68,6 @@ const Membership = () => {
             ]);
             setmemberships([...activeMemberships.data.result, ...inactiveMemberships.data.result]);
             setloading(false);
-            console.log('Active Memberships:', activeMemberships);
-            console.log('Inactive Memberships:', inactiveMemberships);
 
             // You can now use activeMemberships and inactiveMemberships as needed
         } catch (error) {
@@ -121,7 +124,12 @@ const Membership = () => {
     ];
     const handlePageChange = (newPage) => {};
     const handleOpenModal = () => setIsModalOpen(true);
-    const handleCloseModal = () => setIsModalOpen(false);
+    const handleCloseModal = () => {
+        getAllActiveAndInActiveMemberships();
+        {
+            setIsModalOpen(false);
+        }
+    };
 
     return (
         <div>

@@ -93,6 +93,14 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
             .finally(() => {
                 setReload((prev) => !prev);
                 setModalOpen(false);
+                setData({
+                    name: '',
+                    nativeName: '',
+                    orderValue: 0,
+                    allowMultiple: false,
+                    isRequired: false,
+                    maxMultipleValue: 0
+                });
             });
     };
 
