@@ -260,9 +260,8 @@ const Notification = () => {
                                         {notifications.length > 0 ? (
                                             notifications.slice(0, 4).map((item) => (
                                                 <React.Fragment key={item.id}>
-                                                    {' '}
                                                     {/* Ensure to use a unique key for each item */}
-                                                    <ListItemButton>
+                                                    <ListItemButton onClick={() => navigate('/all-notifications')}>
                                                         <ListItemText
                                                             primary={
                                                                 <Typography variant="h6">

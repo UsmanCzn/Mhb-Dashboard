@@ -1,27 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Modal,
-    Box,
-    Typography,
-    TextField,
-    Grid,
-    Button,
-    Switch,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormControl,
-    FormLabel
-} from '@mui/material/index';
-import DropDown from 'components/dropdown';
-
+import React, { useEffect } from 'react';
+import { Modal, Box, Typography, TextField, Grid, Button } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { CloudUploadOutlined } from '@ant-design/icons';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { useParams } from 'react-router-dom';
 import { ServiceFactory } from 'services/index';
-import constants from 'helper/constants';
-import { useParams } from '../../../node_modules/react-router-dom/dist/index';
 
 const style = {
     position: 'absolute',
@@ -37,51 +22,49 @@ const style = {
 };
 
 const UpdateCreditBalance = ({ modalOpen, setModalOpen, setReload, prevData }) => {
-    const [data, setData] = useState({
-        creditBalance: 0,
-        expiryDate: '',
-        commnets: ''
-    });
     const { cid } = useParams();
     const customerServices = ServiceFactory.get('customer');
 
-    useEffect(() => {}, []);
-
     useEffect(() => {
-        setData({
-            ...data,
-            creditBalance: prevData?.creditBalance,
-            expiryDate: prevData?.expiryDate,
-            commnets: prevData?.commnets
-        });
+        formik.setFieldValue('creditBalance', prevData?.creditBalance);
+        formik.setFieldValue('expiryDate', prevData?.expiryDate || new Date());
+        formik.setFieldValue('commnets', prevData?.commnets);
     }, [prevData]);
+    const validationSchema = Yup.object().shape({
+        creditBalance: Yup.number().required('Credit Balance is required').min(0.01, 'Credit Balance must be greater than zero'),
+        expiryDate: Yup.date().required('Expiry Date is required').nullable(),
+        comments: Yup.string().max(500, 'Comments cannot exceed 500 characters')
+    });
 
-    const UpdateCreditBalance = async (event) => {
-        event.preventDefault();
+    const formik = useFormik({
+        initialValues: {
+            creditBalance: prevData?.creditBalance || 0,
+            expiryDate: prevData?.expiryDate || new Date(),
+            comments: prevData?.comments || ''
+        },
+        // enableReinitialize: true,
+        validationSchema,
+        onSubmit: async (values) => {
+            const payload = {
+                ...values,
+                id: prevData?.id,
+                increaseBalanceAmount: values.creditBalance,
+                expiryDate: values.expiryDate,
+                walletComments: values.comments,
+                brandId: +prevData.brandId,
+                customerId: +cid
+            };
 
-        let payload = {
-            ...data,
-            id: prevData?.id,
-            increaseBalanceAmount: data.creditBalance,
-            expiryDate: data.expiryDate,
-            walletComments: data.commnets,
-            brandId: +prevData.brandId,
-            customerId: +cid
-        };
-
-        await customerServices
-            .UpdateCreditBalance(payload)
-            .then((res) => {
-                console.log(res?.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
+            try {
+                await customerServices.UpdateCreditBalance(payload);
                 setReload((prev) => !prev);
                 setModalOpen(false);
-            });
-    };
+               
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    });
 
     return (
         <Modal
@@ -90,7 +73,7 @@ const UpdateCreditBalance = ({ modalOpen, setModalOpen, setReload, prevData }) =
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <form onSubmit={UpdateCreditBalance}>
+            <form onSubmit={formik.handleSubmit}>
                 <Box sx={style}>
                     <Grid container spacing={4}>
                         <Grid item>
@@ -100,79 +83,63 @@ const UpdateCreditBalance = ({ modalOpen, setModalOpen, setReload, prevData }) =
                             <Grid container spacing={2}>
                                 <Grid item xs={4}>
                                     <TextField
-                                        id="outlined-basic"
+                                        id="creditBalance"
                                         fullWidth
                                         label="Credit Balance"
                                         variant="outlined"
                                         required
-                                        value={data.creditBalance}
-                                        onChange={(e) => setData({ ...data, creditBalance: e.target.value })}
+                                        type="number"
+                                        {...formik.getFieldProps('creditBalance')}
+                                        error={formik.touched.creditBalance && Boolean(formik.errors.creditBalance)}
+                                        helperText={formik.touched.creditBalance && formik.errors.creditBalance}
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DatePicker
                                             label="Credit Balance Expiry"
-                                            value={data.expiryDate}
-                                            onChange={(newValue) => {
-                                                setData({
-                                                    ...data,
-                                                    expiryDate: newValue
-                                                });
-                                            }}
-                                            renderInput={(params) => <TextField fullWidth {...params} />}
+                                            value={formik.values.expiryDate}
+                                            onChange={(newValue) => formik.setFieldValue('expiryDate', newValue, true)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    fullWidth
+                                                    {...params}
+                                                    error={formik.touched.expiryDate && Boolean(formik.errors.expiryDate)}
+                                                    helperText={formik.touched.expiryDate && formik.errors.expiryDate}
+                                                />
+                                            )}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}></Grid>
-                        </Grid>
 
                         <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {/* <Grid item xs={4}>
-                <TextField id="outlined-basic" fullWidth label="Password" type="password" variant="outlined" required 
-                  value={data.password}
-                  onChange={(e) => setData({ ...data, password: e.target.value })}
-                />
-              </Grid> */}
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="outlined-multiline-flexible"
-                                        label="commnets"
-                                        fullWidth
-                                        multiline
-                                        rows={4}
-                                        InputProps={{
-                                            readOnly: false
-                                        }}
-                                        variant="outlined"
-                                        value={data?.commnets}
-                                        onChange={(e) => setData({ ...data, commnets: e.target.value })}
-                                    />
-                                    {/* <TextField id="outlined-basic" fullWidth label="Wallet Subtitle" variant="outlined" /> */}
-                                </Grid>
-                            </Grid>
+                            <TextField
+                                id="comments"
+                                label="Comments"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                variant="outlined"
+                                {...formik.getFieldProps('comments')}
+                                error={formik.touched.comments && Boolean(formik.errors.comments)}
+                                helperText={formik.touched.comments && formik.errors.comments}
+                            />
                         </Grid>
 
                         {/* Footer */}
-
                         <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={8} />
-                                <Grid container spacing={2} justifyContent="flex-end">
-                                    <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
-                                            Cancel
-                                        </Button>
-                                    </Grid>
-                                    <Grid item>
-                                        <Button primay variant="contained" type="Submit">
-                                            Update Customer
-                                        </Button>
-                                    </Grid>
+                            <Grid container justifyContent="flex-end" spacing={2}>
+                                <Grid item>
+                                    <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                </Grid>
+                                <Grid item>
+                                    <Button primary variant="contained" type="submit">
+                                        Update Customer
+                                    </Button>
                                 </Grid>
                             </Grid>
                         </Grid>
