@@ -17,7 +17,7 @@ export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus
     const fetchOrdersList =  useCallback(  async  (pageNo=0) => { 
       // if(pageNo==undefined||pageNo==null)
       // return
-      console.log("fetching....",pageNo,prevPage);
+      // console.log("fetching....",pageNo,prevPage);
        
       if (prevSelectedBranch!=selectedBranch?.id||prevSelectedBranch==null||pageNo!=prevPage||prevFil!=filterStatus) {
         setloading(true);
@@ -80,10 +80,9 @@ export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus
       []
     )
 
-    console.log(selectedBranch?.id,"changin",reload);
 
     useEffect(() => {
-      console.log("useeffect running parent 3");
+      // console.log("useeffect running parent 3");
       // fetchOrdersList(0, true);
     }, [reload]);
 

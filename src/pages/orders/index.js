@@ -190,7 +190,6 @@ export default function Orders() {
     }, [selectedBranch, reload]);
 
     useEffect(() => {
-        console.log('useEffect rerunning, Parent 1');
     }, [reload]);
     useEffect(() => {
         const interval = setInterval(() => {

@@ -7,27 +7,21 @@ import { useFetchOrdersList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationSound from 'assets/audio/orderSound.mp3';
 import orderServices from 'services/orderServices';
-
-export default function OrdersTable({
-    type,
-    setData,
-    setModalOpen,
-    selectedBranch,  
-    data,
-    filter,
-    filterStatus, 
-}) {
+import AssignTaskDialog from './assign-task-dialog';
+import { useSnackbar } from 'notistack';
+export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
     const navigate = useNavigate();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const location = useLocation();
 
     const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchOrdersList({
         selectedBranch,
-        playAudio, 
+        playAudio,
         filter,
-        filterStatus, 
+        filterStatus
     });
- 
+
     const [anchorEl, setAnchorEl] = useState(null);
     const [brand, setBrand] = useState({});
     const open = Boolean(anchorEl);
@@ -38,6 +32,23 @@ export default function OrdersTable({
             modal: true
         }
     ]);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleOpenDialog = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+    };
+
+    const handleAssignTask = () => {
+        console.log('Task Assigned');
+        setIsDialogOpen(false); // Close dialog after assigning the task
+        enqueueSnackbar('Task has been assigned', {
+            variant: 'success'
+        });
+    };
     const getOrderTypes = async () => {
         orderServices
             .getOrderTypes()
@@ -50,7 +61,7 @@ export default function OrdersTable({
     };
 
     useEffect(() => {
-        console.log("useEffect rerunning, Parent 2");
+        console.log('useEffect rerunning, Parent 2');
         getOrderTypes();
     }, []);
     const handleClick = (event, params) => {
@@ -72,6 +83,17 @@ export default function OrdersTable({
                     modal: false
                 }
             ]);
+        } else if (params?.row?.status == 'Accepted' && params?.row?.deliverySystem === 'HomeDeliver' && !params.row?.verdiOrderId) {
+            setOptions([
+                {
+                    name: 'Open/Print',
+                    modal: true
+                },
+                {
+                    name: 'Request Driver',
+                    modal: false
+                }
+            ]);
         } else if (params?.row?.status == 'Accepted') {
             setOptions([
                 {
@@ -82,6 +104,28 @@ export default function OrdersTable({
                     name: 'Ready',
                     modal: false
                 }
+            ]);
+        } else if (params?.row?.status == 'OutForDelivery' && params?.row?.verdiTrackingLink) {
+            setOptions([
+                {
+                    name: 'Open/Print',
+                    modal: true
+                },
+                {
+                    name: 'Track Order',
+                    modal: false
+                }
+            ]);
+        } else if (params?.row?.status == 'Ready' && params?.row?.deliverySystem === 'HomeDeliver') {
+            setOptions([
+                {
+                    name: 'Open/Print',
+                    modal: true
+                }
+                // {
+                //     name: 'Close',
+                //     modal: false
+                // }
             ]);
         } else if (params?.row?.status == 'Ready') {
             setOptions([
@@ -103,22 +147,26 @@ export default function OrdersTable({
             ]);
         }
     };
-    const handleClose = (data) => {
+    const handleClose = (Data) => {
         console.log(statustypes);
-        if (data?.name == 'Open/Print') {
+        if (Data?.name == 'Open/Print') {
             setModalOpen(true);
-        } else if (data?.name == 'Accept') {
+        } else if (Data?.name == 'Accept') {
             updateOrderStatus(statustypes?.find((obj) => obj?.title == 'Accepted')?.id);
             console.log('Accept');
-        } else if (data?.name == 'Reject') {
+        } else if (Data?.name == 'Request Driver') {
+            handleOpenDialog();
+        } else if (Data?.name == 'Reject') {
             console.log('Reject');
             updateOrderStatus(statustypes?.find((obj) => obj?.title == 'Rejected')?.id);
-        } else if (data?.name == 'Ready') {
+        } else if (Data?.name == 'Ready') {
             updateOrderStatus(statustypes?.find((obj) => obj?.title == 'Ready')?.id);
             console.log('Ready');
-        } else if (data?.name == 'Close') {
+        } else if (Data?.name == 'Close') {
             updateOrderStatus(statustypes?.find((obj) => obj?.title == 'Closed')?.id);
             console.log('Close');
+        } else if (Data?.name == 'Track Order') {
+            window.open(data?.verdiTrackingLink, '_blank');
         }
         setAnchorEl(null);
     };
@@ -243,8 +291,6 @@ export default function OrdersTable({
         audioPlayer.current.play();
     }
 
-    
-
     return (
         <div>
             <DataGridComponent
@@ -255,7 +301,6 @@ export default function OrdersTable({
                 rowsPerPageOptions={[10]}
                 totalRowCount={totalRowCount}
                 fetchCallback={fetchOrdersList}
-                
             />
             <Menu
                 id="basic-menu"
@@ -275,6 +320,7 @@ export default function OrdersTable({
                 })}
             </Menu>
 
+            <AssignTaskDialog open={isDialogOpen} onClose={handleCloseDialog} onAssignTask={handleAssignTask} selectedOrder={data} />
             <audio ref={audioPlayer} src={NotificationSound}>
                 <track src="captions_en.vtt" kind="captions" srclang="en" label="english_captions" />
             </audio>

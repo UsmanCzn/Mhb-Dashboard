@@ -11,7 +11,10 @@ import {
     FormControlLabel,
     Radio,
     FormControl,
-    FormLabel
+    FormLabel,
+    Select,
+    InputLabel,
+    MenuItem
 } from '@mui/material/index';
 import DropDown from 'components/dropdown';
 
@@ -48,7 +51,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
     const [p1, setP1] = useState(null);
     // const [p2, setP2] = useState(null);
     const { productTypes, fetchProductTypesList } = useFetchProductTypeList(true, selectedBrand);
-        const [ImageUpload, setImageUpload] = useState(false);
+    const [ImageUpload, setImageUpload] = useState(false);
     const { addonList } = useFetchAddonList(true);
     const { addonGroupList } = useFetchAddonGroupList(true, selectedBrand);
 
@@ -64,6 +67,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         productSecondImage: '',
         productThirdImage: '',
         isProductImageDeleted: true,
+        isDeliveryProduct: false,
         calories: '',
         fat: '',
         protien: '',
@@ -77,11 +81,11 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         isTopProduct: false,
         isFeaturedProduct: false,
         dontMissOutProduct: false,
-         
+
         punchesForPurchase: 0,
         commentAllowed: true,
         productDescription: '',
-        productDescriptionNative:'',
+        productDescriptionNative: '',
         productQtyWithBranchs: [],
         productSubTypeId: 0,
         type: 0,
@@ -98,7 +102,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
     const updateProductData = async (event) => {
         event.preventDefault();
-    
+
         let payload = {
             ...data,
             productId: updateData?.id,
@@ -114,25 +118,24 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                 prodGroupId: prodGroupId
             }))
         };
-    
+
         const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };
-    
+
         try {
             if (p1) {
                 setImageUpload(true);
-    
+
                 const compressedFile = await imageCompression(p1, options);
                 const imageResponse = await fileService.uploadProductImage(compressedFile);
                 payload.productImage = imageResponse.data?.result;
             }
-    
+
             const updateResponse = await storeServices.updateProduct(payload);
             console.log(updateResponse?.data, 'updateddddddd');
-    
         } catch (error) {
             console.error(error.response?.data || error.message || error);
         } finally {
@@ -141,7 +144,6 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             setModalOpen(false);
         }
     };
-    
 
     const deleteProduct = async () => {
         await storeServices
@@ -206,6 +208,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             isEligibleForFreeItem: updateData?.isEligibleForFreeItem,
             isQtyAvailable: updateData?.isQtyAvailable,
             punchesForPurchase: updateData?.punchesForPurchase,
+            isDeliveryProduct: updateData?.isDeliveryProduct,
             commentAllowed: updateData?.commentAllowed,
             productDescription: updateData?.productDescription ? updateData?.productDescription : '',
             productDescriptionNative: updateData?.productDescriptionNative ? updateData?.productDescriptionNative : '',
@@ -217,8 +220,6 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             isTopProduct: updateData?.isTopProduct,
             isFeaturedProduct: updateData?.isFeaturedProduct,
             dontMissOutProduct: updateData?.dontMissOutProduct
-
-             
         });
 
         setP1(null);
@@ -269,11 +270,12 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            
             <form onSubmit={updateProductData}>
-                {ImageUpload && <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-                </Box>}
+                {ImageUpload && (
+                    <Box sx={{ width: '100%' }}>
+                        <LinearProgress />
+                    </Box>
+                )}
                 <Box sx={style}>
                     <Grid container spacing={4}>
                         <Grid item>
@@ -357,12 +359,16 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                 </Grid>
 
                                 <Grid item xs={4}>
-                                    <TextField id="outlined-basic" fullWidth label="Points Of Cost" variant="outlined"
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Points Of Cost"
+                                        variant="outlined"
                                         value={data.pointsOfCost}
                                         onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
                                     />
                                 </Grid>
-                {/* <Grid item xs={4}>
+                                {/* <Grid item xs={4}>
                   <TextField id="outlined-basic" fullWidth label="POS ID" variant="outlined"
                     value={data.posId}
                     onChange={(e) => setData({ ...data, posId: e.target.value })}
@@ -388,6 +394,25 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                         value={data.punchesForPurchase}
                                         onChange={(e) => setData({ ...data, punchesForPurchase: e.target.value })}
                                     />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="delivery-product-label">Is Delivery Product</InputLabel>
+                                        <Select
+                                            labelId="delivery-product-label"
+                                            value={data.isDeliveryProduct}
+                                            onChange={(e) =>
+                                                setData({
+                                                    ...data,
+                                                    isDeliveryProduct: e.target.value
+                                                })
+                                            }
+                                            label="Is Delivery Product"
+                                        >
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
@@ -416,35 +441,50 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                             </Grid>
                         </Grid>
 
-                        
-            <Grid item xs={12}>
-              <Grid container spacing={2} >
-                <Grid item xs={3}>
-                  <TextField id="outlined-basic" fullWidth label="Calories" variant="outlined"
-                    value={data.calories}
-                    onChange={(e) => setData({ ...data, calories: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField id="outlined-basic" fullWidth label="Fat" variant="outlined"
-                    value={data.fat}
-                    onChange={(e) => setData({ ...data, fat: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField id="outlined-basic" fullWidth label="Protein" variant="outlined"
-                    value={data.protien}
-                    onChange={(e) => setData({ ...data, protien: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField id="outlined-basic" fullWidth label="Carbo" variant="outlined"
-                    value={data.carbo}
-                    onChange={(e) => setData({ ...data, carbo: e.target.value })}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
+                        <Grid item xs={12}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Calories"
+                                        variant="outlined"
+                                        value={data.calories}
+                                        onChange={(e) => setData({ ...data, calories: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Fat"
+                                        variant="outlined"
+                                        value={data.fat}
+                                        onChange={(e) => setData({ ...data, fat: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Protein"
+                                        variant="outlined"
+                                        value={data.protien}
+                                        onChange={(e) => setData({ ...data, protien: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Carbo"
+                                        variant="outlined"
+                                        value={data.carbo}
+                                        onChange={(e) => setData({ ...data, carbo: e.target.value })}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
 
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
@@ -623,7 +663,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
                         <Grid item xs={3}>
                             <Typography required variant="h7">
-                                 Top Selling Product
+                                Top Selling Product
                             </Typography>
                             <Box
                                 sx={{

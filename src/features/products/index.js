@@ -54,6 +54,8 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 result = result.filter((item) => item.productTypeId === category?.id);
             }
         }
+        console.log(result, 'search');
+        
         setSortedProductList(result);
     };
 

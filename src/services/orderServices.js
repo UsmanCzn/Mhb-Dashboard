@@ -1,4 +1,5 @@
 import { ApiV1 } from 'helper/api'; 
+import { Api } from '../../node_modules/@mui/icons-material/index';
  
 
 export default {
@@ -79,6 +80,16 @@ export default {
         params:{branchId:data}
       }
     ); 
+  },
+  
+  getFaresDetails(orderId){
+    return ApiV1.get(`services/app/Store/GetFareDetailsForVerdiStageDelivery?orderId=${orderId}`)
+  },
+  assignDeliveryTask(orderId){
+      return ApiV1.post(`services/app/Store/CreateTaskForDelivery?orderId=${orderId}`);
   }
-
+,
+  getOrderDetails(id){
+    return ApiV1.get(`services/app/Store/GetOrderDetails?orderId=${id}`)
+  }
 }

@@ -1,18 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Modal,
-    Box,
-    Typography,
-    TextField,
-    Grid,
-    Button,
-    Alert,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormControl,
-    FormLabel
-} from '@mui/material/index';
+import { Modal, Box, Typography, TextField, Grid, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import DropDown from 'components/dropdown';
 import imageCompression from 'browser-image-compression';
 
@@ -54,7 +41,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
         price: 0,
         addongroups: [],
         orderValue: 0,
-        pointsOfCost:0
+        pointsOfCost: 0,
+        isDeliveryProduct: false
     });
 
     const { productTypes, fetchProductTypesList, totalRowCount, loading } = useFetchProductTypeList(true, selectedBrand);
@@ -64,8 +52,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
     const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
     const [types, setTypes] = useState([]);
     const [categories, setCategories] = useState([]);
-    console.log(addonGroupList);
-    
+
     const [p1, setP1] = useState(null);
 
     const createNewProduct = async (event) => {
@@ -76,6 +63,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
             productSubTypeId: data.category,
             orderValue: +data.orderValue,
             customerBranch: data.branches,
+
             brandId: selectedBrand?.id,
             newProducts: [
                 {
@@ -83,6 +71,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                     price: data?.price,
                     pointsOfCost: +data?.pointsOfCost || 0,
                     nativeName: data?.nativeName,
+                    isDeliveryProduct: data?.isDeliveryProduct,
+
                     productGroups: data?.addongroups?.map((obj) => {
                         return {
                             prodGroupId: obj?.addonGroup,
@@ -101,35 +91,35 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
         const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
-            useWebWorker: true,
-          }
-          try{
+            useWebWorker: true
+        };
+        try {
             const compressedFile = await imageCompression(p1, options);
-            
-        await fileService
-            .uploadProductImage(compressedFile)
-            .then((res) => {
-                payload.newProducts[0].productImage = res.data?.result;
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            });
-        await storeServices
-            .createNewProduct(payload)
 
-            .then((res) => {
-                console.log(res?.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
-                setReload((prev) => !prev);
-                setModalOpen(false);
-            });}
-            catch(error){
-                console.log(error);
-            }
+            await fileService
+                .uploadProductImage(compressedFile)
+                .then((res) => {
+                    payload.newProducts[0].productImage = res.data?.result;
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                });
+            await storeServices
+                .createNewProduct(payload)
+
+                .then((res) => {
+                    console.log(res?.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    setReload((prev) => !prev);
+                    setModalOpen(false);
+                });
+        } catch (error) {
+            console.log(error);
+        }
     };
     const updateProduct = async (event) => {
         event.preventDefault();
@@ -281,7 +271,12 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
-                                <TextField id="outlined-basic" type="number" fullWidth label="Points Of Cost" variant="outlined"
+                                    <TextField
+                                        id="outlined-basic"
+                                        type="number"
+                                        fullWidth
+                                        label="Points Of Cost"
+                                        variant="outlined"
                                         value={data.pointsOfCost}
                                         onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
                                     />
@@ -297,6 +292,25 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                         value={data.orderValue}
                                         onChange={(e) => setData({ ...data, orderValue: e.target.value })}
                                     />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="delivery-product-label">Is Delivery Product</InputLabel>
+                                        <Select
+                                            labelId="delivery-product-label"
+                                            value={data.isDeliveryProduct}
+                                            onChange={(e) =>
+                                                setData({
+                                                    ...data,
+                                                    isDeliveryProduct: e.target.value
+                                                })
+                                            }
+                                            label="Is Delivery Product"
+                                        >
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                         </Grid>
