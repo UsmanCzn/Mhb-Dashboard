@@ -37,11 +37,12 @@ const style = {
 };
 
 const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData, selectedBrand }) => {
-    const [data, setData] = useState({
+    const intialValue = {
         name: '',
         nativeName: '',
         orderValue: 0
-    });
+    };
+    const [data, setData] = useState(intialValue);
 
     const customerServices = ServiceFactory.get('customer');
 
@@ -53,6 +54,8 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
                 nativeName: updateData?.nativeName,
                 orderValue: updateData?.orderValue
             });
+        } else {
+            setData(intialValue);
         }
     }, [update]);
 
@@ -76,6 +79,7 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
             .finally(() => {
                 setReload((prev) => !prev);
                 setModalOpen(false);
+                setData(intialValue)
             });
     };
 
@@ -100,6 +104,11 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
             .finally(() => {
                 setReload((prev) => !prev);
                 setModalOpen(false);
+                setData({
+                    name: '',
+                    nativeName: '',
+                    orderValue: 0
+                });
             });
     };
 
@@ -146,7 +155,7 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
                                         label="Sort Order"
                                         variant="outlined"
                                         value={data.orderValue}
-                                        onChange={(e) => setData({ ...data, orderValue: e.target.value })}
+                                        onChange={(e) => setData({ ...data, orderValue: Number(e.target.value) })}
                                     />
                                 </Grid>
                             </Grid>
@@ -159,7 +168,12 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
                                 <Grid item xs={8} />
                                 <Grid container spacing={2} justifyContent="flex-end">
                                     <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                setModalOpen(false);
+                                            }}
+                                        >
                                             Cancel
                                         </Button>
                                     </Grid>

@@ -32,6 +32,7 @@ import { useFetchAddonList } from 'features/Store/Addons/hooks/useFetchAddonList
 import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
 import imageCompression from 'browser-image-compression';
 import LinearProgress from '@mui/material/LinearProgress';
+import ConfirmationModal from 'components/confirmation-modal';
 
 const style = {
     position: 'absolute',
@@ -54,7 +55,10 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
     const [ImageUpload, setImageUpload] = useState(false);
     const { addonList } = useFetchAddonList(true);
     const { addonGroupList } = useFetchAddonGroupList(true, selectedBrand);
-
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const handleCancelDelete = () => {
+        setDeleteModalOpen(false);
+    };
     const [data, setData] = useState({
         name: '',
         nativeName: '',
@@ -158,6 +162,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
             .finally(() => {
                 setReload((prev) => !prev);
                 setModalOpen(false);
+                setDeleteModalOpen(false);
             });
     };
 
@@ -264,237 +269,238 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         }
     }, [productTypes]);
     return (
-        <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <form onSubmit={updateProductData}>
-                {ImageUpload && (
-                    <Box sx={{ width: '100%' }}>
-                        <LinearProgress />
-                    </Box>
-                )}
-                <Box sx={style}>
-                    <Grid container spacing={4}>
-                        <Grid item>
-                            <Typography variant="h4">Update Product </Typography>
-                        </Grid>
+        <>
+            <Modal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <form onSubmit={updateProductData}>
+                    {ImageUpload && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    <Box sx={style}>
+                        <Grid container spacing={4}>
+                            <Grid item>
+                                <Typography variant="h4">Update Product </Typography>
+                            </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <DropDown
-                                        title="Product Type"
-                                        list={types}
-                                        data={data}
-                                        setData={setData}
-                                        keyo={'productTypeId'}
-                                        type="normal"
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <DropDown
-                                        title="Category"
-                                        list={categories}
-                                        data={data}
-                                        setData={setData}
-                                        keyo={'productSubTypeId'}
-                                        type="normal"
-                                    />
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={4}>
+                                        <DropDown
+                                            title="Product Type"
+                                            list={types}
+                                            data={data}
+                                            setData={setData}
+                                            keyo={'productTypeId'}
+                                            type="normal"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <DropDown
+                                            title="Category"
+                                            list={categories}
+                                            data={data}
+                                            setData={setData}
+                                            keyo={'productSubTypeId'}
+                                            type="normal"
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Product Name"
-                                        variant="outlined"
-                                        required
-                                        value={data.name}
-                                        onChange={(e) => setData({ ...data, name: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Product Native Name"
-                                        variant="outlined"
-                                        value={data.nativeName}
-                                        onChange={(e) => setData({ ...data, nativeName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Price"
-                                        variant="outlined"
-                                        required
-                                        value={data.price}
-                                        onChange={(e) => setData({ ...data, price: e.target.value })}
-                                    />
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Product Name"
+                                            variant="outlined"
+                                            required
+                                            value={data.name}
+                                            onChange={(e) => setData({ ...data, name: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Product Native Name"
+                                            variant="outlined"
+                                            value={data.nativeName}
+                                            onChange={(e) => setData({ ...data, nativeName: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Price"
+                                            variant="outlined"
+                                            required
+                                            value={data.price}
+                                            onChange={(e) => setData({ ...data, price: e.target.value })}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Sort Order"
-                                        variant="outlined"
-                                        value={data.orderValue}
-                                        type="number"
-                                        onChange={(e) => setData({ ...data, orderValue: e.target.value })}
-                                    />
-                                </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Sort Order"
+                                            variant="outlined"
+                                            value={data.orderValue}
+                                            type="number"
+                                            onChange={(e) => setData({ ...data, orderValue: e.target.value })}
+                                        />
+                                    </Grid>
 
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Points Of Cost"
-                                        variant="outlined"
-                                        value={data.pointsOfCost}
-                                        onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
-                                    />
-                                </Grid>
-                                {/* <Grid item xs={4}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Points Of Cost"
+                                            variant="outlined"
+                                            value={data.pointsOfCost}
+                                            onChange={(e) => setData({ ...data, pointsOfCost: e.target.value })}
+                                        />
+                                    </Grid>
+                                    {/* <Grid item xs={4}>
                   <TextField id="outlined-basic" fullWidth label="POS ID" variant="outlined"
                     value={data.posId}
                     onChange={(e) => setData({ ...data, posId: e.target.value })}
                   />
                 </Grid>  */}
 
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Estimate Preparation Time In Minutes"
-                                        variant="outlined"
-                                        value={data.estimatePreparationTimeInMinutes}
-                                        onChange={(e) => setData({ ...data, estimatePreparationTimeInMinutes: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Punches For Purchase"
-                                        variant="outlined"
-                                        value={data.punchesForPurchase}
-                                        onChange={(e) => setData({ ...data, punchesForPurchase: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="delivery-product-label">Is Delivery Product</InputLabel>
-                                        <Select
-                                            labelId="delivery-product-label"
-                                            value={data.isDeliveryProduct}
-                                            onChange={(e) =>
-                                                setData({
-                                                    ...data,
-                                                    isDeliveryProduct: e.target.value
-                                                })
-                                            }
-                                            label="Is Delivery Product"
-                                        >
-                                            <MenuItem value={true}>Yes</MenuItem>
-                                            <MenuItem value={false}>No</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        multiline
-                                        label="Product Description"
-                                        variant="outlined"
-                                        type="text"
-                                        value={data.productDescription}
-                                        onChange={(e) => setData({ ...data, productDescription: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        multiline
-                                        label="Product Description Native"
-                                        variant="outlined"
-                                        type="text"
-                                        value={data.productDescriptionNative}
-                                        onChange={(e) => setData({ ...data, productDescriptionNative: e.target.value })}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Calories"
-                                        variant="outlined"
-                                        value={data.calories}
-                                        onChange={(e) => setData({ ...data, calories: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Fat"
-                                        variant="outlined"
-                                        value={data.fat}
-                                        onChange={(e) => setData({ ...data, fat: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Protein"
-                                        variant="outlined"
-                                        value={data.protien}
-                                        onChange={(e) => setData({ ...data, protien: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Carbo"
-                                        variant="outlined"
-                                        value={data.carbo}
-                                        onChange={(e) => setData({ ...data, carbo: e.target.value })}
-                                    />
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Estimate Preparation Time In Minutes"
+                                            variant="outlined"
+                                            value={data.estimatePreparationTimeInMinutes}
+                                            onChange={(e) => setData({ ...data, estimatePreparationTimeInMinutes: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Punches For Purchase"
+                                            variant="outlined"
+                                            value={data.punchesForPurchase}
+                                            onChange={(e) => setData({ ...data, punchesForPurchase: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="delivery-product-label">Is Delivery Product</InputLabel>
+                                            <Select
+                                                labelId="delivery-product-label"
+                                                value={data.isDeliveryProduct}
+                                                onChange={(e) =>
+                                                    setData({
+                                                        ...data,
+                                                        isDeliveryProduct: e.target.value
+                                                    })
+                                                }
+                                                label="Is Delivery Product"
+                                            >
+                                                <MenuItem value={true}>Yes</MenuItem>
+                                                <MenuItem value={false}>No</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            multiline
+                                            label="Product Description"
+                                            variant="outlined"
+                                            type="text"
+                                            value={data.productDescription}
+                                            onChange={(e) => setData({ ...data, productDescription: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            multiline
+                                            label="Product Description Native"
+                                            variant="outlined"
+                                            type="text"
+                                            value={data.productDescriptionNative}
+                                            onChange={(e) => setData({ ...data, productDescriptionNative: e.target.value })}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {/* <Grid item xs={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Calories"
+                                            variant="outlined"
+                                            value={data.calories}
+                                            onChange={(e) => setData({ ...data, calories: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Fat"
+                                            variant="outlined"
+                                            value={data.fat}
+                                            onChange={(e) => setData({ ...data, fat: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Protein"
+                                            variant="outlined"
+                                            value={data.protien}
+                                            onChange={(e) => setData({ ...data, protien: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            fullWidth
+                                            label="Carbo"
+                                            variant="outlined"
+                                            value={data.carbo}
+                                            onChange={(e) => setData({ ...data, carbo: e.target.value })}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    {/* <Grid item xs={4}>
                   <TextField id="outlined-basic" fullWidth label="Carbo" variant="outlined"
                     value={data.carbo}
                     onChange={(e) => setData({ ...data, carbo: e.target.value })}
                   />
                 </Grid> */}
-                                {/* <Grid item xs={4}>
+                                    {/* <Grid item xs={4}>
                   <TextField id="outlined-basic" fullWidth label="Estimate Preparation Time In Minutes" variant="outlined"
                     value={data.estimatePreparationTimeInMinutes}
                     onChange={(e) => setData({ ...data, estimatePreparationTimeInMinutes: e.target.value })}
@@ -506,12 +512,12 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                     onChange={(e) => setData({ ...data, punchesForPurchase: e.target.value })}
                   />
                 </Grid> */}
+                                </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {/* <Grid item xs={3}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    {/* <Grid item xs={3}>
                   <Typography required variant="h7">Is Merch Product</Typography>
                   <Box sx={{
                     width: '100%',
@@ -534,32 +540,32 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                       } />
                   </Box>
                 </Grid> */}
-                                <Grid item xs={3}>
-                                    <Typography required variant="h7">
-                                        Eligible For Free Item
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            mt: 2
-                                        }}
-                                    >
-                                        <Switch
-                                            checked={data.isEligibleForFreeItem}
-                                            onChange={(event) => {
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    isEligibleForFreeItem: event.target.checked
-                                                }));
+                                    <Grid item xs={3}>
+                                        <Typography required variant="h7">
+                                            Eligible For Free Item
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                mt: 2
                                             }}
-                                        />
-                                    </Box>
-                                </Grid>
-                                {/* <Grid item xs={3}>
+                                        >
+                                            <Switch
+                                                checked={data.isEligibleForFreeItem}
+                                                onChange={(event) => {
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        isEligibleForFreeItem: event.target.checked
+                                                    }));
+                                                }}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                    {/* <Grid item xs={3}>
                   <Typography required variant="h7">show Is Out Of Stock</Typography>
                   <Box sx={{
                     width: '100%',
@@ -583,162 +589,162 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                   </Box>
                 </Grid> */}
 
-                                <Grid item xs={3}>
-                                    <Typography required variant="h7">
-                                        Product Image Deleted
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            mt: 2
-                                        }}
-                                    >
-                                        <Switch
-                                            checked={data.isProductImageDeleted}
-                                            onChange={(event) => {
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    isProductImageDeleted: event.target.checked
-                                                }));
+                                    <Grid item xs={3}>
+                                        <Typography required variant="h7">
+                                            Product Image Deleted
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                mt: 2
                                             }}
-                                        />
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <Typography required variant="h7">
-                                        Quantity Available
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            mt: 2
-                                        }}
-                                    >
-                                        <Switch
-                                            checked={data.isQtyAvailable}
-                                            onChange={(event) => {
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    isQtyAvailable: event.target.checked
-                                                }));
+                                        >
+                                            <Switch
+                                                checked={data.isProductImageDeleted}
+                                                onChange={(event) => {
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        isProductImageDeleted: event.target.checked
+                                                    }));
+                                                }}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <Typography required variant="h7">
+                                            Quantity Available
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                mt: 2
                                             }}
-                                        />
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <Typography required variant="h7">
-                                        Comment Allowed
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            mt: 2
-                                        }}
-                                    >
-                                        <Switch
-                                            checked={data.commentAllowed}
-                                            onChange={(event) => {
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    commentAllowed: event.target.checked
-                                                }));
+                                        >
+                                            <Switch
+                                                checked={data.isQtyAvailable}
+                                                onChange={(event) => {
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        isQtyAvailable: event.target.checked
+                                                    }));
+                                                }}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <Typography required variant="h7">
+                                            Comment Allowed
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                mt: 2
                                             }}
-                                        />
-                                    </Box>
+                                        >
+                                            <Switch
+                                                checked={data.commentAllowed}
+                                                onChange={(event) => {
+                                                    setData((prev) => ({
+                                                        ...prev,
+                                                        commentAllowed: event.target.checked
+                                                    }));
+                                                }}
+                                            />
+                                        </Box>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={3}>
-                            <Typography required variant="h7">
-                                Top Selling Product
-                            </Typography>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    mt: 2
-                                }}
-                            >
-                                <Switch
-                                    checked={data.isTopProduct}
-                                    onChange={(event) => {
-                                        setData((prev) => ({
-                                            ...prev,
-                                            isTopProduct: event.target.checked
-                                        }));
+                            <Grid item xs={3}>
+                                <Typography required variant="h7">
+                                    Top Selling Product
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        mt: 2
                                     }}
-                                />
-                            </Box>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Typography required variant="h7">
-                                Featured Product
-                            </Typography>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    mt: 2
-                                }}
-                            >
-                                <Switch
-                                    checked={data.isFeaturedProduct}
-                                    onChange={(event) => {
-                                        setData((prev) => ({
-                                            ...prev,
-                                            isFeaturedProduct: event.target.checked
-                                        }));
+                                >
+                                    <Switch
+                                        checked={data.isTopProduct}
+                                        onChange={(event) => {
+                                            setData((prev) => ({
+                                                ...prev,
+                                                isTopProduct: event.target.checked
+                                            }));
+                                        }}
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography required variant="h7">
+                                    Featured Product
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        mt: 2
                                     }}
-                                />
-                            </Box>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Typography required variant="h7">
-                                Don't Miss out Product
-                            </Typography>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    mt: 2
-                                }}
-                            >
-                                <Switch
-                                    checked={data.dontMissOutProduct}
-                                    onChange={(event) => {
-                                        setData((prev) => ({
-                                            ...prev,
-                                            dontMissOutProduct: event.target.checked
-                                        }));
+                                >
+                                    <Switch
+                                        checked={data.isFeaturedProduct}
+                                        onChange={(event) => {
+                                            setData((prev) => ({
+                                                ...prev,
+                                                isFeaturedProduct: event.target.checked
+                                            }));
+                                        }}
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography required variant="h7">
+                                    Don't Miss out Product
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        mt: 2
                                     }}
-                                />
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {/* <Grid item xs={3}>
+                                >
+                                    <Switch
+                                        checked={data.dontMissOutProduct}
+                                        onChange={(event) => {
+                                            setData((prev) => ({
+                                                ...prev,
+                                                dontMissOutProduct: event.target.checked
+                                            }));
+                                        }}
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    {/* <Grid item xs={3}>
                   <Typography required variant="h7">is Qty Available</Typography>
                   <Box sx={{
                     width: '100%',
@@ -784,52 +790,52 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                       } />
                   </Box>
                 </Grid> */}
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={4}>
-                                    <Typography variant="h7">Product Image</Typography>
-                                </Grid>
-                                <Grid item xs={8} />
-
-                                <Grid item xs={12}>
-                                    <Box
-                                        sx={{
-                                            width: '60%',
-                                            height: 170,
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            mt: 2,
-                                            backgroundColor: '#eee',
-                                            ml: '20%'
-                                        }}
-                                    >
-                                        <img
-                                            src={updateData?.productImage}
-                                            style={{
-                                                width: 100,
-                                                height: 70
-                                            }}
-                                            alt="img"
-                                        />
-                                        <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
-
-                                        <input
-                                            type="file"
-                                            onChange={async (e) => {
-                                                setP1(e.currentTarget.files[0]);
-                                            }}
-                                        />
-                                    </Box>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
-                        {/* <Grid item xs={12}>
+                            <Grid item xs={12}>
+                                <Grid container>
+                                    <Grid item xs={4}>
+                                        <Typography variant="h7">Product Image</Typography>
+                                    </Grid>
+                                    <Grid item xs={8} />
+
+                                    <Grid item xs={12}>
+                                        <Box
+                                            sx={{
+                                                width: '60%',
+                                                height: 170,
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                mt: 2,
+                                                backgroundColor: '#eee',
+                                                ml: '20%'
+                                            }}
+                                        >
+                                            <img
+                                                src={updateData?.productImage}
+                                                style={{
+                                                    width: 100,
+                                                    height: 70
+                                                }}
+                                                alt="img"
+                                            />
+                                            <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
+
+                                            <input
+                                                type="file"
+                                                onChange={async (e) => {
+                                                    setP1(e.currentTarget.files[0]);
+                                                }}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            {/* <Grid item xs={12}>
 
               <Grid container
               >
@@ -867,30 +873,30 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
               </Grid>
 
             </Grid> */}
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {/* <Grid item xs={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={2}>
+                                    {/* <Grid item xs={4}>
               <Typography required variant="h7">Product Qty with Branch</Typography>
                   <TextField id="outlined-basic" fullWidth label="Available Qty" variant="outlined"
                     value={data.estimatePreparationTimeInMinutes}
                     onChange={(e) => setData({ ...data, estimatePreparationTimeInMinutes: e.target.value })}
                   />
                 </Grid> */}
-                                <Grid item xs={4}>
-                                    {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
-                                    <DropDown
-                                        title="Available Branches"
-                                        list={filteredBranch}
-                                        data={data}
-                                        setData={setData}
-                                        keyo={'productQtyWithBranchs'}
-                                        mt={2}
-                                        type="groups"
-                                        notRequired={true}
-                                    />
-                                </Grid>
+                                    <Grid item xs={4}>
+                                        {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
+                                        <DropDown
+                                            title="Available Branches"
+                                            list={filteredBranch}
+                                            data={data}
+                                            setData={setData}
+                                            keyo={'productQtyWithBranchs'}
+                                            mt={2}
+                                            type="groups"
+                                            notRequired={true}
+                                        />
+                                    </Grid>
 
-                                {/* <Grid item xs={4}>
+                                    {/* <Grid item xs={4}>
                   <Typography required variant="h7">Suggest</Typography>
                   <Box sx={{
                     width: '100%',
@@ -913,13 +919,13 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                       } />
                   </Box>
                 </Grid> */}
+                                </Grid>
                             </Grid>
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            {/* <Typography
+                            <Grid item xs={12}>
+                                {/* <Typography
                 required variant="h6">Addons</Typography> */}
-                            {/* <Grid container spacing={2} mt={1} >
+                                {/* <Grid container spacing={2} mt={1} >
 
                 <Grid item xs={3}>
                   <DropDown title="Addon Group"
@@ -930,7 +936,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                     type="normal"
                   />
                 </Grid> */}
-                            {/* <Grid item xs={3}>
+                                {/* <Grid item xs={3}>
                     <DropDown title="Addons"
                   list={addonList}
                   data={data}
@@ -940,7 +946,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                 />
                         
                     </Grid> */}
-                            {/* <Grid item xs={3}>
+                                {/* <Grid item xs={3}>
 
                   <Button onClick={addAddon} >
                     Add new
@@ -950,35 +956,35 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
 
               </Grid> */}
 
-                            <Grid item xs={4}>
-                                {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
-                                <DropDown
-                                    title="Addons Group"
-                                    list={addonGroupList}
-                                    data={data}
-                                    setData={setData}
-                                    keyo={'productGroups'}
-                                    mt={2}
-                                    type="groups"
-                                    notRequired={true}
-                                />
-                            </Grid>
+                                <Grid item xs={4}>
+                                    {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
+                                    <DropDown
+                                        title="Addons Group"
+                                        list={addonGroupList}
+                                        data={data}
+                                        setData={setData}
+                                        keyo={'productGroups'}
+                                        mt={2}
+                                        type="groups"
+                                        notRequired={true}
+                                    />
+                                </Grid>
 
-                            {data?.productGroups?.map((row, index) => {
-                                return (
-                                    <Grid container spacing={2} my={1}>
-                                        <Grid item xs={3}>
-                                            {/* <TextField id="outlined-basic" fullWidth label="Addon Group name" variant="outlined" 
+                                {data?.productGroups?.map((row, index) => {
+                                    return (
+                                        <Grid container spacing={2} my={1}>
+                                            <Grid item xs={3}>
+                                                {/* <TextField id="outlined-basic" fullWidth label="Addon Group name" variant="outlined" 
                                 value={addonGroupList?.find(obj=>obj.id==row.addonGroup)?.name}
                                 editable={false} 
                                 /> */}
-                                            <Box border={0.8} borderRadius={1} p={1}>
-                                                <Typography variant="body1">
-                                                    {addonGroupList?.find((obj) => obj.id == row)?.name}
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                        {/* <Grid item xs={3}>
+                                                <Box border={0.8} borderRadius={1} p={1}>
+                                                    <Typography variant="body1">
+                                                        {addonGroupList?.find((obj) => obj.id == row)?.name}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            {/* <Grid item xs={3}>
                                
                                {
                                 row?.addon?.map(ob=>{
@@ -990,49 +996,56 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                 })
                                }
                             </Grid> */}
-                                        <Grid item xs={3}>
-                                            <Button onClick={() => removeAddon(index)} color="error">
-                                                remove
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                );
-                            })}
-                        </Grid>
-
-                        {/* Footer */}
-
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={6} />
-                                <Grid container spacing={2} justifyContent="space-between">
-                                    <Grid item>
-                                        <Button variant="outlined" color="error" onClick={() => deleteProduct()}>
-                                            Delete this product
-                                        </Button>
-                                    </Grid>
-
-                                    <Grid item>
-                                        <Grid container spacing={2}>
-                                            <Grid item>
-                                                <Button variant="outlined" onClick={() => setModalOpen(false)}>
-                                                    Cancel
+                                            <Grid item xs={3}>
+                                                <Button onClick={() => removeAddon(index)} color="error">
+                                                    remove
                                                 </Button>
                                             </Grid>
-                                            <Grid item>
-                                                <Button primay variant="contained" type="Submit">
-                                                    Update
-                                                </Button>
+                                        </Grid>
+                                    );
+                                })}
+                            </Grid>
+
+                            {/* Footer */}
+
+                            <Grid item xs={12}>
+                                <Grid container>
+                                    <Grid item xs={6} />
+                                    <Grid container spacing={2} justifyContent="space-between">
+                                        <Grid item>
+                                            <Button variant="outlined" color="error" onClick={() => setDeleteModalOpen(true)}>
+                                                Delete this product
+                                            </Button>
+                                        </Grid>
+
+                                        <Grid item>
+                                            <Grid container spacing={2}>
+                                                <Grid item>
+                                                    <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                                        Cancel
+                                                    </Button>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Button primay variant="contained" type="Submit">
+                                                        Update
+                                                    </Button>
+                                                </Grid>
                                             </Grid>
                                         </Grid>
                                     </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </Box>
-            </form>
-        </Modal>
+                    </Box>
+                </form>
+            </Modal>
+            <ConfirmationModal
+                open={isDeleteModalOpen}
+                onClose={handleCancelDelete}
+                onConfirm={deleteProduct}
+                statement={`Are you sure you want to delete this Product?`}
+            />
+        </>
     );
 };
 

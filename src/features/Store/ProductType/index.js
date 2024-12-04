@@ -9,6 +9,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+import ConfirmationModal from 'components/confirmation-modal';
 export default function ProductType({sortOrder }) {
 
     const [reload, setReload] = useState(false);
@@ -17,11 +18,19 @@ export default function ProductType({sortOrder }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [editCategoryModalOpen, setEditCategoryModalOpen] = useState(false);
     const { brandsList } = useFetchBrandsList(reload);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState()
+    const handleCancelDelete = () => {
+        // setSelectedUserId(null);
+        setDeleteModalOpen(false);
+    };
+
     useEffect(() => {
         if (brandsList[0]?.id) {
             setselectedBrand(brandsList[0]);
         }
     }, [brandsList]);
+
     const groupsColumnFormater = (item) => {
         return (
             <Grid container spacing={1} direction="column">
@@ -36,10 +45,6 @@ export default function ProductType({sortOrder }) {
                 </Typography>
             </Grid>
         );
-    };
-
-    const sortProductTypes = () => {
-        const temp = [...productTypes];
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -66,7 +71,8 @@ export default function ProductType({sortOrder }) {
             setUpdateData(type);
             setModalOpen(true);
         } else if (data?.name == 'Delete') {
-            deleteType(type);
+            setDeleteModalOpen(true);
+            setSelectedCategory(type)
         }
         setAnchorEl(null);
     };
@@ -79,9 +85,9 @@ export default function ProductType({sortOrder }) {
         // )
     }, [productTypes]);
 
-    const deleteType = async (type) => {
+    const deleteType = async () => {
         await storeServices
-            .deleteProductType(type?.id)
+            .deleteProductType(selectedCategory?.id)
             .then((res) => {
                 setReload((prev) => {
                     return !prev;
@@ -90,6 +96,7 @@ export default function ProductType({sortOrder }) {
             .catch((err) => {
                 console.log(err?.response?.data);
             });
+            setDeleteModalOpen(false);
     };
 
     const columns = [
@@ -160,44 +167,43 @@ export default function ProductType({sortOrder }) {
             <Grid item xs={12} mb={2}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
-                    <Typography fontSize={22} fontWeight={700}> 
+                        <Typography fontSize={22} fontWeight={700}>
                             Categories
-                    </Typography>
+                        </Typography>
                     </Grid>
-                    <Box alignItems="center" sx={{display:'flex', gap:'10px'}}>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
+                    <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
+                        <Grid item xs="auto">
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={selectedBrand}
+                                    label={'Brand'}
+                                    onChange={(event) => {
+                                        setselectedBrand(event.target.value);
+                                    }}
+                                >
+                                    {brandsList.map((row, index) => {
+                                        return <MenuItem value={row}>{row?.name}</MenuItem>;
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={'auto'}>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                sx={{ textTransform: 'capitalize' }}
+                                onClick={() => {
+                                    setUpdate(false);
+                                    setUpdateData({});
+                                    setModalOpen(true);
                                 }}
                             >
-                                {brandsList.map((row, index) => {
-                                    return <MenuItem value={row}>{row?.name}</MenuItem>;
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={'auto'}>
-                        <Button
-                            size="small"
-                            variant="contained"
-                            sx={{ textTransform: 'capitalize' }}
-                            onClick={() => {
-                                setUpdate(false);
-                                setUpdateData({});
-                                setModalOpen(true);
-                            }}
-                        >
-                            Add New Product Type
-                        </Button>
-                    </Grid>
-
+                                Add New Product Type
+                            </Button>
+                        </Grid>
                     </Box>
                 </Grid>
             </Grid>
@@ -242,6 +248,12 @@ export default function ProductType({sortOrder }) {
                 type={type}
                 setReload={setReload}
                 selectedBrand={selectedBrand}
+            />
+            <ConfirmationModal
+                open={isDeleteModalOpen}
+                onClose={handleCancelDelete}
+                onConfirm={deleteType}
+                statement={`Are you sure you want to delete this Category?`}
             />
         </>
     );

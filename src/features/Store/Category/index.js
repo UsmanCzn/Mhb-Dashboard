@@ -42,14 +42,16 @@ const style = {
 
 const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-    const [data, setData] = useState({
+    const intialValue = {
         type: '',
         name: '',
         nativeName: '',
         subTypes: [],
         orderValue: 0
-    });
+    };
+
+
+    const [data, setData] = useState(intialValue);
 
     const [countries, setCountries] = useState([]);
     const [groups, setGroups] = useState([]);
@@ -58,11 +60,23 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
     const [subTypeImages, setSubTypeImages] = useState({}); // Initialize an empty object
 
     useEffect(() => {
-        setData({
-            ...data,
-            type: type?.name,
-            subTypes: type?.subTypes
-        });
+        if (type) {
+            setData({
+                ...data,
+                name: '',
+                nativeName: '',
+                subTypes:
+                    type && type?.subTypes?.length
+                        ? type?.subTypes.sort((a, b) => {
+                              if (a.orderValue == null) return 1; // `a` goes to the end
+                              if (b.orderValue == null) return -1; // `b` goes to the end
+                              return a.orderValue - b.orderValue; // Ascending sort by orderValue
+                          })
+                        : []
+            });
+        } else {
+            setData(intialValue);
+        }
     }, [type]);
 
     const addNewSubType = async () => {
@@ -76,7 +90,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
         let payload = {
             name: data.name,
             nativeName: data.nativeName,
-            orderValue: data.orderValue,
+            orderValue: +data.orderValue,
             productTypeId: type?.id
         };
         await fileService
@@ -266,7 +280,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                                 ) : (
                                                     <img
                                                         id={imgId}
-                                                        src={item?.imageUrl}
+                                                        src={item?.imageUrl || selectedBrand?.logoUrl}
                                                         style={{ width: 40, height: 40, cursor: 'pointer' }}
                                                         alt="img"
                                                     />
