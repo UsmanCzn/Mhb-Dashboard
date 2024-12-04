@@ -88,11 +88,11 @@ const headCells = [
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
-function OrderTableHead({ order, orderBy, payers }) {
+function OrderTableHead({ order, orderBy, payers, colHeaders }) {
     return (
         <TableHead>
             <TableRow>
-                {headCells.map((headCell) => (
+                {colHeaders.map((headCell) => (
                     <TableCell
                         key={headCell.id}
                         align={headCell.align}
@@ -150,7 +150,7 @@ OrderStatus.propTypes = {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable({ users, payers }) {
+export default function OrderTable({ users, payers, headers }) {
     const [order] = useState('asc');
     const [orderBy] = useState('trackingNo');
     const [selected] = useState([]);
@@ -199,7 +199,7 @@ export default function OrderTable({ users, payers }) {
                             }
                         }}
                     >
-                        <OrderTableHead order={order} orderBy={orderBy} payers={payers} />
+                        <OrderTableHead order={order} orderBy={orderBy} payers={payers} colHeaders={headers} />
                         <TableBody>
                             {users && users.length > 0 ? (
                                 stableSort(users.slice(0, 5), getComparator(users, orderBy))?.map((row, index) => {
@@ -209,6 +209,7 @@ export default function OrderTable({ users, payers }) {
                                     return (
                                         <TableRow
                                             hover
+                                            key={index}
                                             role="checkbox"
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             aria-checked={isItemSelected}
@@ -247,7 +248,7 @@ export default function OrderTable({ users, payers }) {
                                         }
                                     }}
                                 >
-                                    <OrderTableHead order={order} orderBy={orderBy} payers={payers} />
+                                    <OrderTableHead order={order} orderBy={orderBy} payers={payers} colHeaders={headers} />
                                     <TableBody>
                                         {users && users.length > 0 ? (
                                             stableSort(users, getComparator(users, orderBy))?.map((row, index) => {
@@ -257,6 +258,7 @@ export default function OrderTable({ users, payers }) {
                                                 return (
                                                     <TableRow
                                                         hover
+                                                        key={index}
                                                         role="checkbox"
                                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                         aria-checked={isItemSelected}
