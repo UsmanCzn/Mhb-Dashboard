@@ -78,16 +78,37 @@ const DashboardDefault = () => {
     const [ordersChartData, setOrdersChartData] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
+
+    const headCells = [
+        {
+            id: 'name',
+            align: 'left',
+            disablePadding: true,
+            label: 'Name'
+        },
+        {
+            id: 'fat',
+            align: 'right',
+            disablePadding: false,
+            label: 'Total Order'
+        },
+        {
+            id: 'carbs',
+            align: 'right',
+            disablePadding: false,
+            label: 'Amount'
+        }
+    ];
     const getMaxEndDate = (start) => {
         return start ? dayjs(start).add(31, 'day') : new Date();
-      };
-      const handleDateChange = (newValue) => {
+    };
+    const handleDateChange = (newValue) => {
         setStartDate(newValue);
         const maxEndDate = getMaxEndDate(newValue);
         if (!endDate || dayjs(endDate).isAfter(maxEndDate)) {
-          setEndDate(maxEndDate);
+            setEndDate(maxEndDate);
         }
-      };
+    };
     const handleEndDateChange = (newValue) => {
         setEndDate(newValue);
     };
@@ -108,11 +129,65 @@ const DashboardDefault = () => {
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce title="Total Order" count={dashbaordBoardData?.totalOrders??0} percentage={27.4} extra="1,943" />
+                    <AnalyticEcommerce title="Total Order" count={dashbaordBoardData?.totalOrders ?? 0} percentage={27.4} extra="1,943" />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Total Sales"
+                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        percentage={27.4}
+                        isLoss
+                        color="warning"
+                        extra="$20,395"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="Avg order ready time"
+                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="People Signed Up"
+                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        percentage={27.4}
+                        isLoss
+                        color="warning"
+                        extra="$20,395"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="Points Collected"
+                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="Free Redeemed"
+                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        percentage={27.4}
+                        isLoss
+                        color="warning"
+                        extra="$20,395"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="Points Redeemed"
+                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="Customers Ordered"
                         count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
                         percentage={27.4}
                         isLoss
@@ -134,10 +209,9 @@ const DashboardDefault = () => {
 
     useEffect(() => {
         if (brandsList[0]?.id) {
-            if(brandsList && brandsList.length>2){
-            setselectedBrand(brandsList[0]);
-            }
-            else{
+            if (brandsList && brandsList.length > 2) {
+                setselectedBrand(brandsList[0]);
+            } else {
                 setselectedBrand(brandsList[0]);
             }
             setOrdersChartData(null);
@@ -171,7 +245,11 @@ const DashboardDefault = () => {
                                 }}
                             >
                                 {brandsList.map((row, index) => {
-                                    return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
+                                    return (
+                                        <MenuItem key={index} value={row}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
                                 })}
                             </Select>
                         </FormControl>
@@ -219,6 +297,7 @@ const DashboardDefault = () => {
             </Grid>
 
             {topCard()}
+
             <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
             {/* row 2 */}
             {/* <Grid item xs={12} md={12} lg={12}></Grid> */}
@@ -244,7 +323,7 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topPayers} payers={true} />
+                            <OrdersTable users={topPayers} payers={true} headers={headCells} />
                         </MainCard>
                     </Box>
                 </Card>
@@ -259,7 +338,37 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topSales} payers={false} />
+                            <OrdersTable users={topSales} payers={false} headers={headCells} />
+                        </MainCard>
+                    </Box>
+                </Card>
+            </Grid>
+            <Grid item xs={12} md={6} lg={6}>
+                <Card>
+                    <Box p={2}>
+                        <Grid container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                                <Typography variant="h5">Top 10 ordered Product</Typography>
+                            </Grid>
+                            <Grid item />
+                        </Grid>
+                        <MainCard sx={{ mt: 2 }} content={false}>
+                            <OrdersTable users={topSales} payers={false} headers={headCells} />
+                        </MainCard>
+                    </Box>
+                </Card>
+            </Grid>
+            <Grid item xs={12} md={6} lg={6}>
+                <Card>
+                    <Box p={2}>
+                        <Grid container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                                <Typography variant="h5">Latest Orders</Typography>
+                            </Grid>
+                            <Grid item />
+                        </Grid>
+                        <MainCard sx={{ mt: 2 }} content={false}>
+                            <OrdersTable users={topSales} payers={false} headers={headCells} />
                         </MainCard>
                     </Box>
                 </Card>
@@ -267,36 +376,6 @@ const DashboardDefault = () => {
         </Grid>
     );
 
-    function formatTimeToHumanReadable(timeString) {
-        if (timeString === undefined || timeString === null) {
-            return;
-        }
-        const timeParts = timeString?.split(':');
-        const hours = parseInt(timeParts[0]?.replace('h', ''), 10);
-        const minutes = parseInt(timeParts[1].replace('m', ''), 10);
-        const seconds = parseInt(timeParts[2].replace('s', ''), 10);
-        const milliseconds = parseInt(timeParts[3].replace('ms', ''), 10);
-
-        let formattedTime = '';
-
-        if (hours > 0) {
-            formattedTime += hours + ' hours ';
-        }
-
-        if (minutes > 0) {
-            formattedTime += minutes + ' minutes ';
-        }
-
-        if (seconds > 0) {
-            formattedTime += seconds + ' seconds ';
-        }
-
-        if (milliseconds > 0) {
-            formattedTime += milliseconds + ' milliseconds';
-        }
-
-        return formattedTime.trim();
-    }
 };
 
 export default DashboardDefault;
