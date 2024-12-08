@@ -321,7 +321,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                                 label="Category Native Name"
                                                 variant="outlined"
                                                 required
-                                                value={item?.name}
+                                                value={item?.nativeName}
                                                 onChange={(e) => {
                                                     setData((prev) => {
                                                         prev.subTypes[index].nativeName = e.target.value;
