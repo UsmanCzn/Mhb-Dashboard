@@ -34,7 +34,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
     const [p1, setP1] = useState(null);
 
     const [dataUri, setDataUri] = useState('');
-    const [data, setData] = useState({
+    const initalData = {
         name: '',
         nativeName: '',
         selectedCompany: '',
@@ -69,7 +69,8 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
         rvcid: 0,
         body: '',
         logoUrl: null
-    });
+    }
+    const [data, setData] = useState(initalData);
 
     const createBranch = async (event) => {
         event.preventDefault();
@@ -175,6 +176,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
     useEffect(() => {
         if (update) {
             setData({
+                ...updateData,
                 ...data,
                 id: updateData?.id,
                 name: updateData?.name,

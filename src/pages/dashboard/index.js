@@ -99,6 +99,54 @@ const DashboardDefault = () => {
             label: 'Amount'
         }
     ];
+    const headCellsTop10 = [
+        {
+            id: 'name',
+            align: 'left',
+            disablePadding: true,
+            label: 'Name'
+        },
+
+        {
+            id: 'salesPercent',
+            align: 'right',
+            disablePadding: false,
+            label: 'Ordered'
+        },
+        {
+            id: 'sales',
+            align: 'right',
+            disablePadding: false,
+            label: 'Sales'
+        }
+    ];
+    const headCellsLastOrder = [
+        {
+            id: 'image',
+            align: 'right',
+            disablePadding: false,
+            label: 'Image'
+        },
+        {
+            id: 'name',
+            align: 'left',
+            disablePadding: true,
+            label: 'Name'
+        },
+
+        {
+            id: 'date',
+            align: 'right',
+            disablePadding: false,
+            label: 'Date&Time'
+        },
+        {
+            id: 'action',
+            align: 'right',
+            disablePadding: false,
+            label: 'Action'
+        }
+    ];
     const getMaxEndDate = (start) => {
         return start ? dayjs(start).add(31, 'day') : new Date();
     };
@@ -116,7 +164,7 @@ const DashboardDefault = () => {
         setReload((prev) => !prev);
     };
 
-    const { dashbaordBoardData, recallData, fetchRewardList } = useDashboard(reload, selectedBrand?.id, startDate, endDate);
+    const { dashbaordBoardData, recallData, fetchRewardList, loading } = useDashboard(reload, selectedBrand?.id, startDate, endDate);
     useEffect(() => {
         setTopPayers(dashbaordBoardData?.topUsersFromSales);
         setTopSales(dashbaordBoardData?.topUsersFromOrders);
@@ -129,12 +177,19 @@ const DashboardDefault = () => {
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce title="Total Order" count={dashbaordBoardData?.totalOrders ?? 0} percentage={27.4} extra="1,943" />
+                    <AnalyticEcommerce
+                        title="Total Order"
+                        isLoading={loading}
+                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Total Sales"
-                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        count={roundedNumber === undefined ? '0' : roundedNumber + ' KWD'}
+                        isLoading={loading}
                         percentage={27.4}
                         isLoss
                         color="warning"
@@ -144,7 +199,8 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Avg order ready time"
-                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        count={dashbaordBoardData?.avgDispatchTime ?? 0}
+                        isLoading={loading}
                         percentage={27.4}
                         extra="1,943"
                     />
@@ -152,7 +208,10 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="People Signed Up"
-                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        count={
+                            dashbaordBoardData?.totalRegisteredCustomers === undefined ? 0 : dashbaordBoardData?.totalRegisteredCustomers
+                        }
+                        isLoading={loading}
                         percentage={27.4}
                         isLoss
                         color="warning"
@@ -162,15 +221,17 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Points Collected"
-                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        count={dashbaordBoardData?.totalPointsEarned ?? 0}
+                        isLoading={loading}
                         percentage={27.4}
                         extra="1,943"
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
-                        title="Free Redeemed"
-                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        title="Free Drinks"
+                        count={dashbaordBoardData?.totalFreeDrinks ?? 0}
+                        isLoading={loading}
                         percentage={27.4}
                         isLoss
                         color="warning"
@@ -180,7 +241,8 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Points Redeemed"
-                        count={dashbaordBoardData?.totalOrders ?? 0}
+                        count={dashbaordBoardData?.pointsRedeemed ?? 0}
+                        isLoading={loading}
                         percentage={27.4}
                         extra="1,943"
                     />
@@ -188,7 +250,8 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Customers Ordered"
-                        count={roundedNumber === undefined ? '' : roundedNumber + ' KWD'}
+                        count={dashbaordBoardData?.customerCount ?? 0}
+                        isLoading={loading}
                         percentage={27.4}
                         isLoss
                         color="warning"
@@ -302,16 +365,6 @@ const DashboardDefault = () => {
             {/* row 2 */}
             {/* <Grid item xs={12} md={12} lg={12}></Grid> */}
 
-            <Grid item xs={12} md={12} lg={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
-                        <Typography variant="h5">Income Overview</Typography>
-                    </Grid>
-                </Grid>
-                <MainCard sx={{ mt: 2 }} content={false}>
-                    {ordersChartData && <MonthlyLineChart data={ordersChartData} key={chartDataUpdateCounter} />}
-                </MainCard>
-            </Grid>
             {/* row 3 */}
             <Grid item xs={12} md={6} lg={6}>
                 <Card>
@@ -353,7 +406,12 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topSales} payers={false} headers={headCells} />
+                            <OrdersTable
+                                users={[]}
+                                payers={false}
+                                headers={headCellsTop10}
+                                top10Products={dashbaordBoardData?.topTenProducts?.slice().sort((a, b) => b.countOrdered - a.countOrdered)}
+                            />
                         </MainCard>
                     </Box>
                 </Card>
@@ -368,10 +426,26 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topSales} payers={false} headers={headCells} />
+                            <OrdersTable
+                                users={[]}
+                                top10Products={[]}
+                                lastOrders={dashbaordBoardData?.lastorders}
+                                payers={false}
+                                headers={headCellsLastOrder}
+                            />
                         </MainCard>
                     </Box>
                 </Card>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+                <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item>
+                        <Typography variant="h5">Income Overview</Typography>
+                    </Grid>
+                </Grid>
+                <MainCard sx={{ mt: 2 }} content={false}>
+                    {ordersChartData && <MonthlyLineChart data={ordersChartData} key={chartDataUpdateCounter} />}
+                </MainCard>
             </Grid>
         </Grid>
     );

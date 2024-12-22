@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import React from 'react';
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
+import OrderDetail from 'components/orders/OrderDetails';
+import moment from 'moment';
 
 // material-ui
 import {
@@ -150,13 +152,23 @@ OrderStatus.propTypes = {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable({ users, payers, headers }) {
+export default function OrderTable({ users, payers, headers, top10Products, lastOrders }) {
     const [order] = useState('asc');
     const [orderBy] = useState('trackingNo');
     const [selected] = useState([]);
     const [deleteAlert, setDeleteAlert] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [data, setData] = useState({});
+    const [reload, setReload] = useState(false);
+    const [statustypes, setStatusTypes] = useState([
+        { id: 1, title: 'Open' },
+        { id: 3, title: 'Accepted' },
+        { id: 4, title: 'Ready' },
+        { id: 2, title: 'Closed' },
+        { id: 5, title: 'Rejected' }
+    ]);
 
     const gotoViewAll = () => {
         const data = JSON.stringify(users);
@@ -172,6 +184,14 @@ export default function OrderTable({ users, payers, headers }) {
     const handleClose = () => {
         setOpen(false);
     };
+    const showDetails = (data) => {
+        setData(data);
+        setModalOpen(true);
+    };
+
+    const navigateToUserProfile = (user) => {
+        navigate(`/customers/${user.userId}`);
+    };
 
     const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
 
@@ -181,7 +201,9 @@ export default function OrderTable({ users, payers, headers }) {
                 <TableContainer
                     sx={{
                         width: '100%',
-                        overflowX: 'auto',
+                        maxHeight: '400px', // Set a fixed height for the scrollable area
+                        overflowY: 'auto', // Enable vertical scrolling
+                        overflowX: 'auto', // Enable horizontal scrolling
                         position: 'relative',
                         display: 'block',
                         maxWidth: '100%',
@@ -202,19 +224,22 @@ export default function OrderTable({ users, payers, headers }) {
                         <OrderTableHead order={order} orderBy={orderBy} payers={payers} colHeaders={headers} />
                         <TableBody>
                             {users && users.length > 0 ? (
-                                stableSort(users.slice(0, 5), getComparator(users, orderBy))?.map((row, index) => {
+                                stableSort(users.slice(0, 10), getComparator(users, orderBy))?.map((row, index) => {
                                     const isItemSelected = isSelected(row.trackingNo);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
                                             key={index}
                                             role="checkbox"
-                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
                                             selected={isItemSelected}
+                                            onClick={(e) => {
+                                                e.preventDefault(); // Prevent default navigation behavior
+                                                navigateToUserProfile(row);
+                                            }}
                                         >
                                             <TableCell align="left">{row.userFullName}</TableCell>
                                             <TableCell align="right">{row.totalOrders}</TableCell>
@@ -222,71 +247,83 @@ export default function OrderTable({ users, payers, headers }) {
                                         </TableRow>
                                     );
                                 })
+                            ) : top10Products && top10Products.length > 0 ? (
+                                top10Products.map((row, index) => (
+                                    <TableRow
+                                        hover
+                                        key={index}
+                                        role="checkbox"
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        tabIndex={-1}
+                                    >
+                                        <TableCell align="left">{row.productName}</TableCell>
+                                        <TableCell align="right">
+                                            {row.countOrdered} {row.countOrdered > 1 ? 'Times' : 'Time'}
+                                        </TableCell>
+                                        <TableCell align="right">{row.totalSales.toFixed(2) + ' KWD'}</TableCell>
+                                    </TableRow>
+                                ))
+                            ) : lastOrders && lastOrders.length > 0 ? (
+                                lastOrders.map((order, index) => (
+                                    <TableRow
+                                        hover
+                                        key={index}
+                                        role="checkbox"
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        tabIndex={-1}
+                                    >
+                                        {/* Customize the TableCell values according to the structure of lastOrders */}
+                                        <TableCell align="left">
+                                            {order.products[0]?.productImage ? (
+                                                <img
+                                                    src={order.products[0].productImage}
+                                                    alt={order.products[0]?.name || 'Product Image'}
+                                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <span>No Image</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell align="left">{order.products[0]?.name}</TableCell>
+                                        <TableCell align="right">
+                                            {moment(order.creationDate).format('DD-MMM-YYYY')}{' '}
+                                            {moment(order.creationDate).format('hh:mm A')}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <a
+                                                href="#"
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'underline',
+                                                    color: 'blue'
+                                                }}
+                                                onClick={(e) => {
+                                                    e.preventDefault(); // Prevent default navigation behavior
+                                                    showDetails(order);
+                                                }}
+                                            >
+                                                View Details
+                                            </a>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
                             ) : (
-                                <></>
+                                <TableRow>
+                                    <TableCell colSpan={3} align="center">
+                                        No data available
+                                    </TableCell>
+                                </TableRow>
                             )}
                         </TableBody>
                     </Table>
-
-                    <div>
-                        <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogContent>
-                                <Typography variant="h5"> {payers ? 'Top Payers' : 'Most with reedeemable'}</Typography>
-                                <Table
-                                    aria-labelledby="tableTitle"
-                                    sx={{
-                                        '& .MuiTableCell-root:first-child': {
-                                            pl: 2
-                                        },
-                                        '& .MuiTableCell-root:last-child': {
-                                            pr: 3
-                                        }
-                                    }}
-                                >
-                                    <OrderTableHead order={order} orderBy={orderBy} payers={payers} colHeaders={headers} />
-                                    <TableBody>
-                                        {users && users.length > 0 ? (
-                                            stableSort(users, getComparator(users, orderBy))?.map((row, index) => {
-                                                const isItemSelected = isSelected(row.trackingNo);
-                                                const labelId = `enhanced-table-checkbox-${index}`;
-
-                                                return (
-                                                    <TableRow
-                                                        hover
-                                                        key={index}
-                                                        role="checkbox"
-                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                        aria-checked={isItemSelected}
-                                                        tabIndex={-1}
-                                                        selected={isItemSelected}
-                                                    >
-                                                        <TableCell align="left">{row.userFullName}</TableCell>
-                                                        <TableCell align="right">{row.totalOrders}</TableCell>
-                                                        <TableCell align="right">{row.totalSale.toFixed(3) + ' KWD'}</TableCell>
-                                                    </TableRow>
-                                                );
-                                            })
-                                        ) : (
-                                            <></>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-
-                    <div style={{ display: 'flex', width: '100%' }}>
-                        {/* The flex container will make the button stretch */}
-                        <Button variant="text" style={{ flex: 1 }} onClick={handleClickOpen}>
-                            View All
-                        </Button>
-                    </div>
                 </TableContainer>
+                <OrderDetail
+                    modalOpen={modalOpen}
+                    setModalOpen={setModalOpen}
+                    setReload={setReload}
+                    data={data}
+                    statustypes={statustypes}
+                />
             </Box>
         </>
     );

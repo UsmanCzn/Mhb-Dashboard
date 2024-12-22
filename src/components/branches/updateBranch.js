@@ -31,9 +31,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
     const fileService = ServiceFactory.get('file');
     const [brands, setBrands] = useState([]);
     const [p1, setP1] = useState(null);
-
-    const [dataUri, setDataUri] = useState('');
-    const [data, setData] = useState({
+    const initalData = {
         name: '',
         nativeName: '',
         selectedCompany: '',
@@ -74,7 +72,8 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         latitude: 0,
         longitude: 0,
         arrivalArea: 0
-    });
+    };
+    const [data, setData] = useState(initalData);
 
     const createBranch = async (event) => {
         event.preventDefault();
@@ -178,16 +177,15 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         });
 
     useEffect(() => {
-        if (update) {
-            console.log(updateData, 'updated');
-
+        if (update && updateData) {
             setData({
+                ...updateData,
                 ...data,
                 id: updateData?.id,
                 isDelivery: updateData?.isDelivery,
                 DeliveryDistanceKM: updateData?.deliveryDistanceKM,
                 DeliveryFee: updateData?.deliveryFee,
-                UsedDeliverySystem: updateData?.usedDeliverySystem,
+                usedDeliverySystem: updateData?.usedDeliverySystem,
                 name: updateData?.name,
                 nativeName: updateData?.nativeName,
                 selectedCompany: updateData?.selectedCompany,
@@ -225,6 +223,8 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                 longitude: updateData?.longitude
                 // logoUrl: updateData?.logoUrl
             });
+        } else {
+            setData(initalData);
         }
     }, [update, updateData]);
 

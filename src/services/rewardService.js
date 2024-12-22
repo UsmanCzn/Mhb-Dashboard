@@ -24,6 +24,44 @@ export default {
         console.log(url);
         return ApiV1.get(url, {});
     },
+    getAvgDispatchTime(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetAvgDisPatchTime?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getTotalRegisteredCustomers(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTotalRegisteredCustomers?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getTotalFreeDrinks(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTotalFreeDrinksConsumedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getTotalPointsEarned(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTotalPointosEarnedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getTotalPointsRedeemed(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTotalPointosRedeemedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getCustomersCountOrdered(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTotalCustomersOrders?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getTopTenProducts(brandId, startDate, endDate) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetTop10DrinksBySalesForReport?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
+    getCustomersLastOrders(brandId, startDate, endDate) {
+        return ApiV1.get(`services/app/Store/GetUserOrdersForDashboardPage?brandId=${brandId}&Skip=0&Take=10`);
+    },
     editPurchasesCollectionProgram(data) {
         return ApiV1.post('services/app/RewardProgram/EditPurchasesCollectionProgram', data);
     },
@@ -63,36 +101,33 @@ export default {
         return ApiV1.post('services/app/RewardProgram/DuplicateRewardProgramForOtherBranches', data);
     },
 
-
-    getRewardStats (data){
-        const {
-            brandId,
-            branchId,
-            startDate,
-            endDate,
-        }= data
-        return ApiV1.get(`services/app/Dashboard/GetLiveDashboardReport?brandId=${brandId}&branchId=${branchId}&startDate=${startDate}&endDate=${endDate}`)  
+    getRewardStats(data) {
+        const { brandId, branchId, startDate, endDate } = data;
+        return ApiV1.get(
+            `services/app/Dashboard/GetLiveDashboardReport?brandId=${brandId}&branchId=${branchId}&startDate=${startDate}&endDate=${endDate}`
+        );
     },
 
-    getAllBundles (brandId){ 
-        return ApiV1.get(`services/app/Bundle/GetAllBundlesByBrandId`,{
-            params:{
+    getAllBundles(brandId) {
+        return ApiV1.get(`services/app/Bundle/GetAllBundlesByBrandId`, {
+            params: {
                 brandId
             }
-        })  
+        });
     },
-    addNewBundle (body){ 
-        return ApiV1.post(`services/app/Bundle/CreateBundle`,body)  
+    addNewBundle(body) {
+        return ApiV1.post(`services/app/Bundle/CreateBundle`, body);
     },
-    updateBundle (body){ 
-        return ApiV1.put(`services/app/Bundle/UpdateBundle`,body)  
+    updateBundle(body) {
+        return ApiV1.put(`services/app/Bundle/UpdateBundle`, body);
     },
-    
-    getRewardHistory({ Take, Skip, BranchId,SearchExpression }) {
+
+    getRewardHistory({ Take, Skip, BranchId, SearchExpression }) {
         // Conditionally include BranchId only if it is defined
         const branchIdParam = BranchId !== undefined && BranchId !== null ? `&BranchId=${BranchId}` : '';
-        
-        return ApiV1.get(`services/app/Store/GetDiscountedOrdersForRewardHistory?Take=${Take}&Skip=${Skip}${branchIdParam}&SearchExpression=${SearchExpression}`);
-    }
 
+        return ApiV1.get(
+            `services/app/Store/GetDiscountedOrdersForRewardHistory?Take=${Take}&Skip=${Skip}${branchIdParam}&SearchExpression=${SearchExpression}`
+        );
+    }
 };
