@@ -34,7 +34,6 @@ const Header = ({ open, handleDrawerToggle }) => {
             >
                 {!open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </IconButton>
-
             <HeaderContent />
         </Toolbar>
     );

@@ -10,7 +10,9 @@ import {
     Card,
     CardContent,
     TextField,
-    CardActions
+    CardActions,
+    Switch,
+    FormControlLabel
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -40,7 +42,8 @@ const SystemNotification = () => {
             notificationMessage: '',
             notificationTitleNative: '',
             notificationMessageNative: '',
-            comments: ''
+            comments: '',
+            isStickyNotification: false
         },
 
         // Validation schema using Yup
@@ -48,10 +51,10 @@ const SystemNotification = () => {
             entityId: Yup.number().required('Entity ID is required'),
             entityTypeId: Yup.number().required('Entity Type ID is required'),
             notificationTitle: Yup.string().required('Notification title is required'),
-            notificationTitleNative: Yup.string().required('Notification title in native language is required'),
+            notificationTitleNative: Yup.string(),
             notificationMessage: Yup.string().required('Notification message is required'),
-            notificationMessageNative: Yup.string().required('Notification message in native language is required'),
-            comments: Yup.string().required('Comment is required')
+            notificationMessageNative: Yup.string(),
+            comments: Yup.string()
         }),
 
         // Submit handler
@@ -191,7 +194,7 @@ const SystemNotification = () => {
                                 </Grid>
 
                                 {/* Notification Native Title */}
-                                <Grid item xs={6}>
+                                {/* <Grid item xs={6}>
                                     <TextField
                                         fullWidth
                                         required
@@ -206,7 +209,7 @@ const SystemNotification = () => {
                                         error={formik.touched.notificationTitleNative && Boolean(formik.errors.notificationTitleNative)}
                                         helperText={formik.touched.notificationTitleNative && formik.errors.notificationTitleNative}
                                     />
-                                </Grid>
+                                </Grid> */}
                                 {/* Notification Message */}
                                 <Grid item xs={6}>
                                     <TextField
@@ -224,7 +227,7 @@ const SystemNotification = () => {
                                 </Grid>
 
                                 {/* Notification Message Native */}
-                                <Grid item xs={6}>
+                                {/* <Grid item xs={6}>
                                     <TextField
                                         id="notificationMessageNative"
                                         label="Notification Message Native"
@@ -237,10 +240,24 @@ const SystemNotification = () => {
                                         error={formik.touched.notificationMessageNative && Boolean(formik.errors.notificationMessageNative)}
                                         helperText={formik.touched.notificationMessageNative && formik.errors.notificationMessageNative}
                                     />
+                                </Grid> */}
+                                {/* Is Sticky Notification Toggle */}
+                                <Grid item xs={6}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={formik.values.isStickyNotification}
+                                                onChange={formik.handleChange}
+                                                name="isStickyNotification"
+                                                color="primary"
+                                            />
+                                        }
+                                        label="Sticky Notification"
+                                    />
                                 </Grid>
 
                                 {/* Comments  */}
-                                <Grid item xs={6}>
+                                {/* <Grid item xs={6}>
                                     <TextField
                                         id="comments"
                                         label="Comments"
@@ -253,7 +270,7 @@ const SystemNotification = () => {
                                         error={formik.touched.comments && Boolean(formik.errors.comments)}
                                         helperText={formik.touched.comments && formik.errors.comments}
                                     />
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </CardContent>
                         <CardActions>

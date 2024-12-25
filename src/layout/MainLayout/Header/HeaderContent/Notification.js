@@ -25,7 +25,7 @@ import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-
+import MembershipPopup from '../notification-popup';
 // assets
 import { BellOutlined, CloseOutlined, GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
 
@@ -53,8 +53,8 @@ const Notification = () => {
     const navigate = useNavigate();
     const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
     const [cookies, setCookie] = useCookies();
-    const [notificationCount, setnotificationCount] = useState(0);
     const userId = cookies['userId'];
+    const [notificationCount, setnotificationCount] = useState(0);
     const getNotifications = async () => {
         const response = await userServices.getSystemNotifications(userId);
         if (response) {
@@ -203,6 +203,13 @@ const Notification = () => {
                     <BellOutlined />
                 </Badge>
             </IconButton>
+            {notifications.length > 0 &&
+                notifications
+                    .filter((e) => e.isStickyNotification)
+                    .slice(0, 4)
+                    .map((item, index) => (
+                        <MembershipPopup key={index} notification={item} userId={userId} getNotification={getNotifications} />
+                    ))}
             <Popper
                 placement={matchesXs ? 'bottom' : 'bottom-end'}
                 open={open}
@@ -258,29 +265,32 @@ const Notification = () => {
                                         }}
                                     >
                                         {notifications.length > 0 ? (
-                                            notifications.slice(0, 4).map((item) => (
-                                                <React.Fragment key={item.id}>
-                                                    {/* Ensure to use a unique key for each item */}
-                                                    <ListItemButton onClick={() => navigate('/all-notifications')}>
-                                                        <ListItemText
-                                                            primary={
-                                                                <Typography variant="h6">
-                                                                    <Typography component="span" variant="subtitle1">
-                                                                        {item.notificationTitle}
+                                            notifications
+                                                .filter((e) => !e.isStickyNotification)
+                                                .slice(0, 4)
+                                                .map((item) => (
+                                                    <React.Fragment key={item.id}>
+                                                        {/* Ensure to use a unique key for each item */}
+                                                        <ListItemButton onClick={() => navigate('/all-notifications')}>
+                                                            <ListItemText
+                                                                primary={
+                                                                    <Typography variant="h6">
+                                                                        <Typography component="span" variant="subtitle1">
+                                                                            {item.notificationTitle}
+                                                                        </Typography>
                                                                     </Typography>
+                                                                }
+                                                                secondary={item.notificationMessage}
+                                                            />
+                                                            <ListItemSecondaryAction>
+                                                                <Typography variant="caption" noWrap>
+                                                                    {getRelativeTime(new Date(item.creationTime))}
                                                                 </Typography>
-                                                            }
-                                                            secondary={item.notificationMessage}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <Typography variant="caption" noWrap>
-                                                                {getRelativeTime(new Date(item.creationTime))}
-                                                            </Typography>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItemButton>
-                                                    <Divider />
-                                                </React.Fragment>
-                                            ))
+                                                            </ListItemSecondaryAction>
+                                                        </ListItemButton>
+                                                        <Divider />
+                                                    </React.Fragment>
+                                                ))
                                         ) : (
                                             <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
                                                 No Notifications
