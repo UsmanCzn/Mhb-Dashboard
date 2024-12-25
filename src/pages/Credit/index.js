@@ -8,7 +8,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import CustomerNotification from '../customer-notification/customer-notifcation';
-
+import FreeDrinksRequest from './free-drinks-request';
 const Credit = () => {
     const [value, setValue] = React.useState('1');
     const handleChange = (event, newValue) => {
@@ -31,6 +31,7 @@ const Credit = () => {
                         <Tab label="Credit Request" value="1" />
                         <Tab label="Points Request" value="2" />
                         <Tab label="Notification Request" value="3" />
+                        {/* <Tab label="Free Drinks Request" value="4" /> */}
                     </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -42,6 +43,9 @@ const Credit = () => {
                 <TabPanel value="3">
                     <CustomerNotification />
                 </TabPanel>
+                {/* <TabPanel value="4">
+                    <FreeDrinksRequest />
+                </TabPanel> */}
             </TabContext>
             <Grid item xs={12}></Grid>
         </>

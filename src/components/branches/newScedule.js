@@ -38,6 +38,7 @@ const NewScedule = ({ modalOpen, setModalOpen, updateData, branchId, setReload }
 
     const save = async () => {
         let payload = {
+            ...updateData,
             id: data.id,
             dayOfTheWeek: data.dayOfTheWeek,
             branchId: branchId,

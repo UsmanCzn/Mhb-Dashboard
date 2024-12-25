@@ -121,6 +121,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
 
         data.brandManager.userName = data?.brandManager?.phoneNumber;
         let payload = {
+            ...updateData,
             ...data,
             brandManager: [
                 {
@@ -185,8 +186,9 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
         getCurrencies();
     }, []);
     useEffect(() => {
-        if (update) {
+        if (update && updateData) {
             setData({
+                ...updateData,
                 ...data,
                 id: updateData?.id,
                 currency: updateData?.currency,

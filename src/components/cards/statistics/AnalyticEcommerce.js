@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
+import { Box, Chip, Grid, Stack, Typography, CircularProgress } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -11,18 +11,23 @@ import { RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) => (
+const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra, isLoading = false }) => (
     <MainCard contentSX={{ p: 2.25 }}>
         <Stack spacing={0.5}>
             <Typography variant="h6" color="textSecondary">
                 {title}
             </Typography>
-            <Grid container alignItems="center">
-                <Grid item>
-                    <Typography variant="h4" color="inherit">
-                        {count}
-                    </Typography>
-                </Grid>
+
+            <Grid container alignItems="center" justifyContent={isLoading ? 'center' : 'flex-start'}>
+                {isLoading ? (
+                    <CircularProgress />
+                ) : (
+                    <Grid item>
+                        <Typography variant="h4" color="inherit">
+                            {count}
+                        </Typography>
+                    </Grid>
+                )}
                 {/* {percentage && (
                     <Grid item>
                         <Chip
