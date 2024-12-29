@@ -64,6 +64,9 @@ export default {
     UpdateCreditBalance(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerCreditBalanceByCompanyManager', data);
     },
+    GenerateRequestForFreeItems(data) {
+        return ApiV1.put('services/app/Customer/InsertUserPunchesInfoDetail', data);
+    },
     UpdateCreditDepositWalletByid(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerCreditWalletBalance', data);
     },
