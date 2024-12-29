@@ -18,6 +18,7 @@ import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRol
 import EventIcon from '@mui/icons-material/Event';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 // icons
 const icons = {
     DashboardOutlined
@@ -335,6 +336,15 @@ const dashboard = {
             type: 'item',
             url: '/advertisement',
             icon: ShopTwoIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN]
+        },
+        {
+            id: 'delivery-settings',
+            title: 'Delivery Settings',
+            type: 'item',
+            url: '/deliverySettings',
+            icon: DeliveryDiningIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },

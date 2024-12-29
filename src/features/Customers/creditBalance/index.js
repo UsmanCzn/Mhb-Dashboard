@@ -129,7 +129,7 @@ const CreditBalance = (props) => {
             setLoading(false);
         }
     };
-    // UPDATE CUSTOMER Items
+    // UPDATE CUSTOMER Free Drinks
     const updateCustomerItem = async (p) => {
         setLoading(true);
         console.log(p);
@@ -139,9 +139,9 @@ const CreditBalance = (props) => {
                 id: 0,
                 brandId: selectedBrand.id,
                 customerId: +cid,
-                increaseFreeItemsCount: requestType === 'item' ? +p : 0,
+                increaseFreeItemsCount:  +p ?? 0,
                 increasePunchesCount: 0,
-                pointsUsed: requestType === 'point' ? +p : 0,
+                pointsUsed: 0,
                 pointsEarned: 0,
                 comments: ''
             };
@@ -173,7 +173,6 @@ const CreditBalance = (props) => {
         } else {
         }
     }, [brandsList]);
-    console.log(selectedBrand, 'Selected brand');
     return (
         <>
             {loading && (
