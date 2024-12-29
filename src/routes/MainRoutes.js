@@ -52,6 +52,7 @@ import Subscription from 'pages/subscription/subscription-details';
 import MembershipForm from 'pages/subscription/create-subscriptions';
 import Membership from 'pages/subscription/memberships';
 import pages from 'menu-items/pages';
+import DeliverySettings from 'pages/delivery-settings/delivery-settings';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -91,7 +92,6 @@ export default function MainRoutes() {
                     <Route path="/rewards" element={<Rewards />} />
                     <Route path="/rewardcollection" element={<RewardCollection />} />
                     <Route path="/rewardredemption" element={<RewardRedemption />} />
-                    <Route path="/rewardHistory" element={<RewardsHistory />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
 
                     <Route path="/user-management" element={<UserList />} />
@@ -135,6 +135,7 @@ export default function MainRoutes() {
                     <Route path="/membership-detail" element={<Subscription />} />
                     <Route path="/membership-detail/:id" element={<Subscription />} />
                     <Route path="/membership" element={<Membership />} />
+                    <Route path="/deliverySettings" element={<DeliverySettings />} />
                 </Route>
             </Route>
 

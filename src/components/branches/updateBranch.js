@@ -46,7 +46,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         isDelivery: false,
         DeliveryDistanceKM: 0,
         DeliveryFee: 0,
-        UsedDeliverySystem: 0,
+        UsedDeliverySystem: 1,
         user: {
             userName: '',
             name: '',
@@ -552,9 +552,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                                     label="Used Delivery System"
                                     onChange={(e) => setData({ ...data, UsedDeliverySystem: e.target.value })}
                                 >
-                                    <MenuItem value={0}>Manual</MenuItem>
                                     <MenuItem value={1}>Verdi</MenuItem>
-                                    <MenuItem value={2}>Any</MenuItem>
                                     {/* Add more options as needed */}
                                 </Select>
                             </FormControl>
