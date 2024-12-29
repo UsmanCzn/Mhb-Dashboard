@@ -39,6 +39,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
         applicationLanguage: 'en',
         walletSubTitle: '',
         walletSubTitleNative: '',
+        showFreeDrinkFeature: false,
         companyId: 0,
         brandManager: {
             userName: '',
@@ -69,7 +70,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
         termsAndConditions: '',
         currencyId: 1,
         pointsForWalletReplenishment: 0
-    }
+    };
 
     const [value, setValue] = React.useState(new Date());
 
@@ -102,7 +103,6 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
             .catch((err) => {
                 console.log(err.response.data);
             });
-
 
         await brandServices
             .createBrand(payload)
@@ -214,6 +214,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                 aboutApplicationNative: updateData?.aboutApplication,
                 privacyPolicyNative: updateData?.privacyPolicyNative,
                 faqNative: updateData?.faqNative,
+                showFreeDrinkFeature: updateData?.showFreeDrinkFeature,
                 termsAndConditionsNative: updateData?.termsAndConditionsNative,
                 aboutApplication: updateData?.aboutApplication,
                 currencyDecimals: updateData?.currencyDecimals,
@@ -232,9 +233,8 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                 currencyId: updateData?.currencyId,
                 pointsForWalletReplenishment: updateData?.pointsForWalletReplenishment
             });
-        }
-        else{
-            setData(intialData)
+        } else {
+            setData(intialData);
         }
     }, [update, updateData]);
 
@@ -457,22 +457,56 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData }) => {
                                     </Box>
                                 </Grid>
                                 <Grid item xs={4}>
-                                    <Typography required variant="h7">
-                                        Use Qr Code
-                                    </Typography>
                                     <Box
                                         sx={{
                                             width: '100%',
                                             display: 'flex',
-                                            justifyContent: 'space-between',
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            mt: 2
+                                            gap: 8 // Adds vertical spacing between items
                                         }}
                                     >
-                                        <Switch defaultChecked />
+                                        {/* First Switch */}
+                                        <Box>
+                                            <Typography required variant="h7">
+                                                Use Qr Code
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    mt: 2
+                                                }}
+                                            >
+                                                <Switch defaultChecked />
+                                            </Box>
+                                        </Box>
+
+                                        {/* Second Switch */}
+                                        <Box>
+                                            <Typography required variant="h7">
+                                                Free Drinks
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    mt: 2
+                                                }}
+                                            >
+                                                <Switch
+                                                    checked={data?.showFreeDrinkFeature}
+                                                    onChange={(event) => setData({ ...data, showFreeDrinkFeature: event.target.checked })}
+                                                />
+                                            </Box>
+                                        </Box>
                                     </Box>
                                 </Grid>
+
                                 <Grid item xs={4}></Grid>
                             </Grid>
                         </Grid>

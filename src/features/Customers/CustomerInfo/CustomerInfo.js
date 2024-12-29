@@ -74,7 +74,7 @@ const CustomerInfo = ({ setReload }) => {
                             fullWidth
                             label="First Name"
                             variant="outlined"
-                            value={data.name}
+                            value={data?.name}
                             onChange={(e) => setData({ ...data, name: e.target.value })}
                             InputProps={{
                                 readOnly: true
@@ -87,7 +87,7 @@ const CustomerInfo = ({ setReload }) => {
                             fullWidth
                             label="Last Name"
                             variant="outlined"
-                            value={data.surname}
+                            value={data?.surname}
                             onChange={(e) => setData({ ...data, surname: e.target.value })}
                             InputProps={{
                                 readOnly: true
@@ -101,7 +101,7 @@ const CustomerInfo = ({ setReload }) => {
                             label="Email"
                             type="email"
                             variant="outlined"
-                            value={data.emailAddress}
+                            value={data?.emailAddress}
                             onChange={(e) => setData({ ...data, emailAddress: e.target.value })}
                             InputProps={{
                                 readOnly: true
@@ -121,7 +121,7 @@ const CustomerInfo = ({ setReload }) => {
                             fullWidth
                             label="Birthday"
                             variant="outlined"
-                            value={moment(data.dateOfBirth).format('DD-MMM-YYYY')}
+                            value={moment(data?.dateOfBirth).format('DD-MMM-YYYY')}
                             InputProps={{
                                 readOnly: true
                             }}
@@ -151,7 +151,7 @@ const CustomerInfo = ({ setReload }) => {
                             label="Phone"
                             variant="outlined"
                             required
-                            value={data.displayPhoneNumber}
+                            value={data?.displayPhoneNumber}
                             onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
                         />
                     </Grid>

@@ -31,7 +31,7 @@ const Credit = () => {
                         <Tab label="Credit Request" value="1" />
                         <Tab label="Points Request" value="2" />
                         <Tab label="Notification Request" value="3" />
-                        {/* <Tab label="Free Drinks Request" value="4" /> */}
+                        <Tab label="Free Drinks Request" value="4" />
                     </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -43,9 +43,9 @@ const Credit = () => {
                 <TabPanel value="3">
                     <CustomerNotification />
                 </TabPanel>
-                {/* <TabPanel value="4">
+                <TabPanel value="4">
                     <FreeDrinksRequest />
-                </TabPanel> */}
+                </TabPanel>
             </TabContext>
             <Grid item xs={12}></Grid>
         </>

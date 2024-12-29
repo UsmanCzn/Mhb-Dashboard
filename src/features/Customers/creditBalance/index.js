@@ -28,6 +28,7 @@ const CreditBalance = (props) => {
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(false);
     const [totalPoints, setTotalPoints] = useState(0);
+    const [totalFreePoints, setTotalFreePoints] = useState(0);
 
     const [brandWallet, setBrandWallet] = useState({
         walletBalance: 0,
@@ -42,7 +43,7 @@ const CreditBalance = (props) => {
         creditBalanceComment: ''
     });
 
-    // const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    const [requestType, setRequestType] = useState();
     // const [updateFreeItemModalOpen, setUpdateFreeItemModalOpen] = useState(false);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
     const formik = useFormik({
@@ -54,6 +55,23 @@ const CreditBalance = (props) => {
         }),
         onSubmit: (values) => {
             updateCutsomerPoints(values.points);
+            setTimeout(() => {
+                resetForm({ values: { points: '' } });
+            }, 10);
+        }
+    });
+    const itemFormik = useFormik({
+        initialValues: {
+            item: ''
+        },
+        validationSchema: Yup.object({
+            item: Yup.number().required('Item are required').min(0.01, 'Items must be greater than zero')
+        }),
+        onSubmit: (values) => {
+            updateCustomerItem(values.item);
+            setTimeout(() => {
+                resetForm({ values: { item: '' } });
+            }, 10);
         }
     });
     // GET CREDIT DETAILS
@@ -63,6 +81,7 @@ const CreditBalance = (props) => {
             .then((res) => {
                 setCreditBalance(res.data.result[0]);
                 // setWalletDetails(res?.data?.result);
+                setTotalFreePoints(res.data.result[0]?.freeItems);
             })
             .catch((err) => {
                 console.log(err?.response?.data);
@@ -92,16 +111,45 @@ const CreditBalance = (props) => {
                 id: 0,
                 brandId: selectedBrand.id,
                 customerId: +cid,
-                increaseFreeItemsCount: 0,
+                increaseFreeItemsCount: requestType === 'item' ? +p : 0,
                 increasePunchesCount: 0,
-                pointsUsed: +p,
+                pointsUsed: requestType === 'point' ? +p : 0,
                 pointsEarned: 0,
                 comments: ''
             };
             const response = await customerService.updateUsedPoints(data);
             if (response) {
                 setLoading(false);
-                enqueueSnackbar('Request Has Been Genereated to Add point for this user', {
+                enqueueSnackbar('Request Has Been Genereated', {
+                    variant: 'success'
+                });
+                getCustomerPoints();
+            }
+        } catch (err) {
+            setLoading(false);
+        }
+    };
+    // UPDATE CUSTOMER Items
+    const updateCustomerItem = async (p) => {
+        setLoading(true);
+        console.log(p);
+
+        try {
+            const data = {
+                id: 0,
+                brandId: selectedBrand.id,
+                customerId: +cid,
+                increaseFreeItemsCount: requestType === 'item' ? +p : 0,
+                increasePunchesCount: 0,
+                pointsUsed: requestType === 'point' ? +p : 0,
+                pointsEarned: 0,
+                comments: ''
+            };
+            const response = await customerService.updateUsedPoints(data);
+            if (response) {
+                setLoading(false);
+
+                enqueueSnackbar('Request Has Been Genereated', {
                     variant: 'success'
                 });
                 getCustomerPoints();
@@ -119,13 +167,13 @@ const CreditBalance = (props) => {
 
     useEffect(() => {
         if (brandsList[0]?.id) {
-            const temp = brandsList.filter((br) => br.companyId === user.companyId);
+            const temp = brandsList.filter((br) => br.companyId === user?.companyId);
             setFilteredBrand(temp);
             setselectedBrand(temp[0]);
         } else {
         }
     }, [brandsList]);
-
+    console.log(selectedBrand, 'Selected brand');
     return (
         <>
             {loading && (
@@ -166,29 +214,50 @@ const CreditBalance = (props) => {
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Grid container>
-                        <Grid item xs={3}>
-                            <Box sx={{ display: 'flex', gap: '10px' }}>
-                                <TextField
-                                    id="outlined-basic"
-                                    fullWidth
-                                    label="Credit Balance"
-                                    variant="outlined"
-                                    value={CreditBalance?.creditBalance}
-                                    InputProps={{
-                                        readOnly: true
-                                    }}
-                                />
-                                <Button
-                                    primary
-                                    variant="contained"
-                                    onClick={() => {
-                                        setupdateCreditBalanceModalOpen(true);
-                                    }}
-                                >
-                                    Update
-                                </Button>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item xs={6} sm={4} md={3}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'start',
+                                    gap: '12px',
+                                    padding: '16px',
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '8px',
+                                    backgroundColor: '#f9f9f9'
+                                }}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <AccessibilityNewIcon color="primary" />
+                                    <Typography variant="subtitle1" fontWeight="bold">
+                                        Credit Balance:
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: '10px' }}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Credit Balance"
+                                        variant="outlined"
+                                        value={CreditBalance?.creditBalance}
+                                        InputProps={{
+                                            readOnly: true
+                                        }}
+                                    />
+                                </Box>
                             </Box>
+                        </Grid>
+                        <Grid item xs={6} sm={4} md={3}>
+                            <Button
+                                primary
+                                variant="contained"
+                                onClick={() => {
+                                    setupdateCreditBalanceModalOpen(true);
+                                }}
+                            >
+                                Update
+                            </Button>
                         </Grid>
                         {/* <Grid item xs={3}>
                         <TextField
@@ -209,34 +278,113 @@ const CreditBalance = (props) => {
 
                 <Grid item xs={12}>
                     <form onSubmit={formik.handleSubmit}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={3}>
-                                <Box sx={{ display: 'flex', gap: '10px' }}>
-                                    <Box>
-                                        <AccessibilityNewIcon /> Total User Points {totalPoints}
-                                        <TextField
-                                            sx={{ marginTop: '10px' }}
-                                            id="points"
-                                            fullWidth
-                                            label="Add points"
-                                            variant="outlined"
-                                            value={formik.values.points}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            error={formik.touched.points && Boolean(formik.errors.points)}
-                                            helperText={formik.touched.points && formik.errors.points}
-                                        />
+                        <Grid container spacing={3} alignItems="center">
+                            <Grid item xs={6} sm={4} md={3}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'start',
+                                        gap: '12px',
+                                        padding: '16px',
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: '8px',
+                                        backgroundColor: '#f9f9f9'
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <AccessibilityNewIcon color="primary" />
+                                        <Typography variant="subtitle1" fontWeight="bold">
+                                            Total User Points: {totalPoints}
+                                        </Typography>
                                     </Box>
+                                    <TextField
+                                        id="points"
+                                        fullWidth
+                                        label="Add Points"
+                                        variant="outlined"
+                                        value={formik.values.points}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={formik.touched.points && Boolean(formik.errors.points)}
+                                        helperText={formik.touched.points && formik.errors.points}
+                                    />
                                 </Box>
                             </Grid>
-                            <Grid item xs={3} sx={{ marginTop: '10px' }}>
-                                <Button primary variant="contained" type="submit">
-                                    Add points
+                            <Grid item xs={6} sm={4} md={3}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    onClick={() => setRequestType('point')}
+                                    sx={{
+                                        padding: '6px 16px',
+                                        fontWeight: 'bold',
+                                        fontSize: '0.875rem', // Adjusting text size to match smaller button
+                                        textTransform: 'uppercase'
+                                    }}
+                                >
+                                    Add Points
                                 </Button>
                             </Grid>
                         </Grid>
                     </form>
                 </Grid>
+                {selectedBrand?.showFreeDrinkFeature && (
+                    <Grid item xs={12}>
+                        <form onSubmit={itemFormik.handleSubmit}>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid item xs={6} sm={4} md={3}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'start',
+                                            gap: '12px',
+                                            padding: '16px',
+                                            border: '1px solid #e0e0e0',
+                                            borderRadius: '8px',
+                                            backgroundColor: '#f9f9f9'
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <AccessibilityNewIcon color="primary" />
+                                            <Typography variant="subtitle1" fontWeight="bold">
+                                                Total Free Drinks: {totalFreePoints}
+                                            </Typography>
+                                        </Box>
+                                        <TextField
+                                            name="item"
+                                            fullWidth
+                                            label="Add Free Drinks"
+                                            variant="outlined"
+                                            value={itemFormik.values.item}
+                                            onChange={itemFormik.handleChange}
+                                            onBlur={itemFormik.handleBlur}
+                                            error={itemFormik.touched.item && Boolean(itemFormik.errors.item)}
+                                            helperText={itemFormik.touched.item && itemFormik.errors.item}
+                                        />
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={4} md={3}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        type="submit"
+                                        sx={{
+                                            padding: '6px 16px',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.875rem',
+                                            textTransform: 'uppercase'
+                                        }}
+                                    >
+                                        Add Free Drinks
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    </Grid>
+                )}
 
                 {/* <Grid item xs={12}>
                 <Grid container spacing={2}>
