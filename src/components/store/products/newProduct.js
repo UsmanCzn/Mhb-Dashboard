@@ -14,7 +14,7 @@ import { useFetchBranchList } from 'features/BranchesTable/hooks/useFetchBranche
 import storeServices from 'services/storeServices';
 import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
 import fileService from 'services/fileService';
-
+import { useSnackbar } from 'notistack';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -42,9 +42,11 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
         addongroups: [],
         orderValue: 0,
         pointsOfCost: 0,
-        isDeliveryProduct: false
+        isDeliveryProduct: false,
+        productDescription: '',
+        productDescriptionNative: ''
     });
-
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const { productTypes, fetchProductTypesList, totalRowCount, loading } = useFetchProductTypeList(true, selectedBrand);
 
     const { branchesList } = useFetchBranchList(true);
@@ -63,7 +65,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
             productSubTypeId: data.category,
             orderValue: +data.orderValue,
             customerBranch: data.branches,
-
+            productDescriptionNative: data?.productDescriptionNative,
+            productDescription: data?.productDescription,
             brandId: selectedBrand?.id,
             newProducts: [
                 {
@@ -72,7 +75,8 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                     pointsOfCost: +data?.pointsOfCost || 0,
                     nativeName: data?.nativeName,
                     isDeliveryProduct: data?.isDeliveryProduct,
-
+                    productDescriptionNative: data?.productDescriptionNative,
+                    productDescription: data?.productDescription,
                     productGroups: data?.addongroups?.map((obj) => {
                         return {
                             prodGroupId: obj?.addonGroup,
@@ -87,7 +91,12 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                 }
             ]
         };
-
+        if (!p1) {
+            enqueueSnackbar('Please add an Image', {
+                variant: 'error'
+            });
+            return;
+        }
         const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
@@ -311,6 +320,26 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                             <MenuItem value={false}>No</MenuItem>
                                         </Select>
                                     </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label=" Product Description"
+                                        variant="outlined"
+                                        value={data.productDescription}
+                                        onChange={(e) => setData({ ...data, productDescription: e.target.value })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        fullWidth
+                                        label="Product Description Native"
+                                        variant="outlined"
+                                        value={data.productDescriptionNative}
+                                        onChange={(e) => setData({ ...data, productDescriptionNative: e.target.value })}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>

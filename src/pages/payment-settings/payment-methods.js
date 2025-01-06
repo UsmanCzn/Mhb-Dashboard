@@ -48,26 +48,35 @@ const PaymentMethods = () => {
                             </Typography>
                         </Grid>
                         <Box sx={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                            <Grid item xs="auto"></Grid>
+                            <Grid item xs="auto">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        // Add payment method logic here
+                                        navigate('/payments-settings/addEdit');
+                                    }}
+                                >
+                                    Add Payment Method
+                                </Button>
+                            </Grid>
                             <Grid item xs="auto">
                                 <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                                    <InputLabel id="branch-select-label">{'Branch'}</InputLabel>
                                     <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
+                                        labelId="branch-select-label"
+                                        id="branch-select"
                                         value={selectedBrand}
                                         label={'Branch'}
                                         onChange={(event) => {
                                             setselectedBrand(event.target.value);
                                         }}
                                     >
-                                        {brandsList.map((row, index) => {
-                                            return (
-                                                <MenuItem key={index} value={row}>
-                                                    {row?.name}
-                                                </MenuItem>
-                                            );
-                                        })}
+                                        {brandsList.map((row, index) => (
+                                            <MenuItem key={index} value={row}>
+                                                {row?.name}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -75,7 +84,7 @@ const PaymentMethods = () => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                    <PaymentMethodsListing methods={brandPayments} brand={selectedBrand} />
+                    <PaymentMethodsListing methods={brandPayments} brand={selectedBrand} fetchData={fetchData} />
                 </Grid>
             </Grid>
         </>
