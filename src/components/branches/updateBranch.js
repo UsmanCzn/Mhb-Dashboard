@@ -123,7 +123,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         //   console.log(err.response.data);
         // })
 
-        let payload = { ...data };
+        let payload = { ...data, longitude: Number(data.longitude), latitude: Number(data.latitude) };
         if (p1) {
             await fileService
                 .uploadBranchLogo(p1)

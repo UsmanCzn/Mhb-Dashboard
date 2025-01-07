@@ -65,7 +65,6 @@ const PaymentGateway = ({ paymentGateway, brand }) => {
     const onChangeMethod = (checked, index) => {
         const updatedMethods = methods.map((method, idx) => (idx === index ? { ...method, isHidden: !checked } : method));
         const method = updatedMethods[index];
-        console.log(method);
         updateMethod(method);
         setMethods(updatedMethods);
     };
@@ -106,13 +105,17 @@ const PaymentGateway = ({ paymentGateway, brand }) => {
         { id: 4, name: 'Google Pay', logo: 'google-pay-logo-url' }
     ];
     const PaymentsTypes = [
-        { name: 'WALLET', id: 1 },
-        { name: 'KNET', id: 2 },
-        { name: 'VISA/MASTERCARD', id: 4 },
-        { name: 'BENEFIT', id: 6 },
-        { name: 'MADA', id: 7 },
-        { name: 'Apple Pay', id: 9 }
-    ];
+        { name: 'Wallet', id: 1, arabicName: 'محفظة' },
+        { name: 'KNET', id: 2, arabicName: 'ك نت' },
+        { name: 'VISA/MASTER CARD', id: 3, arabicName: 'بطاقة ائتمان' },
+        { name: 'BENEFIT', id: 4, arabicName: 'بنفت' },
+        { name: 'Mada', id: 5, arabicName: 'مادہ' },
+        { name: 'Square', id: 6, arabicName: 'مربع' },
+        { name: 'ApplePay', id: 7, arabicName: 'ApplePay' },
+        { name: 'GooglePay', id: 8, arabicName: 'GooglePay' },
+        { name: 'CASH', id: 9, arabicName: 'CASH' }
+      ];
+      
     return (
         <Card variant="outlined" sx={{ marginTop: '10px' }}>
             <>
@@ -121,154 +124,7 @@ const PaymentGateway = ({ paymentGateway, brand }) => {
                         <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
                             {paymentGateway.gateway} Payment Gateway
                         </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Sandbox Key
-                                </Typography>
-                                <TextField
-                                    id="sandBoxKey"
-                                    name="sandBoxKey"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.sandBoxKey}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.sandBoxKey && Boolean(formik.errors.sandBoxKey)}
-                                    helperText={formik.touched.sandBoxKey && formik.errors.sandBoxKey}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Live Key
-                                </Typography>
-                                <TextField
-                                    id="liveKey"
-                                    name="liveKey"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.liveKey}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.liveKey && Boolean(formik.errors.liveKey)}
-                                    helperText={formik.touched.liveKey && formik.errors.liveKey}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Sandbox API URL
-                                </Typography>
-                                <TextField
-                                    id="sandBoxApiUrl"
-                                    name="sandBoxApiUrl"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.sandBoxApiUrl}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.sandBoxApiUrl && Boolean(formik.errors.sandBoxApiUrl)}
-                                    helperText={formik.touched.sandBoxApiUrl && formik.errors.sandBoxApiUrl}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Live API URL
-                                </Typography>
-                                <TextField
-                                    id="liveApiUrl"
-                                    name="liveApiUrl"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.liveApiUrl}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.liveApiUrl && Boolean(formik.errors.liveApiUrl)}
-                                    helperText={formik.touched.liveApiUrl && formik.errors.liveApiUrl}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Currency Code
-                                </Typography>
-                                <TextField
-                                    id="currencyCode"
-                                    name="currencyCode"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.currencyCode}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.currencyCode && Boolean(formik.errors.currencyCode)}
-                                    helperText={formik.touched.currencyCode && formik.errors.currencyCode}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Merchant ID
-                                </Typography>
-                                <TextField
-                                    id="merchantId"
-                                    name="merchantId"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={formik.values.merchantId}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.merchantId && Boolean(formik.errors.merchantId)}
-                                    helperText={formik.touched.merchantId && formik.errors.merchantId}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl fullWidth error={formik.touched.paymentId && Boolean(formik.errors.paymentId)}>
-                                    <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                        Payments
-                                    </Typography>
-                                    <Select
-                                        id="paymentId"
-                                        name="paymentId"
-                                        value={formik.values.paymentId}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                    >
-                                        {PaymentsTypes.map((row, index) => (
-                                            <MenuItem key={index} value={row.id}>
-                                                {row?.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {formik.touched.paymentId && formik.errors.paymentId && (
-                                        <Typography color="error" variant="body2">
-                                            {formik.errors.paymentId}
-                                        </Typography>
-                                    )}
-                                </FormControl>
-                            </Grid>
-                            {/* <Grid item xs={6}>
-                                <FormControl fullWidth error={formik.touched.gateway && Boolean(formik.errors.gateway)}>
-                                    <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                        Gateway
-                                    </Typography>
-                                    <Select
-                                        id="gateway"
-                                        name="gateway"
-                                        value={formik.values.gateway}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                    >
-                                        {gatewayOptions.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.title}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {formik.touched.gateway && formik.errors.gateway && (
-                                        <Typography color="error" variant="body2">
-                                            {formik.errors.gateway}
-                                        </Typography>
-                                    )}
-                                </FormControl>
-                            </Grid> */}
-                        </Grid>
+
                         <Grid container spacing={2} sx={{ marginTop: '10px' }}>
                             {methods.map((method, index) => (
                                 <Grid item xs={12} sm={6} md={3} key={index}>

@@ -39,7 +39,8 @@ const AddPaymentMethod = () => {
               currencyCode: '',
               merchantId: '',
               paymentId: '',
-              gateway: 1
+              gateway: 1,
+              paymentSystemName: ''
           },
           validationSchema: Yup.object({
               sandBoxKey: Yup.string().required('Sandbox Key is required'),
@@ -56,24 +57,17 @@ const AddPaymentMethod = () => {
               SubmitForm(values);
           }
       });
-  
-      const [data, setData] = useState({
-          sandBoxKey: '',
-          liveKey: '',
-          sandboxApi: '',
-          liveApi: '',
-          CurrencyCode: '',
-          merchantid: '',
-          paymentid: '',
-          paymentSystemName: ''
-      });
+
       const PaymentsTypes = [
-          { name: 'WALLET', id: 1 },
-          { name: 'KNET', id: 2 },
-          { name: 'VISA/MASTERCARD', id: 4 },
-          { name: 'BENEFIT', id: 6 },
-          { name: 'MADA', id: 7 },
-          { name: 'Apple Pay', id: 9 }
+          { name: 'Wallet', id: 1, arabicName: 'محفظة' },
+          { name: 'KNET', id: 2, arabicName: 'ك نت' },
+          { name: 'VISA/MASTER CARD', id: 3, arabicName: 'بطاقة ائتمان' },
+          { name: 'BENEFIT', id: 4, arabicName: 'بنفت' },
+          { name: 'Mada', id: 5, arabicName: 'مادہ' },
+          { name: 'Square', id: 6, arabicName: 'مربع' },
+          { name: 'ApplePay', id: 7, arabicName: 'ApplePay' },
+          { name: 'GooglePay', id: 8, arabicName: 'GooglePay' },
+          { name: 'CASH', id: 9, arabicName: 'CASH' }
       ];
       const [reload, setReload] = useState(false);
       const { brandsList } = useFetchBrandsList(reload);
@@ -87,7 +81,7 @@ const AddPaymentMethod = () => {
               getByid(id);
           }
       }, [brandsList]);
-  
+
       const getByid = async (id) => {
           try {
               // Replace 'yourBrandId' with the actual brandId you want to pass
@@ -101,25 +95,15 @@ const AddPaymentMethod = () => {
                   currencyCode: temp.apiCurrencyCode,
                   merchantId: temp.merchantId,
                   paymentId: temp.paymentSystemId,
-                  gateway: temp.gatewayId  // Assuming there's a `gatewayId` or default to 1
-              });
-              setData({
-                  sandBoxKey: temp.sandBoxSecretKey,
-                  liveKey: temp.liveSecretKey,
-                  sandboxApi: temp.sandBoxServerDomain,
-                  liveApi: temp.liveServerDomain,
-                  CurrencyCode: temp.apiCurrencyCode,
-                  merchantid: temp.merchantId,
-                  paymentid: temp.paymentSystemId,
-                  merchantid: temp.merchantId,
-                  paymentSystemName: temp.paymentSystemName
+                  gateway: temp.gatewayId,
+                  paymentSystemName: temp.paymentSystemName // Assuming there's a `gatewayId` or default to 1
               });
               console.log(response, 'getByid');
           } catch (error) {
               console.error('Error fetching brand payments:', error);
           }
       };
-  
+
       const SubmitForm = async (values) => {
           if (!id) {
               try {
@@ -128,32 +112,22 @@ const AddPaymentMethod = () => {
                       brandId: selectedBranch?.id,
                       paymentSystemName: values.paymentSystemName,
                       paymentSystemAr: values.paymentSystemName,
-                      paymentSystemId: values.paymentid,
+                      paymentSystemId: values.paymentId,
                       isUsedForTopUp: true,
                       isUsedForCheckOut: true,
                       livePublicKey: '',
                       liveSecretKey: values.liveKey,
                       sandBoxPubicKey: '',
                       sandBoxSecretKey: values.sandBoxKey,
-                      merchantId: values.merchantid,
-                      apiCurrencyCode: values.CurrencyCode,
-                      code: '',
-                      liveServerDomain: values.liveApi,
-                      sandBoxServerDomain: values.sandboxApi,
+                      merchantId: values.merchantId,
+                      apiCurrencyCode: values.currencyCode,
+                      code: values.currencyCode,
+                      liveServerDomain: values.liveApiUrl,
+                      sandBoxServerDomain: values.sandBoxApiUrl,
                       gatewayId: values.gateway
                   };
                   const response = await paymentServices.CreateNewPaymentMethods(body);
                   if (response) {
-                      setData({
-                          sandBoxKey: '',
-                          liveKey: '',
-                          sandboxApi: '',
-                          liveApi: '',
-                          CurrencyCode: '',
-                          merchantid: '',
-                          paymentid: '',
-                          paymentSystemName: ''
-                      });
                       enqueueSnackbar('Action Performed Successfully', {
                           variant: 'success'
                       });
@@ -168,26 +142,27 @@ const AddPaymentMethod = () => {
                   brandId: selectedBranch?.id,
                   paymentSystemName: values.paymentSystemName,
                   paymentSystemAr: values.paymentSystemName,
-                  paymentSystemId: values.paymentid,
+                  paymentSystemId: values.paymentId,
                   isUsedForTopUp: true,
                   isUsedForCheckOut: true,
                   livePublicKey: '',
                   liveSecretKey: values.liveKey,
                   sandBoxPubicKey: '',
                   sandBoxSecretKey: values.sandBoxKey,
-                  merchantId: values.merchantid,
+                  merchantId: values.merchantId,
                   apiCurrencyCode: values.CurrencyCode,
-                  code: '',
-                  liveServerDomain: values.liveApi,
-                  sandBoxServerDomain: values.sandboxApi
+                  code: values.currencyCode,
+                  liveServerDomain: values.liveApiUrl,
+                  sandBoxServerDomain: values.sandBoxApiUrl,
+                  gatewayId: values.gateway
               };
-              body.id = id;
+              body.id = +id;
               const response = await paymentServices.UpdatePaymentMethods(body);
               if (response) {
                   enqueueSnackbar('Action Performed Successfully', {
                       variant: 'success'
                   });
-                  // navigate('/payments-settings/methods');
+                  navigate('/payments-settings/methods');
               }
           }
       };

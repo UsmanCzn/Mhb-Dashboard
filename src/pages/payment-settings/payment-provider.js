@@ -76,13 +76,17 @@ const Paymentprovider = () => {
         { id: 4, name: 'Google Pay', logo: 'google-pay-logo-url' }
     ];
     const PaymentsTypes = [
-        { name: 'WALLET', id: 1 },
-        { name: 'KNET', id: 2 },
-        { name: 'VISA/MASTERCARD', id: 4 },
-        { name: 'BENEFIT', id: 6 },
-        { name: 'MADA', id: 7 },
-        { name: 'Apple Pay', id: 9 }
+        { name: 'Wallet', id: 1, arabicName: 'محفظة' },
+        { name: 'KNET', id: 2, arabicName: 'ك نت' },
+        { name: 'VISA/MASTER CARD', id: 3, arabicName: 'بطاقة ائتمان' },
+        { name: 'BENEFIT', id: 4, arabicName: 'بنفت' },
+        { name: 'Mada', id: 5, arabicName: 'مادہ' },
+        { name: 'Square', id: 6, arabicName: 'مربع' },
+        { name: 'ApplePay', id: 7, arabicName: 'ApplePay' },
+        { name: 'GooglePay', id: 8, arabicName: 'GooglePay' },
+        { name: 'CASH', id: 9, arabicName: 'CASH' }
     ];
+      
     const [reload, setReload] = useState(false);
     const { brandsList } = useFetchBrandsList(reload);
     const [selectedBrand, setselectedBrand] = useState('');

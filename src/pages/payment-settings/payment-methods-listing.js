@@ -28,7 +28,18 @@ const PaymentMethodsListing = (props) => {
     const [selectedItem, setSelectedItem] = useState('');
     const navigate = useNavigate();
     const [isConfirmationOpen, setConfirmationOpen] = useState(false);
-
+    const gatewayOptions = [
+        { title: 'Tap', value: 1 },
+        { title: 'Ottu', value: 2 },
+        { title: 'Tehseeel', value: 3 },
+        { title: 'Square', value: 4 },
+        { title: 'Checkout', value: 5 },
+        { title: 'MyFatoorah', value: 6 },
+        { title: 'Hesabi', value: 7 }
+    ];
+    const showPaymentGateway = (gatewayId) => {
+        return gatewayOptions.find((e) => e.value == gatewayId)?.title || 'NONE';
+    };
     const handleOpenConfirmation = (item) => {
         setSelectedItem(item);
         setConfirmationOpen(true);
@@ -44,10 +55,14 @@ const PaymentMethodsListing = (props) => {
             KNET: Knet,
             ApplePay: ApplePay,
             GOOGLEPAY: GooglePay,
-            APPLEPAY: ApplePay
+            APPLEPAY: ApplePay,
+            VISAMASTERCARD: MasterVisa
         };
-
-        return images[type] || DefaultImg;
+        if (type === 'VISA/MASTER CARD') {
+            return images['VISAMASTERCARD'] || DefaultImg;
+        } else {
+            return images[type] || DefaultImg;
+        }
     };
 
     const deletePaymentMethods = async () => {
@@ -86,7 +101,7 @@ const PaymentMethodsListing = (props) => {
         hidePaymentMethod(event.target.checked, method);
     };
     const hidePaymentMethod = async (state, method) => {
-        const body = { ...method, isHidden: state };
+        const body = { ...method, isHidden: !state };
         console.log(brand);
         const response = await paymentServices.UpdatePaymentMethods(body);
         if (response) {
@@ -116,19 +131,19 @@ const PaymentMethodsListing = (props) => {
                                     >
                                         <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                             <img
-                                                style={{ width: '80px', height: '50px' }}
+                                                style={{ width: '69px', height: '40px' }}
                                                 alt="payment methods"
                                                 src={paymentMethodImage(method?.name)}
                                             />
                                             <Typography variant="h5" sx={{ color: 'black' }}>
-                                                {method.name}
+                                                {method.name} ({showPaymentGateway(method?.gatewayId)})
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
                                             {/* <Typography variant="h5" sx={{ color: 'black' }}>
                                                 {method?.paymentGatewayName}
                                             </Typography> */}
-                                            <Switch edge="end" onChange={() => handleToggle(event, method)} checked={method.isHidden} />
+                                            <Switch edge="end" onChange={() => handleToggle(event, method)} checked={!method.isHidden} />
                                             <IconButton
                                                 aria-label="Example"
                                                 sx={{ backgroundColor: '#1890ff', color: 'white' }}

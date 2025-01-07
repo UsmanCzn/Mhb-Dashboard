@@ -312,14 +312,14 @@ const dashboard = {
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
-                {
-                    id: 'providers',
-                    title: 'Payment Providers',
-                    type: 'item',
-                    url: '/payments-settings/providers',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
-                },
+                // {
+                //     id: 'providers',
+                //     title: 'Payment Providers',
+                //     type: 'item',
+                //     url: '/payments-settings/providers',
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                // },
                 {
                     id: 'methods',
                     title: 'Payment Method',
