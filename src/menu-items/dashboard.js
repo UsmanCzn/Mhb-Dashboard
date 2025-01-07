@@ -312,14 +312,14 @@ const dashboard = {
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
-                {
-                    id: 'providers',
-                    title: 'Payment Providers',
-                    type: 'item',
-                    url: '/payments-settings/providers',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
-                },
+                // {
+                //     id: 'providers',
+                //     title: 'Payment Providers',
+                //     type: 'item',
+                //     url: '/payments-settings/providers',
+                //     breadcrumbs: false,
+                //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                // },
                 {
                     id: 'methods',
                     title: 'Payment Method',
@@ -346,7 +346,7 @@ const dashboard = {
             url: '/deliverySettings',
             icon: DeliveryDiningIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN, COMPANY_ADMIN]
         },
         {
             id: 'notifcations',
@@ -365,7 +365,7 @@ const dashboard = {
             url: '/credit',
             icon: CreditCardIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
+            forUserRoles: [ADMIN, COMPANY_ADMIN,]
         },
         {
             id: 'CustomerNotification',

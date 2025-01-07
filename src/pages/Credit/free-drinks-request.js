@@ -185,7 +185,7 @@ const FreeDrinksRequest = () => {
                     loading={false}
                     getRowId={(row) => row.id}
                     rowsPerPageOptions={[10]}
-                    totalRowCount={freeDrinksRequest?.length}
+                    totalRowCount={freeDrinksRequest.filter((e) => e.increaseFreeItemsCount > 0)?.length}
                     // fetchCallback={getCreditRequest}
                 />
 

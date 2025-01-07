@@ -120,10 +120,10 @@ export default function MainRoutes() {
                     <Route path="/addons" element={<Addons />} />
                     <Route path="/stocks" element={<Stocks />} />
 
-                    <Route path="/payments-settings/providers" element={<Paymentprovider />} />
-                    <Route path="/payments-settings/providers/:id" element={<Paymentprovider />} />
+                    {/* <Route path="/payments-settings/providers" element={<Paymentprovider />} /> */}
                     <Route path="/payments-settings/methods" element={<PaymentMethods />} />
-                    {/* <Route path="/payments-settings/addnew" element={<AddPaymentMethod />} /> */}
+                    <Route path="/payments-settings/addEdit" element={<AddPaymentMethod />} />
+                    <Route path="/payments-settings/addEdit/:id" element={<AddPaymentMethod />} />
 
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/credit" element={<Credit />} />

@@ -44,6 +44,7 @@ const CreditBalance = (props) => {
     });
 
     const [requestType, setRequestType] = useState();
+    const [customerDetails, setCustomerDetails] = useState();
     // const [updateFreeItemModalOpen, setUpdateFreeItemModalOpen] = useState(false);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
     const formik = useFormik({
@@ -95,6 +96,7 @@ const CreditBalance = (props) => {
             if (res) {
                 setPoints(0);
                 setTotalPoints(res.data.result.redeemablePoints);
+                setCustomerDetails(res.data.result);
             }
         } catch (err) {
             console.log(err);
@@ -104,8 +106,6 @@ const CreditBalance = (props) => {
     // UPDATE CUSTOMER POINTS
     const updateCutsomerPoints = async (p) => {
         setLoading(true);
-        console.log(p);
-
         try {
             const data = {
                 id: 0,
@@ -115,7 +115,8 @@ const CreditBalance = (props) => {
                 increasePunchesCount: 0,
                 pointsUsed: requestType === 'point' ? +p : 0,
                 pointsEarned: 0,
-                comments: ''
+                comments: '',
+                customerId: customerDetails.id
             };
             const response = await customerService.updateUsedPoints(data);
             if (response) {
@@ -139,11 +140,12 @@ const CreditBalance = (props) => {
                 id: 0,
                 brandId: selectedBrand.id,
                 customerId: +cid,
-                increaseFreeItemsCount:  +p ?? 0,
+                increaseFreeItemsCount: +p ?? 0,
                 increasePunchesCount: 0,
                 pointsUsed: 0,
                 pointsEarned: 0,
-                comments: ''
+                comments: '',
+                customerId: customerDetails.id
             };
             const response = await customerService.updateUsedPoints(data);
             if (response) {

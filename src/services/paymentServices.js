@@ -2,7 +2,7 @@ import { ApiV1 } from 'helper/api';
 
 export default {
     getAllBrandPaymentByBrandId(data) {
-        return ApiV1.get(`services/app/BrandPayment/GetAllByBrandId?brandId=${data}`);
+        return ApiV1.get(`services/app/BrandPayment/GetAllByBrandIdAll?brandId=${data}`);
     },
 
     CreateNewPaymentMethods(data) {
