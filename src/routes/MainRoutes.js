@@ -83,6 +83,7 @@ export default function MainRoutes() {
 
                     <Route path="/brands" element={<Brands />} />
                     <Route path="/addEditBrand" element={<AddEditBrand />} />
+                    <Route path="/addEditBrand/:id" element={<AddEditBrand />} />
                     <Route path="/campaigns" element={<Campaings />} />
 
                     <Route path="/locations" element={<Branches />} />
