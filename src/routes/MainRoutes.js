@@ -53,6 +53,7 @@ import MembershipForm from 'pages/subscription/create-subscriptions';
 import Membership from 'pages/subscription/memberships';
 import pages from 'menu-items/pages';
 import DeliverySettings from 'pages/delivery-settings/delivery-settings';
+import AddEditBranch from 'pages/branch/branches/add-edit-branch';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -84,6 +85,9 @@ export default function MainRoutes() {
                     <Route path="/campaigns" element={<Campaings />} />
 
                     <Route path="/locations" element={<Branches />} />
+                    <Route path="/locationAddEdit" element={<AddEditBranch />} />
+                    <Route path="/locationAddEdit/:id" element={<AddEditBranch />} />
+
                     <Route path="/locations/:bhid" element={<LocationDetail />} />
                     <Route path="/locations/:bhid/branchTimings" element={<BranchTimings />} />
                     <Route path="/locations/:bhid/branchRewardProgram" element={<BranchRewardProgram />} />

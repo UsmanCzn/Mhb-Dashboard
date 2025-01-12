@@ -43,7 +43,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
         branchTimingsStringNative: '',
         openTime: '',
         closeTime: '',
-        isDelivery: false,
+
         DeliveryDistanceKM: 0,
         DeliveryFee: 0,
         UsedDeliverySystem: 1,
@@ -56,6 +56,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
             emailAddress: '',
             phoneNumber: ''
         },
+        isDelivery: false,
         isPickup: true,
         isCarService: true,
         isworkdeliver: true,
