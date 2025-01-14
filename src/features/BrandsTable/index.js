@@ -29,6 +29,7 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
         } else if (data?.name == 'Edit Brand') {
+            navigate('/addEditBrand/' + brand.id);
             setUpdateData(brand);
             setUpdate(true);
             setModalOpen(true);

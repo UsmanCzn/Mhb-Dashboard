@@ -23,6 +23,7 @@ import MainCard from 'components/MainCard';
 import { ServiceFactory } from 'services/index';
 import NewBrand from 'components/brands/newBrand';
 import { BrandsTable } from 'features';
+import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 
 export default function Companies() {
     const [order] = useState('asc');
@@ -33,7 +34,7 @@ export default function Companies() {
     const [modalOpen, setModalOpen] = useState(false);
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
-
+    const navigate = useNavigate()
     const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
 
     const getCompanies = async () => {
@@ -58,7 +59,7 @@ export default function Companies() {
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item xs="auto">
-                        <Typography fontSize={22} fontWeight={700}>
+                            <Typography fontSize={22} fontWeight={700}>
                                 Brands
                             </Typography>
                         </Grid>
@@ -68,7 +69,11 @@ export default function Companies() {
                                 size="small"
                                 variant="contained"
                                 sx={{ textTransform: 'capitalize' }}
-                                onClick={() => {setModalOpen(true); setUpdate(false); }}
+                                onClick={() => {
+                                    navigate('/addEditBrand');
+                                    // setModalOpen(true);
+                                    // setUpdate(false);
+                                }}
                             >
                                 Create New Brand
                             </Button>

@@ -6,9 +6,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CloudUploadOutlined } from '@ant-design/icons';
-import { ServiceFactory } from 'services/index';
 import MUIRichTextEditor from 'mui-rte';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ServiceFactory } from 'services/index';
 import brandServices from 'services/brandServices';
 import fileService from 'services/fileService';
 const style = {
