@@ -15,6 +15,8 @@ import {
     Card,
     Select
 } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -22,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import branchServices from 'services/branchServices';
 import fileService from 'services/fileService';
 import { ServiceFactory } from 'services/index';
+import { useSnackbar } from 'notistack';
 
 const AddEditBranch = () => {
     const brandService = ServiceFactory.get('brands');
@@ -30,20 +33,46 @@ const AddEditBranch = () => {
     const [p1, setP1] = useState(null);
     const { id } = useParams();
     const [branch, setBranch] = useState();
-
+    const [loading, setloading] = useState(false);
     const navigate = useNavigate();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const getBranch = async () => {
+        setloading(true);
         try {
             const res = await branchServices.getBranchById(id);
             const branch = res?.data?.result;
+
             if (branch) {
+                setloading(false);
                 setInitialValues((prev) => ({
-                    ...prev,
                     ...branch,
+                    acceptTime: branch?.acceptTime || '',
+                    branchAddress: branch?.branchAddress || '',
+                    branchPhoneNumber: branch?.branchPhoneNumber || '',
+                    branchTimingsString: branch?.branchTimingsString || '',
+                    branchTimingsStringNative: branch?.branchTimingsStringNative || '',
+                    brandId: branch?.brandId || '',
+                    closeTime: branch?.closeTime || '',
+                    deliveryDistance: branch?.deliveryDistance || '',
                     DeliveryDistanceKM: branch?.deliveryDistanceKM,
+                    deliveryFee: branch?.deliveryFee || '',
                     DeliveryFee: branch?.deliveryFee,
-                    usedDeliverySystem: branch?.usedDeliverySystem // Patch the values dynamically
+                    isCarService: branch?.isCarService || false,
+                    isDelivery: branch?.isDelivery || false,
+                    isPickup: branch?.isPickup || false,
+                    logoUrl: branch?.logoUrl || '',
+                    latitude: branch?.latitude || '',
+                    longitude: branch?.longitude || '',
+                    arrivalArea: branch?.arrivalArea || 0,
+                    name: branch?.name || '',
+                    nativeBranchAddress: branch?.nativeBranchAddress || '',
+                    nativeName: branch?.nativeName || '',
+                    openTime: branch?.openTime || '',
+                    readyTime: branch?.readyTime || '',
+                    UsedDeliverySystem: branch?.usedDeliverySystem || 1 // Patch the values dynamically
                 }));
+                setBranch(branch);
             }
         } catch (err) {
             console.error(err.response);
@@ -71,27 +100,30 @@ const AddEditBranch = () => {
         setTabValue(newValue);
     };
     const [initialValues, setInitialValues] = useState({
-        name: '',
-        nativeName: '',
-        brandId: '',
-        branchPhoneNumber: '',
         acceptTime: '',
-        readyTime: '',
         branchAddress: '',
-        nativeBranchAddress: '',
-        logoUrl: '',
-        openTime: '',
+        branchPhoneNumber: '',
+        branchTimingsString: '',
+        branchTimingsStringNative: '',
+        brandId: '',
         closeTime: '',
+        deliveryDistance: '',
+        DeliveryDistanceKM: 0,
+        deliveryFee: 0,
+        DeliveryFee: 0,
+        isCarService: false,
         isDelivery: false,
         isPickup: false,
-        isCarService: false,
-        deliveryDistance: '',
-        deliveryFee: '',
-        DeliveryDistanceKM: 0,
-        DeliveryFee: 0,
-        UsedDeliverySystem: 1,
-        branchTimingsString: '',
-        branchTimingsStringNative: ''
+        logoUrl: '',
+        latitude: '',
+        longitude: '',
+        arrivalArea: 0,
+        name: '',
+        nativeBranchAddress: '',
+        nativeName: '',
+        openTime: '',
+        readyTime: '',
+        UsedDeliverySystem: 1
     });
 
     const validationSchema = Yup.object().shape({
@@ -117,13 +149,22 @@ const AddEditBranch = () => {
             is: true,
             then: Yup.number().required('Select Delivery System')
         }),
-        latitude: branch?.latitude || '',
-        longitude: branch?.longitude || '',
-        arrivalArea: branch?.arrivalArea || 0
+        latitude: Yup.number().test(
+            'is-decimal',
+            'Latitude must be a decimal',
+            (value) => !value || /^[+-]?\d+(\.\d+)?$/.test(value.toString())
+        ),
+        longitude: Yup.number().test(
+            'is-decimal',
+            'Longitude must be a decimal',
+            (value) => !value || /^[+-]?\d+(\.\d+)?$/.test(value.toString())
+        ),
+        arrivalArea: Yup.number().min(0, 'Cannot be negative').optional()
     });
 
     const handleSubmit = async (values) => {
-        let payload = { ...values };
+        let payload = { ...values, deliveryFee: values?.DeliveryFee, deliveryDistanceKM: values?.DeliveryDistanceKM };
+        console.log(payload);
         if (p1) {
             try {
                 const logoResponse = await fileService.uploadBranchLogo(p1);
@@ -131,6 +172,11 @@ const AddEditBranch = () => {
             } catch (err) {
                 console.error(err);
             }
+        } else if (!id && !p1) {
+            enqueueSnackbar('Please Upload Image', {
+                variant: 'error'
+            });
+            return;
         }
 
         try {
@@ -140,8 +186,11 @@ const AddEditBranch = () => {
             } else {
                 await branchServices.createBranch(payload);
                 console.log('Branch created successfully');
+                enqueueSnackbar('Branch created successfully', {
+                    variant: 'success'
+                });
             }
-            navigate('/branches');
+            navigate('/locations');
         } catch (err) {
             console.error(err);
         }
@@ -150,19 +199,18 @@ const AddEditBranch = () => {
     return (
         <Grid container spacing={3}>
             <Grid item xs={12}>
-                <Typography variant="h4" mb={3}>
-                    {id ? 'Edit Store' : 'Create New Store'}
-                </Typography>
+                <Typography variant="h4">{id ? 'Edit Store' : 'Create New Store'}</Typography>
             </Grid>
             <Grid item xs={12}>
                 <Card sx={{ padding: 4, margin: '3px 0' }}>
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={validationSchema}
-                        enableReinitialize={true}
-                        onSubmit={handleSubmit}
-                    >
-                        {({ values, handleChange, errors, touched, setFieldValue }) => {
+                    {loading && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    <Formik initialValues={initialValues} validationSchema={validationSchema} enableReinitialize onSubmit={handleSubmit}>
+                        {({ values, handleChange, handleBlur, errors, touched, setFieldValue }) => {
+                            <pre>{JSON.stringify(errors, null, 2)}</pre>;
                             return (
                                 <Form>
                                     <TabContext value={tabValue}>
@@ -187,6 +235,7 @@ const AddEditBranch = () => {
                                                         name="name"
                                                         value={values.name}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.name && Boolean(errors.name)}
                                                         helperText={touched.name && errors.name}
                                                     />
@@ -199,6 +248,7 @@ const AddEditBranch = () => {
                                                         name="nativeName"
                                                         value={values.nativeName}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.nativeName && Boolean(errors.nativeName)}
                                                         helperText={touched.nativeName && errors.nativeName}
                                                     />
@@ -212,6 +262,7 @@ const AddEditBranch = () => {
                                                         name="brandId"
                                                         value={values.brandId}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.brandId && Boolean(errors.brandId)}
                                                         helperText={touched.brandId && errors.brandId}
                                                     >
@@ -230,6 +281,7 @@ const AddEditBranch = () => {
                                                         name="branchPhoneNumber"
                                                         value={values.branchPhoneNumber}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.branchPhoneNumber && Boolean(errors.branchPhoneNumber)}
                                                         helperText={touched.branchPhoneNumber && errors.branchPhoneNumber}
                                                     />
@@ -243,6 +295,7 @@ const AddEditBranch = () => {
                                                         name="acceptTime"
                                                         value={values.acceptTime}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.acceptTime && Boolean(errors.acceptTime)}
                                                         helperText={touched.acceptTime && errors.acceptTime}
                                                     />
@@ -256,6 +309,7 @@ const AddEditBranch = () => {
                                                         name="readyTime"
                                                         value={values.readyTime}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.readyTime && Boolean(errors.readyTime)}
                                                         helperText={touched.readyTime && errors.readyTime}
                                                     />
@@ -289,6 +343,7 @@ const AddEditBranch = () => {
                                                         name="openTime"
                                                         value={values.openTime}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.openTime && Boolean(errors.openTime)}
                                                         helperText={touched.openTime && errors.openTime}
                                                     />
@@ -302,6 +357,7 @@ const AddEditBranch = () => {
                                                         name="closeTime"
                                                         value={values.closeTime}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.closeTime && Boolean(errors.closeTime)}
                                                         helperText={touched.closeTime && errors.closeTime}
                                                     />
@@ -314,6 +370,7 @@ const AddEditBranch = () => {
                                                         name="branchTimingsString"
                                                         value={values.branchTimingsString}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.branchTimingsString && Boolean(errors.branchTimingsString)}
                                                         helperText={touched.branchTimingsString && errors.branchTimingsString}
                                                     />
@@ -328,6 +385,7 @@ const AddEditBranch = () => {
                                                         name="branchTimingsStringNative"
                                                         value={values.branchTimingsStringNative}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={
                                                             touched.branchTimingsStringNative && Boolean(errors.branchTimingsStringNative)
                                                         }
@@ -414,6 +472,7 @@ const AddEditBranch = () => {
                                                                 name="DeliveryFee"
                                                                 value={values.DeliveryFee}
                                                                 onChange={handleChange}
+                                                                onBlur={handleBlur}
                                                                 error={touched.DeliveryFee && Boolean(errors.DeliveryFee)}
                                                                 helperText={touched.DeliveryFee && errors.DeliveryFee}
                                                             />
@@ -429,6 +488,7 @@ const AddEditBranch = () => {
                                                                     labelId="used-delivery-system-label"
                                                                     id="used-delivery-system-select"
                                                                     value={values.UsedDeliverySystem}
+                                                                    onBlur={handleBlur}
                                                                     onChange={(e) => setFieldValue('UsedDeliverySystem', e.target.value)}
                                                                 >
                                                                     <MenuItem value={1}>Verdi</MenuItem>
@@ -458,6 +518,7 @@ const AddEditBranch = () => {
                                                         name="branchAddress"
                                                         value={values.branchAddress}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.branchAddress && Boolean(errors.branchAddress)}
                                                         helperText={touched.branchAddress && errors.branchAddress}
                                                     />
@@ -470,10 +531,12 @@ const AddEditBranch = () => {
                                                         name="nativeBranchAddress"
                                                         value={values.nativeBranchAddress}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.nativeBranchAddress && Boolean(errors.nativeBranchAddress)}
                                                         helperText={touched.nativeBranchAddress && errors.nativeBranchAddress}
                                                     />
                                                 </Grid>
+
                                                 <Grid item xs={6}>
                                                     <TextField
                                                         label="Latitude"
@@ -482,6 +545,7 @@ const AddEditBranch = () => {
                                                         name="latitude"
                                                         value={values.latitude}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.latitude && Boolean(errors.latitude)}
                                                         helperText={touched.latitude && errors.latitude}
                                                     />
@@ -494,6 +558,7 @@ const AddEditBranch = () => {
                                                         name="longitude"
                                                         value={values.longitude}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.longitude && Boolean(errors.longitude)}
                                                         helperText={touched.longitude && errors.longitude}
                                                     />
@@ -507,10 +572,12 @@ const AddEditBranch = () => {
                                                         name="arrivalArea"
                                                         value={values.arrivalArea}
                                                         onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                         error={touched.arrivalArea && Boolean(errors.arrivalArea)}
                                                         helperText={touched.arrivalArea && errors.arrivalArea}
                                                     />
                                                 </Grid>
+
                                                 <Grid item xs={12}>
                                                     <Button variant="contained" onClick={() => setTabValue('5')}>
                                                         Next
@@ -536,11 +603,11 @@ const AddEditBranch = () => {
                                                             border: '1px dashed #ccc'
                                                         }}
                                                     >
-                                                        {values.logoUrl && (
+                                                        {branch && branch.logoUrl && (
                                                             <img
-                                                                src={values.logoUrl}
+                                                                src={branch.logoUrl}
                                                                 alt="Logo"
-                                                                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                                                                style={{ maxWidth: '100px', maxHeight: '100%' }}
                                                             />
                                                         )}
                                                         <input
