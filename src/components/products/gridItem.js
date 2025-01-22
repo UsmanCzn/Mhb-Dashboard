@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Chip, Grid, Typography, Box, Menu, MenuItem, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 
-const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setUpdate,duplicateProduct }) => {
+const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setUpdate, duplicateProduct }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const type = productTypes?.find((obj) => obj?.id === item?.productTypeId);
-
+    const navigate = useNavigate();
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -16,16 +17,17 @@ const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setU
     };
 
     const handleEdit = () => {
-        setModalOpen(true);
-        setUpdateData(item);
-        setUpdate(true);
+        // setModalOpen(true);
+        // setUpdateData(item);
+        // setUpdate(true);
+        navigate(`addEditProduct/${brand.id}/${item.id}`);
         closeMenu();
     };
 
-    const handleDuplicate = async() => {
+    const handleDuplicate = async () => {
         // Implement duplicate logic here
         console.log('Duplicate item:', item);
-        duplicateProduct(item)
+        duplicateProduct(item);
         closeMenu();
     };
 

@@ -53,6 +53,10 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
         setCustomer(params?.row);
+        console.log(params?.row);
+
+        navigate('/addEditCompany/' + params?.row.id);
+
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (data) => {

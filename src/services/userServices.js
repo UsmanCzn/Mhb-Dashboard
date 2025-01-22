@@ -33,5 +33,8 @@ export default {
     },
     updateReadNotification(nId,cId){
         return ApiV1.put(`services/app/Notifications/UpdateMarkAsReadByAdmin?notificationId=${nId}&currentUserId=${cId}`)
+    },
+    getCompanyById(cId){
+        return ApiV1.get(`services/app/Company/GetCompanyById?companyId=${cId}`)
     }
 };

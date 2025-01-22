@@ -43,7 +43,7 @@ const dashboard = {
 
         {
             id: 'apps',
-            title: 'Apps',
+            title: 'Companies',
             type: 'item',
             url: '/apps',
             icon: BusinessIcon,

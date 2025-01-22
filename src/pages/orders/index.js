@@ -200,29 +200,6 @@ export default function Orders() {
     }, []);
     return (
         <Grid container spacing={2}>
-            {/* <Grid item xs={6} >
- <Grid container spacing={2} 
-   direction="row"
-  justifyContent="flex-end"
-  alignItems="flex-end"
->
-
-<Grid item xs={3} >
-                <AnalyticBox title="Pending" count={analytics?.pending}   />
-            </Grid>
-            <Grid item xs={3} >
-                <AnalyticBox title="Accepted" count={analytics?.accepted}  />
-            </Grid>
-            <Grid item xs={3} >
-                <AnalyticBox title="Closed" count={analytics?.closed}     />
-            </Grid>
-            <Grid item xs={3} >
-                <AnalyticBox title="Rejected" count={analytics?.rejected}    />
-            </Grid>
-            </Grid>
-
-            </Grid> */}
-
             <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>

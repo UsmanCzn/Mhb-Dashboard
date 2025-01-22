@@ -51,8 +51,8 @@ const style = {
 const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, update, updateData }) => {
     const [p1, setP1] = useState(null);
     // const [p2, setP2] = useState(null);
-    const { productTypes, fetchProductTypesList } = useFetchProductTypeList(true, selectedBrand);
     const [ImageUpload, setImageUpload] = useState(false);
+    const { productTypes, fetchProductTypesList } = useFetchProductTypeList(true, selectedBrand);
     const { addonList } = useFetchAddonList(true);
     const { addonGroupList } = useFetchAddonGroupList(true, selectedBrand);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -64,30 +64,29 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         nativeName: '',
         price: 0,
         pointsOfCost: 0,
-        isMerchProduct: true,
         orderValue: 0,
-        isMerchProduct: true,
         productImage: '',
         productSecondImage: '',
         productThirdImage: '',
         isProductImageDeleted: true,
-        isDeliveryProduct: false,
         calories: '',
         fat: '',
         protien: '',
-        showIsOutOfStock: true,
         productDeliveryText: '',
         carbo: '',
         estimatePreparationTimeInMinutes: 0,
         posId: 0,
+        isMerchProduct: true,
+        isDeliveryProduct: false,
+        showIsOutOfStock: true,
         isEligibleForFreeItem: true,
         isQtyAvailable: true,
         isTopProduct: false,
         isFeaturedProduct: false,
         dontMissOutProduct: false,
+        commentAllowed: true,
 
         punchesForPurchase: 0,
-        commentAllowed: true,
         productDescription: '',
         productDescriptionNative: '',
         productQtyWithBranchs: [],

@@ -55,6 +55,8 @@ import pages from 'menu-items/pages';
 import DeliverySettings from 'pages/delivery-settings/delivery-settings';
 import AddEditBranch from 'pages/branch/branches/add-edit-branch';
 import AddEditBrand from 'pages/brands/add-edit-brand';
+import ProductAddEdit from 'pages/products/product-add-edit';
+import AddEditApp from 'pages/apps/addEditApp';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -81,6 +83,8 @@ export default function MainRoutes() {
                     <Route path="/dashboard" element={<DashboardDefault />} />
 
                     <Route path="/apps" element={<Apps />} />
+                    <Route path="/addEditCompany" element={<AddEditApp />} />
+                    <Route path="/addEditCompany/:id" element={<AddEditApp />} />
 
                     <Route path="/brands" element={<Brands />} />
                     <Route path="/addEditBrand" element={<AddEditBrand />} />
@@ -91,10 +95,10 @@ export default function MainRoutes() {
                     <Route path="/locationAddEdit" element={<AddEditBranch />} />
                     <Route path="/locationAddEdit/:id" element={<AddEditBranch />} />
 
-                    <Route path="/locations/:bhid" element={<LocationDetail />} />
+                    {/* <Route path="/locations/:bhid" element={<LocationDetail />} />
                     <Route path="/locations/:bhid/branchTimings" element={<BranchTimings />} />
                     <Route path="/locations/:bhid/branchRewardProgram" element={<BranchRewardProgram />} />
-                    <Route path="/locations/:bhid/branchUsers" element={<BranchUsers />} />
+                    <Route path="/locations/:bhid/branchUsers" element={<BranchUsers />} /> */}
 
                     <Route path="/rewards" element={<Rewards />} />
                     <Route path="/rewardcollection" element={<RewardCollection />} />
@@ -123,6 +127,8 @@ export default function MainRoutes() {
                     <Route path="/offers" element={<Offers />} />
 
                     <Route path="/products" element={<Products />} />
+                    <Route path="/addEditProduct/:bid" element={<ProductAddEdit />} />
+                    <Route path="/products/addEditProduct/:bid/:id" element={<ProductAddEdit />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/addons" element={<Addons />} />
                     <Route path="/stocks" element={<Stocks />} />
