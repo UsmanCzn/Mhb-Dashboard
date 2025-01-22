@@ -12,10 +12,10 @@ export default function TimingTable({
 }) {
 
   const navigate = useNavigate();
-  const { bhid } = useParams();
+  const { id } = useParams();
   const location = useLocation();
 
-  const { timingList, fetchTimingList, totalRowCount, loading } = useFetchTimingList(bhid,reload);
+  const { timingList, fetchTimingList, totalRowCount, loading } = useFetchTimingList(id, reload);
 
  
   const columns = [

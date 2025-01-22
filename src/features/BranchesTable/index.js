@@ -28,7 +28,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
         } else if (data?.name == 'Edit Location') {
-            navigate(`${location.pathname}/${branch?.id}`);
+            navigate(`/locationAddEdit/${branch?.id}`);
 
             // setUpdateData(branch);
             // setUpdate(true);

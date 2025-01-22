@@ -22,7 +22,7 @@ export default function Apps() {
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
                         <Typography fontSize={22} fontWeight={700}>
-                            Apps
+                            Companies
                         </Typography>
                     </Grid>
                     <Grid item xs={'auto'}>
@@ -31,8 +31,9 @@ export default function Apps() {
                             variant="contained"
                             sx={{ textTransform: 'capitalize' }}
                             onClick={() => {
-                                setUpdate(false);
-                                setModalOpen(true);
+                                navigate('/addEditCompany');
+                                // setUpdate(false);
+                                // setModalOpen(true);
                             }}
                         >
                             Add New App

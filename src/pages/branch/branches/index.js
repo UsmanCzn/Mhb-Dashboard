@@ -27,7 +27,7 @@ export default function Branches() {
                                 size="small"
                                 variant="contained"
                                 sx={{ textTransform: 'capitalize' }}
-                                onClick={() =>{ setModalOpen(true)}}
+                                onClick={() =>{ navigate('/locationAddEdit')}}
                             >
                                 Create New Store
                             </Button>

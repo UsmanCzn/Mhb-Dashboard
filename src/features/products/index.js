@@ -5,10 +5,11 @@ import GridItem from 'components/products/gridItem';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
 import UpdateProduct from 'components/store/products/updateProduct';
 import storeServices from 'services/storeServices';
+import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrder, sortBy }) => {
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
     const { productTypes } = useFetchProductTypeList(true, selectedBranch);
-
+    const navigate = useNavigate();
     const [category, setCategory] = useState();
     const [subCategory, setSubCategory] = useState();
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -55,7 +56,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
             }
         }
         console.log(result, 'search');
-        
+
         setSortedProductList(result);
     };
 
@@ -89,7 +90,6 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
             })
             .then((response) => {
                 setReload((prev) => !prev);
-  
             })
             .catch((error) => {
                 console.error('Error duplicating product:', error);
@@ -179,7 +179,12 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                         </Select>
                     </FormControl>
                 </Box>
-                <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => setModalOpen(true)}>
+                <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ textTransform: 'capitalize' }}
+                    onClick={() => navigate(`/addEditProduct/${selectedBranch.id}`)}
+                >
                     Add new Product
                 </Button>
             </Box>
