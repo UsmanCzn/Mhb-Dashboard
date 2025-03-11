@@ -329,7 +329,7 @@ const NewCompany = ({ modalOpen, setModalOpen, update, updateData, setReload ,lo
                                     <Counter title="Total Number of Brands" value="NoBrands" data={data} setData={setData} />
                                 </Grid>
                                 <Grid item xs={4}>
-                                    <Counter title="Total Number of Branches" value="NoBranches" data={data} setData={setData} />
+                                    <Counter title="Total Number of Stores" value="NoBranches" data={data} setData={setData} />
                                 </Grid>
                                 <Grid item xs={4}>
                                     <Counter title="Total Number of Notifications" value="NoNotifications" data={data} setData={setData} />

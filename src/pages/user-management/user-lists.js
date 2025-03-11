@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
@@ -36,6 +37,10 @@ const UserList = () => {
             name: 'Branch User'
         }
     ];
+    const [searchParams] = useSearchParams();
+
+    // Get individual query parameters
+    const companyId = searchParams.get('companyId');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [users, setUsers] = useState([]);
@@ -105,10 +110,14 @@ const UserList = () => {
                 const tempComp = res.data.result;
                 if (tempComp.length) {
                     let index = tempComp.findIndex((e) => e.name === 'Holmes Bakehouse');
-                    if (index >= 0) {
-                        setSelectedCompany(tempComp[index].id);
+                    if (!companyId) {
+                        if (index >= 0) {
+                            setSelectedCompany(tempComp[index].id);
+                        } else {
+                            setSelectedCompany(tempComp[0].id);
+                        }
                     } else {
-                        setSelectedCompany(tempComp[0].id);
+                        setSelectedCompany(companyId);
                     }
                 }
                 setcompanies(res.data.result);

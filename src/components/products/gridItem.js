@@ -21,7 +21,7 @@ const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setU
         // setUpdateData(item);
         // setUpdate(true);
         navigate(`addEditProduct/${brand.id}/${item.id}`);
-        closeMenu();
+        // closeMenu();
     };
 
     const handleDuplicate = async () => {
@@ -107,6 +107,6 @@ const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setU
             </Box>
         </Grid>
     );
-};
+};;
 
 export default GridItem;

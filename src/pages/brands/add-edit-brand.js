@@ -12,6 +12,7 @@ import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import LinearProgress from '@mui/material/LinearProgress';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -26,53 +27,31 @@ const FormComponent = () => {
     const initialValues = {
         brandName: '',
         brandNameNative: '',
+        brandTimeZone: 1,
         company: '',
-        secondaryLanguage: '',
-        phoneNumber: '',
-        emailAddress: '',
+        contactEmail: '',
         currency: '',
         currencyDecimal: 0,
-        reportInterval: 1,
-        brandTimeZone: 1,
-        walletSubtitle: '',
-        walletSubtitleNative: '',
-        points: 0,
-        initialCustomerBalance: 0,
+        emailAddress: '',
+        facebookURL: '',
         initialCreditBalance: 0,
         initialCreditBalanceExpiry: null,
-        contactEmail: '',
-        facebookURL: '',
+        initialCustomerBalance: 0,
         instagramURL: '',
+        notificationBalance: 0,
+        phoneNumber: '',
+        points: 0,
+        reportInterval: 1,
+        secondaryLanguage: '',
+        showFreeDrinkFeature: false,
         twitterURL: '',
         useQRCode: false,
-        showFreeDrinkFeature: false
+        walletSubtitle: '',
+        walletSubtitleNative: ''
     };
     const [initialFormValues, setInitialFormValues] = useState(initialValues); // State to store form values
+    const [loading, setloading] = useState(false);
     const navigate = useNavigate();
-
-    const validationSchema = Yup.object({
-        brandName: Yup.string().required('Brand Name is required'),
-        // brandNameNative: Yup.string().required('Brand Name (Native) is required'),
-        company: Yup.string().required('Company is required'),
-        // secondaryLanguage: Yup.string().required('Secondary Language is required'),
-        phoneNumber: Yup.number().required('Phone Number is required'),
-        emailAddress: Yup.string().email('Invalid email format').required('Email Address is required'),
-        currency: Yup.string().required('Currency is Required'),
-        currencyDecimal: Yup.number().required('Value is required'),
-        // reportInterval: Yup.string().required('Report Interval is required'),
-        // brandTimeZone: Yup.string().required('Brand Time Zone is required'),
-        // walletSubtitle: Yup.string().required('Required'),
-        // walletSubtitleNative: Yup.string().required('Required'),
-        points: Yup.number().required('Points are required'),
-        initialCustomerBalance: Yup.number(),
-        initialCreditBalance: Yup.number()
-        // initialCreditBalanceExpiry: Yup.date().required('Required'),
-        // useQRCode: Yup.boolean(),
-        // contactEmail: Yup.string().email('Invalid email format').required('Contact Email is required'),
-        // facebookURL: Yup.string().url('Invalid URL').required('Facebook URL is required'),
-        // instagramURL: Yup.string().url('Invalid URL').required('Instagram URL is required'),
-        // twitterURL: Yup.string().url('Invalid URL').required('Twitter URL is required')
-    });
     const brandsService = ServiceFactory.get('brands');
     const userService = ServiceFactory.get('users');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -81,13 +60,15 @@ const FormComponent = () => {
         // Tab 0: Basic Info
         Yup.object({
             brandName: Yup.string().required('Brand Name is required'),
-            brandNameNative: Yup.string().required('Brand Name (Native) is required'),
             company: Yup.string().required('Company is required'),
-            // secondaryLanguage: Yup.string().required('Secondary Language is required'),
-            phoneNumber: Yup.string().required('Phone Number is required'),
-            emailAddress: Yup.string().email('Invalid email format').required('Email Address is required'),
             currency: Yup.string().required('Currency is required'),
-            currencyDecimal: Yup.number()
+            currencyDecimal: Yup.number(),
+            notificationBalance: Yup.number()
+            // brandNameNative: Yup.string().required('Brand Name (Native) is required'),
+            // secondaryLanguage: Yup.string().required('Secondary Language is required'),
+            // phoneNumber: Yup.string().required('Phone Number is required'),
+            // emailAddress: Yup.string().email('Invalid email format').required('Email Address is required'),
+
             // reportInterval: Yup.string().required('Report Interval is required'),
             // brandTimeZone: Yup.string().required('Brand Time Zone is required')
         }),
@@ -97,10 +78,10 @@ const FormComponent = () => {
         Yup.object({}),
         // Tab 3: Social Links
         Yup.object({
-            contactEmail: Yup.string().email('Invalid email format'),
-            facebookURL: Yup.string().url('Invalid URL'),
-            instagramURL: Yup.string().url('Invalid URL'),
-            twitterURL: Yup.string().url('Invalid URL')
+            // contactEmail: Yup.string().email('Invalid email format'),
+            // facebookURL: Yup.string().url('Invalid URL'),
+            // instagramURL: Yup.string().url('Invalid URL'),
+            // twitterURL: Yup.string().url('Invalid URL')
         }),
         // Tab 4: Logo
         Yup.object({})
@@ -169,6 +150,8 @@ const FormComponent = () => {
             });
     };
     const getAllBrands = async () => {
+        setloading(true);
+
         try {
             const response = await brandServices.getAllBrands();
             const brands = response.data.result;
@@ -177,6 +160,8 @@ const FormComponent = () => {
 
             if (selectedBrand) {
                 setBrand(selectedBrand);
+                setloading(false);
+
                 // Update the form values
                 setInitialFormValues({
                     brandName: selectedBrand.name || '',
@@ -200,14 +185,14 @@ const FormComponent = () => {
                     instagramURL: selectedBrand.socialInstaUrl || '',
                     twitterURL: selectedBrand.socialTwitterUrl || '',
                     useQRCode: false,
-                    showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false
+                    showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
+                    notificationBalance: selectedBrand.notificationBalance || 0
                 });
             } else {
                 enqueueSnackbar('Brand not found.', { variant: 'error' });
             }
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Failed to fetch brands. Please try again.', { variant: 'error' });
         }
     };
 
@@ -221,7 +206,7 @@ const FormComponent = () => {
         }
 
         const data = {}; // Initialize data if needed
-
+        setloading(true);
         const payload = {
             ...data,
             brandManager: {
@@ -252,6 +237,7 @@ const FormComponent = () => {
             minimumTopUpValue: 0,
             name: value.brandName,
             nativeName: value?.brandNameNative,
+            // notificationBalance: value?.notificationBalance,
             phoneNumber: value?.phoneNumber,
             pointsForWalletReplenishment: value.points,
             privacyPolicy: '',
@@ -275,7 +261,7 @@ const FormComponent = () => {
 
             // Create brand
             const brandResponse = await brandServices.createBrand(payload);
-
+            setloading(false);
             enqueueSnackbar('Brand Created Successfully', {
                 variant: 'success'
             });
@@ -284,27 +270,33 @@ const FormComponent = () => {
         } catch (error) {
             console.error(error.response?.data);
             if (error.response?.data) {
-                enqueueSnackbar(error.response?.data.error.message, {
-                    variant: 'error'
-                });
+                enqueueSnackbar(
+                    error?.response?.data?.error?.validationErrors?.[0]?.message ||
+                        error.response?.data?.error?.message ||
+                        'An error occurred while saving the Brand.',
+                    {
+                        variant: 'error'
+                    }
+                );
             }
         }
     };
     const updateBrand = async (value) => {
         // Check if logo file is provided
-
+        setloading(true);
         const payload = {
-            ...brand, // Existing data for the brand
-            ...value, // Updated form values
+            ...brand,
+            ...value,
             brandManager: [
                 {
-                    ...value.brandManager // Updated brand manager details
+                    ...value.brandManager
                 }
             ],
             applicationLanguage: value?.secondaryLanguage,
             brandTimeZone: value?.brandTimeZone,
             companyId: value.company,
             contactUsEmailAddress: value?.contactEmail,
+            notificationBalance: value?.notificationBalance,
             // currency: value.currency,
             currencyDecimals: value.currencyDecimal,
             currencyId: value.currency,
@@ -326,12 +318,16 @@ const FormComponent = () => {
             }
             // Update brand
             const brandResponse = await brandServices.UpdateBrand(payload);
+            setloading(false);
 
             enqueueSnackbar('Brand Updated Successfully', {
                 variant: 'success'
             });
             navigate('/brands'); // Redirect to the brands page after update
         } catch (error) {
+            enqueueSnackbar(error?.response?.data?.error?.validationErrors?.[0]?.message || 'An error occurred while saving the Brand.', {
+                variant: 'error'
+            });
             // console.error(error.response?.data);
             // enqueueSnackbar('Failed to update the brand. Please try again.', {
             //     variant: 'error'
@@ -347,6 +343,11 @@ const FormComponent = () => {
             </Grid>
             <Grid item xs={12}>
                 <Card>
+                    {loading && (
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                        </Box>
+                    )}
                     <Formik
                         initialValues={initialFormValues}
                         validationSchema={validationSchemas[tabValue]}
@@ -368,11 +369,11 @@ const FormComponent = () => {
                             <Form>
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
-                                        <Tab label="Basic Info" disabled={tabValue !== 0} />
-                                        <Tab label="Rewards" disabled={tabValue !== 1} />
-                                        <Tab label="Settings" disabled={tabValue !== 2} />
-                                        <Tab label="Social Links" disabled={tabValue !== 3} />
-                                        <Tab label="Logo" disabled={tabValue !== 4} />
+                                        <Tab label="Basic Info" disabled={!id && tabValue !== 0} />
+                                        <Tab label="Rewards" disabled={!id && tabValue !== 1} />
+                                        <Tab label="Settings" disabled={!id && tabValue !== 2} />
+                                        <Tab label="Social Links" disabled={!id && tabValue !== 3} />
+                                        <Tab label="Logo" disabled={!id && tabValue !== 4} />
                                     </Tabs>
                                     {/* BASIC INFO START */}
                                     <TabPanel value={tabValue} index={0}>
@@ -381,7 +382,7 @@ const FormComponent = () => {
                                                 <Field
                                                     as={TextField}
                                                     name="brandName"
-                                                    label="Brand Name"
+                                                    label="Brand Name*"
                                                     fullWidth
                                                     variant="outlined"
                                                     onChange={handleChange}
@@ -405,7 +406,7 @@ const FormComponent = () => {
                                                 <Field
                                                     as={TextField}
                                                     name="company"
-                                                    label="Company"
+                                                    label="Company*"
                                                     select
                                                     fullWidth
                                                     variant="outlined"
@@ -467,7 +468,7 @@ const FormComponent = () => {
                                                 <Field
                                                     as={TextField}
                                                     name="currency"
-                                                    label="Currency"
+                                                    label="Currency*"
                                                     select
                                                     fullWidth
                                                     variant="outlined"
@@ -527,6 +528,21 @@ const FormComponent = () => {
                                                     <MenuItem value="2">Universal 2</MenuItem>
                                                 </Field>
                                             </Grid>
+                                            {id && (
+                                                <Grid item xs={12} sm={6}>
+                                                    <Field
+                                                        as={TextField}
+                                                        name="notificationBalance"
+                                                        label="Notification Balance"
+                                                        fullWidth
+                                                        type="number"
+                                                        variant="outlined"
+                                                        onChange={handleChange}
+                                                        error={touched.notificationBalance && Boolean(errors.notificationBalance)}
+                                                        helperText={touched.notificationBalance && errors.notificationBalance}
+                                                    />
+                                                </Grid>
+                                            )}
                                             <Grid item xs={12} container justifyContent="flex-end">
                                                 <Button
                                                     type="button"
@@ -858,7 +874,6 @@ const FormComponent = () => {
                                                     </Button>
                                                 </Grid>
                                             </Grid>
-           
                                         </Grid>
                                     </TabPanel>
 

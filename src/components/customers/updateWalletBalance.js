@@ -73,6 +73,7 @@ const UpdateWallet = ({
       "customerId": cid,
       "increaseBalanceAmount": parseFloat(data?.wallet),   
       "walletComments": data?.comment,
+      "customerWalletBaseId": 0,
       "expiryDate": data?.expiryDate,
       "id": 0
     }

@@ -31,7 +31,7 @@ const AddEditApp = () => {
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const userServices = ServiceFactory.get('users');
-
+ 
     const categories = ['Cafe', 'Restaurant'];
     const navigate = useNavigate();
     const { id } = useParams();
@@ -52,8 +52,8 @@ const AddEditApp = () => {
                         lastName: app?.adminUser?.surname || '',
                         email: app?.adminUser?.emailAddress || '',
                         password: app?.adminUser?.password || '',
-                        menuViewing: true,
-                        tableOrdering: true,
+                        menuViewing: false,
+                        tableOrdering: false,
                         brandsLimit: app?.brandsLimit,
                         branchesLimit: app?.branchesLimit,
                         notificationsLimit: app?.notificationsLimit,
@@ -111,7 +111,9 @@ const AddEditApp = () => {
         Yup.object().shape({}),
         Yup.object().shape({}) // No validation for Logo tab
     ];
-
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
     const handleNext = async (validateForm, setErrors, setTouched, values) => {
         // Mark all fields as touched
         const fieldsToTouch = Object.keys(values);
@@ -175,6 +177,10 @@ const AddEditApp = () => {
 
             if (!id) {
                 // Create new company
+                if (!logoFile) {
+                    enqueueSnackbar('Image is required', { variant: 'error' });
+                    return;
+                }
                 await userServices.createCompany(payload);
                 enqueueSnackbar('Company created successfully', { variant: 'success' });
             } else {
@@ -225,11 +231,11 @@ const AddEditApp = () => {
                             <Form>
                                 <Box sx={{ flexGrow: 1 }}>
                                     {/* Tabs Header */}
-                                    <Tabs value={tabValue} aria-label="form tabs">
-                                        <Tab label="Basic Info" disabled={tabValue !== 0} />
-                                        <Tab label="Settings" disabled={tabValue !== 1} />
-                                        {!id && <Tab label="Admin Info" disabled={tabValue !== 2} />}
-                                        <Tab label="Logo" disabled={tabValue !== 3} />
+                                    <Tabs value={tabValue} onChange={handleTabChange} aria-label="form tabs">
+                                        <Tab label="Basic Info" disabled={!id && tabValue !== 0} />
+                                        <Tab label="Settings" disabled={!id && tabValue !== 1} />
+                                        {!id && <Tab label="Admin Info" disabled={!id && tabValue !== 2} />}
+                                        <Tab label="Logo" disabled={!id && tabValue !== 3} />
                                     </Tabs>
 
                                     {/* Tab Content */}
@@ -263,7 +269,7 @@ const AddEditApp = () => {
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
-                                                    label="Branches Limit"
+                                                    label="Stores Limit"
                                                     name="branchesLimit"
                                                     value={values.branchesLimit}
                                                     onChange={handleChange}

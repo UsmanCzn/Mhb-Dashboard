@@ -212,14 +212,14 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 </Grid>
             )}
 
-            <UpdateProduct
+            {/* <UpdateProduct
                 modalOpen={updateModalOpen}
                 setModalOpen={setUpdateModalOpen}
                 setReload={setReload}
                 selectedBrand={selectedBranch}
                 update={update}
                 updateData={updateData}
-            />
+            /> */}
         </Box>
     );
 };

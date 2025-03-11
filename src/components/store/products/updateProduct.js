@@ -884,7 +884,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
                                     <Grid item xs={4}>
                                         {/* <Typography variant="h7">Product Qty with Branch</Typography> */}
                                         <DropDown
-                                            title="Available Branches"
+                                            title="Available Stores"
                                             list={filteredBranch}
                                             data={data}
                                             setData={setData}

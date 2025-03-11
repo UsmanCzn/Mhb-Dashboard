@@ -162,9 +162,9 @@ const App = ({
 
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <Typography variant="h7">Branches</Typography>
+                        <Typography variant="h7">Stores</Typography>
                         <DropDown
-                            title="Select Branches"
+                            title="Select Stores"
                             list={branchesList}
                             data={data}
                             setData={setData}

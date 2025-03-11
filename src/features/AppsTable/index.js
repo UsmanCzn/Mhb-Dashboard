@@ -54,29 +54,28 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
     const handleClick = (event, params) => {
         setCustomer(params?.row);
         console.log(params?.row);
-
-        navigate('/addEditCompany/' + params?.row.id);
-
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (data) => {
         if (data?.name == 'Edit App') {
-            const dateObj = new Date(customer.endSubscriptionDate);
+            navigate('/addEditCompany/' + customer.id);
+
+            // const dateObj = new Date(customer.endSubscriptionDate);
 
             // Extract day, month, and year from the Date object
-            const day = dateObj.getDate().toString().padStart(2, '0');
-            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Note: January is 0, so we add 1
-            const year = dateObj.getFullYear();
+            // const day = dateObj.getDate().toString().padStart(2, '0');
+            // const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Note: January is 0, so we add 1
+            // const year = dateObj.getFullYear();
 
             // Create the formatted date string in "dd/mm/yyyy" format
-            const formattedDate = `${month}/${day}/${year}`;
-            const updatedObject = {
-                ...customer,
-                formattedEndSubscriptionDate: formattedDate
-            };
-            setUpdateData(updatedObject);
-            setUpdate(true);
-            setModalOpen(true);
+            // const formattedDate = `${month}/${day}/${year}`;
+            // const updatedObject = {
+            //     ...customer,
+            //     formattedEndSubscriptionDate: formattedDate
+            // };
+            // setUpdateData(updatedObject);
+            // setUpdate(true);
+            // setModalOpen(true);
         }
         setAnchorEl(null);
     };

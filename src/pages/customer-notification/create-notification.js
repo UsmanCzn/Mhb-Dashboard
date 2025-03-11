@@ -207,7 +207,7 @@ const CreateNotification = () => {
                                             error={formik.touched.notificationType && Boolean(formik.errors.notificationType)}
                                         >
                                             <MenuItem value={0}>Home</MenuItem>
-                                            <MenuItem value={1}>Store</MenuItem>
+                                            {/* <MenuItem value={1}>Store</MenuItem> */}
                                         </Select>
                                         {formik.touched.notificationType && formik.errors.notificationType ? (
                                             <Typography color="error">{formik.errors.notificationType}</Typography>

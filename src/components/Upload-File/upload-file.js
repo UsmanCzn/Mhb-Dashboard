@@ -29,6 +29,7 @@ const UploadFile = (props) => {
             <input
                 ref={inputRef}
                 type="file"
+                accept="image/*"
                 onChange={($event) => {
                     onChangeFile($event);
                 }}
@@ -62,7 +63,7 @@ const UploadFile = (props) => {
                 )}
                 <IconButton
                     onClick={handleClick}
-                    sx={{ color: 'grey.500', position: 'absolute', bottom: '5px', right: '15px' ,backgroundColor:'#f0ffffab' }}
+                    sx={{ color: 'grey.500', position: 'absolute', bottom: '5px', right: '15px', backgroundColor: '#f0ffffab' }}
                     aria-label="Example"
                 >
                     <FileUploadOutlinedIcon />

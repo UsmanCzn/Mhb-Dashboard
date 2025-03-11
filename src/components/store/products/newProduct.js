@@ -235,7 +235,7 @@ const NewProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand }) => {
                                 </Grid>
                                 <Grid item xs={4}>
                                     <DropDown
-                                        title="Assign to Branches"
+                                        title="Assign to Stores"
                                         list={filteredBranch}
                                         data={data}
                                         setData={setData}

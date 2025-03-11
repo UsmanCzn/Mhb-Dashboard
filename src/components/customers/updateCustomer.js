@@ -91,30 +91,44 @@ const UpdateCustomer = ({
   )
 
   const updateCustomer=async (event)=>{
+      event.preventDefault();
 
-    event.preventDefault() 
+      // let payload = {
+      //     ...data,
+      //     id: prevData?.id,
+      //     companyId: constants.COMPANY_ID,
+      //     userName: prevData.phoneNumber,
+      //     applicationLanguage: 'en',
+      //     displayEmail: data.emailAddress,
+      //     displayPhone: data.phoneNumber
+      // };
+      let payload = {
+          id: prevData?.id,
+          name: data.name,
+          surname: data.surname,
+          dateOfBirth: data.dateOfBirth,
+          gender: data.gender,
+          displayEmail: data.emailAddress,
+          displayPhone: data.phoneNumber,
+          countryId: data.countryId,
+          applicationLanguage: 'string',
+          companyId: constants.COMPANY_ID,
+          customerGroups: [...data.customerGroups]
+      };
 
-    let payload={
-      ...data,
-      "id":prevData?.id,
-      "companyId": constants.COMPANY_ID,
-      "userName": prevData.phoneNumber,   
-      "applicationLanguage": "en"
-    }
- 
-    await customerServices.updateCustomerDetail(payload)
+      await customerServices
+          .updateCustomerDetail(payload)
 
-    .then((res)=>{
-      console.log(res?.data);
-    })
-    .catch((err)=>{
-      console.log(err);
-    })
-    .finally(()=>{
-      setReload(prev=>!prev)
-      setModalOpen(false)
-    })
-
+          .then((res) => {
+              console.log(res?.data);
+          })
+          .catch((err) => {
+              console.log(err);
+          })
+          .finally(() => {
+              setReload((prev) => !prev);
+              setModalOpen(false);
+          });
   }
 
   return (

@@ -91,8 +91,8 @@ const App = ({
 
         <Grid item xs={12} my={1}>
 
-<Typography  variant="h7">Branches</Typography> 
-<DropDown title="Select Branches"
+<Typography  variant="h7">Stores</Typography> 
+<DropDown title="Select Stores"
         list={branchesList}
         data={data}
         setData={setData}

@@ -57,6 +57,7 @@ const ProductAddEdit = () => {
         productDescriptionNative: '',
         productImage: null,
         productQtyWithBranchs: [],
+        productTypeId: '',
         productSubTypeId: '',
         protien: 0,
         showIsOutOfStock: true,
@@ -70,12 +71,11 @@ const ProductAddEdit = () => {
     const validationSchemas = {
         basicInfo: Yup.object().shape({
             name: Yup.string().required('Product Name is required'),
-            nativeName: Yup.string().required('Product Name (Native) is required'),
             price: Yup.number().required('Price is required').moreThan(0, 'Price must be greater than 0'),
             pointsOfCost: Yup.number().required('Points of Cost is required'),
-            estimatePreparationTimeInMinutes: Yup.number().required('Estimate Preparation Time is required'),
-            productDescription: Yup.string().required('Description is required'),
-            productDescriptionNative: Yup.string().required('Description (Native) is required')
+            type: Yup.number().required('Category is required'),
+            productSubTypeId: Yup.number().required('Subcategory is required'),
+            estimatePreparationTimeInMinutes: Yup.number().required('Estimated Time is required')
         }),
         addOns: Yup.object().shape({
             // addonGroups: Yup.array().of(
@@ -201,7 +201,7 @@ const ProductAddEdit = () => {
             })
             .finally(() => {
                 setLoading(false);
-                navigate('/products');
+                navigate(`/products?brandId=${bid}`);
             });
     };
     const getProductById = async () => {
@@ -246,17 +246,7 @@ const ProductAddEdit = () => {
                         validationSchema={validationSchemas[tabValue]}
                         onSubmit={(values, { setTouched, validateForm, setSubmitting }) => {
                             validateForm().then((errors) => {
-                                const requiredFields = [
-                                    'name',
-                                    'nativeName',
-                                    'price',
-                                    'pointsOfCost',
-                                    'estimatePreparationTimeInMinutes',
-                                    'productDescription',
-                                    'productDescriptionNative',
-                                    'productSubTypeId',
-                                    'type'
-                                ];
+                                const requiredFields = ['name', 'price', 'pointsOfCost', 'productSubTypeId', 'type'];
 
                                 // Find missing fields
                                 const missingFields = requiredFields.filter(
@@ -270,13 +260,10 @@ const ProductAddEdit = () => {
                                         }, {})
                                     );
                                     // Mark all missing fields as touched
-                                    missingFields.reduce((acc, field) => {
-                                        acc[field] = true;
-                                        return acc;
-                                    }, {});
-
+                                    missingFields.forEach((e) => {
+                                        enqueueSnackbar(`Please fill required field "${e}"`, { variant: 'error' });
+                                    });
                                     // Show a snackbar with a message
-                                    enqueueSnackbar('Please fill all required fields', { variant: 'error' });
                                     // Mark all fields as touched if there are validation errors
 
                                     setSubmitting(false); // Stop form submission
@@ -373,7 +360,7 @@ const ProductAddEdit = () => {
                                     };
                                 }
                                 const options = {
-                                    maxSizeMB: 1,
+                                    maxSizeMB: 0.1,
                                     maxWidthOrHeight: 1920,
                                     useWebWorker: true
                                 };
@@ -386,7 +373,11 @@ const ProductAddEdit = () => {
 
                                 uploadImagePromise
                                     .then((uploadedImage) => {
-                                        payload.newProducts[0].productImage = uploadedImage;
+                                        console.log(uploadedImage, 'uploadedImage');
+
+                                        !isUpdate
+                                            ? (payload.newProducts[0].productImage = uploadedImage)
+                                            : (updatepayload.productImage = uploadedImage);
                                         return isUpdate
                                             ? storeServices.updateProduct(updatepayload) // Call update service
                                             : storeServices.createNewProduct(payload); // Call create service
@@ -395,7 +386,7 @@ const ProductAddEdit = () => {
                                         enqueueSnackbar(isUpdate ? 'Product updated successfully!' : 'Product created successfully!', {
                                             variant: 'success'
                                         });
-                                        navigate('/products');
+                                        navigate(`/products?brandId=${bid}`);
                                     })
                                     .catch((error) => {
                                         console.log(
@@ -415,24 +406,24 @@ const ProductAddEdit = () => {
                             });
                         }}
                     >
-                        {({ values, handleChange, handleBlur, setFieldValue, errors, touched, isValid }) => (
+                        {({ values, handleChange, handleBlur, setFieldValue, errors, touched, isValid, setTouched }) => (
                             <Form>
                                 <TabContext value={tabValue}>
                                     <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 3 }}>
                                         <TabList onChange={handleTabChange}>
-                                            <Tab label="Basic Info" value="basicInfo" disabled={tabValue !== 'basicInfo'} />
-                                            <Tab label="Add Ons" value="addOns" disabled={tabValue !== 'addOns'} />
-                                            <Tab label="Branches" value="branches" disabled={tabValue !== 'branches'} />
+                                            <Tab label="Basic Info" value="basicInfo" disabled={!id && tabValue !== 'basicInfo'} />
+                                            <Tab label="Add Ons" value="addOns" disabled={!id && tabValue !== 'addOns'} />
+                                            <Tab label="Stores" value="branches" disabled={!id && tabValue !== 'branches'} />
                                             {id && [
                                                 <Tab key="settings" label="Settings" value="settings" />,
                                                 <Tab
                                                     key="nutritions"
                                                     label="Nutritions"
                                                     value="nutritions"
-                                                    disabled={tabValue !== 'nutritions'}
+                                                    disabled={!id && tabValue !== 'nutritions'}
                                                 />
                                             ]}
-                                            <Tab label="Image" value="image" disabled={tabValue !== 'image'} />
+                                            <Tab label="Image" value="image" disabled={!id && tabValue !== 'image'} />
                                         </TabList>
                                     </Box>
 
@@ -634,8 +625,23 @@ const ProductAddEdit = () => {
                                                 <Button
                                                     variant="contained"
                                                     sx={{ minWidth: '120px' }}
-                                                    onClick={() => setTabValue('addOns')}
-                                                    disabled={!validationSchemas['basicInfo'].isValidSync(values)}
+                                                    onClick={() => {
+                                                        if (!validationSchemas['basicInfo'].isValidSync(values)) {
+                                                            // Mark all fields in 'basicInfo' as touched
+
+                                                            const basicInfoFields = Object.keys(validationSchemas['basicInfo'].fields);
+
+                                                            // Mark only those fields as touched
+                                                            setTouched(
+                                                                basicInfoFields.reduce((acc, field) => {
+                                                                    acc[field] = true;
+                                                                    return acc;
+                                                                }, {})
+                                                            );
+                                                        } else {
+                                                            setTabValue('addOns');
+                                                        }
+                                                    }}
                                                 >
                                                     Next
                                                 </Button>
@@ -873,7 +879,7 @@ const ProductAddEdit = () => {
                                             </Grid>
 
                                             {/* Product Image Delete */}
-                                            <Grid item xs={4}>
+                                            {/* <Grid item xs={4}>
                                                 <FormControlLabel
                                                     control={
                                                         <Switch
@@ -885,10 +891,10 @@ const ProductAddEdit = () => {
                                                     }
                                                     label="Product Image Delete"
                                                 />
-                                            </Grid>
+                                            </Grid> */}
 
                                             {/* Quantity Available */}
-                                            <Grid item xs={4}>
+                                            {/* <Grid item xs={4}>
                                                 <FormControlLabel
                                                     control={
                                                         <Switch
@@ -900,7 +906,7 @@ const ProductAddEdit = () => {
                                                     }
                                                     label="Quantity Available"
                                                 />
-                                            </Grid>
+                                            </Grid> */}
 
                                             {/* Comment Allowed */}
                                             <Grid item xs={4}>
@@ -922,13 +928,13 @@ const ProductAddEdit = () => {
                                                 <FormControlLabel
                                                     control={
                                                         <Switch
-                                                            name="isMerchProduct"
-                                                            checked={values.isMerchProduct}
+                                                            name="isTopProduct"
+                                                            checked={values.isTopProduct}
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
                                                         />
                                                     }
-                                                    label="To Selling"
+                                                    label="Top Selling"
                                                 />
                                             </Grid>
 
@@ -1080,6 +1086,7 @@ const ProductAddEdit = () => {
                                                         backgroundColor: '#f9f9f9'
                                                     }}
                                                 >
+                                                    {Product && <img width={100} src={Product?.productImage} alt="Product" />}
                                                     <Typography variant="body1" gutterBottom>
                                                         Click to upload
                                                     </Typography>

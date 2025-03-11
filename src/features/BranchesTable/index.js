@@ -1,6 +1,6 @@
 import { Chip, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useHistory } from 'react-router-dom';
 import { useFetchBranchList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -9,17 +9,18 @@ import branchServices from 'services/branchServices';
 
 const label = { inputProps: { 'aria-label': 'Size switch demo' } };
 
-export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData }) {
+export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData, bid }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList({reload});
+    const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList({ reload });
+    const filteredBranchList = bid === 'all' || !bid ? branchesList : branchesList.filter((e) => e.brandId == bid);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [branch, setBranch] = useState({});
+    useEffect(() => {}, [bid]);
 
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
-        
         setBranch(params?.row);
         setAnchorEl(event.currentTarget);
         // navigate(`${location.pathname}/${params.row?.id}`);
@@ -50,28 +51,24 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         );
     };
 
-    const hideBranch = async (event,data) => {
-        const tempData = {...data,ishide:event.target.checked}
+    const hideBranch = async (event, data) => {
+        const tempData = { ...data, ishide: event.target.checked };
         try {
-         const res = await branchServices.editBranch(tempData)
-         if(res) {
-            fetchBranchesList()
-         }
-        }catch (err){
-
-        }
-    }
-    const branchSwitch = async (event,data) => {
-        const tempData = {...data,isBusy:event.target.checked}
+            const res = await branchServices.editBranch(tempData);
+            if (res) {
+                fetchBranchesList();
+            }
+        } catch (err) {}
+    };
+    const branchSwitch = async (event, data) => {
+        const tempData = { ...data, isBusy: event.target.checked };
         try {
-         const res = await branchServices.editBranch(tempData)
-         if(res) {
-            fetchBranchesList()
-         }
-        }catch (err){
-
-        }
-    }
+            const res = await branchServices.editBranch(tempData);
+            if (res) {
+                fetchBranchesList();
+            }
+        } catch (err) {}
+    };
 
     const columns = [
         {
@@ -85,8 +82,17 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             headerName: 'Is Busy',
             flex: 1,
             headerAlign: 'left',
-            renderCell: (params) => { 
-                return  <Switch {...label} checked={ params.row.isBusy }  onChange={(event)=>{branchSwitch(event,params.row)}} size="small" />  
+            renderCell: (params) => {
+                return (
+                    <Switch
+                        {...label}
+                        checked={params.row.isBusy}
+                        onChange={(event) => {
+                            branchSwitch(event, params.row);
+                        }}
+                        size="small"
+                    />
+                );
             }
         },
         {
@@ -94,8 +100,17 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             headerName: 'Is Hide',
             flex: 1,
             headerAlign: 'left',
-            renderCell: (params) => { 
-                return  <Switch {...label} checked={ params.row.ishide } onChange={(event)=>{hideBranch(event,params.row)}} size="small" />  
+            renderCell: (params) => {
+                return (
+                    <Switch
+                        {...label}
+                        checked={params.row.ishide}
+                        onChange={(event) => {
+                            hideBranch(event, params.row);
+                        }}
+                        size="small"
+                    />
+                );
                 // return params.row.ishide ? <Tooltip title="Hidden"> <CheckCircleIcon  /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon title="false"/></Tooltip> ;
             }
         },
@@ -128,29 +143,28 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             headerName: 'Rewards Program',
             flex: 1,
             headerAlign: 'left',
-            renderCell: (params) => { 
-                return  <Switch {...label} checked={ params.row.isRewardMissing }  size="small" />  
+            renderCell: (params) => {
+                return <Switch {...label} checked={params.row.isRewardMissing} size="small" />;
             }
         },
         {
-          field: "isRewardMissisng",
-          headerName: "Action",
-          sortable: false,
-          flex: 0.5,
-          headerAlign: "left",
+            field: 'isRewardMissisng',
+            headerName: 'Action',
+            sortable: false,
+            flex: 0.5,
+            headerAlign: 'left',
 
-          renderCell: (params) => {
-                return <MoreVertIcon
-                    onClick={(event)=>handleClick(event,params)} />
-              }
-        },
+            renderCell: (params) => {
+                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
+            }
+        }
     ];
 
     const options = [
         {
             name: 'Edit Location',
             modal: true
-        },
+        }
         // {
         //   name:"Create Branch User",
         //   modal:true,
@@ -180,15 +194,14 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
     return (
         <>
             <DataGridComponent
-                rows={branchesList}
+                rows={filteredBranchList}
                 columns={columns}
                 loading={loading}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
-                totalRowCount={branchesList?.length ??0}
+                totalRowCount={filteredBranchList?.length ?? 0}
                 // fetchCallback={fetchBranchesList}
-                onRowClick={(row) => {
-                }}
+                onRowClick={(row) => {}}
                 pSize={10}
                 pMode={'client'}
             />

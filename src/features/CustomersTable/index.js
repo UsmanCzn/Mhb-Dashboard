@@ -157,7 +157,7 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
                         </Typography>
                     </Grid>
                     <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
-                        <Grid item xs={'auto'}>
+                        {/* <Grid item xs={'auto'}>
                             <Button
                                 size="small"
                                 variant="contained"
@@ -166,7 +166,7 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
                             >
                                 Add New Customer
                             </Button>
-                        </Grid>
+                        </Grid> */}
 
                         <FormControl sx={{ minWidth: '200px', maxWidth: '200px' }}>
                             <InputLabel id="demo-simple-select-label">{'Companies'}</InputLabel>

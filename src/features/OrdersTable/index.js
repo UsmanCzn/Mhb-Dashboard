@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack';
 export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
+    const [selectedRow, setSelectedRow] = useState();
     const location = useLocation();
 
     const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchOrdersList({
@@ -66,7 +66,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
     }, []);
     const handleClick = (event, params) => {
         setData(params?.row);
+        setSelectedRow(params?.row);
         // setModalOpen(true)
+
         setAnchorEl(event.currentTarget);
         if (params?.row?.status == 'Open') {
             setOptions([
@@ -148,7 +150,6 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         }
     };
     const handleClose = (Data) => {
-        console.log(statustypes);
         if (Data?.name == 'Open/Print') {
             setModalOpen(true);
         } else if (Data?.name == 'Accept') {
@@ -177,19 +178,21 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
             status: id,
             reason: ''
         };
+
         await orderServices
             .updateOrderStatus(payload)
             .then((res) => {
                 console.log(res?.data);
-                // setReload(prev=>!prev)
-                // setTimerReload(prev=>!prev)
-                // setTimerReload(prev=>!prev)
+                ordersList.forEach((element) => {
+                    if (element.id === selectedRow.id) {
+                        element.status = statustypes?.find((obj) => obj?.id == id)?.title;
+                    }
+                });
             })
             .catch((err) => {
                 console.log(err?.response?.data);
             })
             .finally(() => {
-                setReload((prev) => !prev);
                 // setTimerReload(prev=>!prev)
             });
     };

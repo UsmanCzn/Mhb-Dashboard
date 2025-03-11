@@ -100,7 +100,7 @@ const DynamicCollapsibleFormsWithCards = () => {
             .editBranch(payload)
             .then((res) => {
                 setLoading((prev) => ({ ...prev, [id]: false }));
-                setReload((prev) => !prev);
+                // setReload((prev) => !prev);
             })
             .catch((err) => {
                 console.log(err.response.data);

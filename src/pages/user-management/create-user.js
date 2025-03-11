@@ -144,7 +144,7 @@ const CreateUser = () => {
                 enqueueSnackbar('User Created Successfully', {
                     variant: 'success'
                 });
-                navigate('/user-management');
+                navigate(`/user-management?companyId=${cid}`);
             }
         } catch (error) {
             console.log('Error fetching user roles', error);
@@ -162,7 +162,7 @@ const CreateUser = () => {
                     enqueueSnackbar('User Updated Successfully', {
                         variant: 'success'
                     });
-                    navigate('/user-management');
+                    navigate(`/user-management?companyId=${cid}`);
                 }
             } catch (error) {
                 enqueueSnackbar(error.response.data.error.message, {
@@ -188,6 +188,8 @@ const CreateUser = () => {
             allotedIdsList: allotedBranchIds,
             companyId: +cid
         };
+        console.log(formData);
+        
         if (validateForm()) {
             await handlePostData(postDataObject);
         } else {
@@ -364,12 +366,12 @@ const CreateUser = () => {
             <Grid item xs={6}>
             <div>
             <label htmlFor="branches">
-                {formData.roles === 'Company_Admin'
-                    ? 'Companies'
-                    : formData.roles === 'Brand_Manager'
-                    ? ' Brands'
-                    : formData.roles === 'Branch_User'
-                    ? 'Branches'
+                {formData.roles == '3'
+                    ? 'Select Companies'
+                    : formData.roles =='5'
+                    ? 'Select Brands'
+                    : formData.roles =='7'
+                    ? 'Select Branches'
                     : ' Select'}
             </label>
             </div>
@@ -392,31 +394,6 @@ const CreateUser = () => {
             </Select>
             <p className="error">{errors.branches}</p>
             </Grid>
-            {/* <Grid item xs={6}>
-            <div>
-            <label htmlFor="Company">
-             Company
-            </label>
-            </div>
-          <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              fullWidth
-              value={formData.companyId}
-              label={'Company'}
-              name="companyId"
-              onChange={handleInputChange}
-          >
-              {companies.map((row, index) => {
-                return (
-                    <MenuItem key={index} value={row.id}>
-                        {row?.name}
-                    </MenuItem>
-                );
-              })}
-          </Select>
-            </Grid> */}
-
             <Grid item xs={12} sx={{marginBottom:"10px"}}>
             <Button size="small" type="submit" variant="contained">
                     {id ?'Update User':'Add User'}

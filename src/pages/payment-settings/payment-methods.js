@@ -54,7 +54,7 @@ const PaymentMethods = () => {
                                     color="primary"
                                     onClick={() => {
                                         // Add payment method logic here
-                                        navigate('/payments-settings/addEdit');
+                                        navigate(`/payments-settings/addEdit/${selectedBrand.id}`);
                                     }}
                                 >
                                     Add Payment Method
@@ -62,12 +62,12 @@ const PaymentMethods = () => {
                             </Grid>
                             <Grid item xs="auto">
                                 <FormControl fullWidth>
-                                    <InputLabel id="branch-select-label">{'Branch'}</InputLabel>
+                                    <InputLabel id="branch-select-label">{'Brand'}</InputLabel>
                                     <Select
                                         labelId="branch-select-label"
                                         id="branch-select"
                                         value={selectedBrand}
-                                        label={'Branch'}
+                                        label={'Brand'}
                                         onChange={(event) => {
                                             setselectedBrand(event.target.value);
                                         }}

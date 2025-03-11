@@ -39,13 +39,12 @@ const CustomerNotification = () => {
                 customerService.GetCustomersGroups(),
                 customerService.GetAllCustomerNotification()
             ]);
-
+            debugger;
             // Process customer groups
             if (customerGroupsResponse) {
                 const tempGroup = customerGroupsResponse.data.result.data.data.filter((group) => group.type === 'Base');
                 setCustomerGroup(tempGroup);
             }
-
             // Process notifications
             if (notificationsResponse) {
                 setNotifications(notificationsResponse.data.result);
@@ -160,20 +159,16 @@ const CustomerNotification = () => {
             headerAlign: 'left',
             renderCell: (params) => {
                 // Find all matching customer groups based on requestGroupID
-                const matchedGroups = customerGroup.filter((group) =>
-                    params.row.requestGroup.some((request) => request?.requestGroupID === group.id)
-                );
-
+                const matchedGroups =
+                    customerGroup.filter((group) => params.row.requestGroup.some((request) => request?.requestGroupID === group.id)) || [];
                 return (
                     <div sx={{ display: 'flex', flexWrap: 'wrap' }}>
                         {matchedGroups.length > 0 ? (
                             matchedGroups.map((group) => (
-                                <Chip color="primary" key={group.id} label={group.name} style={{ margin: '2px' }} />
+                                <Chip color="primary" key={group?.id} label={group?.name} style={{ margin: '2px' }} />
                             ))
                         ) : (
-                            <Stack direction="row" sx={{ display: 'flex' }} spacing={1}>
-                                <Chip label={group.name} color="primary" />
-                            </Stack>
+                            <div></div>
                         )}
                     </div>
                 );

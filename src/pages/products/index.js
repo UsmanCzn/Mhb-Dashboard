@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import NewProduct from 'components/store/products/newProduct';
-
+import { useSearchParams } from 'react-router-dom';
 export default function Products() {
     const { type } = useParams();
 
@@ -12,7 +12,10 @@ export default function Products() {
     const [modalOpen, setModalOpen] = useState(false);
     const [data, setData] = useState({});
     const [reload, setReload] = useState(false);
+    const [searchParams] = useSearchParams();
 
+    // Get individual query parameters
+    const brandId = searchParams.get('brandId');
     const { brandsList } = useFetchBrandsList(reload);
     // const { brandsList } = useFetchBranchList(reload)
 
@@ -25,15 +28,18 @@ export default function Products() {
         { value: 1, label: 'Descending' }
     ];
     const [sortBy, setSortBy] = useState('name');
-    const sortArr = [
-        { value: 'name', label: 'Name' }
-    ];
+    const sortArr = [{ value: 'name', label: 'Name' }];
 
     useEffect(() => {
-        if (brandsList[0]?.id) {
-            setselectedBranch(brandsList[0]);
+        if (!brandId) {
+            if (brandsList[0]?.id) {
+                setselectedBranch(brandsList[0]);
+            }
+        } else {
+            const selectedBrand = brandsList.find((brand) => brand.id === +brandId);
+            setselectedBranch(selectedBrand);
         }
-    }, [brandsList]);
+    }, [brandId, brandsList]);
 
     return (
         <Grid container spacing={2}>
@@ -57,14 +63,18 @@ export default function Products() {
                                 }}
                             >
                                 {brandsList?.map((row, index) => {
-                                    return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
+                                    return (
+                                        <MenuItem key={index} value={row}>
+                                            {row?.name}
+                                        </MenuItem>
+                                    );
                                 })}
                             </Select>
                         </FormControl>
                     </Grid>
                 </Grid>
             </Grid>
-   
+
             <Grid item xs={12}>
                 <ProductGrid
                     reload={reload}
@@ -79,7 +89,7 @@ export default function Products() {
                 />
             </Grid>
 
-            <NewProduct modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} selectedBrand={selectedBranch} />
+            {/* <NewProduct modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} selectedBrand={selectedBranch} /> */}
         </Grid>
     );
 }

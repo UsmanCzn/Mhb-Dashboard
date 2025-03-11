@@ -323,12 +323,12 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
           </Grid>
           <Grid item xs={6}>
           <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">{'Branches'}</InputLabel>
+          <InputLabel id="demo-simple-select-label">{'Stores'}</InputLabel>
           <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={formData.branchId}
-              label={'Branches'}
+              label={'Stores'}
               name="branchId"
               onChange={handleChange}
           >

@@ -148,18 +148,18 @@ const PaymentMethodsListing = (props) => {
                                                 aria-label="Example"
                                                 sx={{ backgroundColor: '#1890ff', color: 'white' }}
                                                 onClick={() => {
-                                                    navigate(`/payments-settings/addEdit/${method.id}`);
+                                                    navigate(`/payments-settings/addEdit/${method.id}/${brand.id}`);
                                                 }}
                                             >
                                                 <ModeEditOutlineOutlinedIcon sx={{ cursor: 'pointer' }} />
                                             </IconButton>
-                                            {/* <IconButton
+                                            <IconButton
                                                 sx={{ backgroundColor: '#ff1818', color: 'white' }}
                                                 aria-label="Example"
                                                 onClick={() => handleOpenConfirmation(method)}
                                             >
                                                 <DeleteOutlineOutlinedIcon />
-                                            </IconButton> */}
+                                            </IconButton>
                                         </Box>
                                     </Box>
                                 </ListItem>

@@ -73,13 +73,13 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
     const handleClose = () => {
         onClose();
         setModalOpen(false);
-        // setOffer(intialData);
+        setOffer(intialData);
     };
 
     const getMenuActions = async (action, id) => {
         if (action === 1 || action === 2) {
             try {
-                const response = await storeServices.getProductTypes(id);
+                const response = await storeServices.getProductTypes(brand.id);
                 if (response) {
                     switch (action) {
                         case 1:
@@ -94,7 +94,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                 }
             } catch (error) {}
         } else if (action === 3) {
-            getAllProductsByBrandId(id);
+            getAllProductsByBrandId(brand.id);
         } else {
             setActionItems([]);
         }

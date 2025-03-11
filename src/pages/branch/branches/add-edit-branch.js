@@ -113,7 +113,7 @@ const AddEditBranch = () => {
         setTabValue(newValue);
     };
     const [initialValues, setInitialValues] = useState({
-        acceptTime: '',
+        acceptTime: 0,
         branchAddress: '',
         branchPhoneNumber: '',
         branchTimingsString: '',
@@ -128,30 +128,36 @@ const AddEditBranch = () => {
         isDelivery: false,
         isPickup: false,
         logoUrl: '',
-        latitude: '',
-        longitude: '',
+        latitude: 0,
+        longitude: 0,
         arrivalArea: 0,
         name: '',
         nativeBranchAddress: '',
         nativeName: '',
         openTime: '',
-        readyTime: '',
+        readyTime: 0,
         UsedDeliverySystem: 1
     });
     const validationSchemas = {
         1: Yup.object().shape({
             name: Yup.string().required('Store Name is required'),
-            nativeName: Yup.string().required('Store Name (Native) is required'),
+            // nativeName: Yup.string().required('Store Name (Native) is required'),
             brandId: Yup.string().required('Brand is required'),
-            branchPhoneNumber: Yup.number().required('Phone Number is required'),
-            acceptTime: Yup.number().required('Accept Time is required'),
-            readyTime: Yup.number().required('Ready Time is required')
+            // branchPhoneNumber: Yup.number().required('Phone Number is required'),
+            acceptTime: Yup.number().required('Accept Time is required').min(0),
+            readyTime: Yup.number().required('Ready Time is required').min(0)
         }),
         2: Yup.object().shape({
             openTime: Yup.string().required('Opening Time is required'),
-            closeTime: Yup.string().required('Closing Time is required'),
-            branchTimingsString: Yup.string().required('Working hours text is required'),
-            branchTimingsStringNative: Yup.string().required('Working hours text (Native) is required')
+            closeTime: Yup.string().required('Closing Time is required')
+            // .test('is-after-openTime', 'Closing Time must be after Opening Time', function (closeTime) {
+            //     const { openTime } = this.parent;
+            //     if (!openTime || !closeTime) return true; // Skip validation if either is missing
+
+            //     return openTime < closeTime; // Ensure openTime is before closeTime
+            // })
+            // branchTimingsString: Yup.string().required('Working hours text is required'),
+            // branchTimingsStringNative: Yup.string().required('Working hours text (Native) is required')
         }),
         3: Yup.object().shape({
             isPickup: Yup.boolean(),
@@ -171,8 +177,8 @@ const AddEditBranch = () => {
             })
         }),
         4: Yup.object().shape({
-            branchAddress: Yup.string().required('Address is required'),
-            nativeBranchAddress: Yup.string().required('Native Address is required'),
+            // branchAddress: Yup.string().required('Address is required'),
+            // nativeBranchAddress: Yup.string().required('Native Address is required'),
             latitude: Yup.number()
                 .typeError('Latitude must be a decimal number')
                 .required('Latitude is required')
@@ -235,13 +241,13 @@ const AddEditBranch = () => {
                 });
             }
             setloading(false);
-            navigate('/locations');
+            navigate(`/locations?brandId=${initialValues.brandId}`);
         } catch (error) {
             console.log(error);
             const errorMessage =
-            error.response?.data?.error?.validationErrors?.[0]?.message || error.response?.data?.error?.message || 'An error occurred';
+                error.response?.data?.error?.validationErrors?.[0]?.message || error.response?.data?.error?.message || 'An error occurred';
 
-        enqueueSnackbar(errorMessage, { variant: 'error' });
+            enqueueSnackbar(errorMessage, { variant: 'error' });
             setloading(false);
         }
     };
@@ -274,12 +280,13 @@ const AddEditBranch = () => {
                                                 <Tab
                                                     label="Basic Info"
                                                     value="1"
-                                                    disabled={id ? tabValue !== '1' && tabValue !== '6' : tabValue !== '1'}
+                                                    // disabled={id ? tabValue !== '1' && tabValue !== '6' : tabValue !== '1'}
+                                                    disabled={!id && tabValue !== '1'}
                                                 />
-                                                <Tab label="Timings" value="2" disabled={tabValue !== '2'} />
-                                                <Tab label="Settings" value="3" disabled={tabValue !== '3'} />
-                                                <Tab label="Address" value="4" disabled={tabValue !== '4'} />
-                                                <Tab label="Logo" value="5" disabled={tabValue !== '5'} />
+                                                <Tab label="Timings" value="2" disabled={!id && tabValue !== '2'} />
+                                                <Tab label="Settings" value="3" disabled={!id && tabValue !== '3'} />
+                                                <Tab label="Address" value="4" disabled={!id && tabValue !== '4'} />
+                                                <Tab label="Logo" value="5" disabled={!id && tabValue !== '5'} />
                                                 {id && <Tab label="Branch Schedule" value="6" disabled={false} />}
                                             </TabList>
                                         </Box>
@@ -379,7 +386,7 @@ const AddEditBranch = () => {
                                                         variant="contained"
                                                         sx={{ minWidth: '120px' }}
                                                         onClick={() => handleNext(validateForm, setTouched)}
-                                                        disabled={!validationSchemas[1].isValidSync(values)} // Disable if the current tab's validation fails
+                                                        // disabled={!validationSchemas[1].isValidSync(values)} // Disable if the current tab's validation fails
                                                     >
                                                         Next
                                                     </Button>

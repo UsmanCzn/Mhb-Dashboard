@@ -340,9 +340,9 @@ const NewRewardCollection = ({
                                     </Box>
                                     <Box>
                                     <Typography
-                                    required variant="h7">Branches</Typography>
+                                    required variant="h7">Stores</Typography>
  
-                <DropDown title="Select Branches"
+                <DropDown title="Select Stores"
                             list={branchesList}
                             data={data}
                             setData={setData}

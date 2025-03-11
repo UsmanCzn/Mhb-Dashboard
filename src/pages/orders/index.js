@@ -194,7 +194,7 @@ export default function Orders() {
     useEffect(() => {
         const interval = setInterval(() => {
             setReload((prev) => !prev);
-        }, 5000);
+        }, 10000);
 
         return () => clearInterval(interval);
     }, []);
