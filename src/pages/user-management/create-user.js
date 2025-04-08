@@ -226,7 +226,6 @@ const CreateUser = () => {
             if (response) {
                 setUserBranches(response.data.result);
                 return response.data.result;
-                
             }
         } catch (error) {
             console.error('Error fetching user roles', error);
@@ -234,11 +233,9 @@ const CreateUser = () => {
     };
 
     useEffect(() => {
-     
         getUserRoles();
         // getCompanies()
     }, []);
-
 
     useEffect(() => {
         getDesiredBranch(formData.roles);
@@ -255,15 +252,13 @@ const CreateUser = () => {
             });
         }
         setMultiSelectValues(branches);
-        if(id) return
+        if (id) return;
         handleBranchesChange([]);
     }, [userBranches]);
 
-    const fetchUserData = async ( roles) => {
-        console.log(id,"userid");
-        
+    const fetchUserData = async (roles) => {
+
         if (id) {
-            
             try {
                 const response = await userManagementService.GetUserId(id);
 
@@ -272,14 +267,14 @@ const CreateUser = () => {
                     const roleObject = roles?.find((role) => role.id === userData?.roleId);
                     if (roleObject) {
                         const responseForBranches = await getDesiredBranch(roleObject.id);
-                        const alloctedBranches = userData.allotedIdsList ??[];
+                        const alloctedBranches = userData.allotedIdsList ?? [];
 
                         const alloctedBranchesObj = responseForBranches.filter((item) => alloctedBranches.includes(item.id));
                         let newObjForBranches = [];
                         if (alloctedBranchesObj.length > 0) {
                             newObjForBranches = alloctedBranchesObj.map((item) => item.id);
                         }
-                        console.log(userData,"selected Brancehs");
+                        
                         setFormData({
                             firstName: userData.name,
                             lastName: userData.surname,
@@ -289,7 +284,7 @@ const CreateUser = () => {
                             email: userData.emailAddress,
                             roles: roleObject.id,
                             branches: newObjForBranches,
-                            companyId:userData?.companyId
+                            companyId: userData?.companyId
                         });
                     }
                 }
@@ -302,106 +297,118 @@ const CreateUser = () => {
     return (
         <form onSubmit={handleSubmit}>
             <Grid container spacing={2} className="userFormContainer">
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="firstName">First Name:</label>
-            </div>
-            <TextField  fullWidth type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
-            <p className="error">{errors.firstName}</p>
-            </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="firstName">First Name:</label>
+                    </div>
+                    <TextField
+                        fullWidth
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                    />
+                    <p className="error">{errors.firstName}</p>
+                </Grid>
 
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="lastName">Last Name:</label>
-            </div>
-            <TextField fullWidth type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
-            <p className="error">{errors.lastName}</p>
-            </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="lastName">Last Name:</label>
+                    </div>
+                    <TextField fullWidth type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+                    <p className="error">{errors.lastName}</p>
+                </Grid>
 
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="phoneNumber">Phone Number:</label>
-            </div>
-            <TextField fullWidth type="text" id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} />
-            <p className="error">{errors.phoneNumber}</p>
-            </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="phoneNumber">Phone Number:</label>
+                    </div>
+                    <TextField
+                        fullWidth
+                        type="text"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleInputChange}
+                    />
+                    <p className="error">{errors.phoneNumber}</p>
+                </Grid>
 
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="email">Email:</label>
-            </div>
-            <TextField fullWidth type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
-            <p className="error">{errors.email}</p>
-            </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="email">Email:</label>
+                    </div>
+                    <TextField fullWidth type="text" id="email" name="email" value={formData.email} onChange={handleInputChange} />
+                    <p className="error">{errors.email}</p>
+                </Grid>
 
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="password">Password:</label>
-            </div>
-            <TextField fullWidth type="text" id="password" name="password" value={formData.password} onChange={handleInputChange} />
-            <p className="error">{errors.password}</p>
-            </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="password">Password:</label>
+                    </div>
+                    <TextField fullWidth type="text" id="password" name="password" value={formData.password} onChange={handleInputChange} />
+                    <p className="error">{errors.password}</p>
+                </Grid>
 
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="roles">Roles:</label>
-            </div>
-            <Select fullWidth id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
-            <MenuItem value="">Select a role</MenuItem>
-            {usersRoles.length > 0 &&
-                usersRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                {role.name === 'Company_Admin'
-                ? 'Company Admin'
-                : role.name === 'Brand_Manager'
-                ? 'Brand Manager'
-                : role.name === 'Branch_User'
-                ? 'Branch User'
-                : role.name}
-            </MenuItem>
-                        ))}
-            </Select>
-            <p className="error">{errors.roles}</p>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="roles">Roles:</label>
+                    </div>
+                    <Select fullWidth id="roles" name="roles" value={formData.roles} onChange={handleInputChange}>
+                        <MenuItem value="">Select a role</MenuItem>
+                        {usersRoles.length > 0 &&
+                            usersRoles.map((role) => (
+                                <MenuItem key={role.id} value={role.id}>
+                                    {role.name === 'Company_Admin'
+                                        ? 'Company Admin'
+                                        : role.name === 'Brand_Manager'
+                                        ? 'Brand Manager'
+                                        : role.name === 'Branch_User'
+                                        ? 'Store User'
+                                        : role.name}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                    <p className="error">{errors.roles}</p>
+                </Grid>
+                <Grid item xs={6}>
+                    <div>
+                        <label htmlFor="branches">
+                            {formData.roles == '3'
+                                ? 'Select Companies'
+                                : formData.roles == '5'
+                                ? 'Select Brands'
+                                : formData.roles == '7'
+                                ? 'Select Stores'
+                                : ' Select'}
+                        </label>
+                    </div>
+                    <Select
+                        fullWidth
+                        className=""
+                        id="branches"
+                        name="branches"
+                        value={formData.branches}
+                        multiple
+                        onChange={(event) => handleBranchesChange(event.target.value)}
+                    >
+                        <MenuItem value="">Select a Value</MenuItem>
+                        {multiSelectValues.length > 0 &&
+                            multiSelectValues.map((role, index) => (
+                                <MenuItem key={index} value={role.value}>
+                                    {role.label}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                    <p className="error">{errors.branches}</p>
+                </Grid>
+                <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                    <Button size="small" type="submit" variant="contained">
+                        {id ? 'Update User' : 'Add User'}
+                    </Button>
+                </Grid>
             </Grid>
-            <Grid item xs={6}>
-            <div>
-            <label htmlFor="branches">
-                {formData.roles == '3'
-                    ? 'Select Companies'
-                    : formData.roles =='5'
-                    ? 'Select Brands'
-                    : formData.roles =='7'
-                    ? 'Select Branches'
-                    : ' Select'}
-            </label>
-            </div>
-            <Select 
-                fullWidth
-                className=""
-                id="branches"
-                name="branches"
-                value={formData.branches}
-                multiple
-                onChange={(event)=>handleBranchesChange(event.target.value)}
-            >
-                <MenuItem value="">Select a Value</MenuItem>
-                {multiSelectValues.length > 0 &&
-                multiSelectValues.map((role, index) => (
-                <MenuItem key={index} value={role.value}>
-                    {role.label}
-                </MenuItem>
-            ))}
-            </Select>
-            <p className="error">{errors.branches}</p>
-            </Grid>
-            <Grid item xs={12} sx={{marginBottom:"10px"}}>
-            <Button size="small" type="submit" variant="contained">
-                    {id ?'Update User':'Add User'}
-            </Button>
-            </Grid>
-            </Grid>
-                        
-
         </form>
     );
 };
