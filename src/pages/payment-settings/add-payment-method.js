@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, TextField, Box } from '@mui/material';
+import {
+    Grid,
+    Typography,
+    Button,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormControlLabel,
+    TextField,
+    Box,
+    Switch
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -19,40 +31,53 @@ const AddPaymentMethod = () => {
             name: 'All Branches'
         }
     ]);
-
+    const [payments, setpayments] = useState(null);
+    const [visibleFields, setVisibleFields] = useState([]);
+    const [validationSchema, setValidationSchema] = useState(Yup.object({}));
     const { id, bid } = useParams();
     const navigate = useNavigate();
     const gatewayOptions = [
         { title: 'Tap', value: 1 },
-        { title: 'Ottu', value: 2 },
+        // { title: 'Ottu', value: 2 }, Usman 16-0-2025 (Not Integrated with brand)
         { title: 'Tehseeel', value: 3 },
         { title: 'Square', value: 4 },
-        { title: 'Checkout', value: 5 },
+        // { title: 'Checkout', value: 5 },Usman 16-0-2025 (Not Integrated with brand) No Idea
         { title: 'MyFatoorah', value: 6 },
         { title: 'Hesabi', value: 7 }
     ];
     const formik = useFormik({
         initialValues: {
-            sandBoxKey: '',
-            liveKey: '',
-            sandBoxApiUrl: '',
-            liveApiUrl: '',
+            // New fields
+            apiCheckOutUrl: '',
+            apiTopUpUrl: '',
             currencyCode: '',
+            gateway: 1,
+            hesabiMerchantCode: '',
+            hesabiMerchantIv: '',
+            hesabiPAYMENTURL: '',
+            isHidden: false,
+            liveApiUrl: '',
+            liveKey: '',
+            locationId: '',
             merchantId: '',
             paymentId: '',
-            gateway: 1,
-            paymentSystemName: ''
+            paymentImageUrl: '',
+            paymentSystemName: '',
+            paymentSystemNative: '',
+            paymentTrackingInfoUrl: '',
+            redirectCheckOutUrl: '',
+            redirectTopUpUrl: '',
+            sandBoxServerDomain: '',
+            sandBoxSecretKey: '',
+            supplierShare: 0,
+            tehseeelAppUrl: '',
+            tehseeelCCAPI: '',
+            tehseeelKnetAPI: '',
+            tehseeelpwd: '',
+            tehseeelsecret: '',
+            tehseeeluid: ''
         },
-        validationSchema: Yup.object({
-            sandBoxKey: Yup.string().required('Sandbox Key is required'),
-            liveKey: Yup.string().required('Live Key is required'),
-            sandBoxApiUrl: Yup.string().required('Sandbox API URL is required'),
-            liveApiUrl: Yup.string().required('Live API URL is required'),
-            currencyCode: Yup.string().required('Currency Code is required'),
-            merchantId: Yup.string().required('Merchant ID is required'),
-            paymentId: Yup.string().required('Payment Type is required'),
-            gateway: Yup.number().required('Gateway is required')
-        }),
+        validationSchema: validationSchema,
         onSubmit: (values) => {
             console.log('Form values:', values);
             SubmitForm(values);
@@ -78,16 +103,39 @@ const AddPaymentMethod = () => {
             // Replace 'yourBrandId' with the actual brandId you want to pass
             const response = await paymentServices.GetPaymentById(id);
             const temp = { ...response.data.result };
+            setpayments(temp);
             formik.setValues({
-                sandBoxKey: temp.sandBoxSecretKey,
-                liveKey: temp.liveSecretKey,
-                sandBoxApiUrl: temp.sandBoxServerDomain,
-                liveApiUrl: temp.liveServerDomain,
+                sandBoxSecretKey: temp.sandBoxSecretKey,
+                liveSecretKey: temp.liveSecretKey,
+                sandBoxServerDomain: temp.sandBoxServerDomain,
+                liveServerDomain: temp.liveServerDomain,
                 currencyCode: temp.apiCurrencyCode,
                 merchantId: temp.merchantId,
                 paymentId: temp.paymentSystemId,
                 gateway: temp.gatewayId,
-                paymentSystemName: temp.paymentSystemName // Assuming there's a `gatewayId` or default to 1
+                paymentSystemName: temp.paymentSystemName,
+                // New fields
+                apiCheckOutUrl: temp.apiCheckOutUrl,
+                livePublicKey: temp.livePublicKey,
+                apiTopUpUrl: temp.apiTopUpUrl,
+                hesabiMerchantCode: temp.hesabiMerchantCode,
+                hesabiMerchantIv: temp.hesabiMerchantIv,
+                hesabiPAYMENTURL: temp.hesabiPAYMENTURL,
+                isHidden: temp.isHidden,
+                locationId: temp.locationId,
+                paymentSystemNative: temp.paymentSystemNative,
+                paymentImageUrl: temp.paymentImageUrl,
+                paymentTrackingInfoUrl: temp.paymentTrackingInfoUrl,
+                redirectCheckOutUrl: temp.redirectCheckOutUrl,
+                redirectTopUpUrl: temp.redirectTopUpUrl,
+                supplierShare: temp.supplierShare,
+                supplierCode: temp.supplierCode,
+                tehseeelAppUrl: temp.tehseeelAppUrl,
+                tehseeelCCAPI: temp.tehseeelCCAPI,
+                tehseeelKnetAPI: temp.tehseeelKnetAPI,
+                tehseeelpwd: temp.tehseeelpwd,
+                tehseeelsecret: temp.tehseeelsecret,
+                tehseeeluid: temp.tehseeeluid
             });
             setLoading(false);
             console.log(response, 'getByid');
@@ -101,29 +149,185 @@ const AddPaymentMethod = () => {
             getByid(id);
         }
     }, [id]);
+    const handleSubmit = async () => {
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length > 0) {
+            console.log('Validation errors:', errors);
+            formik.setTouched(errors);
+        } else {
+            formik.handleSubmit();
+        }
+    };
+
+    useEffect(() => {
+        const updateFields = () => {
+            let requiredFields = [];
+            let schema = Yup.object({
+                merchantId: Yup.string().required('Merchant ID is required'),
+                currencyCode: Yup.string().required('Currency Code is required'),
+                paymentId: Yup.string().required('Payment Type is required'),
+                gateway: Yup.number().required('Gateway is required')
+            });
+
+            switch (formik.values.gateway) {
+                case 1: // Tap
+                    requiredFields = [
+                        { field: 'liveSecretKey', label: 'Live Secret Key' },
+                        { field: 'liveServerDomain', label: 'Live Server Domain' },
+                        { field: 'sandBoxSecretKey', label: 'Sandbox Secret Key' },
+                        { field: 'sandBoxServerDomain', label: 'Sandbox Server Domain' }
+                    ];
+                    schema = schema.shape({
+                        liveSecretKey: Yup.string().required('Live Secret Key is required'),
+                        liveServerDomain: Yup.string().required('Live Server Domain is required'),
+                        sandBoxSecretKey: Yup.string().required('Sandbox Secret Key is required'),
+                        sandBoxServerDomain: Yup.string().required('Sandbox Server Domain is required')
+                    });
+                    break;
+
+                case 3: // Tehseeel
+                    requiredFields = [
+                        { field: 'liveServerDomain', label: 'Live Server Domain' },
+                        { field: 'tehseeelAppUrl', label: 'Tehseeel App URL' },
+                        { field: 'apiCheckOutUrl', label: 'API Checkout URL' },
+                        { field: 'paymentTrackingInfoUrl', label: 'Payment Tracking Info URL' },
+                        { field: 'tehseeelKnetAPI', label: 'Tehseeel Knet API' },
+                        { field: 'tehseeelpwd', label: 'Tehseeel Password' },
+                        { field: 'tehseeelsecret', label: 'Tehseeel Secret' },
+                        { field: 'tehseeeluid', label: 'Tehseeel UID' }
+                    ];
+                    schema = schema.shape({
+                        liveServerDomain: Yup.string().required('Live Server Domain is required'),
+                        tehseeelAppUrl: Yup.string().required('Tehseeel App URL is required'),
+                        apiCheckOutUrl: Yup.string().required('API Checkout URL is required'),
+                        paymentTrackingInfoUrl: Yup.string().required('Payment Tracking Info URL is required'),
+                        tehseeelKnetAPI: Yup.string().required('Tehseeel Knet API is required'),
+                        tehseeelpwd: Yup.string().required('Tehseeel Password is required'),
+                        tehseeelsecret: Yup.string().required('Tehseeel Secret is required'),
+                        tehseeeluid: Yup.string().required('Tehseeel UID is required')
+                    });
+                    break;
+
+                case 4: // Square
+                    requiredFields = [
+                        { field: 'livePublicKey', label: 'Live Public Key' },
+                        { field: 'liveSecretKey', label: 'Live Secret Key' },
+                        { field: 'locationId', label: 'Location ID' }
+                    ];
+                    schema = schema.shape({
+                        livePublicKey: Yup.string().required('Live Public Key is required'),
+                        liveSecretKey: Yup.string().required('Live Secret Key is required'),
+                        locationId: Yup.string().required('Location ID is required')
+                    });
+                    break;
+
+                case 6: // MyFatoorah
+                    requiredFields = [
+                        { field: 'liveSecretKey', label: 'Live Secret Key' },
+                        { field: 'liveServerDomain', label: 'Live Server Domain' },
+                        { field: 'apiCheckOutUrl', label: 'API Checkout URL' },
+                        { field: 'sandBoxSecretKey', label: 'Sandbox Secret Key' },
+                        { field: 'sandBoxServerDomain', label: 'Sandbox Server Domain' },
+                        { field: 'supplierCode', label: 'Supplier Code' },
+                        { field: 'supplierShare', label: 'Supplier Share' }
+                    ];
+                    schema = schema.shape({
+                        liveSecretKey: Yup.string().required('Live Secret Key is required'),
+                        liveServerDomain: Yup.string().required('Live Server Domain is required'),
+                        apiCheckOutUrl: Yup.string().required('API Checkout URL is required'),
+                        sandBoxSecretKey: Yup.string().required('Sandbox Secret Key is required'),
+                        sandBoxServerDomain: Yup.string().required('Sandbox Server Domain is required'),
+                        supplierCode: Yup.string().required('Supplier Code is required'),
+                        supplierShare: Yup.number().required('Supplier Share is required').min(0)
+                    });
+                    break;
+
+                case 7: // Hesabi
+                    requiredFields = [
+                        { field: 'liveSecretKey', label: 'Live Secret Key' },
+                        { field: 'liveServerDomain', label: 'Live Server Domain' },
+                        { field: 'apiCheckOutUrl', label: 'API Checkout URL' },
+                        { field: 'hesabiPAYMENTURL', label: 'Hesabi PAYMENT URL' },
+                        { field: 'hesabiMerchantIv', label: 'Hesabi Merchant IV' },
+                        { field: 'hesabiMerchantCode', label: 'Hesabi Merchant Code' },
+                        { field: 'sandBoxServerDomain', label: 'Sandbox Server Domain' }
+                    ];
+                    schema = schema.shape({
+                        liveSecretKey: Yup.string().required('Live Secret Key is required'),
+                        liveServerDomain: Yup.string().required('Live Server Domain is required'),
+                        apiCheckOutUrl: Yup.string().required('API Checkout URL is required'),
+                        hesabiPAYMENTURL: Yup.string().required('Hesabi PAYMENT URL is required'),
+                        merchantId: Yup.string().required('Merchant ID is required'),
+                        hesabiMerchantIv: Yup.string().required('Hesabi Merchant IV is required'),
+                        hesabiMerchantCode: Yup.string().required('Hesabi Merchant Code is required'),
+                        sandBoxServerDomain: Yup.string().required('Sandbox Server Domain is required')
+                    });
+                    break;
+
+                default:
+                    break;
+            }
+
+            setVisibleFields(requiredFields);
+            setValidationSchema(schema);
+
+            // Reset form while keeping mandatory fields
+            if (!id) {
+                formik.resetForm({
+                    values: { gateway: formik.values.gateway }
+                });
+            }
+        };
+
+        updateFields();
+    }, [formik.values.gateway]);
 
     const SubmitForm = async (values) => {
+        console.log(values);
+
         if (!id) {
             try {
                 const body = {
-                    id: 0,
+                    apiCurrencyCode: values.currencyCode,
                     brandId: bid,
-                    paymentSystemName: values.paymentSystemName,
+                    code: values.currencyCode,
+                    gatewayId: values.gateway,
+                    id: 0,
+                    isUsedForCheckOut: true,
+                    isUsedForTopUp: true,
+                    livePublicKey: values.livePublicKey,
+                    liveSecretKey: values.liveSecretKey,
+                    liveServerDomain: values.liveServerDomain,
+                    merchantId: values.merchantId,
                     paymentSystemAr: values.paymentSystemName,
                     paymentSystemId: values.paymentId,
-                    isUsedForTopUp: true,
-                    isUsedForCheckOut: true,
-                    livePublicKey: '',
-                    liveSecretKey: values.liveKey,
+                    paymentSystemName: values.paymentSystemName,
                     sandBoxPubicKey: '',
-                    sandBoxSecretKey: values.sandBoxKey,
-                    merchantId: values.merchantId,
-                    apiCurrencyCode: values.currencyCode,
-                    code: values.currencyCode,
-                    liveServerDomain: values.liveApiUrl,
-                    sandBoxServerDomain: values.sandBoxApiUrl,
-                    gatewayId: values.gateway
+                    sandBoxSecretKey: values.sandBoxSecretKey,
+                    sandBoxServerDomain: values.sandBoxServerDomain,
+                    //NEW VALUES
+                    apiCheckOutUrl: values.apiCheckOutUrl,
+                    apiTopUpUrl: values.apiTopUpUrl,
+                    hesabiMerchantCode: values.hesabiMerchantCode,
+                    hesabiMerchantIv: values.hesabiMerchantIv,
+                    hesabiPAYMENTURL: values.hesabiPAYMENTURL,
+                    isHidden: values.isHidden,
+                    locationId: values.locationId,
+                    paymentSystemNative: values.paymentSystemNative,
+                    paymentImageUrl: values.paymentImageUrl,
+                    paymentTrackingInfoUrl: values.paymentTrackingInfoUrl,
+                    redirectCheckOutUrl: values.redirectCheckOutUrl,
+                    redirectTopUpUrl: values.redirectTopUpUrl,
+                    supplierShare: values.supplierShare,
+                    supplierCode: values.supplierCode,
+                    tehseeelAppUrl: values.tehseeelAppUrl,
+                    tehseeelCCAPI: values.tehseeelCCAPI,
+                    tehseeelKnetAPI: values.tehseeelKnetAPI,
+                    tehseeelpwd: values.tehseeelpwd,
+                    tehseeelsecret: values.tehseeelsecret,
+                    tehseeeluid: values.tehseeeluid
                 };
+
                 const response = await paymentServices.CreateNewPaymentMethods(body);
                 if (response) {
                     enqueueSnackbar('Action Performed Successfully', {
@@ -136,6 +340,7 @@ const AddPaymentMethod = () => {
             }
         } else {
             const body = {
+                ...payments,
                 id: 0,
                 brandId: bid,
                 paymentSystemName: values.paymentSystemName,
@@ -143,16 +348,37 @@ const AddPaymentMethod = () => {
                 paymentSystemId: values.paymentId,
                 isUsedForTopUp: true,
                 isUsedForCheckOut: true,
-                livePublicKey: '',
-                liveSecretKey: values.liveKey,
+                livePublicKey: values.livePublicKey,
+                liveSecretKey: values.liveSecretKey,
                 sandBoxPubicKey: '',
-                sandBoxSecretKey: values.sandBoxKey,
+                sandBoxSecretKey: values.sandBoxSecretKey,
                 merchantId: values.merchantId,
                 apiCurrencyCode: values.CurrencyCode,
                 code: values.currencyCode,
-                liveServerDomain: values.liveApiUrl,
-                sandBoxServerDomain: values.sandBoxApiUrl,
-                gatewayId: values.gateway
+                liveServerDomain: values.liveServerDomain,
+                sandBoxServerDomain: values.sandBoxServerDomain,
+                gatewayId: values.gateway,
+                // New fields
+                apiCheckOutUrl: values.apiCheckOutUrl,
+                apiTopUpUrl: values.apiTopUpUrl,
+                hesabiMerchantCode: values.hesabiMerchantCode,
+                hesabiMerchantIv: values.hesabiMerchantIv,
+                hesabiPAYMENTURL: values.hesabiPAYMENTURL,
+                isHidden: values.isHidden,
+                locationId: values.locationId,
+                paymentSystemNative: values.paymentSystemNative,
+                paymentImageUrl: values.paymentImageUrl,
+                paymentTrackingInfoUrl: values.paymentTrackingInfoUrl,
+                redirectCheckOutUrl: values.redirectCheckOutUrl,
+                redirectTopUpUrl: values.redirectTopUpUrl,
+                supplierShare: values.supplierShare,
+                supplierCode: values.supplierCode,
+                tehseeelAppUrl: values.tehseeelAppUrl,
+                tehseeelCCAPI: values.tehseeelCCAPI,
+                tehseeelKnetAPI: values.tehseeelKnetAPI,
+                tehseeelpwd: values.tehseeelpwd,
+                tehseeelsecret: values.tehseeelsecret,
+                tehseeeluid: values.tehseeeluid
             };
             body.id = +id;
             const response = await paymentServices.UpdatePaymentMethods(body);
@@ -165,118 +391,38 @@ const AddPaymentMethod = () => {
         }
     };
 
-    const card = (
-        <>
+    return (
+        <Card variant="outlined">
             <form onSubmit={formik.handleSubmit}>
                 <CardContent>
-                    <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
+                    <Typography fontSize={22} fontWeight={700}>
                         Configure Payment Gateway
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Sandbox Key
-                            </Typography>
-                            <TextField
-                                id="sandBoxKey"
-                                name="sandBoxKey"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.sandBoxKey}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.sandBoxKey && Boolean(formik.errors.sandBoxKey)}
-                                helperText={formik.touched.sandBoxKey && formik.errors.sandBoxKey}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Live Key
-                            </Typography>
-                            <TextField
-                                id="liveKey"
-                                name="liveKey"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.liveKey}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.liveKey && Boolean(formik.errors.liveKey)}
-                                helperText={formik.touched.liveKey && formik.errors.liveKey}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Sandbox API URL
-                            </Typography>
-                            <TextField
-                                id="sandBoxApiUrl"
-                                name="sandBoxApiUrl"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.sandBoxApiUrl}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.sandBoxApiUrl && Boolean(formik.errors.sandBoxApiUrl)}
-                                helperText={formik.touched.sandBoxApiUrl && formik.errors.sandBoxApiUrl}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Live API URL
-                            </Typography>
-                            <TextField
-                                id="liveApiUrl"
-                                name="liveApiUrl"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.liveApiUrl}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.liveApiUrl && Boolean(formik.errors.liveApiUrl)}
-                                helperText={formik.touched.liveApiUrl && formik.errors.liveApiUrl}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Currency Code
-                            </Typography>
-                            <TextField
-                                id="currencyCode"
-                                name="currencyCode"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.currencyCode}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.currencyCode && Boolean(formik.errors.currencyCode)}
-                                helperText={formik.touched.currencyCode && formik.errors.currencyCode}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                Merchant ID
-                            </Typography>
-                            <TextField
-                                id="merchantId"
-                                name="merchantId"
-                                fullWidth
-                                variant="outlined"
-                                value={formik.values.merchantId}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.merchantId && Boolean(formik.errors.merchantId)}
-                                helperText={formik.touched.merchantId && formik.errors.merchantId}
-                            />
+                            <FormControl fullWidth>
+                                <InputLabel id="paymentId-label">Payments Gateways</InputLabel>
+                                <Select
+                                    name="gateway"
+                                    labelId="paymentId-label"
+                                    value={formik.values.gateway}
+                                    onChange={formik.handleChange}
+                                >
+                                    {gatewayOptions.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth error={formik.touched.paymentId && Boolean(formik.errors.paymentId)}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Payments
-                                </Typography>
+                                <InputLabel id="paymentMethods-label">Payments Gateways</InputLabel>
                                 <Select
                                     id="paymentId"
                                     name="paymentId"
+                                    labelId="paymentMethods-label"
                                     value={formik.values.paymentId}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -295,85 +441,52 @@ const AddPaymentMethod = () => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <FormControl fullWidth error={formik.touched.gateway && Boolean(formik.errors.gateway)}>
-                                <Typography sx={{ fontSize: 14 }} color="text.primary">
-                                    Gateway
-                                </Typography>
-                                <Select
-                                    id="gateway"
-                                    name="gateway"
-                                    value={formik.values.gateway}
+                            <TextField
+                                label="Merchant ID"
+                                name="merchantId"
+                                fullWidth
+                                value={formik.values['merchantId'] || ''}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched['merchantId'] && Boolean(formik.errors['merchantId'])}
+                                helperText={formik.touched['merchantId'] && formik.errors['merchantId']}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Currency Code"
+                                name="currencyCode"
+                                fullWidth
+                                value={formik.values['currencyCode'] || ''}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched['currencyCode'] && Boolean(formik.errors['currencyCode'])}
+                                helperText={formik.touched['currencyCode'] && formik.errors['currencyCode']}
+                            />
+                        </Grid>
+                        {visibleFields.map((field, index) => (
+                            <Grid item xs={6} key={index}>
+                                <TextField
+                                    name={field.field}
+                                    label={field.label}
+                                    fullWidth
+                                    value={formik.values[field.field] || ''}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                >
-                                    {gatewayOptions.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.title}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                {formik.touched.gateway && formik.errors.gateway && (
-                                    <Typography color="error" variant="body2">
-                                        {formik.errors.gateway}
-                                    </Typography>
-                                )}
-                            </FormControl>
-                        </Grid>
+                                    error={formik.touched[field.field] && Boolean(formik.errors[field.field])}
+                                    helperText={formik.touched[field.field] && formik.errors[field.field]}
+                                />
+                            </Grid>
+                        ))}
                     </Grid>
                 </CardContent>
                 <CardActions style={{ justifyContent: 'flex-end' }}>
-                    <Button type="submit" size="small" variant="contained">
-                        {id ? 'Update' : 'Save'}
+                    <Button onClick={handleSubmit} size="small" variant="contained">
+                        Save
                     </Button>
                 </CardActions>
             </form>
-        </>
-    );
-
-    return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs="auto">
-                        <Typography fontSize={22} fontWeight={700}>
-                            Payment Provider
-                        </Typography>
-                    </Grid>
-
-                    {/* <Grid item xs="auto">
-                          <FormControl fullWidth>
-                              <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                              <Select
-                                  labelId="demo-simple-select-label"
-                                  id="demo-simple-select"
-                                  value={selectedBranch}
-                                  label={'Branch'}
-                                  onChange={(event) => {
-                                      setselectedBranch(event.target.value);
-                                  }}
-                              >
-                                  {brandsList.map((row, index) => {
-                                      return (
-                                          <MenuItem key={index} value={row}>
-                                              {row?.name}
-                                          </MenuItem>
-                                      );
-                                  })}
-                              </Select>
-                          </FormControl>
-                      </Grid> */}
-                </Grid>
-
-                <Grid item xs={12} style={{ margin: '10px 0 0 0' }} alignItems="center" justifyContent="space-between">
-                    {loading && (
-                        <Box sx={{ width: '100%' }}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-                    <Card variant="outlined">{card}</Card>
-                </Grid>
-            </Grid>
-        </Grid>
+        </Card>
     );
 };
 
