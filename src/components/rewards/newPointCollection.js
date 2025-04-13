@@ -139,7 +139,7 @@ return aYearFromNow
 <Grid container spacing={4} mb={2}>
 
 <Grid item xs={12}>
-<Typography required variant="h5">{  "Create New Point Collection" }</Typography>
+<Typography required variant="h5">{  "Add New Points " }</Typography>
                     </Grid>
                     </Grid>
 

@@ -50,7 +50,7 @@ export default function LocationDetail() {
             <Grid container  alignItems="center" justifyContent="space-between">
                 <Grid item xs={6}>
                     <Typography fontSize={22} fontWeight={700}>
-                       Location Detail
+                       Store Detail
                     </Typography>
                 </Grid> 
             </Grid> 

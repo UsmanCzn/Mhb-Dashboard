@@ -302,7 +302,7 @@ const CreditBalance = (props) => {
                                     <TextField
                                         id="points"
                                         fullWidth
-                                        label="Add Points"
+                                        label="Add New Points"
                                         variant="outlined"
                                         value={formik.values.points}
                                         onChange={formik.handleChange}
@@ -325,7 +325,7 @@ const CreditBalance = (props) => {
                                         textTransform: 'uppercase'
                                     }}
                                 >
-                                    Add Points
+                                    Add New Points
                                 </Button>
                             </Grid>
                         </Grid>

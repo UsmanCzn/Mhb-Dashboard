@@ -85,30 +85,33 @@ export default function RewardProgram({
   }, [])
     
   return (
-    <TabContext value={value}>
-        <Box sx={{ borderBottom: 0.3, borderColor: 'divider' }}>
-            <TabList onChange={handleChange}>
-                <Tab label="Purchases Collection" value="1" />
-                <Tab label="Points Collection" value="2" />
-                <Tab label="Constants Collection" value="3" /> 
-                <Tab label="Coupon Collection" value="4" /> 
-            </TabList>
-        </Box>
-        <TabPanel value="1">
-             {/* <PurchaseCollection purchaseCollection={purchaseCollection}/> */}
-             <PurchaseCollection selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups} />
-
-        </TabPanel>
-        <TabPanel value="2">
-           <PointsCollection selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups}  />
-        </TabPanel>
-        <TabPanel value="3">
-          <ConstantsCollection selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups} />
-        </TabPanel>
-        <TabPanel value="4">
-        <CouponDiscount selectedBrand={selectedBrand} setReload={setReload}  reload={reload} customerGroups={customerGroups}></CouponDiscount>
-        </TabPanel>
-        
-    </TabContext>
+      <TabContext value={value}>
+          <Box sx={{ borderBottom: 0.3, borderColor: 'divider' }}>
+              <TabList onChange={handleChange}>
+                  <Tab label="Stamps" value="1" />
+                  <Tab label="Points" value="2" />
+                  <Tab label="Discounts" value="3" />
+                  <Tab label="Coupons" value="4" />
+              </TabList>
+          </Box>
+          <TabPanel value="1">
+              {/* <PurchaseCollection purchaseCollection={purchaseCollection}/> */}
+              <PurchaseCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+          </TabPanel>
+          <TabPanel value="2">
+              <PointsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+          </TabPanel>
+          <TabPanel value="3">
+              <ConstantsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+          </TabPanel>
+          <TabPanel value="4">
+              <CouponDiscount
+                  selectedBrand={selectedBrand}
+                  setReload={setReload}
+                  reload={reload}
+                  customerGroups={customerGroups}
+              ></CouponDiscount>
+          </TabPanel>
+      </TabContext>
   );
 }

@@ -241,7 +241,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                             <TextField
                                 id="outlined-basic"
                                 fullWidth
-                                label="Location Name"
+                                label="Store Name"
                                 variant="outlined"
                                 value={data.name}
                                 onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -252,7 +252,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                             <TextField
                                 id="outlined-basic"
                                 fullWidth
-                                label="Location Native Name"
+                                label="Store Native Name"
                                 variant="outlined"
                                 value={data.nativeName}
                                 onChange={(e) => setData({ ...data, nativeName: e.target.value })}
@@ -564,7 +564,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
                     <TextField
                         id="outlined-basic"
                         fullWidth
-                        label="Location Address"
+                        label="Store Address"
                         variant="outlined"
                         value={data.branchAddress}
                         onChange={(e) => setData({ ...data, branchAddress: e.target.value })}

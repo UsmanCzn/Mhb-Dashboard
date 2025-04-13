@@ -165,191 +165,186 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
     }, [coupon]);
 
     return (
-        <Modal
-            open={modal}
-            onClose={() => setModal(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
+        <Modal open={modal} onClose={() => setModal(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
             <Box sx={style}>
                 <Grid container spacing={4} mb={2}>
                     <Grid item xs={12}>
-                        <Typography required variant="h5">{!coupon ?'Create New Coupon Discount': 'Edit Coupon Discount'}</Typography>
+                        <Typography required variant="h5">
+                            {!coupon ? 'Add New Coupon ' : 'Edit Coupon'}
+                        </Typography>
                     </Grid>
                 </Grid>
 
-
-
                 <Grid container spacing={4}>
-                <Grid item xs={6}>
-                <TextField
-                margin="dense"
-                id="couponText"
-                name="couponText"
-                label="Coupon Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={data.couponText}
-                onChange={handleInputChange}
-                />
-                </Grid> 
-                {!coupon &&
-                <Grid item xs={6}>
-                    <DropDown
-                        title="Select Stores"
-                        list={(branchesList??[]).filter(b =>b.brandId === brand?.id)}
-                        data={data}
-                        setData={setData}
-                        keyo="branchIds"
-                        mt={1}
-                        type={!coupon ?"groups" :"brands"}
-                        notRequired={true}
-                    />
-                </Grid>}
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="couponText"
+                            name="couponText"
+                            label="Coupon Name"
+                            type="text"
+                            fullWidth
+                            variant="outlined"
+                            value={data.couponText}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    {!coupon && (
+                        <Grid item xs={6}>
+                            <DropDown
+                                title="Select Stores"
+                                list={(branchesList ?? []).filter((b) => b.brandId === brand?.id)}
+                                data={data}
+                                setData={setData}
+                                keyo="branchIds"
+                                mt={1}
+                                type={!coupon ? 'groups' : 'brands'}
+                                notRequired={true}
+                            />
+                        </Grid>
+                    )}
 
-                <Grid item xs={6}>
-                <TextField
-                margin="dense"
-                id="description"
-                name="description"
-                label="Description"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={data.description}
-                onChange={handleInputChange}
-                />
-                </Grid> 
-                <Grid item xs={6}>
-                <TextField
-                margin="dense"
-                id="minimumAmountIsCart"
-                name="minimumAmountIsCart"
-                label="Minimum Amount In Cart"
-                type="number"
-                fullWidth
-                variant="outlined"
-                value={data.minimumAmountIsCart}
-                onChange={handleInputChange}
-                />
-                </Grid> 
-                <Grid item xs={6}>
-                <TextField
-                margin="dense"
-                id="limitPerYear"
-                name="limitPerYear"
-                label="Limit Per Year"
-                type="number"
-                fullWidth
-                variant="outlined"
-                value={data.limitPerYear}
-                onChange={handleInputChange}
-                />
-                </Grid> 
-                <Grid item xs={6}>
-                <TextField
-                margin="dense"
-                id="limitPerMonth"
-                name="limitPerMonth"
-                label="Limit Per Month"
-                type="number"
-                fullWidth
-                variant="outlined"
-                value={data.limitPerMonth}
-                onChange={handleInputChange}
-                />
-                </Grid> 
-                <Grid item xs={6}>
-                    <DropDown
-                        title="Select the group of customers & tiers"
-                        list={customerGroups}
-                        data={data}
-                        setData={setData}
-                        keyo="groupOfCustomers"
-                        mt={2}
-                        type="customerGroup"
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Promo Code</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={data.isPromoCode}
-                    label="Promo Code"
-                    onChange={handlePromoCodeChange}
-                    sx={{marginTop:"14px"}}
-                >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                </Select>
-                </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Discount Type</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={data.discountType}
-                    label="Discount type"
-                    onChange={handleDiscountTypeChange}
-                    sx={{marginTop:"14px"}}
-                >
-                    <MenuItem value={1}>Flat Discount</MenuItem>
-                    <MenuItem value={0}>Percentage Discount</MenuItem>
-                </Select>
-                </FormControl>
-                </Grid>
-                {data.discountType===0 &&
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="description"
+                            name="description"
+                            label="Description"
+                            type="text"
+                            fullWidth
+                            variant="outlined"
+                            value={data.description}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="minimumAmountIsCart"
+                            name="minimumAmountIsCart"
+                            label="Minimum Amount In Cart"
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                            value={data.minimumAmountIsCart}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="limitPerYear"
+                            name="limitPerYear"
+                            label="Limit Per Year"
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                            value={data.limitPerYear}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="limitPerMonth"
+                            name="limitPerMonth"
+                            label="Limit Per Month"
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                            value={data.limitPerMonth}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DropDown
+                            title="Select the group of customers & tiers"
+                            list={customerGroups}
+                            data={data}
+                            setData={setData}
+                            keyo="groupOfCustomers"
+                            mt={2}
+                            type="customerGroup"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Promo Code</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={data.isPromoCode}
+                                label="Promo Code"
+                                onChange={handlePromoCodeChange}
+                                sx={{ marginTop: '14px' }}
+                            >
+                                <MenuItem value={true}>Yes</MenuItem>
+                                <MenuItem value={false}>No</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Discount Type</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={data.discountType}
+                                label="Discount type"
+                                onChange={handleDiscountTypeChange}
+                                sx={{ marginTop: '14px' }}
+                            >
+                                <MenuItem value={1}>Flat Discount</MenuItem>
+                                <MenuItem value={0}>Percentage Discount</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    {data.discountType === 0 && (
+                        <Grid item xs={6}>
+                            <Counter title="Set discount percentage" value="discountPercentage" data={data} setData={setData} />
+                        </Grid>
+                    )}
+                    {data.discountType === 1 && (
+                        <Grid item xs={6}>
+                            <Counter title="Set Flat Discount" value="flatDiscount" data={data} setData={setData} />
+                        </Grid>
+                    )}
 
-                <Grid item xs={6}>
-                    <Counter title="Set discount percentage" value="discountPercentage" data={data} setData={setData} />
-                </Grid>
-                }
-                {data.discountType===1 &&
-                <Grid item xs={6}>
-                    <Counter title="Set Flat Discount" value="flatDiscount" data={data} setData={setData} />
-                </Grid>
-                }
-
-                <Grid item xs={6}>
-                <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Apply Discount On</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={data.optionType}
-                    label="Age"
-                    onChange={handleSelectChange}
-                >
-                    <MenuItem value={0}>All</MenuItem>
-                    <MenuItem value={1}>Category</MenuItem>
-                    <MenuItem value={2}>Product</MenuItem>
-                </Select>
-                </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                    <DropDown
-                        title="Select Items to apply discount"
-                        list={data.optionType == 1 ? productTypes: data.optionType == 2 ? productsList:[]}
-                        data={data}
-                        setData={setData}
-                        keyo="optionList"
-                        type="groups"
-                        notRequired={true}
-                    />
-                </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Apply Discount On</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={data.optionType}
+                                label="Age"
+                                onChange={handleSelectChange}
+                            >
+                                <MenuItem value={0}>All</MenuItem>
+                                <MenuItem value={1}>Category</MenuItem>
+                                <MenuItem value={2}>Product</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DropDown
+                            title="Select Items to apply discount"
+                            list={data.optionType == 1 ? productTypes : data.optionType == 2 ? productsList : []}
+                            data={data}
+                            setData={setData}
+                            keyo="optionList"
+                            type="groups"
+                            notRequired={true}
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <Grid container spacing={2}>
                             <Grid item xs={6} marginTop={1}>
-                                <LocalizationProvider  dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
                                     <DatePicker
                                         label="Start Date"
                                         minDate={new Date()}
-                                        renderInput={(params) => <TextField fullWidth  {...params} error={false} />}
+                                        renderInput={(params) => <TextField fullWidth {...params} error={false} />}
                                         value={data.startDate}
                                         onChange={(newValue) => setData({ ...data, startDate: newValue })}
                                     />
@@ -368,7 +363,7 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
                             </Grid>
                         </Grid>
                     </Grid>
-{/* GiftProgram
+                    {/* GiftProgram
                     <Grid item xs={12}>
                         <Typography required variant="h7">Gift Programs</Typography>
                         <Grid container spacing={2}>

@@ -116,7 +116,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         },
         {
             field: 'name',
-            headerName: 'Location name',
+            headerName: 'Store name',
             flex: 1,
             headerAlign: 'left'
         },
@@ -175,7 +175,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         //   route:"branchRewardProgram"
         // },
         // {
-        //     name: 'Location Timings',
+        //     name: 'Store Timings',
         //     modal: false,
         //     route: 'branchTimings'
         // },

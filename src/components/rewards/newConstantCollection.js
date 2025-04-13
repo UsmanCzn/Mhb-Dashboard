@@ -146,7 +146,7 @@ return aYearFromNow
    <Box sx={style} >
       <Grid container spacing={4} mb={2}>
          <Grid item xs={12}>
-            <Typography required variant="h5">{  "Create New Constant Collection" }</Typography>
+            <Typography required variant="h5">{  "Add New Discounts" }</Typography>
          </Grid>
       </Grid>
       <Grid container spacing={4}>

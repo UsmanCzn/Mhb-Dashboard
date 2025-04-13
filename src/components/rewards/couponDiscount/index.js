@@ -135,7 +135,7 @@ const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload }) =>
                         sx={{ textTransform: 'capitalize' }}
                         onClick={() =>{ setNewModal(true); setselectedCoupon(null)}}
                     >
-                        Create New Coupon Discount
+                        Add New Coupon
                     </Button>
                 </Grid>
             </Grid>

@@ -285,6 +285,7 @@ export default function OrderTable({ users, payers, headers, top10Products, last
                                             )}
                                         </TableCell>
                                         <TableCell align="left">{order.products[0]?.name}</TableCell>
+                                        <TableCell align="right">{order?.brandName}</TableCell>
                                         <TableCell align="right">
                                             {moment(order.creationDate).format('DD-MMM-YYYY')}{' '}
                                             {moment(order.creationDate).format('hh:mm A')}

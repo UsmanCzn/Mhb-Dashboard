@@ -194,7 +194,7 @@ export default function PointsCollectionTable({ selectedBrand, customerGroups, }
                             setNewModal(true);
                         }}
                     >
-                        Create New Point Collection
+                        Add New Points
                     </Button>
                 </Grid>
             </Grid>

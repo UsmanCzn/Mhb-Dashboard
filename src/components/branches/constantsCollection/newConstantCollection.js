@@ -197,7 +197,7 @@ const NewConstantCollection = ({
       <form onSubmit={editData?.id ? editConstantScedule : createNewConstantScedule} >
         <Box sx={style} >
           <Grid item>
-            <Typography variant="h4">Create new constant collection </Typography>
+            <Typography variant="h4">Add New Discounts </Typography>
           </Grid>
           <Grid item xs={12} mt={2}>
             <Grid container spacing={2} >

@@ -45,18 +45,17 @@ export function useDashboard(reload, brandId, startDate, endDate) {
                     customerCount,
                     lastorders
                 ]) => {
-                    console.log(lastorders?.data?.result.data.data, 'Top Ten');
-
                     const dashboardData = {
-                        ...dashboardRes.data.result, // Include existing dashboard data
+                        ...dashboardRes.data.result.item2,
+
                         totalRegisteredCustomers: registeredCustomersRes?.data.result,
                         totalFreeDrinks: freeDrinksRes?.data?.result,
                         totalPointsEarned: pointsEarnedRes?.data.result,
                         pointsRedeemed: pointsRedeemed?.data?.result,
-                        avgDispatchTime: avgDispatchTime.data.result,
-                        topTenProducts: topTenProducts.data.result,
-                        customerCount: customerCount.data.result,
-                        lastorders: lastorders?.data?.result.data.data
+                        avgDispatchTime: avgDispatchTime?.data?.result,
+                        topTenProducts: topTenProducts?.data?.result?.item2 || [],
+                        customerCount: customerCount?.data?.result,
+                        lastorders: lastorders?.data?.result?.data?.data
                     };
 
                     setDashbordData(dashboardData);

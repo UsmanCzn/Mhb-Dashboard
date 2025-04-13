@@ -130,20 +130,20 @@ const NewRewardCollection = ({
     return (
         <Modal
             open={modal}
-            onClose={() =>{setModal(false)}}
+            onClose={() => {
+                setModal(false);
+            }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style} >
-
-
+            <Box sx={style}>
                 <Grid container spacing={4} mb={2}>
-
                     <Grid item xs={12}>
-                        <Typography required variant="h5">{"Create New Points Collection"}</Typography>
+                        <Typography required variant="h5">
+                            {'Create New Points'}
+                        </Typography>
                     </Grid>
                 </Grid>
-
 
                 {/* <Grid item xs={12} my={1}>
 
@@ -161,22 +161,28 @@ const NewRewardCollection = ({
                 </Grid> */}
 
                 <Grid container spacing={4}>
-
                     <Grid item xs={12}>
-                        <Grid container spacing={2} >
+                        <Grid container spacing={2}>
                             <Grid item xs={12} md={12}>
-                                 <Box sx={{
-                                    display:"flex",
-                                    flexDirection:"column"
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}
+                                >
+                                    <Typography required variant="h7">
+                                        Points will be given per KD purchase:{' '}
+                                    </Typography>
+                                    <TextField
+                                        id="outlined-basic"
+                                        onChange={(event) => {
+                                            setData({ ...data, amountPurchaseReward: event.target.value });
+                                        }}
+                                        label="Points"
+                                        variant="outlined"
 
-                                 }}>
-                                     
-                                <Typography
-                                    required variant="h7">Points will be given per KD purchase: </Typography>
-                                <TextField id="outlined-basic" onChange={(event)=>{setData({...data,amountPurchaseReward:event.target.value})}}  label="Points" variant="outlined"
-
-                                //  value={row.name} 
-                                />
+                                        //  value={row.name}
+                                    />
                                 </Box>
                             </Grid>
                             {/* <Grid item xs={6}>
@@ -196,31 +202,24 @@ const NewRewardCollection = ({
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Grid container spacing={2} >
-                            <Grid item xs={6} marginTop={1}  >
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
-                                >
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} marginTop={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
                                     <DatePicker
                                         label="Start Date"
-                                        renderInput={(params) => <TextField fullWidth  {...params} error={false} />}
+                                        renderInput={(params) => <TextField fullWidth {...params} error={false} />}
                                         value={data.startDate}
                                         onChange={(newValue) => {
                                             setData({
                                                 ...data,
                                                 startDate: newValue
-                                            })
+                                            });
                                         }}
                                     />
                                 </LocalizationProvider>
-
                             </Grid>
-                            <Grid item xs={6} marginTop={1}  >
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                    localeText={{ start: 'Check-in', end: 'Check-out' }}
-                                >
+                            <Grid item xs={6} marginTop={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={{ start: 'Check-in', end: 'Check-out' }}>
                                     <DatePicker
                                         label="End Date"
                                         renderInput={(params) => <TextField fullWidth {...params} error={false} />}
@@ -229,11 +228,10 @@ const NewRewardCollection = ({
                                             setData({
                                                 ...data,
                                                 endDate: newValue
-                                            })
+                                            });
                                         }}
                                     />
                                 </LocalizationProvider>
-
                             </Grid>
                         </Grid>
                     </Grid>
@@ -320,78 +318,63 @@ const NewRewardCollection = ({
                     </Grid> */}
 
                     <Grid item xs={12}>
-
                         <Box>
-                        <Typography
-                                    required variant="h7">Requirements:</Typography>
+                            <Typography required variant="h7">
+                                Requirements:
+                            </Typography>
 
-                                    <Box>
-                                    <Typography
-                                    required variant="h7">Customers Groups & Tiers</Typography>
-                                    <DropDown 
+                            <Box>
+                                <Typography required variant="h7">
+                                    Customers Groups & Tiers
+                                </Typography>
+                                <DropDown
                                     title="Select the group of customers and tiers"
                                     list={customerGroups}
                                     data={data}
                                     setData={setData}
-                                    keyo={"groupOfCustomers"}
+                                    keyo={'groupOfCustomers'}
                                     mt={2}
                                     type="customerGroup"
                                 />
-                                    </Box>
-                                    <Box>
-                                    <Typography
-                                    required variant="h7">Stores</Typography>
- 
-                <DropDown title="Select Stores"
-                            list={branchesList}
-                            data={data}
-                            setData={setData}
-                            keyo={"branchIds"}
-                            mt={2}
-                            type="groups"
-                            notRequired={true}
-                        />
- 
-                                    </Box>
-                        </Box>
+                            </Box>
+                            <Box>
+                                <Typography required variant="h7">
+                                    Stores
+                                </Typography>
 
+                                <DropDown
+                                    title="Select Stores"
+                                    list={branchesList}
+                                    data={data}
+                                    setData={setData}
+                                    keyo={'branchIds'}
+                                    mt={2}
+                                    type="groups"
+                                    notRequired={true}
+                                />
+                            </Box>
+                        </Box>
                     </Grid>
 
-
-
                     <Grid item xs={12}>
-                        <Grid container >
-
+                        <Grid container>
                             <Grid item xs={8} />
-                            <Grid container spacing={2}
-
-                                justifyContent="flex-end"
-                            >
-
+                            <Grid container spacing={2} justifyContent="flex-end">
                                 {/* <Grid item>
                             <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
                         </Grid> */}
                                 <Grid item>
-                                    <Button primay variant="contained" onClick={createPurchaseCollection} >Save</Button>
+                                    <Button primay variant="contained" onClick={createPurchaseCollection}>
+                                        Save
+                                    </Button>
                                 </Grid>
-
                             </Grid>
-
-
                         </Grid>
-
                     </Grid>
-
-
-
                 </Grid>
-
-
-
             </Box>
-
         </Modal>
-    )
+    );
 }
 
 

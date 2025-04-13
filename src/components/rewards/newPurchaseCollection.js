@@ -155,7 +155,7 @@ const App = ({
                 <Grid container spacing={4} mb={2}>
                     <Grid item xs={12}>
                         <Typography required variant="h5">
-                            {'Create Purchase Collection'}
+                            {'Add New Stamps'}
                         </Typography>
                     </Grid>
                 </Grid>

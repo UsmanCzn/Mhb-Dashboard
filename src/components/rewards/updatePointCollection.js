@@ -135,7 +135,7 @@ const App = ({
                 <Grid container spacing={4} mb={2}>
                     <Grid item xs={12}>
                         <Typography required variant="h5">
-                            {'Edit Point Collection'}
+                            {'Edit Points'}
                         </Typography>
                     </Grid>
                 </Grid>

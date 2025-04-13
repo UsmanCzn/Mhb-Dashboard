@@ -12,6 +12,7 @@ import { useDashboard } from 'features/dashbord/hooks/useDashboard';
 import MonthlyLineChart from './MonthlyBarChart';
 import OrdersTable from './OrdersTable';
 import { useSnackbar } from 'notistack';
+import { useAuth } from 'providers/authProvider';
 // assets
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -55,29 +56,19 @@ const status = [
 const DashboardDefault = () => {
     const [reload, setReload] = useState(false);
     const { brandsList } = useFetchBrandsList(reload);
-    const [value, setValue] = useState('today');
-    const [slot, setSlot] = useState('week');
-    const [selectedButton, setSelectedButton] = useState(0);
     const [startDate, setStartDate] = useState(() => {
         const currentDate = new Date();
         currentDate.setMonth(currentDate.getMonth() - 1);
         return currentDate;
-      });
+    });
     const [endDate, setEndDate] = useState(new Date());
-    
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-    const handleButtonClick = (buttonNumber) => {
-        setSelectedButton(buttonNumber);
-        fetchRewardList(buttonNumber);
-        // recallData(buttonNumber, fetchRewardList);
-    };
     const [selectedBrand, setselectedBrand] = useState({});
     const [topPayers, setTopPayers] = useState();
     const [topSales, setTopSales] = useState();
     const [ordersChartData, setOrdersChartData] = useState();
-    const [isOpen, setIsOpen] = useState(false);
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
+
+    const { userRole } = useAuth();
 
     const headCells = [
         {
@@ -133,6 +124,12 @@ const DashboardDefault = () => {
             disablePadding: true,
             label: 'Name'
         },
+        {
+            id: 'BrandName',
+            align: 'left',
+            disablePadding: true,
+            label: 'Brand Name'
+        },
 
         {
             id: 'date',
@@ -173,7 +170,8 @@ const DashboardDefault = () => {
     }, [dashbaordBoardData]);
 
     const topCard = () => {
-        let roundedNumber = dashbaordBoardData?.totalSale.toFixed(3);
+        let roundedNumber = dashbaordBoardData?.item2?.totalSale?.toFixed(3) || 0;
+        debugger;
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -273,6 +271,9 @@ const DashboardDefault = () => {
     useEffect(() => {
         if (brandsList[0]?.id) {
             if (brandsList && brandsList.length > 2) {
+                if (userRole === 'ADMIN') {
+                    brandsList.unshift({ id: 0, name: 'All Brands' });
+                }
                 setselectedBrand(brandsList[0]);
             } else {
                 setselectedBrand(brandsList[0]);
@@ -449,7 +450,6 @@ const DashboardDefault = () => {
             </Grid>
         </Grid>
     );
-
 };
 
 export default DashboardDefault;

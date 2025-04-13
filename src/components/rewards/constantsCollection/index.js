@@ -185,60 +185,69 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
 
 
   return (
-    <> 
-     <Grid container   mb={2} justifyContent="flex-end">
-                
-                <Grid item xs={"auto"}>
-                    
-                   <Button size="small" variant="contained" 
-                   sx={{ textTransform: 'capitalize' }}
-                   onClick={
-                    ()=>{ 
-                      setNewModal(true)
-                    }
-                   }
-                   >
-                                  Create New Constant Collection 
-                 </Button> 
-   
-                   </Grid>
-               
-            </Grid>
-    <DataGridComponent
-      rows={ConstantsCollectionList}
-      columns={columns}
-      loading={loading} 
-      getRowId={(row)=>row.id}
-      rowsPerPageOptions={[10]}
-      totalRowCount={totalRowCount}
-      fetchCallback={fetchRewardList} 
-    />
-     <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-         
-          {
-            options.map((row, index) => { 
-                   return (
-                       <MenuItem onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
-                   )
-            }
-            )
-           }
-        
+      <>
+          <Grid container mb={2} justifyContent="flex-end">
+              <Grid item xs={'auto'}>
+                  <Button
+                      size="small"
+                      variant="contained"
+                      sx={{ textTransform: 'capitalize' }}
+                      onClick={() => {
+                          setNewModal(true);
+                      }}
+                  >
+                      Add New Discounts
+                  </Button>
+              </Grid>
+          </Grid>
+          <DataGridComponent
+              rows={ConstantsCollectionList}
+              columns={columns}
+              loading={loading}
+              getRowId={(row) => row.id}
+              rowsPerPageOptions={[10]}
+              totalRowCount={totalRowCount}
+              fetchCallback={fetchRewardList}
+          />
+          <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+              }}
+          >
+              {options.map((row, index) => {
+                  return (
+                      <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                          {row.name}
+                      </MenuItem>
+                  );
+              })}
+          </Menu>
 
-      </Menu>
-
-      <UpdateConstantCollection  modal={modal} setModal={setModal}   constantCollection={constantCollection} setReload={setReload} selectedBrand={selectedBrand}  />
-      <NewconstantCollection  modal={newModal} setModal={setNewModal} branchesList={filteredBranches}   setReload={setReload} selectedBrand={selectedBrand}  />
-      <DuplicateReward  modal={duplicateModal} setModal={setDuplicateModal} branchesList={filteredBranches} reward={constantCollection}   setReload={setReload}  />
-     
-    </>
+          <UpdateConstantCollection
+              modal={modal}
+              setModal={setModal}
+              constantCollection={constantCollection}
+              setReload={setReload}
+              selectedBrand={selectedBrand}
+          />
+          <NewconstantCollection
+              modal={newModal}
+              setModal={setNewModal}
+              branchesList={filteredBranches}
+              setReload={setReload}
+              selectedBrand={selectedBrand}
+          />
+          <DuplicateReward
+              modal={duplicateModal}
+              setModal={setDuplicateModal}
+              branchesList={filteredBranches}
+              reward={constantCollection}
+              setReload={setReload}
+          />
+      </>
   );
 }

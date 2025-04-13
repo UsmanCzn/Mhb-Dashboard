@@ -207,7 +207,7 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
                     }
                    }
                    >
-                                  Create New Purchase Collection
+                                  Add New Stamps
                  </Button> 
    
                    </Grid>
