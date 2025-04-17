@@ -167,10 +167,11 @@ const DashboardDefault = () => {
         setTopSales(dashbaordBoardData?.topUsersFromOrders);
         setOrdersChartData(dashbaordBoardData?.ordersChartData);
         setChartDataUpdateCounter((prev) => prev + 1);
+        console.log(dashbaordBoardData, 'dashsadas');
     }, [dashbaordBoardData]);
 
     const topCard = () => {
-        let roundedNumber = dashbaordBoardData?.item2?.totalSale?.toFixed(3) || 0;
+        let roundedNumber = dashbaordBoardData?.totalSale?.toFixed(3) || 0;
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
