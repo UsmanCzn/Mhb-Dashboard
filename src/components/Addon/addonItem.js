@@ -120,7 +120,9 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                     {item?.name}
                                 </Typography>
                                 <Typography variant="h5" fontSize={14}>
-                                    {item?.price + ' ' + brand?.currency}
+                                    {brand?.currencyDecimals != null
+                                        ? `${Number(item?.price).toFixed(brand.currencyDecimals)} ${brand.currency}`
+                                        : `${item?.price} ${brand?.currency}`}
                                 </Typography>
                             </Box>
                             <MoreVertIcon onClick={openMenu} />

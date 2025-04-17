@@ -2,8 +2,8 @@ import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
 const URI = require('uri-js');
-// export const baseURL = 'https://next-whitelabelling-stage-api.azurewebsites.net/api';   
-export const baseURL = 'https://nextwhitelabelling-prod.azurewebsites.net/api';
+export const baseURL = 'https://next-whitelabelling-stage-api.azurewebsites.net/api';   
+// export const baseURL = 'https://nextwhitelabelling-prod.azurewebsites.net/api';
 
 // export const baseURL = process.env.APP_API_URL;
 

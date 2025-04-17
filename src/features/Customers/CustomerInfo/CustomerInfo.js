@@ -24,13 +24,13 @@ const CustomerInfo = ({ setReload }) => {
     const [data, setData] = useState({
         name: '',
         surname: '',
-        emailAddress: '',
+        displayEmailAddress: '',
         password: '',
-        phoneNumber: '',
+        displayPhoneNumber: '',
         gender: '',
         dateOfBirth: new Date(),
         customerGroups: [],
-        country:""
+        country: ''
     });
     const [modalOpen, setModalOpen] = useState(false);
     const [reload2, setReload2] = useState(false);
@@ -101,8 +101,8 @@ const CustomerInfo = ({ setReload }) => {
                             label="Email"
                             type="email"
                             variant="outlined"
-                            value={data?.emailAddress}
-                            onChange={(e) => setData({ ...data, emailAddress: e.target.value })}
+                            value={data?.displayEmailAddress}
+                            onChange={(e) => setData({ ...data, displayEmailAddress: e.target.value })}
                             InputProps={{
                                 readOnly: true
                             }}
@@ -152,7 +152,10 @@ const CustomerInfo = ({ setReload }) => {
                             variant="outlined"
                             required
                             value={data?.displayPhoneNumber}
-                            onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
+                            onChange={(e) => setData({ ...data, displayPhoneNumber: e.target.value })}
+                            InputProps={{
+                                readOnly: true
+                            }}
                         />
                     </Grid>
                     <Grid item xs={4}>

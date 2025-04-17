@@ -39,7 +39,6 @@ const CustomerNotification = () => {
                 customerService.GetCustomersGroups(),
                 customerService.GetAllCustomerNotification()
             ]);
-            debugger;
             // Process customer groups
             if (customerGroupsResponse) {
                 const tempGroup = customerGroupsResponse.data.result.data.data.filter((group) => group.type === 'Base');

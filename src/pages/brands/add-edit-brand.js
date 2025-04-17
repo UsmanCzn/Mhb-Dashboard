@@ -47,7 +47,12 @@ const FormComponent = () => {
         twitterURL: '',
         useQRCode: false,
         walletSubtitle: '',
-        walletSubtitleNative: ''
+        walletSubtitleNative: '',
+        menuView: false,
+        menuOrdering: false,
+        primaryThemeColor: '#7ac590',
+        playStoreUrl: '',
+        appleStoreUrl: ''
     };
     const [initialFormValues, setInitialFormValues] = useState(initialValues); // State to store form values
     const [loading, setloading] = useState(false);
@@ -91,6 +96,7 @@ const FormComponent = () => {
     const [companies, setCompanies] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [currencies, setCurrencies] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState('');
     const [brand, setBrand] = useState();
     const [p1, setP1] = useState(null);
     useEffect(() => {
@@ -157,36 +163,41 @@ const FormComponent = () => {
             const brands = response.data.result;
             const selectedBrand = brands.find((e) => e.id === +id); // Replace `id` with the actual route param or identifier
             // Populate the form fields with the selected brand data
-
+            setSelectedBrand(selectedBrand);
             if (selectedBrand) {
                 setBrand(selectedBrand);
                 setloading(false);
 
                 // Update the form values
                 setInitialFormValues({
-                    brandName: selectedBrand.name || '',
-                    brandNameNative: selectedBrand.nativeName || '',
+                    brandName: selectedBrand?.name || '',
+                    brandNameNative: selectedBrand?.nativeName || '',
                     company: selectedBrand.companyId?.toString() || '',
-                    secondaryLanguage: selectedBrand.applicationLanguage || '',
-                    phoneNumber: selectedBrand.phoneNumber || '',
-                    emailAddress: selectedBrand.emailAddress || '',
-                    currency: currencies.find((e) => e.name === selectedBrand.currency)?.id || '',
-                    currencyDecimal: selectedBrand.currencyDecimals || 0,
-                    reportInterval: selectedBrand.reportInterval || 1,
-                    brandTimeZone: selectedBrand.brandTimeZone || 1,
-                    walletSubtitle: selectedBrand.walletSubTitle || '',
-                    walletSubtitleNative: selectedBrand.walletSubTitleNative || '',
-                    points: selectedBrand.pointsForWalletReplenishment || 0,
-                    initialCustomerBalance: selectedBrand.initialCustomerBalance || 0,
-                    initialCreditBalance: selectedBrand.freeItems || 0,
+                    secondaryLanguage: selectedBrand?.applicationLanguage || '',
+                    phoneNumber: selectedBrand?.phoneNumber || '',
+                    emailAddress: selectedBrand?.emailAddress || '',
+                    currency: currencies.find((e) => e.name === selectedBrand?.currency)?.id || '',
+                    currencyDecimal: selectedBrand?.currencyDecimals || 0,
+                    reportInterval: selectedBrand?.reportInterval || 1,
+                    brandTimeZone: selectedBrand?.brandTimeZone || 1,
+                    walletSubtitle: selectedBrand?.walletSubTitle || '',
+                    walletSubtitleNative: selectedBrand?.walletSubTitleNative || '',
+                    points: selectedBrand?.pointsForWalletReplenishment || 0,
+                    initialCustomerBalance: selectedBrand?.initialCustomerBalance || 0,
+                    initialCreditBalance: selectedBrand?.freeItems || 0,
                     initialCreditBalanceExpiry: null,
-                    contactEmail: selectedBrand.contactUsEmailAddress || '',
-                    facebookURL: selectedBrand.socialFacebookUrl || '',
-                    instagramURL: selectedBrand.socialInstaUrl || '',
-                    twitterURL: selectedBrand.socialTwitterUrl || '',
+                    contactEmail: selectedBrand?.contactUsEmailAddress || '',
+                    facebookURL: selectedBrand?.socialFacebookUrl || '',
+                    instagramURL: selectedBrand?.socialInstaUrl || '',
+                    twitterURL: selectedBrand?.socialTwitterUrl || '',
+                    playStoreUrl: selectedBrand?.playStoreUrl || '',
+                    appleStoreUrl: selectedBrand?.appleStoreUrl || '',
                     useQRCode: false,
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
-                    notificationBalance: selectedBrand.notificationBalance || 0
+                    notificationBalance: selectedBrand.notificationBalance || 0,
+                    menuView: selectedBrand.menuView || false,
+                    menuOrdering: selectedBrand.menuOrdering || false,
+                    primaryThemeColor: selectedBrand.primaryThemeColor
                 });
             } else {
                 enqueueSnackbar('Brand not found.', { variant: 'error' });
@@ -251,7 +262,12 @@ const FormComponent = () => {
             termsAndConditionsNative: '',
             useTopUpValues: true,
             walletSubTitle: value?.walletSubtitle,
-            walletSubTitleNative: value?.walletSubtitleNative
+            walletSubTitleNative: value?.walletSubtitleNative,
+            menuView: value?.menuView,
+            menuOrdering: value?.menuOrdering,
+            primaryThemeColor: value?.primaryThemeColor,
+            playStoreUrl: value?.playStoreUrl || '',
+            appleStoreUrl: value?.appleStoreUrl || ''
         };
 
         try {
@@ -307,7 +323,12 @@ const FormComponent = () => {
             socialInstaUrl: value?.instagramURL,
             socialTwitterUrl: value?.twitterURL,
             walletSubTitle: value?.walletSubtitle,
-            walletSubTitleNative: value?.walletSubtitleNative
+            walletSubTitleNative: value?.walletSubtitleNative,
+            menuView: value?.menuView,
+            menuOrdering: value?.menuOrdering,
+            primaryThemeColor: value?.primaryThemeColor,
+            playStoreUrl: value?.playStoreUrl,
+            appleStoreUrl: value?.appleStoreUrl
         };
 
         try {
@@ -690,6 +711,43 @@ const FormComponent = () => {
                                                     }
                                                     label="Free Drinks"
                                                 />
+                                                <FormControlLabel
+                                                    control={<Switch checked={values.menuView} onChange={handleChange} name="menuView" />}
+                                                    label="Menu Viewing"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Switch name="menuOrdering" checked={values.menuOrdering} onChange={handleChange} />
+                                                    }
+                                                    label="Table Ordering"
+                                                    sx={{ ml: 4 }}
+                                                />
+                                                {values.menuView && (
+                                                    <Grid container spacing={2} mt={2}>
+                                                        <Grid item xs={3}>
+                                                            <TextField
+                                                                label="Menu Highlight Color"
+                                                                name="primaryThemeColor"
+                                                                type="color"
+                                                                value={values.primaryThemeColor}
+                                                                onChange={handleChange}
+                                                                fullWidth
+                                                                InputLabelProps={{ shrink: true }}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={3}>
+                                                            <TextField
+                                                                label="Site URL"
+                                                                type="url"
+                                                                value={`https://view-menu.netlify.app/${
+                                                                    selectedBrand ? selectedBrand.id : ''
+                                                                }`}
+                                                                InputProps={{ readOnly: true }}
+                                                                fullWidth
+                                                            />
+                                                        </Grid>
+                                                    </Grid>
+                                                )}
                                             </Grid>
                                             <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
                                                 <Grid item>
@@ -772,6 +830,30 @@ const FormComponent = () => {
                                                     onChange={handleChange}
                                                     error={touched.twitterURL && Boolean(errors.twitterURL)}
                                                     helperText={touched.twitterURL && errors.twitterURL}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="appleStoreUrl"
+                                                    label="Apple Store Url"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.appleStoreUrl && Boolean(errors.appleStoreUrl)}
+                                                    helperText={touched.appleStoreUrl && errors.appleStoreUrl}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="playStoreUrl"
+                                                    label="Play Store Url"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.playStoreUrl && Boolean(errors.playStoreUrl)}
+                                                    helperText={touched.playStoreUrl && errors.playStoreUrl}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} container justifyContent="flex-end" spacing={2}>

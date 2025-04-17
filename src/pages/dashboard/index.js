@@ -171,7 +171,6 @@ const DashboardDefault = () => {
 
     const topCard = () => {
         let roundedNumber = dashbaordBoardData?.item2?.totalSale?.toFixed(3) || 0;
-        debugger;
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>

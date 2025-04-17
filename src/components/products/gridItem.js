@@ -95,7 +95,11 @@ const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setU
                     </Typography>
                     <Grid container justifyContent="space-between">
                         <Typography alignSelf="flex-start">Sort Order: {item?.orderValue}</Typography>
-                        <Typography alignSelf="flex-end">{item?.price + ' ' + brand?.currency}</Typography>
+                        <Typography alignSelf="flex-end">
+                            {brand?.currencyDecimals != null
+                                ? `${Number(item?.price).toFixed(brand.currencyDecimals)} ${brand?.currency || ''}`
+                                : `${item?.price} ${brand?.currency || ''}`}
+                        </Typography>
                     </Grid>
 
                     {/* Menu for Edit and Duplicate */}
