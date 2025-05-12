@@ -29,6 +29,7 @@ const AddEditApp = () => {
     const [logoFile, setLogoFile] = useState(null);
     const [logoUrl, setLogoUrl] = useState('');
     const [loading, setLoading] = useState(false);
+    const [company, setCompany] = useState(null);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const userServices = ServiceFactory.get('users');
  
@@ -43,6 +44,8 @@ const AddEditApp = () => {
                 .then((res) => {
                     console.log(res.data.result);
                     const app = res.data.result;
+                     setCompany(app);
+
                     setInitialValues({
                         name: app?.name || '',
                         phoneNumber: app?.adminUser?.phoneNumber || '',
@@ -84,7 +87,7 @@ const AddEditApp = () => {
             // notificationsLimit: Yup.number().required('Field is required'),
             // giftCardsLimit: Yup.number().required('Field is required')
         }),
-        Yup.object().shape({}),
+        // Yup.object().shape({}),
         // No validation for Settings tab
         Yup.object().shape({
             firstName: Yup.string().required('First Name is required'),
@@ -97,20 +100,15 @@ const AddEditApp = () => {
     ];
     const validationSchemasEdit = [
         Yup.object().shape({
-            name: Yup.string().required('Company Name is required'),
-            // phoneNumber: Yup.string().matches(/^\d+$/, 'Phone number must be numeric').required('Phone number is required'),
-            CategoryName: Yup.string().required('Category is required'),
-            endSubDate: Yup.date().required('End subscription date is required'),
-            brandsLimit: Yup.number().required('Field is required'),
-            branchesLimit: Yup.number().required('Field is required')
-            // notificationsLimit: Yup.number().required('Field is required'),
-            // giftCardsLimit: Yup.number().required('Field is required')
+          name: Yup.string().required('Company Name is required'),
+          CategoryName: Yup.string().required('Category is required'),
+          endSubDate: Yup.date().required('End subscription date is required'),
+          brandsLimit: Yup.number().required('Field is required'),
+          branchesLimit: Yup.number().required('Field is required')
         }),
-        Yup.object().shape({}),
-        // No validation for Settings tab
-        Yup.object().shape({}),
-        Yup.object().shape({}) // No validation for Logo tab
-    ];
+        Yup.object().shape({}) // Logo tab — no validation
+      ];
+      
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -129,12 +127,12 @@ const AddEditApp = () => {
 
         if (Object.keys(errors).length === 0) {
             setTabValue((prev) => {
-                if (id && prev === 1) {
-                    // Skip Tab 2 (Admin Info) when `id` exists
-                    return 2;
+                if (id && prev === 0) {
+                  return 1; // In edit mode, skip Admin Info, go directly from Basic Info to Logo
                 }
                 return prev + 1;
-            });
+              });
+              
         } else {
             setErrors(errors); // Display errors
         }
@@ -183,12 +181,26 @@ const AddEditApp = () => {
                 }
                 await userServices.createCompany(payload);
                 enqueueSnackbar('Company created successfully', { variant: 'success' });
-            } else {
-                // Edit existing company
-                payload.id = id; // Use `id` from `useParams`
-                await userServices.UpdateCompany(payload);
+            }  else {
+                // Edit existing company using spread
+                const editPayload = {
+                  ...company,
+                  id:+id,
+                  name: values.name,
+                  CategoryName: values.CategoryName,
+                  category: values.CategoryName,
+                  logoUrl: payload.logoUrl,
+                  endSubscriptionDate: values.endSubDate,
+                  brandsLimit: values.brandsLimit || 0,
+                  branchesLimit: values.branchesLimit || 0,
+                  notificationsLimit: values.notificationsLimit || 0,
+                  giftCardsLimit: values.giftCardsLimit || 0
+                  // No adminUser on update
+                };
+                
+                await userServices.UpdateCompany(editPayload);
                 enqueueSnackbar('Company updated successfully', { variant: 'success' });
-            }
+              }
 
             setLoading(false);
             navigate('/apps'); // Redirect after success
@@ -233,9 +245,9 @@ const AddEditApp = () => {
                                     {/* Tabs Header */}
                                     <Tabs value={tabValue} onChange={handleTabChange} aria-label="form tabs">
                                         <Tab label="Basic Info" disabled={!id && tabValue !== 0} />
-                                        <Tab label="Settings" disabled={!id && tabValue !== 1} />
-                                        {!id && <Tab label="Admin Info" disabled={!id && tabValue !== 2} />}
-                                        <Tab label="Logo" disabled={!id && tabValue !== 3} />
+                                        {/* <Tab label="Settings" disabled={!id && tabValue !== 1} /> */}
+                                        {!id && <Tab label="Admin Info" disabled={!id && tabValue !== 1} />}
+                                        <Tab label="Logo" disabled={!id && tabValue !== 2} />
                                     </Tabs>
 
                                     {/* Tab Content */}
@@ -354,13 +366,13 @@ const AddEditApp = () => {
                                                     color="primary"
                                                     onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
                                                 >
-                                                    {tabValue < validationSchemas.length - 1 ? 'Next' : 'Save'}
+                                                    {tabValue < (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1) ? 'Next' : 'Save'}
                                                 </Button>
                                             </Grid>
                                         </Grid>
                                     </TabPanel>
 
-                                    <TabPanel value={tabValue} index={1}>
+                                    {/* <TabPanel value={tabValue} index={1}>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12}>
                                                 <FormControlLabel
@@ -406,9 +418,9 @@ const AddEditApp = () => {
                                                 </Button>
                                             </Grid>
                                         </Grid>
-                                    </TabPanel>
+                                    </TabPanel> */}
                                     {!id && (
-                                        <TabPanel value={tabValue} index={2}>
+                                        <TabPanel value={tabValue} index={1}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={12} sm={6}>
                                                     <TextField
@@ -493,13 +505,13 @@ const AddEditApp = () => {
                                                         color="primary"
                                                         onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
                                                     >
-                                                        {tabValue < validationSchemas.length - 1 ? 'Next' : 'Save'}
+                                                        {tabValue < (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1) ? 'Next' : 'Save'}
                                                     </Button>
                                                 </Grid>
                                             </Grid>
                                         </TabPanel>
                                     )}
-                                    <TabPanel value={tabValue} index={id ? 2 : 3}>
+                                    <TabPanel value={tabValue} index={id ? 1 : 2}>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12}>
                                                 <Typography variant="h6">Upload Logo</Typography>

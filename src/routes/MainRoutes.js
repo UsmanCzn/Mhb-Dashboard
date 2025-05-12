@@ -57,6 +57,8 @@ import AddEditBranch from 'pages/branch/branches/add-edit-branch';
 import AddEditBrand from 'pages/brands/add-edit-brand';
 import ProductAddEdit from 'pages/products/product-add-edit';
 import AddEditApp from 'pages/apps/addEditApp';
+import PaymentFailure from 'pages/payment-failure/index';
+import PaymentSuccess from 'pages/payment-success/index';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -151,7 +153,8 @@ export default function MainRoutes() {
                     <Route path="/deliverySettings" element={<DeliverySettings />} />
                 </Route>
             </Route>
-
+            <Route path="/paymentSuccess" element={<PaymentSuccess />} />
+            <Route path="/paymentFailure" element={<PaymentFailure />} />
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

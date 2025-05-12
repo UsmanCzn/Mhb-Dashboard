@@ -11,22 +11,21 @@ import {
     CardContent,
     TextField,
     CardActions,
-    Box
+    Box,
+    LinearProgress
 } from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
-
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { ServiceFactory } from 'services/index';
 import { useBranches } from 'providers/branchesProvider';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useSnackbar } from 'notistack';
 
 const CreateNotification = () => {
     const [selectedBrand, setselectedBrand] = useState({});
     const [customerGroup, setCustomerGroup] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [notificationBalance, setNotificationBalance] = useState(0);
     const filteredGroups = customerGroup.filter((e) => e.brandId === selectedBrand.id);
     const { branchesList } = useBranches();
     const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
@@ -41,10 +40,60 @@ const CreateNotification = () => {
             setCustomerGroup(tempGroup);
         }
     };
+    const getNotificationBalance = async () => {
+        setIsLoading(true);
+        const response = await customerService.GetNotificationBalance(selectedBrand?.companyId);
+        if (response) {
+            console.log(response);
+            setNotificationBalance(response.data.result);
+        }
+        setIsLoading(false);
+    };
+
+    const handleAddBalance = async () => {
+        setIsLoading(true);
+        const response = await customerService.CheckNotificationBalanceStatus(selectedBrand?.companyId);
+        if (response && response.data.result?.isManualOnly) {
+            console.log(response);
+            enqueueSnackbar(response.data.result?.message, {
+                variant: 'error'
+            });
+        }
+        else {
+            handleConfirmBalance(response.data.result?.creditPrice,response.data.result?.productName);
+
+          }
+        setIsLoading(false);
+        // const response = await customerService.AddNotificationBalance(selectedBrand?.companyId);
+        // if (response) {
+        //     getNotificationBalance();
+        // }
+    };
+
+    const handleConfirmBalance = async (amount, productName) => {
+        setIsLoading(true);
+      
+        try {
+          const res = await customerService.AddNotificationBalance(amount, selectedBrand?.companyId, productName);
+      
+          if (res?.data?.result?.isSuccess && res?.data?.result?.paymentUrl) {
+            // Redirect to the payment page
+            window.location.href = res?.data?.result?.paymentUrl;
+          } else {
+            enqueueSnackbar('Something went wrong. Please try again.', { variant: 'error' });
+          }
+        } catch (error) {
+          enqueueSnackbar('Failed to initiate payment.', { variant: 'error' });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
     const { brandsList } = useFetchBrandsList(false);
     useEffect(() => {
         getCustomerGroups();
-    }, []);
+        getNotificationBalance();
+    }, [selectedBrand]);
 
     // Formik and Yup setup
     const formik = useFormik({
@@ -67,6 +116,12 @@ const CreateNotification = () => {
             customersGroups: Yup.array().min(1, 'Please select at least one group').required('Required')
         }),
         onSubmit: async (values, { resetForm }) => {
+            if(notificationBalance < 1){
+                enqueueSnackbar('Please add balance to create notification', {
+                    variant: '  '
+                });
+                return;
+            }
             const payload = { ...values }; // Prepare your payload as needed
             try {
                 const response = await customerService.CreateNotification(payload);
@@ -89,45 +144,67 @@ const CreateNotification = () => {
         }
     }, [brandsList]);
     return (
+        <>
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+            <Typography fontSize={22} fontWeight={700}>
+                                    Create Notifications Request
+            </Typography>
+            </Grid>
+        </Grid>
         <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Card variant="outlined">
+                        { isLoading && <Box sx={{ width: '100%' }}>
+                        <LinearProgress />
+                        </Box>}
                         <CardContent>
-                            <Box
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center" // Optional: Align items vertically
-                                p={2} // Optional: Padding inside the box
+         
+                        <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        p={2}
+                        borderBottom="1px solid #e0e0e0" // optional, for styling like the screenshot
+                        >
+                        <Typography fontWeight="500">
+                            Current Notification Balance : {notificationBalance}
+                        </Typography>
+
+                        <Button variant="contained" color="primary" onClick={handleAddBalance}>
+                            Add Balance
+                        </Button>
+                        </Box>
+
+                        <Box
+                        display="flex"
+                        justifyContent="flex-end" // Move content to the end
+                        alignItems="center"
+                        p={2}
+                        >
+                        <FormControl>
+                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={selectedBrand}
+                            label={'Brand'}
+                            onChange={(event) => {
+                                setselectedBrand(event.target.value);
+                                formik.setFieldValue('customersGroups', []);
+                                formik.setFieldValue('branchId', 0);
+                            }}
                             >
-                                <Typography fontSize={22} fontWeight={700}>
-                                    Create Notifications Request
-                                </Typography>
-                                <Grid item xs={'auto'}>
-                                    <FormControl>
-                                        <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={selectedBrand}
-                                            label={'Brand'}
-                                            onChange={(event) => {
-                                                setselectedBrand(event.target.value);
-                                                formik.setFieldValue('customersGroups', []);
-                                                formik.setFieldValue('branchId', 0);
-                                            }}
-                                        >
-                                            {brandsList.map((row, index) => {
-                                                return (
-                                                    <MenuItem key={index} value={row}>
-                                                        {row?.name}
-                                                    </MenuItem>
-                                                );
-                                            })}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Box>
+                            {brandsList.map((row, index) => (
+                                <MenuItem key={index} value={row}>
+                                {row?.name}
+                                </MenuItem>
+                            ))}
+                            </Select>
+                        </FormControl>
+                        </Box>
+
                             <Grid container spacing={2} marginTop={1}>
                                 {/* Notification Title */}
                                 <Grid item xs={6}>
@@ -294,6 +371,7 @@ const CreateNotification = () => {
                 </Grid>
             </Grid>
         </form>
+        </>
     );
 };
 

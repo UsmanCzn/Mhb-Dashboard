@@ -286,18 +286,21 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
                                             <Typography variant="h7" style={{ fontSize: '12px' }}>
                                                 {'No of Customer'}
                                                 <Typography variant="h5" style={{ fontSize: '14px' }}>
-                                                    {selectedBrand.amountOfCustomers}
+                                                    {item?.numberOfCustomers}
                                                 </Typography>
                                             </Typography>
                                         </Box>
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Box my={upperMarin}>
-                                            <Typography variant="h7" style={{ fontSize: '12px' }}>
-                                                {'Send Notification'}
-                                                <Typography variant="h5" style={{ fontSize: '14px' }}>
-                                                    {item.sendNotification ? 'true' : 'false'}
-                                                </Typography>
+                                            <Typography variant="h7" style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                                                Send Notification
+                                            </Typography>
+                                            <Typography
+                                                variant="h5"
+                                                style={{ fontSize: '14px', color: selectedBrand?.sendNotification ? 'green' : 'red' }}
+                                            >
+                                                {selectedBrand?.sendNotification ? 'Enabled' : 'Disabled'}
                                             </Typography>
                                         </Box>
                                     </Grid>

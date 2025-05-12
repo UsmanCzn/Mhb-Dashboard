@@ -1,6 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Formik, Form, Field } from 'formik';
-import { TextField, MenuItem, Button, Grid, Typography, Box, Tabs, Tab, AppBar, Card, FormControlLabel, Switch } from '@mui/material';
+import {
+    TextField,
+    MenuItem,
+    Button,
+    Grid,
+    Typography,
+    Box,
+    Tabs,
+    Tab,
+    AppBar,
+    Card,
+    FormControlLabel,
+    Switch,
+    Paper
+} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,6 +27,10 @@ import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import LinearProgress from '@mui/material/LinearProgress';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import theme
+import { QRCodeCanvas } from 'qrcode.react';
+import { useFetchBranchList } from '../../features/BranchesTable/hooks/useFetchBranchesList';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -52,8 +70,15 @@ const FormComponent = () => {
         menuOrdering: false,
         primaryThemeColor: '#7ac590',
         playStoreUrl: '',
-        appleStoreUrl: ''
+        appleStoreUrl: '',
+        privacyPolicy: '',
+        termsAndConditions: '',
+        titleNameForDriveThru: '',
+        titleNameForPickUp: '',
+        titleNameForDriveThruNative: '',
+        titleNameForPickUpNative: '',
     };
+
     const [initialFormValues, setInitialFormValues] = useState(initialValues); // State to store form values
     const [loading, setloading] = useState(false);
     const navigate = useNavigate();
@@ -61,6 +86,8 @@ const FormComponent = () => {
     const userService = ServiceFactory.get('users');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const { id } = useParams();
+    const { branchesList, fetchBranchesList, totalRowCount } = useFetchBranchList({ reload: false });
+    const filteredBranchList = branchesList.filter((e) => e.brandId == id && !e?.ishide);
     const validationSchemas = [
         // Tab 0: Basic Info
         Yup.object({
@@ -96,9 +123,14 @@ const FormComponent = () => {
     const [companies, setCompanies] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [currencies, setCurrencies] = useState([]);
+    const [copied, setCopied] = useState(false);
+
     const [selectedBrand, setSelectedBrand] = useState('');
     const [brand, setBrand] = useState();
     const [p1, setP1] = useState(null);
+    const [value, setValue] = useState('');
+    const qrRef = useRef(null);
+    const branchRefs = useRef({});
     useEffect(() => {
         getCompanies();
         getLanguages();
@@ -109,6 +141,34 @@ const FormComponent = () => {
             getAllBrands();
         }
     }, [id, currencies]);
+
+    const downloadQRCode = (ref, filename = 'qr-code.png') => {
+        const canvas = ref; // no .current here
+        if (canvas) {
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+    };
+    
+    const mainSiteURL = selectedBrand
+        ? `https://avomenu.azurewebsites.net/menu/${selectedBrand?.name.replace(/\s/g, '')}/${selectedBrand.id}`
+        : '';
+    const changeTerms = (html) => {
+        setInitialFormValues((prev) => ({
+            ...prev,
+            termsAndConditions: html
+        }));
+    };
+
+    const changePrivacy = (html) => {
+        setInitialFormValues((prev) => ({
+            ...prev,
+            privacyPolicy: html
+        }));
+    };
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -195,9 +255,15 @@ const FormComponent = () => {
                     useQRCode: false,
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
                     notificationBalance: selectedBrand.notificationBalance || 0,
-                    menuView: selectedBrand.menuView || false,
-                    menuOrdering: selectedBrand.menuOrdering || false,
-                    primaryThemeColor: selectedBrand.primaryThemeColor
+                    menuView: selectedBrand?.menuView || false,
+                    menuOrdering: selectedBrand?.menuOrdering || false,
+                    primaryThemeColor: selectedBrand?.primaryThemeColor,
+                    privacyPolicy: selectedBrand?.privacyPolicy,
+                    termsAndConditions: selectedBrand?.termsAndConditions,
+                    titleNameForDriveThru: selectedBrand?.titleNameForDriveThru || '',
+                    titleNameForPickUp: selectedBrand?.titleNameForPickUp || '',
+                    titleNameForDriveThruNative: selectedBrand?.titleNameForDriveThruNative || '',
+                    titleNameForPickUpNative: selectedBrand?.titleNameForPickUpNative || '',
                 });
             } else {
                 enqueueSnackbar('Brand not found.', { variant: 'error' });
@@ -206,6 +272,10 @@ const FormComponent = () => {
             console.error(error);
         }
     };
+    // titleNameForDriveThru
+    // titleNameForPickUp
+    // titleNameForDriveThruNative
+    // titleNameForPickUpNative
 
     const createNewBrand = async (value) => {
         // Check if p1 (logo file) is provided
@@ -258,7 +328,7 @@ const FormComponent = () => {
             socialFacebookUrl: value?.facebookURL,
             socialInstaUrl: value?.instagramURL,
             socialTwitterUrl: value?.twitterURL,
-            termsAndConditions: '',
+            termsAndConditions: value?.termsAndConditions,
             termsAndConditionsNative: '',
             useTopUpValues: true,
             walletSubTitle: value?.walletSubtitle,
@@ -267,7 +337,11 @@ const FormComponent = () => {
             menuOrdering: value?.menuOrdering,
             primaryThemeColor: value?.primaryThemeColor,
             playStoreUrl: value?.playStoreUrl || '',
-            appleStoreUrl: value?.appleStoreUrl || ''
+            appleStoreUrl: value?.appleStoreUrl || '',
+            titleNameForDriveThru: value?.titleNameForDriveThru || '',
+            titleNameForPickUp: value?.titleNameForPickUp || '',
+            titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
+            titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
         };
 
         try {
@@ -282,7 +356,6 @@ const FormComponent = () => {
                 variant: 'success'
             });
             navigate('/brands');
-            console.log(brandResponse?.data, 'Brand Created');
         } catch (error) {
             console.error(error.response?.data);
             if (error.response?.data) {
@@ -328,7 +401,11 @@ const FormComponent = () => {
             menuOrdering: value?.menuOrdering,
             primaryThemeColor: value?.primaryThemeColor,
             playStoreUrl: value?.playStoreUrl,
-            appleStoreUrl: value?.appleStoreUrl
+            appleStoreUrl: value?.appleStoreUrl,
+            titleNameForDriveThru: value?.titleNameForDriveThru || '',
+            titleNameForPickUp: value?.titleNameForPickUp || '',
+            titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
+            titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
         };
 
         try {
@@ -357,6 +434,18 @@ const FormComponent = () => {
         }
     };
 
+    const handleCopy = (text, e) => {
+        navigator.clipboard.writeText(text);
+      
+        const button = e.currentTarget;
+        const originalText = button.innerText;
+        button.innerText = 'Copied!';
+      
+        setTimeout(() => {
+          button.innerText = originalText;
+        }, 1500);
+      };
+      
     return (
         <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -549,6 +638,58 @@ const FormComponent = () => {
                                                     <MenuItem value="2">Universal 2</MenuItem>
                                                 </Field>
                                             </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="titleNameForDriveThru"
+                                                    label="Drive-Thru Title"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.titleNameForDriveThru && Boolean(errors.titleNameForDriveThru)}
+                                                    helperText={touched.titleNameForDriveThru && errors.titleNameForDriveThru}
+                                                />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="titleNameForPickUp"
+                                                    label="Pickup Title"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.titleNameForPickUp && Boolean(errors.titleNameForPickUp)}
+                                                    helperText={touched.titleNameForPickUp && errors.titleNameForPickUp}
+                                                />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="titleNameForDriveThruNative"
+                                                    label="Drive-Thru Title (Native)"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.titleNameForDriveThruNative && Boolean(errors.titleNameForDriveThruNative)}
+                                                    helperText={touched.titleNameForDriveThruNative && errors.titleNameForDriveThruNative}
+                                                />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="titleNameForPickUpNative"
+                                                    label="Pickup Title (Native)"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.titleNameForPickUpNative && Boolean(errors.titleNameForPickUpNative)}
+                                                    helperText={touched.titleNameForPickUpNative && errors.titleNameForPickUpNative}
+                                                />
+                                                </Grid>
+
                                             {id && (
                                                 <Grid item xs={12} sm={6}>
                                                     <Field
@@ -689,43 +830,71 @@ const FormComponent = () => {
                                     <TabPanel value={tabValue} index={2}>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Field
-                                                            as={Switch}
-                                                            name="useQRCode"
-                                                            checked={values.useQRCode}
-                                                            onChange={handleChange}
-                                                        />
-                                                    }
-                                                    label="Use QR Code"
+                                            <FormControlLabel
+                                                control={
+                                                    <Field name="useQRCode">
+                                                    {({ field }) => (
+                                                        <Switch {...field} checked={field.value} />
+                                                    )}
+                                                    </Field>
+                                                }
+                                                label="Use QR Code"
                                                 />
+
                                                 <FormControlLabel
-                                                    control={
-                                                        <Field
-                                                            as={Switch}
-                                                            name="showFreeDrinkFeature"
-                                                            checked={values.showFreeDrinkFeature}
-                                                            onChange={handleChange}
-                                                        />
-                                                    }
-                                                    label="Free Drinks"
+                                                control={
+                                                    <Field name="showFreeDrinkFeature">
+                                                    {({ field }) => (
+                                                        <Switch {...field} checked={field.value} />
+                                                    )}
+                                                    </Field>
+                                                }
+                                                label="Free Drinks"
                                                 />
+
                                                 <FormControlLabel
-                                                    control={<Switch checked={values.menuView} onChange={handleChange} name="menuView" />}
-                                                    label="Menu Viewing"
+                                                control={
+                                                    <Field name="menuView">
+                                                    {({ field }) => (
+                                                        <Switch {...field} checked={field.value} />
+                                                    )}
+                                                    </Field>
+                                                }
+                                                label="Menu Viewing"
                                                 />
+
                                                 <FormControlLabel
-                                                    control={
-                                                        <Switch name="menuOrdering" checked={values.menuOrdering} onChange={handleChange} />
-                                                    }
-                                                    label="Table Ordering"
-                                                    sx={{ ml: 4 }}
+                                                control={
+                                                    <Field name="menuOrdering">
+                                                    {({ field }) => (
+                                                        <Switch {...field} checked={field.value} />
+                                                    )}
+                                                    </Field>
+                                                }
+                                                label="Table Ordering"
                                                 />
-                                                {values.menuView && (
-                                                    <Grid container spacing={2} mt={2}>
-                                                        <Grid item xs={3}>
-                                                            <TextField
+
+                                                <>
+                                                    {values.menuView && (
+                                                        <Grid container spacing={4} mt={2}>
+                                                        {/* Brand Section */}
+                                                        <Grid item xs={12}>
+                                                        <Paper
+                                                            elevation={3}
+                                                            style={{
+                                                            padding: '24px',
+                                                            borderRadius: '12px',
+                                                            backgroundColor: '#ffffff'
+                                                            }}
+                                                        >
+                                                            <Typography variant="h6" gutterBottom>
+                                                            Main Brand QR Code
+                                                            </Typography>
+
+                                                            <Grid container spacing={2} alignItems="center">
+                                                            {/* Color Picker */}
+                                                            <Grid item xs={12} sm={6} md={3}>
+                                                                <TextField
                                                                 label="Menu Highlight Color"
                                                                 name="primaryThemeColor"
                                                                 type="color"
@@ -733,21 +902,208 @@ const FormComponent = () => {
                                                                 onChange={handleChange}
                                                                 fullWidth
                                                                 InputLabelProps={{ shrink: true }}
-                                                            />
+                                                                />
+                                                            </Grid>
+
+                                                            {/* Main Site URL with Copy */}
+                                                            <Grid item xs={12} sm={9}>
+                                          
+                                                                <Paper
+                                                                elevation={0}
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'space-between',
+                                                                    padding: '10px 12px',
+                                                                    borderRadius: '6px',
+                                                                    background: '#ffffff',
+                                                                    border: '1px solid #e5e7eb',
+                                                                    overflow: 'hidden'
+                                                                }}
+                                                                >
+                                                                <span
+                                                                    style={{
+                                                                    fontSize: '0.875rem',
+                                                                    flex: 1,
+                                                                    overflow: 'hidden',
+                                                                    whiteSpace: 'nowrap',
+                                                                    textOverflow: 'ellipsis',
+                                                                    textAlign: 'left'
+                                                                    }}
+                                                                    title={mainSiteURL}
+                                                                >
+                                                                    {mainSiteURL}
+                                                                </span>
+                                                                <button
+                                                                type="button"
+                                                                onClick={(e) => handleCopy(mainSiteURL, e)}
+                                                                style={{
+                                                                    marginLeft: '12px',
+                                                                    padding: '6px 12px',
+                                                                    backgroundColor: '#2563eb',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                >
+                                                                Copy
+                                                                </button>
+
+                                                                </Paper>
+                                                            </Grid>
+
+                                                            {/* QR Code */}
+                                                            <Grid
+                                                                item
+                                                                xs={12}
+                                                                style={{ textAlign: 'center', marginTop: '20px' }}
+                                                            >
+                                                                <QRCodeCanvas ref={qrRef} value={mainSiteURL} size={256} />
+                                                            </Grid>
+
+                                                            {/* Download Button */}
+                                                            <Grid
+                                                                item
+                                                                xs={12}
+                                                                style={{ textAlign: 'center', marginTop: '1rem' }}
+                                                            >
+                                                                <button
+                                                                onClick={() =>
+                                                                    downloadQRCode(qrRef.current, 'brand-qr-code.png')
+                                                                }
+                                                                style={{
+                                                                    padding: '10px 20px',
+                                                                    backgroundColor: '#2563eb',
+                                                                    color: '#ffffff',
+                                                                    borderRadius: '8px',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                type="button"
+                                                                >
+                                                                Download Brand QR Code
+                                                                </button>
+                                                            </Grid>
+                                                            </Grid>
+                                                        </Paper>
                                                         </Grid>
-                                                        <Grid item xs={3}>
-                                                            <TextField
-                                                                label="Site URL"
-                                                                type="url"
-                                                                value={`https://view-menu.netlify.app/${
-                                                                    selectedBrand ? selectedBrand.id : ''
-                                                                }`}
-                                                                InputProps={{ readOnly: true }}
-                                                                fullWidth
-                                                            />
+
+
+                                                        {/* Branch Section */}
+                                                        <Grid item xs={12}>
+                                                        <Typography variant="h6" gutterBottom>
+                                                            Branches QR Codes
+                                                        </Typography>
+                                                        <Grid container spacing={4}>
+                                                            {filteredBranchList.map((branch) => {
+                                                            const branchSiteURL = `https://avomenu.azurewebsites.net/menu/${selectedBrand?.name.replace(
+                                                                /\s/g,
+                                                                ''
+                                                            )}/${selectedBrand?.id}?branch=${branch.name.replace(/\s/g, '')}&branchId=${branch.id}`;
+
+                                                            return (
+                                                                <Grid item xs={12} sm={6} md={4} key={branch.id}>
+                                                                <Paper
+                                                                    elevation={2}
+                                                                    style={{
+                                                                    padding: '20px',
+                                                                    borderRadius: '10px',
+                                                                    textAlign: 'center',
+                                                                    backgroundColor: '#ffffff'
+                                                                    }}
+                                                                >
+                                                                    <Typography variant="subtitle1" gutterBottom>
+                                                                    {branch.name}
+                                                                    </Typography>
+
+                                                                    {/* URL Display with Copy Button */}
+                                                                    <Typography variant="subtitle2" gutterBottom>
+                                                                    Branch Site URL
+                                                                    </Typography>
+                                                                    <Paper
+                                                                    elevation={0}
+                                                                    style={{
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'space-between',
+                                                                        padding: '8px 10px',
+                                                                        borderRadius: '6px',
+                                                                        background: '#ffffff',
+                                                                        border: '1px solid #e5e7eb', // Light gray border
+                                                                        marginBottom: '12px'
+                                                                    }}
+                                                                    >
+                                                                    <span
+                                                                        style={{
+                                                                        fontSize: '0.875rem',
+                                                                        flex: 1,
+                                                                        overflow: 'hidden',
+                                                                        whiteSpace: 'nowrap',
+                                                                        textOverflow: 'ellipsis',
+                                                                        textAlign: 'left'
+                                                                        }}
+                                                                        title={branchSiteURL} // Tooltip on hover
+                                                                    >
+                                                                        {branchSiteURL}
+                                                                    </span>
+                                                                    <button
+                                                                        onClick={(e) => handleCopy(branchSiteURL, e)}
+                                                                        
+                                                                        style={{
+                                                                        marginLeft: '12px',
+                                                                        padding: '6px 10px',
+                                                                        backgroundColor: '#2563eb',
+                                                                        color: '#fff',
+                                                                        border: 'none',
+                                                                        borderRadius: '4px',
+                                                                        cursor: 'pointer'
+                                                                        }}
+                                                                        type="button"
+                                                                    >
+                                                                        Copy
+                                                                    </button>
+                                                                    </Paper>
+
+                                                                    {/* QR Code */}
+                                                                    <QRCodeCanvas
+                                                                    ref={(el) => (branchRefs.current[branch.id] = el)}
+                                                                    value={branchSiteURL}
+                                                                    size={200}
+                                                                    />
+
+                                                                    {/* Download QR Button */}
+                                                                    <div style={{ marginTop: '12px' }}>
+                                                                    <button
+                                                                        onClick={() =>
+                                                                        downloadQRCode(
+                                                                            branchRefs.current[branch.id],
+                                                                            `branch-${branch.id}-qr-code.png`
+                                                                        )
+                                                                        }
+                                                                        style={{
+                                                                        padding: '8px 16px',
+                                                                        backgroundColor: '#16a34a',
+                                                                        color: '#ffffff',
+                                                                        borderRadius: '6px',
+                                                                        border: 'none',
+                                                                        cursor: 'pointer'
+                                                                        }}
+                                                                        type="button"
+                                                                    >
+                                                                        Download QR
+                                                                    </button>
+                                                                    </div>
+                                                                </Paper>
+                                                                </Grid>
+                                                            );
+                                                            })}
                                                         </Grid>
-                                                    </Grid>
-                                                )}
+                                                        </Grid>
+
+                                                        </Grid>
+                                                    )}
+                                                </>
                                             </Grid>
                                             <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
                                                 <Grid item>
@@ -856,6 +1212,29 @@ const FormComponent = () => {
                                                     helperText={touched.playStoreUrl && errors.playStoreUrl}
                                                 />
                                             </Grid>
+                                            <Grid item xs={12} sm={12}>
+                                            <Typography variant="h5" gutterBottom>
+                                                Terms and Conditions
+                                                </Typography>
+                                                <ReactQuill
+                                                theme="snow"
+                                                value={values.termsAndConditions}
+                                                onChange={(content) => setFieldValue('termsAndConditions', content)}
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12} sm={12}>
+                                            <Typography variant="h5" gutterBottom>
+                                                Privacy Policy
+                                                </Typography>
+                                                <ReactQuill
+                                                theme="snow"
+                                                value={values.privacyPolicy}
+                                                onChange={(content) => setFieldValue('privacyPolicy', content)}
+                                                />
+
+                                            </Grid>
+
                                             <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
                                                 <Grid item>
                                                     <Button

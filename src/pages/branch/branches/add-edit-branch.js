@@ -81,8 +81,8 @@ const AddEditBranch = () => {
                     name: branch?.name || '',
                     nativeBranchAddress: branch?.nativeBranchAddress || '',
                     nativeName: branch?.nativeName || '',
-                    openTime: branch?.openTime || '',
-                    readyTime: branch?.readyTime || '',
+                    openTime: branch?.openTime || 0,
+                    readyTime: branch?.readyTime || 0,
                     UsedDeliverySystem: branch?.usedDeliverySystem || 1 // Patch the values dynamically
                 }));
                 setBranch(branch);

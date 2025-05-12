@@ -35,14 +35,155 @@ const style = {
     boxShadow: 24,
     p: 4,
     borderRadius: 1,
-    overflow: 'scroll'
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    overflowY: 'scroll',
+    overflowX: 'hidden'
 };
 
-const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes }) => {
-    function printBox() {
-        const box = document.getElementById('my-box');
-        window.print(box);
-    }
+const  OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes }) => {
+ 
+const printOrder = () => {
+  const printContent = document.getElementById('my-box');
+  if (!printContent) return;
+
+  const printWindow = window.open('', '', 'width=1000,height=600');
+  if (!printWindow) return;
+
+  const creditUsedHtml =
+    Number(data?.creditUsed) > 0
+      ? `<div class="total-row"><span>Credit Used:</span><span>${Number(data?.creditUsed).toFixed(
+          data?.brandCurrencyDecimal || 3
+        )}</span></div>`
+      : '';
+
+  const documentContent = `
+    <html>
+    <head>
+      <title>Print Receipt</title>
+      <style>
+        @page {
+          size: 80mm auto;
+          margin: 0;
+        }
+        body {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+        width: 80mm;
+        max-width: 80mm;
+        }
+
+        .receipt-container {
+           width: 80mm; /* ✅ hard limit */
+          max-width: 80mm;
+          box-sizing: border-box;
+          padding: 10px;
+        }
+        .separator {
+          border-bottom: 1px dashed black;
+          margin: 8px 0;
+        }
+        .center {
+          text-align: center;
+          font-weight: bold;
+          font-size: 18px;
+        }
+        .item-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          margin-bottom: 4px;
+        }
+        .addon {
+          font-size: 11px;
+          margin-left: 10px;
+          color: #333;
+        }
+        .total-row {
+          display: flex;
+          justify-content: space-between;
+          font-weight: bold;
+          border-top: 1px dashed black;
+          padding-top: 4px;
+          margin-top: 8px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-container">
+        <div class="separator"></div>
+        <div class="center">No of Items: ${data?.products?.length}</div>
+        <h2 class="center">${data?.branchName}</h2>
+
+        <div>Order #${data?.orderNumber}</div>
+        <div>Customer: ${data?.customerName ?? data?.name} ${data?.customerSurname ?? data?.surname}</div>
+        <div>Mobile: ${data?.customerPhoneNumber ?? data?.displayPhoneNumber}</div>
+        <div>Email: ${data?.customerEmail ?? data?.displayEmailAddress}</div>
+        <div>Date: ${moment(data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
+        <div>Payment Method: ${data?.paymentMethod}</div>
+
+        <div class="separator"></div>
+        <div class="item-row" style="font-weight: bold;">
+          <span style="width: 60%">Item</span>
+          <span style="width: 20%">Qty</span>
+          <span style="width: 20%">Price</span>
+        </div>
+        <div class="separator"></div>
+
+        ${data?.products
+          ?.map(
+            (item) => `
+              <div class="item-row">
+                <span style="width: 60%">${item.name}</span>
+                <span style="width: 20%">x ${item.quantity}</span>
+                <span style="width: 20%">${(item.quantity * item.itemPrice).toFixed(
+                  data?.brandCurrencyDecimal || 3
+                )}</span>
+              </div>
+              ${
+                (item.additions ?? item.addOnsList ?? [])
+                  .map(
+                    (a) =>
+                      `<div class="addon">${a.name} - ${Number(a.priceStr).toFixed(
+                        data?.brandCurrencyDecimal || 3
+                      )}</div>`
+                  )
+                  .join('')
+              }
+            `
+          )
+          .join('')}
+
+        <div class="separator"></div>
+        ${creditUsedHtml}
+        <div class="total-row"><span>Items Total:</span><span>${data?.subTotal?.toFixed(
+          data?.brandCurrencyDecimal || 3
+        )}</span></div>
+        <div class="total-row"><span>To Pay:</span><span>${data?.totalPrice?.toFixed(
+          data?.brandCurrencyDecimal || 3
+        )}</span></div>
+        <div class="separator"></div>
+        <div class="center">Payment Method: ${data?.paymentMethod}</div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.open();
+  printWindow.document.write(documentContent);
+  printWindow.document.close();
+
+  setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+};
+
+      
+    
     const [orderDetails, setOrderDetails] = useState();
     const getOrderDetails = useCallback(async () => {
         try {
@@ -101,6 +242,38 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
 
     return (
         <>
+<style>
+  {`
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+
+    #my-box, #my-box * {
+      visibility: visible !important;
+    }
+
+    #my-box {
+      width: 80mm !important;
+      max-width: 80mm !important;
+      font-family: monospace !important;
+      font-size: 12px !important;
+      background: white !important;
+      padding: 0 !important;
+      margin: 0 auto !important; /* center horizontally */
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+  }
+  `}
+</style>
             <Modal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -121,7 +294,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                         <div id="my-box">
                             <Box
                                 sx={{
-                                    width: 454,
+                                    width: '80mm',
                                     p: 2,
                                     display: 'flex',
                                     backgroundColor: '#fff',
@@ -131,14 +304,13 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                             >
                                 <Box
                                     sx={{
-                                        width: 450,
                                         p: 2,
                                         display: 'flex',
                                         backgroundColor: '#fff',
-
                                         flexDirection: 'column',
                                         justifyContent: 'center',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        width:'80mm'
                                     }}
                                 >
                                     <Typography
@@ -332,9 +504,10 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                                         x {obj?.quantity}{' '}
                                                     </Typography>
                                                     <Typography variant="h2" fontSize={14} style={{ width: '10%' }}>
-                                                        {obj?.quantity * obj?.itemPrice}{' '}
+                                                    {(obj?.quantity * obj?.itemPrice).toFixed(data?.brandCurrencyDecimal || 3)}
                                                     </Typography>
-                                                </Box>
+
+                                                    </Box>
 
                                                 {(obj?.additions ?? obj?.addOnsList)?.map((obj_) => {
                                                     return (
@@ -352,8 +525,9 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                                                 {obj_?.name}
                                                             </Typography>
                                                             <Typography variant="h7" fontSize={12}>
-                                                                {obj_?.priceStr}{' '}
+                                                            {Number(obj_?.priceStr).toFixed(data?.brandCurrencyDecimal || 3)}
                                                             </Typography>
+
                                                         </Box>
                                                     );
                                                 })}
@@ -377,7 +551,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                         </Typography>
                                         <Typography variant="h7" fontSize={14}>
                                             {' '}
-                                            {data?.subTotal}{' '}
+                                            {data?.subTotal?.toFixed(data?.brandCurrencyDecimal ||3)}{' '}
                                         </Typography>
                                     </Box>
                                     {/* <Box style={{  
@@ -435,7 +609,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                             To Pay
                                         </Typography>
                                         <Typography variant="h7" fontSize={14}>
-                                            {data?.totalPrice}{' '}
+                                            {data?.totalPrice?.toFixed(data?.brandCurrencyDecimal ||3)}{' '}
                                         </Typography>
                                     </Box>
 
@@ -475,7 +649,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                                 Credit Used
                                             </Typography>
                                             <Typography variant="h7" fontSize={14}>
-                                                {data?.creditUsed}
+                                                {data?.creditUsed?.toFixed(data?.brandCurrencyDecimal || 3)}
                                             </Typography>
                                         </Box>
                                     )}
@@ -509,45 +683,10 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                 flexDirection: 'column'
                             }}
                         >
-                            {/* <Typography variant="h1" fontSize={14}>Change Order Status</Typography>
 
-
-<Box style={{ 
-  
-      width:"100%",  
-      marginTop:20, 
-      marginBottom:20, 
-      display:"flex",
-      flexDirection:"row",
-      justifyContent:"space-between",
-    
-    }}>
-      {
-        statustypes?.map((obj,index)=>{
-          return(
-            <Button
-            variant="contained"
-            color={index==0? "primary":
-            index==1?"success":
-            index==2?"success":
-            index==3?"secondary":
-            index==4?"error":
-            "secondary"
-          }
-          onClick={()=>updateOrderStatus(obj?.id)}
-            >
-              {
-                obj?.title
-              }
-            </Button>
-          )
-        })
-      }
-    
-      
-</Box>   */}
 
                             <Box
+                            className="no-print"
                                 style={{
                                     width: '38%',
                                     marginTop: 20,
@@ -561,7 +700,7 @@ const OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes })
                                 {/* <Button variant="contained" onClick={handleOpenDialog}>
                                     Request A Driver
                                 </Button> */}
-                                <Button variant="contained" onClick={printBox}>
+                                <Button variant="contained" onClick={printOrder}>
                                     Print
                                 </Button>
 

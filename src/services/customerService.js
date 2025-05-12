@@ -110,5 +110,15 @@ export default {
 
     getComapniesByUserRole() {
         return ApiV1.get(`services/app/AdminUserManagement/GetCompaniesForCurrentUserUM`);
+    },
+
+    GetNotificationBalance(cId) {
+        return ApiV1.get(`services/app/NotificationCredits/GetCurrentCompanyNotificationBalance?companyId=${cId}`);
+    },
+    CheckNotificationBalanceStatus(cId) {
+        return ApiV1.get(`services/app/NotificationCredits/GetNotificationBalanceToAddByCompany?companyId=${cId}`);
+    },
+    AddNotificationBalance(orderPrice, companyId, productName) {
+        return ApiV1.post(`services/app/NotificationCredits/AddBalanceForNotification?orderPrice=${orderPrice}&companyId=${companyId}&ProductName=${productName}`);
     }
 };

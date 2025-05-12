@@ -103,7 +103,7 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
             renderCell: (params) => companyFormatter(params.row)
         },
         {
-            field: 'displayPhone',
+            field: 'displayPhoneNumber',
             headerName: 'Phone Number',
             flex: 0.7,
             headerAlign: 'left'

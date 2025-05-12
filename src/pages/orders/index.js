@@ -223,8 +223,8 @@ export default function Orders() {
                                 {branchZero.map((row, index) => {
                                     return (
                                         <MenuItem value={row} key={index}>
-                                            {row?.name}
-                                        </MenuItem>
+                                        {row?.name === 'All Branches' ? row?.name : `${row?.name} (${row?.brand})`}
+                                      </MenuItem>
                                     );
                                 })}
                             </Select>
