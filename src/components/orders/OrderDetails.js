@@ -62,55 +62,61 @@ const printOrder = () => {
     <html>
     <head>
       <title>Print Receipt</title>
-      <style>
-        @page {
-          size: 80mm auto;
-          margin: 0;
-        }
-        body {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 12px;
-        margin: 0;
-        padding: 0;
-        width: 80mm;
-        max-width: 80mm;
-        }
+<style>
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    width: 80mm;
+    max-width: 80mm;
+    font-weight: bold; /* Makes everything bold */
+  }
 
-        .receipt-container {
-           width: 80mm; /* ✅ hard limit */
-          max-width: 80mm;
-          box-sizing: border-box;
-          padding: 10px;
-        }
-        .separator {
-          border-bottom: 1px dashed black;
-          margin: 8px 0;
-        }
-        .center {
-          text-align: center;
-          font-weight: bold;
-          font-size: 18px;
-        }
-        .item-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 12px;
-          margin-bottom: 4px;
-        }
-        .addon {
-          font-size: 11px;
-          margin-left: 10px;
-          color: #333;
-        }
-        .total-row {
-          display: flex;
-          justify-content: space-between;
-          font-weight: bold;
-          border-top: 1px dashed black;
-          padding-top: 4px;
-          margin-top: 8px;
-        }
-      </style>
+  .receipt-container {
+    width: 80mm;
+    max-width: 80mm;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  .separator {
+    border-bottom: 1px dashed black;
+    margin: 8px 0;
+  }
+
+  .center {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .addon {
+    font-size: 11px;
+    margin-left: 10px;
+    color: #333;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px dashed black;
+    padding-top: 4px;
+    margin-top: 8px;
+  }
+</style>
+
+
     </head>
     <body>
       <div class="receipt-container">
