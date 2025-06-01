@@ -18,6 +18,7 @@ import Orders from 'pages/orders';
 import Products from 'pages/products';
 import Categories from 'pages/categories';
 import Addons from 'pages/addons';
+import AddonsStock from 'pages/addons-stock';
 import Rewards from 'pages/rewards/index';
 import RewardsHistory from 'pages/rewardsHistory/index';
 import Apps from 'pages/apps/index';
@@ -59,6 +60,7 @@ import ProductAddEdit from 'pages/products/product-add-edit';
 import AddEditApp from 'pages/apps/addEditApp';
 import PaymentFailure from 'pages/payment-failure/index';
 import PaymentSuccess from 'pages/payment-success/index';
+import GroupCustomerTable from 'features/Customers/GroupCustomerTable/groupCustomerTable';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -116,6 +118,7 @@ export default function MainRoutes() {
                     <Route path="/customers/list" element={<CustomersList />} />
                     <Route path="/customers/tiers" element={<TiersList />} />
                     <Route path="/customers/groups" element={<CustomerGroups />} />
+                    <Route path="/groups/customer/:id" element={<GroupCustomerTable />} />
                     <Route path="/customers/:cid" element={<CustomerDetail />} />
                     <Route path="/rewards-stats" element={<RewardStats />} />
 
@@ -133,6 +136,7 @@ export default function MainRoutes() {
                     <Route path="/products/addEditProduct/:bid/:id" element={<ProductAddEdit />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/addons" element={<Addons />} />
+                    <Route path="/addonsstock" element={<AddonsStock />} />
                     <Route path="/stocks" element={<Stocks />} />
 
                     {/* <Route path="/payments-settings/providers" element={<Paymentprovider />} /> */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Chip, Grid, Typography, Box, Menu, MenuItem, Button, ButtonBase } from '@mui/material';
+import { Chip, Grid, Typography, Box, Menu, MenuItem, Button, ButtonBase,Switch  } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -7,7 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import DefaultImage from '../../assets/images/users/default-image.png';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
-const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData, setAddsonReload }) => {
+const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData, setAddsonReload,user, selectedBranch=null }) => {
     const handleClick = async () => {
         setModalOpen(true);
         setUpdate(true);
@@ -37,6 +37,22 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
             });
     };
 
+    const handleToggleChange = async (isChecked , item) => {
+        try {
+            // Call your API to toggle availability
+            await storeServices.enableDisableAddOn([{
+                productAdditionId: item.id,
+                branchId: selectedBranch.id, // if required
+                isAvailable: isChecked
+            }]);
+            setAddsonReload((prev) => !prev);
+            // Optionally update local state/UI
+            console.log(`Toggled availability to ${isChecked}`);
+        } catch (error) {
+            console.error('Failed to toggle availability', error);
+        }
+    };
+    
     return (
         <Grid
             item
@@ -106,15 +122,22 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
 
                         <Typography sx={{ px: 1 }}>{item?.price + ' ' + brand?.currency}</Typography>
                     </ButtonBase> */}
-                    <Card sx={{ maxWidth: 345 }}>
-                        <CardMedia sx={{ height: 130 }} image={item?.image || DefaultImage} title="green iguana" />
+                        <Card sx={{ maxWidth: 345 }}>
+                        <CardMedia
+                            sx={{ height: 130 }}
+                            image={item?.image || DefaultImage}
+                            title={item?.name || 'Image'}
+                        />
                         <CardContent
                             sx={{
                                 display: 'flex',
-                                justifyContent: 'space-between', // Space out the elements horizontally
-                                alignItems: 'center' // Center align items vertically
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-start',
+                                px: 2,
+                                py: 1
                             }}
                         >
+                            {/* Left side: Name + Price */}
                             <Box>
                                 <Typography variant="h5" fontSize={14}>
                                     {item?.name}
@@ -125,19 +148,32 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                         : `${item?.price} ${brand?.currency}`}
                                 </Typography>
                             </Box>
-                            <MoreVertIcon onClick={openMenu} />
-                            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-                                <MenuItem onClick={() => handleClick(item)}>Edit</MenuItem>
-                                <MenuItem onClick={() => deleteAddon()}>Delete</MenuItem>
-                            </Menu>
+
+                            {/* Right side: Toggle + Menu */}
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                {selectedBranch &&
+                                    <Switch
+                                    checked={item?.productAdditionQtyWithBranchs?.some(
+                                        (branchItem) => branchItem.branchid === selectedBranch?.id && branchItem.availabilityQty >0
+                                    )}
+                                    onChange={(e) => handleToggleChange(e.target.checked, item)}
+                                    size="small"
+                                    color="primary"
+                                    />
+                                }
+                                {user && user?.roleId !== 7 && !selectedBranch&& (
+                                    <>
+                                        <MoreVertIcon onClick={openMenu} sx={{ cursor: 'pointer', mt: 0.5 }} />
+                                        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+                                            <MenuItem onClick={() => handleClick(item)}>Edit</MenuItem>
+                                            <MenuItem onClick={() => deleteAddon()}>Delete</MenuItem>
+                                        </Menu>
+                                    </>
+                                )}
+                            </Box>
                         </CardContent>
-                        {/* <CardActions>
-                            <Button size="small" onClick={() => handleClick(item)}>
-                                Edit
-                            </Button>
-                            <Button size="small">Delete</Button>
-                        </CardActions> */}
-                    </Card>
+
+                        </Card>
                 </Box>
             </Box>
         </Grid>

@@ -56,7 +56,7 @@ const FormComponent = () => {
         initialCreditBalanceExpiry: null,
         initialCustomerBalance: 0,
         instagramURL: '',
-        notificationBalance: 0,
+        
         phoneNumber: '',
         points: 0,
         reportInterval: 1,
@@ -77,6 +77,7 @@ const FormComponent = () => {
         titleNameForPickUp: '',
         titleNameForDriveThruNative: '',
         titleNameForPickUpNative: '',
+        showMacros:false
     };
 
     const [initialFormValues, setInitialFormValues] = useState(initialValues); // State to store form values
@@ -95,7 +96,6 @@ const FormComponent = () => {
             company: Yup.string().required('Company is required'),
             currency: Yup.string().required('Currency is required'),
             currencyDecimal: Yup.number(),
-            notificationBalance: Yup.number()
             // brandNameNative: Yup.string().required('Brand Name (Native) is required'),
             // secondaryLanguage: Yup.string().required('Secondary Language is required'),
             // phoneNumber: Yup.string().required('Phone Number is required'),
@@ -154,7 +154,7 @@ const FormComponent = () => {
     };
     
     const mainSiteURL = selectedBrand
-        ? `https://avomenu.azurewebsites.net/menu/${selectedBrand?.name.replace(/\s/g, '')}/${selectedBrand.id}`
+        ? `https://menu.avorewards.com/menu/${selectedBrand?.name.replace(/\s/g, '')}/${selectedBrand.id}`
         : '';
     const changeTerms = (html) => {
         setInitialFormValues((prev) => ({
@@ -254,7 +254,6 @@ const FormComponent = () => {
                     appleStoreUrl: selectedBrand?.appleStoreUrl || '',
                     useQRCode: false,
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
-                    notificationBalance: selectedBrand.notificationBalance || 0,
                     menuView: selectedBrand?.menuView || false,
                     menuOrdering: selectedBrand?.menuOrdering || false,
                     primaryThemeColor: selectedBrand?.primaryThemeColor,
@@ -264,6 +263,7 @@ const FormComponent = () => {
                     titleNameForPickUp: selectedBrand?.titleNameForPickUp || '',
                     titleNameForDriveThruNative: selectedBrand?.titleNameForDriveThruNative || '',
                     titleNameForPickUpNative: selectedBrand?.titleNameForPickUpNative || '',
+                    showMacros: selectedBrand?.showMacros || false
                 });
             } else {
                 enqueueSnackbar('Brand not found.', { variant: 'error' });
@@ -342,6 +342,7 @@ const FormComponent = () => {
             titleNameForPickUp: value?.titleNameForPickUp || '',
             titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
             titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
+            showMacros: value?.showMacros || ''
         };
 
         try {
@@ -385,7 +386,6 @@ const FormComponent = () => {
             brandTimeZone: value?.brandTimeZone,
             companyId: value.company,
             contactUsEmailAddress: value?.contactEmail,
-            notificationBalance: value?.notificationBalance,
             // currency: value.currency,
             currencyDecimals: value.currencyDecimal,
             currencyId: value.currency,
@@ -406,6 +406,7 @@ const FormComponent = () => {
             titleNameForPickUp: value?.titleNameForPickUp || '',
             titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
             titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
+            showMacros: value?.showMacros || false
         };
 
         try {
@@ -690,21 +691,7 @@ const FormComponent = () => {
                                                 />
                                                 </Grid>
 
-                                            {id && (
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field
-                                                        as={TextField}
-                                                        name="notificationBalance"
-                                                        label="Notification Balance"
-                                                        fullWidth
-                                                        type="number"
-                                                        variant="outlined"
-                                                        onChange={handleChange}
-                                                        error={touched.notificationBalance && Boolean(errors.notificationBalance)}
-                                                        helperText={touched.notificationBalance && errors.notificationBalance}
-                                                    />
-                                                </Grid>
-                                            )}
+          
                                             <Grid item xs={12} container justifyContent="flex-end">
                                                 <Button
                                                     type="button"
@@ -839,6 +826,17 @@ const FormComponent = () => {
                                                     </Field>
                                                 }
                                                 label="Use QR Code"
+                                                />
+
+                                                <FormControlLabel
+                                                control={
+                                                    <Field name="showMacros">
+                                                    {({ field }) => (
+                                                        <Switch {...field} checked={field.value} />
+                                                    )}
+                                                    </Field>
+                                                }
+                                                label="Show Macros"
                                                 />
 
                                                 <FormControlLabel
@@ -997,7 +995,7 @@ const FormComponent = () => {
                                                         </Typography>
                                                         <Grid container spacing={4}>
                                                             {filteredBranchList.map((branch) => {
-                                                            const branchSiteURL = `https://avomenu.azurewebsites.net/menu/${selectedBrand?.name.replace(
+                                                            const branchSiteURL = `https://menu.avorewards.com/menu/${selectedBrand?.name.replace(
                                                                 /\s/g,
                                                                 ''
                                                             )}/${selectedBrand?.id}?branch=${branch.name.replace(/\s/g, '')}&branchId=${branch.id}`;

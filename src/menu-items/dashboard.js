@@ -219,11 +219,19 @@ const dashboard = {
                     type: 'item',
                     url: '/addons/',
                     breadcrumbs: false,
-                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER,]
+                },
+                {
+                    id: 'addonstock',
+                    title: 'Addons Management',
+                    type: 'item',
+                    url: '/addonsstock',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER,, BRANCH_USER,]
                 },
                 {
                     id: 'stocks',
-                    title: 'Stocks',
+                    title: 'Product Management ',
                     type: 'item',
                     url: '/stocks/',
                     breadcrumbs: false,
