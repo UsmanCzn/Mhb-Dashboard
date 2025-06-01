@@ -132,5 +132,9 @@ export default {
     },
     DuplicateProducts(payload) {
         return ApiV1.post(`services/app/Products/DuplicateProductV2`, payload);
+    },
+
+    enableDisableAddOn(payload) {
+        return ApiV1.post( `services/app/ProductAddition/ProductAdditionUpdateOperationForBranchUser`,payload)
     }
 };

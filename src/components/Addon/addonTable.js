@@ -4,18 +4,22 @@ import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetc
 import { useFetchAddonList } from 'features/Store/Addons/hooks/useFetchAddonList';
 import AddonItem from 'components/Addon/addonItem';
 import NewAddonGroup from 'components/store/addonGroup/newAddonGroup';
-
+import { useAuth } from 'providers/authProvider';
 import NewAddon from 'components/store/addon/newAddon';
 import storeServices from 'services/storeServices';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { BorderBottom } from '../../../node_modules/@mui/icons-material/index';
 
-const AddonTable = ({ reload, selectedBrand, setReload }) => {
+const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) => {
     const { addonGroupList, loading: gLoading } = useFetchAddonGroupList(reload, selectedBrand);
     const [AddsonReload, setAddsonReload] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
     const { addonList, loading } = useFetchAddonList(AddsonReload, selectedGroup?.id, selectedBrand);
+    useEffect(() => {
+        setAddsonReload((prev)=> !prev)
+    }, [selectedBranch]);
     const [anchorEl, setAnchorEl] = useState(null);
+    const { user } = useAuth();
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -38,6 +42,8 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
     useEffect(() => {
         setSelectedGroup(addonGroupList[0] ?? 0);
     }, [addonGroupList]);
+
+
 
     const deleteAddonGroup = async () => {
         await storeServices
@@ -95,6 +101,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                 >
                                     Groups
                                 </Typography>
+                                {user && user?.roleId!==7 && !selectedBranch && 
                                 <Button
                                     variant="contained"
                                     onClick={() => {
@@ -103,7 +110,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                     }}
                                 >
                                     Create Group
-                                </Button>
+                                </Button>}
                             </Grid>
                             <Divider
                                 sx={{
@@ -149,7 +156,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                                 >
                                                     {item?.name}
                                                 </Typography>
-                                                <MoreVertIcon onClick={openMenu} fontSize="small" />
+                                               {user && user?.roleId!==7 && !selectedBranch && <MoreVertIcon onClick={openMenu} fontSize="small" />}
                                             </ButtonBase>
                                         </Box>
                                     );
@@ -203,6 +210,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                             >
                                 Add-On's
                             </Typography>
+                            {user && user?.roleId!==7 && !selectedBranch &&
                             <Button
                                 variant="contained"
                                 onClick={() => {
@@ -211,7 +219,7 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                 }}
                             >
                                 Add new Add-On's
-                            </Button>
+                            </Button>}
                         </Grid>
                         <Divider
                             sx={{
@@ -272,6 +280,8 @@ const AddonTable = ({ reload, selectedBrand, setReload }) => {
                                         <AddonItem
                                             item={item}
                                             key={index}
+                                            user={user}
+                                            selectedBranch={selectedBranch}
                                             addonGroupList={addonGroupList}
                                             brand={selectedBrand}
                                             setModalOpen={setModalOpenA}

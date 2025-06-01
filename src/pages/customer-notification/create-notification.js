@@ -12,7 +12,8 @@ import {
     TextField,
     CardActions,
     Box,
-    LinearProgress
+    LinearProgress,
+    Backdrop, CircularProgress
 } from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useFormik } from 'formik';
@@ -25,6 +26,7 @@ const CreateNotification = () => {
     const [selectedBrand, setselectedBrand] = useState({});
     const [customerGroup, setCustomerGroup] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isPaymentUrlLoading, setIsPaymentUrlLoading] = useState(false);
     const [notificationBalance, setNotificationBalance] = useState(0);
     const filteredGroups = customerGroup.filter((e) => e.brandId === selectedBrand.id);
     const { branchesList } = useBranches();
@@ -51,19 +53,20 @@ const CreateNotification = () => {
     };
 
     const handleAddBalance = async () => {
-        setIsLoading(true);
+        setIsPaymentUrlLoading(true);
         const response = await customerService.CheckNotificationBalanceStatus(selectedBrand?.companyId);
         if (response && response.data.result?.isManualOnly) {
             console.log(response);
             enqueueSnackbar(response.data.result?.message, {
                 variant: 'error'
             });
+        setIsPaymentUrlLoading(false);
+
         }
         else {
             handleConfirmBalance(response.data.result?.creditPrice,response.data.result?.productName);
 
           }
-        setIsLoading(false);
         // const response = await customerService.AddNotificationBalance(selectedBrand?.companyId);
         // if (response) {
         //     getNotificationBalance();
@@ -371,6 +374,10 @@ const CreateNotification = () => {
                 </Grid>
             </Grid>
         </form>
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isPaymentUrlLoading}>
+  <CircularProgress color="inherit" />
+</Backdrop>
+
         </>
     );
 };

@@ -86,7 +86,7 @@ const CustomerNotification = () => {
             notificationMessage: selectedNotification.notificationMessage,
             notificationTitle: selectedNotification.notificationTitle,
             notificationMessageNative: selectedNotification.notificationMessageNative,
-            notificationTitleNative: selectedNotification.notificationMessageNative,
+            notificationTitleNative: selectedNotification.notificationTitleNative,
             notificationRequestid: selectedNotification.id,
             comments: selectedNotification.comments,
             notificationType: selectedNotification.notificationType,

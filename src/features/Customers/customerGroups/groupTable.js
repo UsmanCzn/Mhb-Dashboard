@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography, Menu, MenuItem, Button, Card, Box } from '@mui/material';
+import { Chip, Grid, Typography, Menu, MenuItem, Button, Card, Box, IconButton } from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -31,6 +31,31 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
     const handleImageError = () => {
         setImageError(true);
     };
+
+    // Edit and Customers Functionality
+    const [anchorEl1, setAnchorEl1] = useState(null);
+    const open1 = Boolean(anchorEl1);
+  
+    const handleClick1 = (event) => {
+        setAnchorEl1(event.currentTarget);
+    };
+  
+    const handleClose1 = () => {
+        setAnchorEl1(null);
+    };
+  
+    const handleEdit = (item) => {
+      setSelectedItem(item);
+      handleClose1();
+    };
+  
+    const handleCustomer = (item) => {
+      // Add your logic for customer option here
+      console.log('Customer option clicked', item);
+      navigate(`/groups/customer/${item.id}`);
+      handleClose();
+    };
+    // Edit and Customers Functionality
 
     const groupsColumnFormater = (item) => {
         return (
@@ -92,7 +117,7 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (data, index) => {
-        if (data.modal && data?.name == 'Edit') {
+        if (data?.modal && data?.name == 'Edit') {
             setNewModal(true);
         } else if (data?.name == 'Delete') {
             deletePointsCollection(pointCollection?.id);
@@ -266,9 +291,19 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
                                             </Box>
                                         </Grid>
                                         <Grid item xs={1}>
-                                            <Box my={upperMarin}>
+
+                                        <Box my={2}>
+                                        <IconButton onClick={handleClick1}>
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Menu anchorEl={anchorEl1} open={open1} onClose={handleClose1}>
+                                            <MenuItem onClick={()=>handleEdit(item)}>Edit</MenuItem>
+                                            <MenuItem onClick={()=>handleCustomer(item)}>Customer</MenuItem>
+                                        </Menu>
+                                        </Box>
+                                            {/* <Box my={upperMarin}>
                                                 <FaPencilAlt onClick={() => setSelectedItem(item)} />
-                                            </Box>
+                                            </Box> */}
                                         </Grid>
                                     </Grid>
                                 </Box>

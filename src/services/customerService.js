@@ -21,7 +21,7 @@ export default {
         return ApiV1.post(`services/app/Notifications/NotificationsRequests`, payload);
     },
     AcceptNotification(payload) {
-        return ApiV1.post(`services/app/Notifications/SendWebAdminNotifications`, payload);
+        return ApiV1.post(`services/app/Notifications/SendWebAdminNotificationsV2ForDirectNoIndividual`, payload);
     },
     RejectNotification(payload) {
         return ApiV1.post(`services/app/Notifications/RejectNotificationsRequests`, payload);
