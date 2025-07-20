@@ -195,7 +195,7 @@ const NewAddon = ({
                         <Grid item>
                             <Typography variant="h5" fontSize={26}>
                                 {' '}
-                                {update ? 'Edit Add-on' : 'Create new Add-on'}{' '}
+                                {update ? 'Edit Add-on' : 'Create Add-on'}{' '}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
@@ -242,7 +242,7 @@ const NewAddon = ({
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Add-on Group Name"
+                                        label="Add-on Name"
                                         variant="outlined"
                                         required
                                         value={data.name}
@@ -253,7 +253,7 @@ const NewAddon = ({
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Add-on Group Native Name"
+                                        label="Add-on Native Name"
                                         variant="outlined"
                                         value={data.nativeName}
                                         onChange={(e) => setData({ ...data, nativeName: e.target.value })}

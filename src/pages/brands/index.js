@@ -24,18 +24,17 @@ import { ServiceFactory } from 'services/index';
 import NewBrand from 'components/brands/newBrand';
 import { BrandsTable } from 'features';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
+import { useAuth } from '../../providers/authProvider';
+
 
 export default function Companies() {
-    const [order] = useState('asc');
-    const [orderBy] = useState('trackingNo');
-    const [selected] = useState([]);
     const brandServices = ServiceFactory.get('brands');
     const [companies, setCompanies] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
     const navigate = useNavigate()
-    const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const getCompanies = async () => {
         await brandServices
@@ -69,6 +68,7 @@ export default function Companies() {
                                 size="small"
                                 variant="contained"
                                 sx={{ textTransform: 'capitalize' }}
+                                disabled={user?.isAccessRevoked} 
                                 onClick={() => {
                                     navigate('/addEditBrand');
                                     // setModalOpen(true);

@@ -89,9 +89,7 @@ const SystemNotification = () => {
         formik.setFieldValue('entityId', 0);
         getDesiredEntity(event.target.value);
     };
-    const handleEntityChange = (event) => {
-        formik.setFieldValue('entityId', event.target.value);
-    };
+
 
     const getDesiredEntity = async (type) => {
         try {

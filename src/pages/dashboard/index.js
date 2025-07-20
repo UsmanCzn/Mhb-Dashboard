@@ -160,14 +160,12 @@ const DashboardDefault = () => {
     const getData = () => {
         setReload((prev) => !prev);
     };
-
     const { dashbaordBoardData, recallData, fetchRewardList, loading } = useDashboard(reload, selectedBrand?.id, startDate, endDate);
     useEffect(() => {
         setTopPayers(dashbaordBoardData?.topUsersFromSales);
         setTopSales(dashbaordBoardData?.topUsersFromOrders);
         setOrdersChartData(dashbaordBoardData?.ordersChartData);
         setChartDataUpdateCounter((prev) => prev + 1);
-        console.log(dashbaordBoardData, 'dashsadas');
     }, [dashbaordBoardData]);
 
     const topCard = () => {
@@ -186,7 +184,14 @@ const DashboardDefault = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Total Sales"
-                        count={roundedNumber === undefined ? '0' : roundedNumber + ' KWD'}
+                        count={
+                            roundedNumber === undefined
+                              ? '0'
+                              : selectedBrand?.currency
+                                ? `${roundedNumber}${selectedBrand.currency}`
+                                : `${roundedNumber}`
+                          }
+                          
                         isLoading={loading}
                         percentage={27.4}
                         isLoss
@@ -377,7 +382,7 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topPayers} payers={true} headers={headCells} />
+                            <OrdersTable users={topPayers} payers={true} headers={headCells} selectedBrand={selectedBrand} />
                         </MainCard>
                     </Box>
                 </Card>
@@ -411,6 +416,7 @@ const DashboardDefault = () => {
                                 users={[]}
                                 payers={false}
                                 headers={headCellsTop10}
+                                selectedBrand={selectedBrand}
                                 top10Products={dashbaordBoardData?.topTenProducts?.slice().sort((a, b) => b.countOrdered - a.countOrdered)}
                             />
                         </MainCard>
@@ -445,7 +451,9 @@ const DashboardDefault = () => {
                     </Grid>
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    {ordersChartData && <MonthlyLineChart data={ordersChartData} key={chartDataUpdateCounter} />}
+                    {ordersChartData && <MonthlyLineChart data={ordersChartData}
+                        selectedBrand={selectedBrand}
+                    key={chartDataUpdateCounter}  />}
                 </MainCard>
             </Grid>
         </Grid>

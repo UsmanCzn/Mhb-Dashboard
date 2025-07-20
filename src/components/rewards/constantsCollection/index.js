@@ -9,7 +9,9 @@ import moment from 'moment-jalaali';
  import UpdateConstantCollection from "../updateConstantCollection"
  import DuplicateReward from "../duplicateReward"
  import rewardService from 'services/rewardService';
-export default function ConstantsCollectionTable({ selectedBrand,reload,customerGroups,setReload }) {
+ import { useAuth } from 'providers/authProvider';
+
+export default function ConstantsCollectionTable({ selectedBrand,reload,customerGroups,setReload,user }) {
 
     const {ConstantsCollectionList  ,fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload,selectedBrand);
     
@@ -191,6 +193,7 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
                   <Button
                       size="small"
                       variant="contained"
+                      disabled={user?.isAccessRevoked}
                       sx={{ textTransform: 'capitalize' }}
                       onClick={() => {
                           setNewModal(true);
@@ -220,7 +223,7 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
           >
               {options.map((row, index) => {
                   return (
-                      <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                      <MenuItem disabled={user?.isAccessRevoked} onClick={() => handleClose(row)} value={row.name}>
                           {row.name}
                       </MenuItem>
                   );

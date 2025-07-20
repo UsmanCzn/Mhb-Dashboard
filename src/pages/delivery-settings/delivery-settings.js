@@ -20,6 +20,7 @@ import { Formik, Form, Field } from 'formik';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useBranches } from 'providers/branchesProvider';
 import branchService from 'services/branchServices';
+import { useAuth } from 'providers/authProvider';
 
 // Example configuration array
 const sections = [
@@ -44,6 +45,7 @@ const sections = [
 ];
 
 const DynamicCollapsibleFormsWithCards = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
     const [toggles, setToggles] = useState(sections.reduce((acc, section) => ({ ...acc, [section.id]: false }), {}));
     const [loading, setLoading] = useState(sections.reduce((acc, section) => ({ ...acc, [section.id]: false }), {}));
     const [disabled, setDisabled] = useState(sections.reduce((acc, section) => ({ ...acc, [section.id]: true }), {}));
@@ -196,7 +198,7 @@ const DynamicCollapsibleFormsWithCards = () => {
                             <CardHeader
                                 action={
                                     <Switch
-                                        disabled={disabled[section.id]}
+                                        disabled={disabled[section.id] || user?.isAccessRevoked}
                                         checked={toggles[section.id]}
                                         onChange={() => handleToggle(section.id)}
                                     />
@@ -234,7 +236,7 @@ const DynamicCollapsibleFormsWithCards = () => {
                                                     ))}
                                                 </Grid>
                                                 <Grid item xs={12} sx={{ marginTop: '10px', display: 'flex', justifyContent: 'end' }}>
-                                                    <Button variant="contained" color="primary" type="submit">
+                                                    <Button variant="contained" disabled={user?.isAccessRevoked} color="primary" type="submit">
                                                         Update {section.title}
                                                     </Button>
                                                 </Grid>

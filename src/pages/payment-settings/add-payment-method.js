@@ -10,7 +10,8 @@ import {
     FormControlLabel,
     TextField,
     Box,
-    Switch
+    Switch,
+    Checkbox
 } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -43,7 +44,8 @@ const AddPaymentMethod = () => {
         { title: 'Square', value: 4 },
         // { title: 'Checkout', value: 5 },Usman 16-0-2025 (Not Integrated with brand) No Idea
         { title: 'MyFatoorah', value: 6 },
-        { title: 'Hesabi', value: 7 }
+        { title: 'Hesabi', value: 7 },
+        { title: 'SkipCash', value: 8},
     ];
     const formik = useFormik({
         initialValues: {
@@ -75,7 +77,11 @@ const AddPaymentMethod = () => {
             tehseeelKnetAPI: '',
             tehseeelpwd: '',
             tehseeelsecret: '',
-            tehseeeluid: ''
+            tehseeeluid: '',
+            // Added fields:
+            ShowOnWeb: false,
+            ShowOnIOS: false,
+            ShowOnAndroid: false
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -93,14 +99,14 @@ const AddPaymentMethod = () => {
         { name: 'Square', id: 6, arabicName: 'مربع' },
         { name: 'ApplePay', id: 7, arabicName: 'ApplePay' },
         { name: 'GooglePay', id: 8, arabicName: 'GooglePay' },
-        { name: 'CASH', id: 9, arabicName: 'CASH' }
+        { name: 'CASH', id: 9, arabicName: 'CASH' },
+        { name: 'SkipCash', id: 10, arabicName: 'SkipCash' },
     ];
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const getByid = async (id) => {
         try {
-            // Replace 'yourBrandId' with the actual brandId you want to pass
             const response = await paymentServices.GetPaymentById(id);
             const temp = { ...response.data.result };
             setpayments(temp);
@@ -135,7 +141,11 @@ const AddPaymentMethod = () => {
                 tehseeelKnetAPI: temp.tehseeelKnetAPI,
                 tehseeelpwd: temp.tehseeelpwd,
                 tehseeelsecret: temp.tehseeelsecret,
-                tehseeeluid: temp.tehseeeluid
+                tehseeeluid: temp.tehseeeluid,
+                // Add the flag values if they exist, default false if not
+                ShowOnWeb: temp.showOnWeb ?? false,
+                ShowOnIOS: temp.showOnIOS ?? false,
+                ShowOnAndroid: temp.showOnAndroid ?? false,
             });
             setLoading(false);
             console.log(response, 'getByid');
@@ -166,7 +176,9 @@ const AddPaymentMethod = () => {
                 merchantId: Yup.string().required('Merchant ID is required'),
                 currencyCode: Yup.string().required('Currency Code is required'),
                 paymentId: Yup.string().required('Payment Type is required'),
-                gateway: Yup.number().required('Gateway is required')
+                gateway: Yup.number().required('Gateway is required'),
+                // Optional: add flags to validation if needed
+              
             });
 
             switch (formik.values.gateway) {
@@ -325,9 +337,13 @@ const AddPaymentMethod = () => {
                     tehseeelKnetAPI: values.tehseeelKnetAPI,
                     tehseeelpwd: values.tehseeelpwd,
                     tehseeelsecret: values.tehseeelsecret,
-                    tehseeeluid: values.tehseeeluid
+                    tehseeeluid: values.tehseeeluid,
+                    // Flags
+                    ShowOnWeb: values.ShowOnWeb,
+                    ShowOnIOS: values.ShowOnIOS,
+                    ShowOnAndroid: values.ShowOnAndroid
                 };
-
+                
                 const response = await paymentServices.CreateNewPaymentMethods(body);
                 if (response) {
                     enqueueSnackbar('Action Performed Successfully', {
@@ -378,9 +394,14 @@ const AddPaymentMethod = () => {
                 tehseeelKnetAPI: values.tehseeelKnetAPI,
                 tehseeelpwd: values.tehseeelpwd,
                 tehseeelsecret: values.tehseeelsecret,
-                tehseeeluid: values.tehseeeluid
+                tehseeeluid: values.tehseeeluid,
+                // Flags
+                ShowOnWeb: values.ShowOnWeb,
+                ShowOnIOS: values.ShowOnIOS,
+                ShowOnAndroid: values.ShowOnAndroid
             };
             body.id = +id;
+ 
             const response = await paymentServices.UpdatePaymentMethods(body);
             if (response) {
                 enqueueSnackbar('Action Performed Successfully', {
@@ -418,7 +439,7 @@ const AddPaymentMethod = () => {
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth error={formik.touched.paymentId && Boolean(formik.errors.paymentId)}>
-                                <InputLabel id="paymentMethods-label">Payments Gateways</InputLabel>
+                                <InputLabel id="paymentMethods-label">Payments Methods</InputLabel>
                                 <Select
                                     id="paymentId"
                                     name="paymentId"
@@ -464,6 +485,9 @@ const AddPaymentMethod = () => {
                                 helperText={formik.touched['currencyCode'] && formik.errors['currencyCode']}
                             />
                         </Grid>
+
+        
+
                         {visibleFields.map((field, index) => (
                             <Grid item xs={6} key={index}>
                                 <TextField
@@ -478,6 +502,44 @@ const AddPaymentMethod = () => {
                                 />
                             </Grid>
                         ))}
+                                        {/* ShowOnWeb / ShowOnIOS / ShowOnAndroid Checkboxes */}
+                                        <Grid item xs={12}>
+                            <Box display="flex" gap={4}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formik.values.ShowOnWeb}
+                                            name="ShowOnWeb"
+                                            onChange={e => formik.setFieldValue("ShowOnWeb", e.target.checked)}
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Show on Web"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formik.values.ShowOnIOS}
+                                            name="ShowOnIOS"
+                                            onChange={e => formik.setFieldValue("ShowOnIOS", e.target.checked)}
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Show on iOS"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formik.values.ShowOnAndroid}
+                                            name="ShowOnAndroid"
+                                            onChange={e => formik.setFieldValue("ShowOnAndroid", e.target.checked)}
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Show on Android"
+                                />
+                            </Box>
+                        </Grid>
                     </Grid>
                 </CardContent>
                 <CardActions style={{ justifyContent: 'flex-end' }}>

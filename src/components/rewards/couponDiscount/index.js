@@ -8,8 +8,11 @@ import { useFetchBranchList } from 'features/BranchesTable/hooks/useFetchBranche
 import moment from 'moment-jalaali';
 import rewardService from 'services/rewardService';
 import CreateCoupounDiscount from './createCoupounDiscount';
+import { useAuth } from 'providers/authProvider';
 
-const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload }) => {
+
+const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload,user }) => {
+
     const { CouponsCollectionList, fetchRewardList, totalRowCount, loading } = useFetchRewardList(reload, selectedBrand,);
     const { branchesList } = useFetchBranchList(reload);
     const [modal, setModal] = useState(false);
@@ -131,6 +134,7 @@ const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload }) =>
                 <Grid item xs="auto">
                     <Button
                         size="small"
+                        disabled={user?.isAccessRevoked}
                         variant="contained"
                         sx={{ textTransform: 'capitalize' }}
                         onClick={() =>{ setNewModal(true); setselectedCoupon(null)}}
@@ -158,7 +162,7 @@ const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload }) =>
                 MenuListProps={{ 'aria-labelledby': 'basic-button' }}
             >
                 {options.map((row, index) => (
-                    <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                    <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                         {row.name}
                     </MenuItem>
                 ))}

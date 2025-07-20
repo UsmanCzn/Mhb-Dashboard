@@ -46,8 +46,19 @@ export default {
   },
   deleteBrandEvent(body){
     return ApiV1.delete(`services/app/BrandEvent/Delete?Id=${body}`,)
+  },
+
+  GetNotificationBalanceToAddByCompany(cId){
+    return ApiV1.get(`services/app/NotificationCredits/GetNotificationBalanceToAddByCompany?companyId=${cId}`)
   }
-   
+   ,
+   AddNotificationBalance(orderPrice, companyId, productName,notificationCount) {
+    return ApiV1.post(`services/app/NotificationCredits/AddBalanceForNotification?orderPrice=${orderPrice}&companyId=${companyId}&ProductName=${productName}&NotificationCount=${notificationCount}`);
+},
+
+CheckNotificationBalanceStatus(cId) {
+  return ApiV1.get(`services/app/NotificationCredits/GetNotificationBalanceToAddByCompany?companyId=${cId}`);
+},
 }
 
 

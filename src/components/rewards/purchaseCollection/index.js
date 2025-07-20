@@ -12,7 +12,7 @@ import moment from 'moment-jalaali';
 import rewardService from 'services/rewardService';
 
 
-export default function PurchaseCollectionTable({ selectedBrand,reload,customerGroups,setReload }) {
+export default function PurchaseCollectionTable({ selectedBrand,reload,customerGroups,setReload,user }) {
 
   const navigate = useNavigate();
 
@@ -201,6 +201,7 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
                     
                    <Button size="small" variant="contained" 
                    sx={{ textTransform: 'capitalize' }}
+                   disabled={user?.isAccessRevoked}
                    onClick={
                     ()=>{ 
                       setNewModal(true)
@@ -235,7 +236,7 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )

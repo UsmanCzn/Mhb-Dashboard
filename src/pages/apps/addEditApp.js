@@ -7,7 +7,12 @@ import { useNavigate, useParams } from '../../../node_modules/react-router-dom/d
 import { ServiceFactory } from 'services/index';
 import fileService from 'services/fileService';
 import { useSnackbar } from 'notistack';
+import { useAuth } from '../../providers/authProvider';
+
 const AddEditApp = () => {
+
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const initialFormValues = {
         name: '',
         phoneNumber: '',
@@ -572,7 +577,9 @@ const AddEditApp = () => {
                                                 </Grid>
                                             )}
                                             <Grid item>
-                                                <Button variant="contained" color="primary" type="submit">
+                                                <Button
+                                                disabled={user?.isAccessRevoked} 
+                                                variant="contained" color="primary" type="submit">
                                                     Submit
                                                 </Button>
                                             </Grid>

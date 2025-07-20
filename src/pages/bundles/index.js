@@ -17,10 +17,15 @@ import RedButton from 'components/redButton';
 import NewBundle from 'features/bundles/NewBundle';
 import { useSnackbar } from 'notistack';
 import { useFetchBundlesData } from 'features/bundles/hooks/useFetchBundlesData';
+import { useAuth } from 'providers/authProvider';
+
+
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 export default function BundlesForm() {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const { type } = useParams();
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
@@ -277,7 +282,7 @@ export default function BundlesForm() {
                     >
                         {options.map((row, index) => {
                             return (
-                                <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                                <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                                     {row.name}
                                 </MenuItem>
                             );

@@ -8,9 +8,12 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Tooltip from '@mui/material/Tooltip';
+import { useAuth } from 'providers/authProvider';
 
 
 export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOpen }) {
+
+    const { user, userRole, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -188,7 +191,7 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

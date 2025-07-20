@@ -61,6 +61,7 @@ import AddEditApp from 'pages/apps/addEditApp';
 import PaymentFailure from 'pages/payment-failure/index';
 import PaymentSuccess from 'pages/payment-success/index';
 import GroupCustomerTable from 'features/Customers/GroupCustomerTable/groupCustomerTable';
+import NotificationBalnce from 'pages/notification-balance/notification-balance'
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -149,6 +150,7 @@ export default function MainRoutes() {
                     <Route path="/levels" element={<LevelIndex />} />
                     <Route path="/bundles" element={<Bundles />} />
                     <Route path="/customernotification" element={<CreateNotification />} />
+                    <Route path="/notificationBalance" element={<NotificationBalnce />} />
                     <Route path="/all-notifications" element={<AllNotification />} />
                     <Route path="/notification" element={<SystemNotification />} />
                     <Route path="/membership-detail" element={<Subscription />} />

@@ -10,11 +10,15 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ConfirmationModal from '../../components/confirmation-modal';
 import customerService from 'services/customerService';
 import { alignments } from '../../../../../AppData/Local/Microsoft/TypeScript/5.5/node_modules/@floating-ui/utils/dist/floating-ui.utils';
+import { useAuth } from 'providers/authProvider';
 
 const UserList = () => {
     const navigate = useNavigate();
     const [companies, setcompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
+
+    const { user, userRole, isAuthenticated } = useAuth();
+
 
     const headers = [
         { name: 'Name', value: 'name' },
@@ -199,7 +203,11 @@ const UserList = () => {
                                 </Select>
                             </Grid>
                             <Grid item xs={'auto'}>
-                                <Button onClick={handleCreateNewUser} size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
+                                <Button 
+                                disabled={user?.isAccessRevoked}
+                                onClick={handleCreateNewUser} 
+                                
+                                size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
                                     Create New User
                                 </Button>
                             </Grid>
@@ -236,8 +244,8 @@ const UserList = () => {
                                                             'aria-labelledby': 'basic-button'
                                                         }}
                                                     >
-                                                        <MenuItem onClick={() => handleClose('delete', row, index)}>Delete</MenuItem>
-                                                        <MenuItem onClick={() => handleClose('edit', row, index)}>Edit</MenuItem>
+                                                        <MenuItem  disabled={user?.isAccessRevoked} onClick={() => handleClose('delete', row, index)}>Delete</MenuItem>
+                                                        <MenuItem  disabled={user?.isAccessRevoked} onClick={() => handleClose('edit', row, index)}>Edit</MenuItem>
                                                     </Menu>
                                                 </div>
                                             </TableCell>

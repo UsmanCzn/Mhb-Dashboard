@@ -23,7 +23,7 @@ export function useTiers(reload, selectedBrand) {
                         var tiers = [];
                         for (var i = 0; i < res?.data?.result?.data?.data.length; i++) {
                             const item = res?.data?.result?.data?.data[i];
-                            if (item.type === 'Dynamic points') {
+                            if (item.type === 'DynamicPointsGroup') {
                                 tiers.push(item);
                             }
                         }

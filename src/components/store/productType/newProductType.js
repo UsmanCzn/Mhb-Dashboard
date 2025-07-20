@@ -123,7 +123,7 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
                 <Box sx={style}>
                     <Grid container spacing={4}>
                         <Grid item>
-                            <Typography variant="h4"> {update ? 'Edit Product Type' : 'Create new Product Type'} </Typography>
+                            <Typography variant="h4"> {update ? 'Edit Category' : 'Create new Category'} </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Grid container spacing={2}>
@@ -179,7 +179,7 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
                                     </Grid>
                                     <Grid item>
                                         <Button primay variant="contained" type="Submit">
-                                            {update ? 'Edit Product Type' : 'Create new Product Type'}
+                                            {update ? 'Edit Category' : 'Create new Category'}
                                         </Button>
                                     </Grid>
                                 </Grid>

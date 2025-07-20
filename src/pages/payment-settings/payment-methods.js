@@ -5,8 +5,12 @@ import PaymentMethodsListing from './payment-methods-listing';
 import { useNavigate } from 'react-router-dom';
 import paymentServices from 'services/paymentServices';
 import { ServiceFactory } from 'services/index';
+import { useAuth } from 'providers/authProvider';
+
 
 const PaymentMethods = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const [data, setData] = useState({ sandBoxKey: '', liveKey: '', sandboxApi: '', liveApi: '', CurrencyCode: '' });
     const [reload, setReload] = useState(false);
     const [brandPayments, setBrandPayments] = useState([]);
@@ -52,6 +56,7 @@ const PaymentMethods = () => {
                                 <Button
                                     variant="contained"
                                     color="primary"
+                                    disabled={user?.isAccessRevoked}
                                     onClick={() => {
                                         // Add payment method logic here
                                         navigate(`/payments-settings/addEdit/${selectedBrand.id}`);

@@ -121,6 +121,7 @@ const NewRewardCollection = ({
     useEffect(
         () => {
             getCustomergroups()
+            console.log(selectedBrand,"selecredBrand")
         }
         , [selectedBrand]
     )
@@ -171,7 +172,7 @@ const NewRewardCollection = ({
                                     }}
                                 >
                                     <Typography required variant="h7">
-                                        Points will be given per KD purchase:{' '}
+                                        Points will be given per {selectedBrand?.currency} purchase:{' '}
                                     </Typography>
                                     <TextField
                                         id="outlined-basic"

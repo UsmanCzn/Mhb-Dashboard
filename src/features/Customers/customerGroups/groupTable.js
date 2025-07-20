@@ -12,9 +12,11 @@ import { FaPencilAlt } from 'react-icons/fa';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { useCustomerGroup } from '../hooks/useCustomerGroups';
+import { useAuth } from 'providers/authProvider';
 
 const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, setReload }, ref) => {
     const navigate = useNavigate();
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const location = useLocation();
 
@@ -25,6 +27,7 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
     const [newModal, setNewModal] = useState(false);
     const hideModal = (value) => {
         setNewModal(value);
+        // setSelectedItem(null)
     };
     const [imageError, setImageError] = useState(false);
 
@@ -32,27 +35,19 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
         setImageError(true);
     };
 
-    // Edit and Customers Functionality
-    const [anchorEl1, setAnchorEl1] = useState(null);
-    const open1 = Boolean(anchorEl1);
-  
-    const handleClick1 = (event) => {
-        setAnchorEl1(event.currentTarget);
-    };
-  
-    const handleClose1 = () => {
-        setAnchorEl1(null);
-    };
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const [activeItem, setActiveItem] = useState(null);
+    const [activeIndex, setActiveIndex] = useState(null);
   
     const handleEdit = (item) => {
       setSelectedItem(item);
-      handleClose1();
     };
   
-    const handleCustomer = (item) => {
+    const handleCustomer = (gourp,index) => {
       // Add your logic for customer option here
-      console.log('Customer option clicked', item);
-      navigate(`/groups/customer/${item.id}`);
+      console.log('Customer option clicked', gourp, tiersList);
+      console.log('Customer option clicked', index, tiersList[index]);
+      navigate(`/groups/customer/${gourp.id}`);
       handleClose();
     };
     // Edit and Customers Functionality
@@ -254,7 +249,7 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
             {showLoader()}
             <Grid container spacing={2}>
                 {tiersList.map((item, index) => (
-                    <Grid item key={index} xs={6} sm={6} md={4} lg={3}>
+                    <Grid item   key={index} xs={6} sm={6} md={4} lg={3}>
                         <Card>
                             {imageError ? (
                                 <img
@@ -293,13 +288,15 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
                                         <Grid item xs={1}>
 
                                         <Box my={2}>
-                                        <IconButton onClick={handleClick1}>
+                                        <IconButton onClick={(e) => {
+                                            setMenuAnchorEl(e.currentTarget);
+                                            setActiveItem(item);
+                                            setActiveIndex(index);
+                                            }}>
                                             <MoreVertIcon />
-                                        </IconButton>
-                                        <Menu anchorEl={anchorEl1} open={open1} onClose={handleClose1}>
-                                            <MenuItem onClick={()=>handleEdit(item)}>Edit</MenuItem>
-                                            <MenuItem onClick={()=>handleCustomer(item)}>Customer</MenuItem>
-                                        </Menu>
+                                            </IconButton>
+
+                      
                                         </Box>
                                             {/* <Box my={upperMarin}>
                                                 <FaPencilAlt onClick={() => setSelectedItem(item)} />
@@ -351,7 +348,32 @@ const CustomerGroupTable = forwardRef(({ selectedBrand, reload, customerGroups, 
                 selectedBrand={selectedBrand}
                 setReload={setReload}
                 editItem={pointCollection}
+                groupList={tiersList}
             />
+            <Menu
+  anchorEl={menuAnchorEl}
+  open={Boolean(menuAnchorEl)}
+  onClose={() => {
+    setMenuAnchorEl(null);
+    setActiveItem(null);
+    setActiveIndex(null);
+  }}
+>
+  <MenuItem 
+    disabled={user?.isAccessRevoked}
+    onClick={() => {
+    handleEdit(activeItem);
+    setMenuAnchorEl(null);
+  }}>Edit</MenuItem>
+
+  <MenuItem 
+    disabled={user?.isAccessRevoked}
+    onClick={() => {    
+    handleCustomer(activeItem, activeIndex);
+    setMenuAnchorEl(null);
+  }}>Customer</MenuItem>
+</Menu>
+
         </>
     );
 });

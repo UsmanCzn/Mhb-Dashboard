@@ -378,11 +378,30 @@ const dashboard = {
         {
             id: 'CustomerNotification',
             title: 'Notifications',
-            type: 'item',
-            url: '/customernotification',
+            type: 'collapse',
+            // url: '/customernotification',
             icon: NotificationsIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+            isOpen: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
+            children: [
+                {
+                    id: 'customerNotification',
+                    title: 'Notification Management',
+                    type: 'item',
+                    url: '/customernotification',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                },
+                {
+                    id: 'notificationBalanceHistory',
+                    title: 'Notification Balance',
+                    type: 'item',
+                    url: '/notificationBalance',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
+                },
+            ]
         },
         {
             id: 'subscription',

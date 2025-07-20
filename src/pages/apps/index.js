@@ -2,13 +2,13 @@ import { Grid, Typography, Button } from '@mui/material';
 import { TableControl, CustomersTable } from 'features';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import NewCustomer from 'components/customers/newCustomer';
 import AppsTable from 'features/AppsTable/index';
 import NewCompany from 'components/companies/newCompany';
+import { useAuth } from '../../providers/authProvider';
 
 export default function Apps() {
     const { type } = useParams();
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
@@ -26,18 +26,18 @@ export default function Apps() {
                         </Typography>
                     </Grid>
                     <Grid item xs={'auto'}>
-                        <Button
-                            size="small"
-                            variant="contained"
-                            sx={{ textTransform: 'capitalize' }}
-                            onClick={() => {
-                                navigate('/addEditCompany');
-                                // setUpdate(false);
-                                // setModalOpen(true);
-                            }}
-                        >
-                            Add New App
-                        </Button>
+                    <Button
+                    size="small"
+                    variant="contained"
+                    disabled={user?.isAccessRevoked} // ✅ Proper conditional check
+                    sx={{ textTransform: 'capitalize' }}
+                    onClick={() => {
+                        navigate('/addEditCompany');
+                    }}
+                    >
+                    Add New App
+                    </Button>
+
                     </Grid>
                     {/* <Grid item xs={6}>
                     <TableControl type="Customer"/> 

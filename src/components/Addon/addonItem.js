@@ -8,6 +8,7 @@ import DefaultImage from '../../assets/images/users/default-image.png';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
 const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData, setAddsonReload,user, selectedBranch=null }) => {
+
     const handleClick = async () => {
         setModalOpen(true);
         setUpdate(true);
@@ -153,6 +154,7 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                                 {selectedBranch &&
                                     <Switch
+                                    disabled={user?.isAccessRevoked}
                                     checked={item?.productAdditionQtyWithBranchs?.some(
                                         (branchItem) => branchItem.branchid === selectedBranch?.id && branchItem.availabilityQty >0
                                     )}
@@ -165,8 +167,8 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                     <>
                                         <MoreVertIcon onClick={openMenu} sx={{ cursor: 'pointer', mt: 0.5 }} />
                                         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-                                            <MenuItem onClick={() => handleClick(item)}>Edit</MenuItem>
-                                            <MenuItem onClick={() => deleteAddon()}>Delete</MenuItem>
+                                            <MenuItem disabled={user?.isAccessRevoked} onClick={() => handleClick(item)}>Edit</MenuItem>
+                                            <MenuItem disabled={user?.isAccessRevoked} onClick={() => deleteAddon()}>Delete</MenuItem>
                                         </Menu>
                                     </>
                                 )}

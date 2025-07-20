@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import ReactApexChart from 'react-apexcharts';
 
-const MonthlyLineChart = (data) => {
+const MonthlyLineChart = (data, selectedBrand) => {
     const theme = useTheme();
+    
     const { primary, secondary } = theme.palette.text;
     const info = theme.palette.info.light;
 
@@ -44,8 +45,11 @@ const MonthlyLineChart = (data) => {
                         colors: [info]
                     },
                     formatter: function (value) {
-                        return 'KD' + value.toFixed(2);
+                        return data?.selectedBrand?.currency
+                            ? `${value.toFixed(2)} ${data?.selectedBrand.currency}`
+                            : value.toFixed(2);
                     }
+                    
                 },
                 title: {
                     text: 'Total Sales',

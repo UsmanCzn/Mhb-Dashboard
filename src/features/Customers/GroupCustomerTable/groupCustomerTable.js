@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Avatar, IconButton, Menu, MenuItem, TablePagination, LinearProgress
+  Paper, Avatar, IconButton, Menu, MenuItem, TablePagination, LinearProgress,Button, Box
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DownloadIcon from '@mui/icons-material/Download'; // Optional icon
 import { useParams, useNavigate } from 'react-router-dom';
 import { ApiV1 } from 'helper/api'; 
-
+import { ServiceFactory } from 'services/index';
 const rowsPerPageOptions = [5, 10];
 
 const GroupCustomerTable = () => {
@@ -20,6 +21,7 @@ const GroupCustomerTable = () => {
   const [page, setPage] = useState(0); // zero-based
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[1]);
   const [totalCount, setTotalCount] = useState(0);
+  const customerServices = ServiceFactory.get('customer');
 
   // Fetch customers
   useEffect(() => {
@@ -75,9 +77,60 @@ const GroupCustomerTable = () => {
     setPage(0); // Reset to first page
   };
 
+  const DownloadCustomers = async () => {
+    setLoading(true);
+    try {
+      const response = await customerServices.downloadCustomerList(id);
+  
+      const blob = new Blob([response.data], {
+        type:
+          response.headers['content-type'] ||
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+  
+      // Optional: Get filename from Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'CustomerList.xlsx';
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?(.+)"?/);
+        if (match?.[1]) {
+          fileName = decodeURIComponent(match[1]);
+        }
+      }
+  
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+  
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download customer list.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
   return (
+    <>
+  <Box display="flex" justifyContent="flex-end" p={2}>
+    <Button
+      variant="contained"
+      color="primary"
+      startIcon={<DownloadIcon />}
+      onClick={DownloadCustomers}
+    >
+      Download Customers
+    </Button>
+  </Box>
     <Paper>
       {loading && <LinearProgress />}
+
       <TableContainer>
         <Table>
           <TableHead>
@@ -121,6 +174,7 @@ const GroupCustomerTable = () => {
         rowsPerPageOptions={rowsPerPageOptions}
       />
     </Paper>
+    </>
   );
 };
 

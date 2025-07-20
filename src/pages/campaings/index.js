@@ -6,6 +6,7 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import { useSnackbar } from 'notistack';
 import Button from '@mui/material/Button';
 import brandServices from 'services/brandServices';
+import { useAuth } from 'providers/authProvider';
 
 
 import CampaingModal from './campaing-modal'
@@ -20,7 +21,8 @@ const Campaings = () => {
   const { brandsList } = useFetchBrandsList(reload);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [selectedBrand, setselectedBrand] = useState({});
-  
+  const { user, userRole, isAuthenticated } = useAuth();
+
   useEffect(() => {
     if (brandsList[0]?.id) {
         setselectedBrand(brandsList[0]);
@@ -168,7 +170,7 @@ return (
                         </FormControl>
                     </Grid>
                     <Grid item xs={'auto'}>
-                        <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => addNewCampaing()}>
+                        <Button size="small" disabled={user?.isAccessRevoked} variant="contained" sx={{ textTransform: 'capitalize' }} onClick={() => addNewCampaing()}>
                             Add New Campaings
                         </Button>
                     </Grid>
@@ -199,7 +201,7 @@ return (
                 >
                     {options.map((row, index) => {
                         return (
-                            <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                            <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                                 {row.name}
                             </MenuItem>
                         );

@@ -26,6 +26,10 @@ export default {
     RejectNotification(payload) {
         return ApiV1.post(`services/app/Notifications/RejectNotificationsRequests`, payload);
     },
+
+    revokeUserAccess ({userId,revokeAccess,tokenToUpdate}){
+        return ApiV1.post(`services/app/AdminUserManagement/RevokeUserAccessFromAdminSide?userId=${userId}&revokeAccess=${revokeAccess}&TokenToupdate=${tokenToUpdate}`)
+    },
     getCountries() {
         return ApiV1.get('services/app/Country/GetCountriesDictionary');
     },
@@ -96,8 +100,8 @@ export default {
     rejectUsedPointsRequest(data) {
         return ApiV1.put('services/app/Customer/UpdateRejectCustomerFreeItemsAndPunches', data);
     },
-    getUsedPointsRequest() {
-        return ApiV1.get('services/app/Customer/GetUserPunchesInfoDetail');
+    getUsedPointsRequest(isAdmin= false) {
+        return ApiV1.get(`services/app/Customer/GetUserPunchesInfoDetail?IsAdmin=${isAdmin}`);
     },
     getCustomerDetailV3(userId, brandId) {
         return ApiV1.get('services/app/Customer/GetCustomerDetailsByIdV3', {
@@ -118,7 +122,14 @@ export default {
     CheckNotificationBalanceStatus(cId) {
         return ApiV1.get(`services/app/NotificationCredits/GetNotificationBalanceToAddByCompany?companyId=${cId}`);
     },
-    AddNotificationBalance(orderPrice, companyId, productName) {
-        return ApiV1.post(`services/app/NotificationCredits/AddBalanceForNotification?orderPrice=${orderPrice}&companyId=${companyId}&ProductName=${productName}`);
-    }
+
+    downloadCustomerList(groupId) {
+        return ApiV1.get(
+          `Files/ReportCustomerGroupsByGroupId?CustomersGroupId=${groupId}`,
+          {
+            responseType: 'blob', // <-- This is required for Excel files
+          }
+        );
+      }
+      
 };

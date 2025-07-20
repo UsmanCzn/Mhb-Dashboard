@@ -26,6 +26,8 @@ import fileService from 'services/fileService';
 import { ServiceFactory } from 'services/index';
 import { useSnackbar } from 'notistack';
 import BranchTimings from '../../../pages/branch/branchTimings/index';
+import { useAuth } from 'providers/authProvider';
+
 const AddEditBranch = () => {
     const brandService = ServiceFactory.get('brands');
     const [tabValue, setTabValue] = useState('1');
@@ -36,6 +38,8 @@ const AddEditBranch = () => {
     const [loading, setloading] = useState(false);
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { user, userRole, isAuthenticated } = useAuth();
+
 
     const handleNext = async (validateForm, setTouched) => {
         const errors = await validateForm();
@@ -83,7 +87,8 @@ const AddEditBranch = () => {
                     nativeName: branch?.nativeName || '',
                     openTime: branch?.openTime || 0,
                     readyTime: branch?.readyTime || 0,
-                    UsedDeliverySystem: branch?.usedDeliverySystem || 1 // Patch the values dynamically
+                    usedDeliverySystem: branch?.usedDeliverySystem || 1, // Patch the values dynamically
+                    foodicsId: branch?.foodicsId ||''
                 }));
                 setBranch(branch);
             }
@@ -136,7 +141,8 @@ const AddEditBranch = () => {
         nativeName: '',
         openTime: '',
         readyTime: 0,
-        UsedDeliverySystem: 1
+        usedDeliverySystem: 1,
+        foodicsId:""
     });
     const validationSchemas = {
         1: Yup.object().shape({
@@ -171,7 +177,7 @@ const AddEditBranch = () => {
                 is: true,
                 then: Yup.number().required('Delivery Fee is required')
             }),
-            UsedDeliverySystem: Yup.number().when('isDelivery', {
+            usedDeliverySystem: Yup.number().when('isDelivery', {
                 is: true,
                 then: Yup.number().required('Delivery System is required')
             })
@@ -381,6 +387,22 @@ const AddEditBranch = () => {
                                                         helperText={touched.readyTime && errors.readyTime}
                                                     />
                                                 </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                            <FormControl fullWidth>
+                                                            <TextField
+                                                                label="Foodics Branch Id"
+                                                                fullWidth
+                                                                variant="outlined"
+                                                                type="text"
+                                                                name="foodicsId"
+                                                                value={values.foodicsId}
+                                                                onChange={handleChange}
+                                                                error={touched.foodicsId && Boolean(errors.foodicsId)}
+                                                                helperText={touched.foodicsId && errors.foodicsId}
+                                                                size="small"
+                                                            />
+                                                            </FormControl>
+                                                        </Grid>
                                                 <Grid item container justifyContent="flex-end" xs={12}>
                                                     <Button
                                                         variant="contained"
@@ -574,9 +596,9 @@ const AddEditBranch = () => {
                                                                 <Select
                                                                     labelId="used-delivery-system-label"
                                                                     id="used-delivery-system-select"
-                                                                    value={values.UsedDeliverySystem}
+                                                                    value={values.usedDeliverySystem}
                                                                     onBlur={handleBlur}
-                                                                    onChange={(e) => setFieldValue('UsedDeliverySystem', e.target.value)}
+                                                                    onChange={(e) => setFieldValue('usedDeliverySystem', e.target.value)}
                                                                     size="small"
                                                                 >
                                                                     <MenuItem value={1}>Verdi</MenuItem>
@@ -586,6 +608,7 @@ const AddEditBranch = () => {
                                                         </Grid>
                                                     </>
                                                 )}
+
 
                                                 {/* Navigation Buttons */}
                                                 <Grid item xs={12} container justifyContent="flex-end" spacing={1}>
@@ -707,7 +730,7 @@ const AddEditBranch = () => {
                                                             variant="contained"
                                                             color="primary"
                                                             onClick={() => handleNext(validateForm, setTouched, isValid)}
-                                                            disabled={!isValid && tabValue < validationSchemas.length - 1} // Allow submission on the last tab
+                                                            disabled={ (!isValid && tabValue < validationSchemas.length - 1)} // Allow submission on the last tab
                                                             sx={{ minWidth: '120px' }} // Consistent button size
                                                         >
                                                             {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}
@@ -762,7 +785,7 @@ const AddEditBranch = () => {
                                                             Back
                                                         </Button>
                                                     </Grid>
-                                                    <Button variant="contained" sx={{ minWidth: '120px' }} type="submit">
+                                                    <Button disabled={user?.isAccessRevoked } variant="contained" sx={{ minWidth: '120px' }} type="submit">
                                                         Save
                                                     </Button>
                                                 </Grid>

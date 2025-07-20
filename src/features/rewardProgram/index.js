@@ -10,17 +10,20 @@ import { ApiV1 } from 'helper/api';
 import PurchaseCollection from 'components/rewards/purchaseCollection'
 import PointsCollection from 'components/rewards/pointsCollection'
 import ConstantsCollection from 'components/rewards/constantsCollection';
-import CouponDiscount from 'components/rewards/couponDiscount'
+import CouponDiscount from 'components/rewards/couponDiscount';
 
 // import PointsCollection from 'components/branches/pointsCollection'
 // import ConstantsCollection from 'components/branches/constantsCollection'
 import { ServiceFactory } from 'services/index';
 import rewardService from 'services/rewardService';
 import customerService from 'services/customerService';
+import { useAuth } from 'providers/authProvider';
 
 export default function RewardProgram({
   selectedBrand
 }) {
+
+  const { user, userRole, isAuthenticated } = useAuth();
     const [value, setValue] = React.useState('1'); 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -96,13 +99,13 @@ export default function RewardProgram({
           </Box>
           <TabPanel value="1">
               {/* <PurchaseCollection purchaseCollection={purchaseCollection}/> */}
-              <PurchaseCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+              <PurchaseCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} user={user} />
           </TabPanel>
           <TabPanel value="2">
-              <PointsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+              <PointsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} user={user} />
           </TabPanel>
           <TabPanel value="3">
-              <ConstantsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} />
+              <ConstantsCollection selectedBrand={selectedBrand} setReload={setReload} reload={reload} customerGroups={customerGroups} user={user} />
           </TabPanel>
           <TabPanel value="4">
               <CouponDiscount
@@ -110,6 +113,7 @@ export default function RewardProgram({
                   setReload={setReload}
                   reload={reload}
                   customerGroups={customerGroups}
+                  user={user}
               ></CouponDiscount>
           </TabPanel>
       </TabContext>

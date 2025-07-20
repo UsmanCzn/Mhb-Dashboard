@@ -3,8 +3,9 @@ import { Grid, Typography, Button, FormControl, InputLabel, Select, OutlinedInpu
 import ProductCard from './product-card';
 import stockService from 'services/stockService';
 import LinearProgress from '@mui/material/LinearProgress';
-
+import { useAuth } from 'providers/authProvider';
 const StockList = (props) => {
+    const { user, userRole, isAuthenticated } = useAuth();
     const { brandid, branchid } = props;
     const [loading, setloading] = useState(false);
     const [ProductList, setProductList] = useState([]);
@@ -121,7 +122,7 @@ const StockList = (props) => {
                     {FilteredProductList.map((ele, index) => {
                         return (
                             <Grid item key={index} xs={3} sx={{ margin: '10px 0 0 0' }}>
-                                <ProductCard product={ele} branchid={branchid} fetchProduct={getProductsList} />
+                                <ProductCard product={ele} branchid={branchid} fetchProduct={getProductsList} user={user} />
                             </Grid>
                         );
                     })}

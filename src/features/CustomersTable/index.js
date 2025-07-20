@@ -5,8 +5,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchCustomerList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
+import { useAuth } from 'providers/authProvider';
 
 export default function CustomerTable({ type, reload, setCustomerStats, setModalOpen, modalOpen }) {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const [search, setSearch] = useState('');
     const [companies, setcompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
@@ -229,9 +232,8 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
-                            {row.name}
-                        </MenuItem>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
+                            {row.name}                   </MenuItem>
                     );
                 })}
             </Menu>

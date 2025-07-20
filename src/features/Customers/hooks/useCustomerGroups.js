@@ -17,14 +17,14 @@ export function useCustomerGroup(reload, selectedBrand) {
             setloading(true);
 
             tiersService
-                .getCustomerGroupsV2(100, 0,selectedBrand.id, 1)
+                .getCustomerGroupsV2(100, 0,selectedBrand.id, 0)
                 .then(
                     (res) => {
                         console.log(res);
                         var customers = [];
                         for (var i = 0; i < res?.data?.result?.data?.data.length; i++) {
                             const item = res?.data?.result?.data?.data[i];
-                            if (item.type === 'Base') {
+                            if (item.type === "BrandGroup" || item.type === "DefaultBrandGroup" ) {
                                 customers.push(item);
                             }
                         }

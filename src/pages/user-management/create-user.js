@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Typography, Button, FormControl, InputLabel, MenuItem, TextField ,Select} from '@mui/material';
-import { useAuth } from '../../providers/authProvider';
 // import Select from 'react-select';
 import { useSnackbar } from 'notistack';
 import { useNavigate ,useParams } from 'react-router-dom';
 
+
 import './create-user.css';
 import userManagementService from '../../services/userManagementService';
 import customerService from 'services/customerService';
+import { useAuth } from 'providers/authProvider';
 
 const CreateUser = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const [usersRoles, setUsersRoles] = useState([]);
     const [userBranches, setUserBranches] = useState(null);
@@ -18,6 +20,8 @@ const CreateUser = () => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const { id,cid } = useParams();
+    // console.log(user);
+    
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -28,8 +32,10 @@ const CreateUser = () => {
         email: '',
         roles: '',
         branches: [],
-        companyId:""
+        companyId:"",
+        isAccessRevoked:false
     });
+
 
     const [errors, setErrors] = useState({
         firstName: '',
@@ -40,6 +46,35 @@ const CreateUser = () => {
         roles: '',
         branches: ''
     });
+
+
+    const revokeUserAccess = async () => {
+        try {
+          const payload = {
+            userId: +id,
+            revokeAccess: !formData?.isAccessRevoked,            
+            tokenToUpdate: 'UsmanCZN1234@@', // Consider moving this to a config/env if reused
+          };
+      
+          const response = await customerService.revokeUserAccess(payload);
+      
+          if (response?.data?.success) {
+            getUserRoles()
+            enqueueSnackbar('Access revoked successfully', {
+                variant: 'success'
+            });
+            // Optionally refetch user data or update local state
+          } else {
+            enqueueSnackbar(response?.data?.message || 'Failed to revoke access',{
+                variant: "error"
+            });
+          }
+        } catch (error) {
+          console.error('Revoke Access Error:', error);
+          toaster.error('An error occurred while revoking access');
+        }
+      };
+      
 
     const validateForm = () => {
         let isValid = true;
@@ -105,19 +140,7 @@ const CreateUser = () => {
         });
     };
 
-    const getCompanies =async ()=>{
-        try{
-        const res =await  customerService.getComapniesByUserRole();
-        if(res){
-          const tempComp = res.data.result;
-          if(tempComp.length){
-          }
-          setcompanies(res.data.result)
-        }
-        }catch(err){
 
-        }
-      }
 
     const handleBranchesChange = (selectedBranches) => {
         setFormData({
@@ -139,7 +162,8 @@ const CreateUser = () => {
                     streetAddress: '',
                     email: '',
                     roles: '',
-                    branches: []
+                    branches: [],
+                    isAccessRevoked: false,
                 });
                 enqueueSnackbar('User Created Successfully', {
                     variant: 'success'
@@ -147,14 +171,12 @@ const CreateUser = () => {
                 navigate(`/user-management?companyId=${cid}`);
             }
         } catch (error) {
-            console.log('Error fetching user roles', error);
 
             enqueueSnackbar(error.response.data.error.message, {
                 variant: 'error'
             });
         }}else{
             try {
-                console.log(postData,'posrdata');
                 
                 const response = await userManagementService.UpdateUser(postData);
                 if (response) {
@@ -274,7 +296,6 @@ const CreateUser = () => {
                         if (alloctedBranchesObj.length > 0) {
                             newObjForBranches = alloctedBranchesObj.map((item) => item.id);
                         }
-                        
                         setFormData({
                             firstName: userData.name,
                             lastName: userData.surname,
@@ -284,7 +305,9 @@ const CreateUser = () => {
                             email: userData.emailAddress,
                             roles: roleObject.id,
                             branches: newObjForBranches,
-                            companyId: userData?.companyId
+                            companyId: userData?.companyId,
+                            isAccessRevoked: userData?.isAccessRevoked
+
                         });
                     }
                 }
@@ -404,10 +427,23 @@ const CreateUser = () => {
                     <p className="error">{errors.branches}</p>
                 </Grid>
                 <Grid item xs={12} sx={{ marginBottom: '10px' }}>
-                    <Button size="small" type="submit" variant="contained">
-                        {id ? 'Update User' : 'Add User'}
-                    </Button>
+                <Button size="small" disabled={user?.isAccessRevoked} type="submit" variant="contained" sx={{ marginRight: 1 }}>
+                    {id ? 'Update User' : 'Add User'}
+                </Button>
+                {id && (
+                <Button
+                    size="small"
+                    type="button"
+                    variant="contained"
+                    disabled={user?.isAccessRevoked}
+                    color={formData?.isAccessRevoked ? 'success' : 'error'} // Red if active, green if deactivated
+                    onClick={() => revokeUserAccess()}
+                >
+                    {formData?.isAccessRevoked ? 'Activate User' : 'Deactivate User'}
+                </Button>
+                )}
                 </Grid>
+
             </Grid>
         </form>
     );

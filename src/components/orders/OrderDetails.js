@@ -121,7 +121,7 @@ const printOrder = () => {
     <body>
       <div class="receipt-container">
         <div class="separator"></div>
-        <div class="center">No of Items: ${data?.products?.length}</div>
+        <div class="center">No of Items: ${data?.products?.reduce((sum, item) => sum + (item?.quantity || 0), 0)}</div>
         <h2 class="center">${data?.branchName}</h2>
 
         <div>Order #${data?.orderNumber}</div>
@@ -130,6 +130,7 @@ const printOrder = () => {
         <div>Email: ${data?.customerEmail ?? data?.displayEmailAddress}</div>
         <div>Date: ${moment(data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
         <div>Payment Method: ${data?.paymentMethod}</div>
+        <div> ${data?.carDetails}</div>
 
         <div class="separator"></div>
         <div class="item-row" style="font-weight: bold;">
@@ -328,7 +329,7 @@ const printOrder = () => {
                                             textAlign: 'center'
                                         }}
                                     >
-                                        No of Items: {data?.products?.length}{' '}
+                                        No of Items: {data?.products?.reduce((sum, item) => sum + (item?.quantity || 0), 0)}
                                     </Typography>
 
                                     <Typography variant="h1" fontSize={32} fontFamily="Noto Sans Arabic">
@@ -411,6 +412,18 @@ const printOrder = () => {
                                     >
                                         <Typography variant="h6" fontSize={16}>
                                             Payment Method : {data?.paymentMethod}
+                                        </Typography>
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <Typography variant="h6" fontSize={16}>
+                                        {data?.carDetails}
                                         </Typography>
                                     </Box>
 
@@ -556,8 +569,7 @@ const printOrder = () => {
                                             Items Total:
                                         </Typography>
                                         <Typography variant="h7" fontSize={14}>
-                                            {' '}
-                                            {data?.subTotal?.toFixed(data?.brandCurrencyDecimal ||3)}{' '}
+                                            {data?.subTotal?.toFixed(data?.brandCurrencyDecimal || 3)}
                                         </Typography>
                                     </Box>
                                     {/* <Box style={{  

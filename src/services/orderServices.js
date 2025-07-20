@@ -64,6 +64,11 @@ export default {
       }
     );
   },
+
+
+  getAllOrderStatusCount(branchId=0, statusId){
+    return ApiV1.get(`services/app/Store/GetAllStatusCounts?branchId=${branchId}&StatusId=${statusId}`)
+  },
    
   updateOrderStatus(data) {  
     return ApiV1.put(

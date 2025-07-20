@@ -4,9 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import NewBranch from 'components/branches/newBranch';
 import { useSnackbar } from 'notistack';
+
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+import { useAuth } from 'providers/authProvider';
+
+
 
 export default function Branches() {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const { type } = useParams();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [searchParams] = useSearchParams();
@@ -43,6 +49,7 @@ export default function Branches() {
                                     size="small"
                                     variant="contained"
                                     sx={{ textTransform: 'capitalize' }}
+                                    disabled={user?.isAccessRevoked} 
                                     onClick={() => {
                                         navigate('/locationAddEdit');
                                     }}
@@ -65,7 +72,7 @@ export default function Branches() {
                                     >
                                         <MenuItem value="all">All Brands</MenuItem>
                                         {brandsList.map((row, index) => (
-                                            <MenuItem key={index} value={row.id}>
+                                            <MenuItem  key={index} value={row.id}>
                                                 {row.name}
                                             </MenuItem>
                                         ))}

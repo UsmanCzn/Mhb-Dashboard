@@ -10,7 +10,10 @@ import storeServices from 'services/storeServices';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { BorderBottom } from '../../../node_modules/@mui/icons-material/index';
 
+
+
 const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) => {
+    
     const { addonGroupList, loading: gLoading } = useFetchAddonGroupList(reload, selectedBrand);
     const [AddsonReload, setAddsonReload] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
@@ -104,6 +107,7 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
                                 {user && user?.roleId!==7 && !selectedBranch && 
                                 <Button
                                     variant="contained"
+                                    disabled={user?.isAccessRevoked}
                                     onClick={() => {
                                         setUpdate(false);
                                         setModalOpen(true);
@@ -164,6 +168,7 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
                             </Box>
                             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
                                 <MenuItem
+                                disabled={user?.isAccessRevoked}
                                     onClick={() => {
                                         setUpdate(true);
                                         setUpdateData(selectedGroup);
@@ -173,7 +178,9 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
                                 >
                                     Edit
                                 </MenuItem>
-                                <MenuItem onClick={() => deleteAddonGroup()}>Delete</MenuItem>
+                                <MenuItem 
+                                disabled={user?.isAccessRevoked}
+                                onClick={() => deleteAddonGroup()}>Delete</MenuItem>
                             </Menu>
                         </Box>
                     )}
@@ -213,6 +220,7 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
                             {user && user?.roleId!==7 && !selectedBranch &&
                             <Button
                                 variant="contained"
+                                disabled={user?.isAccessRevoked}
                                 onClick={() => {
                                     setUpdateA(false);
                                     setModalOpenA(true);

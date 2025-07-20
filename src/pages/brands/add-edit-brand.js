@@ -31,9 +31,12 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import theme
 import { QRCodeCanvas } from 'qrcode.react';
 import { useFetchBranchList } from '../../features/BranchesTable/hooks/useFetchBranchesList';
+import { useAuth } from '../../providers/authProvider';
+
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
+
     return (
         <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
             {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -42,6 +45,8 @@ function TabPanel(props) {
 }
 
 const FormComponent = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const initialValues = {
         brandName: '',
         brandNameNative: '',
@@ -252,7 +257,7 @@ const FormComponent = () => {
                     twitterURL: selectedBrand?.socialTwitterUrl || '',
                     playStoreUrl: selectedBrand?.playStoreUrl || '',
                     appleStoreUrl: selectedBrand?.appleStoreUrl || '',
-                    useQRCode: false,
+                    useQRCode: selectedBrand?.showQrCode || false,
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
                     menuView: selectedBrand?.menuView || false,
                     menuOrdering: selectedBrand?.menuOrdering || false,
@@ -342,7 +347,8 @@ const FormComponent = () => {
             titleNameForPickUp: value?.titleNameForPickUp || '',
             titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
             titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
-            showMacros: value?.showMacros || ''
+            showMacros: value?.showMacros || false,
+            showQrCode: value?.useQRCode ||false
         };
 
         try {
@@ -406,7 +412,8 @@ const FormComponent = () => {
             titleNameForPickUp: value?.titleNameForPickUp || '',
             titleNameForDriveThruNative: value?.titleNameForDriveThruNative || '',
             titleNameForPickUpNative: value?.titleNameForPickUpNative || '',
-            showMacros: value?.showMacros || false
+            showMacros: value?.showMacros || false,
+            showQrCode: value?.useQRCode ||false
         };
 
         try {
@@ -467,7 +474,6 @@ const FormComponent = () => {
                             if (tabValue < validationSchemas.length - 1) {
                                 setTabValue((prev) => prev + 1); // Move to the next tab on valid submit
                             } else {
-                                console.log('Final Submit');
                                 if (!id) {
                                     createNewBrand(values);
                                 } else {
@@ -1210,27 +1216,32 @@ const FormComponent = () => {
                                                     helperText={touched.playStoreUrl && errors.playStoreUrl}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={12}>
-                                            <Typography variant="h5" gutterBottom>
-                                                Terms and Conditions
-                                                </Typography>
-                                                <ReactQuill
-                                                theme="snow"
-                                                value={values.termsAndConditions}
-                                                onChange={(content) => setFieldValue('termsAndConditions', content)}
-                                                />
+                                            <Grid item xs={12} sm={6}>
+                                            <Field
+                                                as={TextField}
+                                                name="termsAndConditions"
+                                                label="Terms and Conditions"
+                                                fullWidth
+                                                variant="outlined"
+                                                multiline
+                                                onChange={handleChange}
+                                                error={touched.termsAndConditions && Boolean(errors.termsAndConditions)}
+                                                helperText={touched.termsAndConditions && errors.termsAndConditions}
+                                            />
                                             </Grid>
 
-                                            <Grid item xs={12} sm={12}>
-                                            <Typography variant="h5" gutterBottom>
-                                                Privacy Policy
-                                                </Typography>
-                                                <ReactQuill
-                                                theme="snow"
-                                                value={values.privacyPolicy}
-                                                onChange={(content) => setFieldValue('privacyPolicy', content)}
-                                                />
-
+                                            <Grid item xs={12} sm={6}>
+                                            <Field
+                                                as={TextField}
+                                                name="privacyPolicy"
+                                                label="Privacy Policy"
+                                                fullWidth
+                                                variant="outlined"
+                                                multiline
+                                                onChange={handleChange}
+                                                error={touched.privacyPolicy && Boolean(errors.privacyPolicy)}
+                                                helperText={touched.privacyPolicy && errors.privacyPolicy}
+                                            />
                                             </Grid>
 
                                             <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
@@ -1326,6 +1337,7 @@ const FormComponent = () => {
                                                         type="submit"
                                                         variant="contained"
                                                         color="primary"
+                                                        disabled={user?.isAccessRevoked} 
                                                         sx={{ minWidth: '120px' }} // Consistent button size
                                                     >
                                                         {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}

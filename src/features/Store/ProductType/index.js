@@ -10,7 +10,12 @@ import storeServices from 'services/storeServices';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import ConfirmationModal from 'components/confirmation-modal';
+import { useAuth } from 'providers/authProvider';
+
+
+
 export default function ProductType({sortOrder }) {
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const [reload, setReload] = useState(false);
     const [selectedBrand, setselectedBrand] = useState({});
@@ -143,7 +148,7 @@ export default function ProductType({sortOrder }) {
             renderCell: (params) => {
                 return (
                     <Grid container direction="row" alignItems="center">
-                        <Button onClick={(event) => handleClickCategory(event, params)}>Edit categories</Button>
+                        <Button disabled={user?.isAccessRevoked} onClick={(event) => handleClickCategory(event, params)}>Edit categories</Button>
                         <MoreVertIcon onClick={(event) => handleClick(event, params)} />
                     </Grid>
                 );
@@ -194,6 +199,7 @@ export default function ProductType({sortOrder }) {
                             <Button
                                 size="small"
                                 variant="contained"
+                                disabled={user?.isAccessRevoked}
                                 sx={{ textTransform: 'capitalize' }}
                                 onClick={() => {
                                     setUpdate(false);
@@ -201,7 +207,7 @@ export default function ProductType({sortOrder }) {
                                     setModalOpen(true);
                                 }}
                             >
-                                Add New Product Type
+                                Add New Category
                             </Button>
                         </Grid>
                     </Box>
@@ -227,7 +233,7 @@ export default function ProductType({sortOrder }) {
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

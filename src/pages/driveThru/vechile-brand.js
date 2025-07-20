@@ -20,9 +20,12 @@ import React, { useState, useEffect } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import carService from 'services/carService';
 import CreateVechileBrand from "./create-vehicle-brand"
+import { useAuth } from 'providers/authProvider';
 
 
 const VechileBrand = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
   const [reload, setReload] = useState(false);
   const { brandsList } = useFetchBrandsList(false);
   const [selectedBrand, setselectedBrand] = useState('');
@@ -154,6 +157,7 @@ const VechileBrand = () => {
                 <Button
                     size="small"
                     variant="contained"
+                    disabled={user?.isAccessRevoked}
                     sx={{ textTransform: 'capitalize' }}
                     onClick={() =>{ handleModalOpen (true); setselectedCarBrand("")}}
                 >
@@ -205,7 +209,7 @@ const VechileBrand = () => {
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem  disabled={user?.isAccessRevoked} key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )

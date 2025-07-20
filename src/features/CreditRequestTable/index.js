@@ -6,9 +6,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
 import moment from 'moment-jalaali';
 
-const CreditRequestTable = () => {
+const CreditRequestTable = ({user}) => {
     const navigate = useNavigate();
-
     const location = useLocation();
 
     const [creditRequest, setCreditRequest] = useState([]);
@@ -218,7 +217,7 @@ const CreditRequestTable = () => {
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

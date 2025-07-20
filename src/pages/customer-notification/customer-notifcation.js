@@ -20,7 +20,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ServiceFactory } from 'services/index';
 import moment from 'moment-jalaali';
-const CustomerNotification = () => {
+const CustomerNotification = ({user}) => {
+
     const [selectedBrand, setselectedBrand] = useState({});
     const [reload, setReload] = useState(false);
     const [customerGroup, setCustomerGroup] = useState([]);
@@ -41,6 +42,7 @@ const CustomerNotification = () => {
             ]);
             // Process customer groups
             if (customerGroupsResponse) {
+                
                 const tempGroup = customerGroupsResponse.data.result.data.data.filter((group) => group.type === 'Base');
                 setCustomerGroup(tempGroup);
             }
@@ -273,7 +275,8 @@ const CustomerNotification = () => {
                 >
                     {options.map((row, index) => {
                         return (
-                            <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+            
+                            <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                                 {row.name}
                             </MenuItem>
                         );

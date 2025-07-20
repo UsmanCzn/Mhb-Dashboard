@@ -21,13 +21,18 @@ import * as Yup from 'yup';
 import { ServiceFactory } from 'services/index';
 import { useBranches } from 'providers/branchesProvider';
 import { useSnackbar } from 'notistack';
+import AddBalanceModal from './balance-calculator'
+import { useAuth } from 'providers/authProvider';
 
 const CreateNotification = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+    
     const [selectedBrand, setselectedBrand] = useState({});
     const [customerGroup, setCustomerGroup] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isPaymentUrlLoading, setIsPaymentUrlLoading] = useState(false);
     const [notificationBalance, setNotificationBalance] = useState(0);
+    const [openModal, setOpenModal] = useState(false);
     const filteredGroups = customerGroup.filter((e) => e.brandId === selectedBrand.id);
     const { branchesList } = useBranches();
     const filteredBranch = branchesList.filter((e) => e.brandId === selectedBrand.id);
@@ -38,7 +43,7 @@ const CreateNotification = () => {
     const getCustomerGroups = async () => {
         const response = await customerService.GetCustomersGroups();
         if (response) {
-            const tempGroup = response.data.result.data.data.filter((group) => group.type === 'Base');
+            const tempGroup = response.data.result.data.data.filter((group) => group.type === "DefaultBrandGroup" || group.type === "BrandGroup");
             setCustomerGroup(tempGroup);
         }
     };
@@ -52,45 +57,7 @@ const CreateNotification = () => {
         setIsLoading(false);
     };
 
-    const handleAddBalance = async () => {
-        setIsPaymentUrlLoading(true);
-        const response = await customerService.CheckNotificationBalanceStatus(selectedBrand?.companyId);
-        if (response && response.data.result?.isManualOnly) {
-            console.log(response);
-            enqueueSnackbar(response.data.result?.message, {
-                variant: 'error'
-            });
-        setIsPaymentUrlLoading(false);
 
-        }
-        else {
-            handleConfirmBalance(response.data.result?.creditPrice,response.data.result?.productName);
-
-          }
-        // const response = await customerService.AddNotificationBalance(selectedBrand?.companyId);
-        // if (response) {
-        //     getNotificationBalance();
-        // }
-    };
-
-    const handleConfirmBalance = async (amount, productName) => {
-        setIsLoading(true);
-      
-        try {
-          const res = await customerService.AddNotificationBalance(amount, selectedBrand?.companyId, productName);
-      
-          if (res?.data?.result?.isSuccess && res?.data?.result?.paymentUrl) {
-            // Redirect to the payment page
-            window.location.href = res?.data?.result?.paymentUrl;
-          } else {
-            enqueueSnackbar('Something went wrong. Please try again.', { variant: 'error' });
-          }
-        } catch (error) {
-          enqueueSnackbar('Failed to initiate payment.', { variant: 'error' });
-        } finally {
-          setIsLoading(false);
-        }
-      };
       
     const { brandsList } = useFetchBrandsList(false);
     useEffect(() => {
@@ -146,6 +113,14 @@ const CreateNotification = () => {
             setselectedBrand(brandsList[0]);
         }
     }, [brandsList]);
+
+    const removeEmojis = (str) => {
+        return str.replace(
+          /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])+|\uFE0F/g,
+          ''
+        );
+      };
+      
     return (
         <>
         <Grid container spacing={2}>
@@ -175,7 +150,7 @@ const CreateNotification = () => {
                             Current Notification Balance : {notificationBalance}
                         </Typography>
 
-                        <Button variant="contained" color="primary" onClick={handleAddBalance}>
+                        <Button variant="contained" disabled={user?.isAccessRevoked} color="primary" onClick={()=>setOpenModal(true)}>
                             Add Balance
                         </Button>
                         </Box>
@@ -220,7 +195,9 @@ const CreateNotification = () => {
                                         label="Notification Title"
                                         type="text"
                                         value={formik.values.notificationTitle}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) =>
+                                            formik.setFieldValue('notificationTitle', removeEmojis(e.target.value))
+                                          }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationTitle && Boolean(formik.errors.notificationTitle)}
                                         helperText={formik.touched.notificationTitle && formik.errors.notificationTitle}
@@ -238,7 +215,9 @@ const CreateNotification = () => {
                                         label="Notification Native Title"
                                         type="text"
                                         value={formik.values.notificationTitleNative}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) =>
+                                            formik.setFieldValue('notificationTitleNative', removeEmojis(e.target.value))
+                                          }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationTitleNative && Boolean(formik.errors.notificationTitleNative)}
                                         helperText={formik.touched.notificationTitleNative && formik.errors.notificationTitleNative}
@@ -327,7 +306,9 @@ const CreateNotification = () => {
                                         fullWidth
                                         rows={4}
                                         value={formik.values.notificationMessage}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) =>
+                                            formik.setFieldValue('notificationMessage', removeEmojis(e.target.value))
+                                          }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationMessage && Boolean(formik.errors.notificationMessage)}
                                         helperText={formik.touched.notificationMessage && formik.errors.notificationMessage}
@@ -343,7 +324,9 @@ const CreateNotification = () => {
                                         fullWidth
                                         rows={4}
                                         value={formik.values.notificationMessageNative}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) =>
+                                            formik.setFieldValue('notificationMessageNative', removeEmojis(e.target.value))
+                                          }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationMessageNative && Boolean(formik.errors.notificationMessageNative)}
                                         helperText={formik.touched.notificationMessageNative && formik.errors.notificationMessageNative}
@@ -359,14 +342,16 @@ const CreateNotification = () => {
                                         fullWidth
                                         rows={4}
                                         value={formik.values.Comments}
-                                        onChange={formik.handleChange}
+                                        onChange={(e) =>
+                                            formik.setFieldValue('Comments', removeEmojis(e.target.value))
+                                          }
                                         onBlur={formik.handleBlur}
                                     />
                                 </Grid>
                             </Grid>
                         </CardContent>
-                        <CardActions>
-                            <Button type="submit" variant="contained" color="primary">
+                        <CardActions> 
+                            <Button type="submit" disabled={user?.isAccessRevoked} variant="contained" color="primary">
                                 Submit
                             </Button>
                         </CardActions>
@@ -375,8 +360,9 @@ const CreateNotification = () => {
             </Grid>
         </form>
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isPaymentUrlLoading}>
-  <CircularProgress color="inherit" />
-</Backdrop>
+        <CircularProgress color="inherit" />
+        </Backdrop>
+        <AddBalanceModal open={openModal} onClose={() => setOpenModal(false)} brand={selectedBrand} setIsPaymentUrlLoading={()=>setIsPaymentUrlLoading} />
 
         </>
     );

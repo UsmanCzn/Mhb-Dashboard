@@ -152,7 +152,7 @@ OrderStatus.propTypes = {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable({ users, payers, headers, top10Products, lastOrders }) {
+export default function OrderTable({ users, payers, headers, top10Products, lastOrders, selectedBrand }) {
     const [order] = useState('asc');
     const [orderBy] = useState('trackingNo');
     const [selected] = useState([]);
@@ -174,7 +174,7 @@ export default function OrderTable({ users, payers, headers, top10Products, last
         const data = JSON.stringify(users);
         navigate(`/pages/dashboard/viewAll?data =${encodeURIComponent(data)}}`);
     };
-
+    
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -243,7 +243,14 @@ export default function OrderTable({ users, payers, headers, top10Products, last
                                         >
                                             <TableCell align="left">{row.userFullName}</TableCell>
                                             <TableCell align="right">{row.totalOrders}</TableCell>
-                                            <TableCell align="right">{row.totalSale.toFixed(3) + ' KWD'}</TableCell>
+                                            <TableCell align="right">
+                                                {
+                                                    selectedBrand?.currency
+                                                    ? `${row.totalSale.toFixed(selectedBrand?.currencyDecimals)}  ${selectedBrand.currency}`
+                                                    : `${row.totalSale.toFixed(3)}`
+                                                }
+                                                </TableCell>
+
                                         </TableRow>
                                     );
                                 })
@@ -260,7 +267,13 @@ export default function OrderTable({ users, payers, headers, top10Products, last
                                         <TableCell align="right">
                                             {row.countOrdered} {row.countOrdered > 1 ? 'Times' : 'Time'}
                                         </TableCell>
-                                        <TableCell align="right">{row.totalSales.toFixed(2) + ' KWD'}</TableCell>
+                                        <TableCell align="right">
+                                                        {
+                                                    selectedBrand?.currency
+                                                    ? `${row.totalSales.toFixed(selectedBrand?.currencyDecimals)}  ${selectedBrand.currency}`
+                                                    : `${row.totalSales.toFixed(3)}`
+                                                }
+                                            </TableCell>
                                     </TableRow>
                                 ))
                             ) : lastOrders && lastOrders.length > 0 ? (

@@ -12,7 +12,12 @@ import EditStockModal from '../../components/stockModal/index';
 import stockService from 'services/stockService';
 
 const ProductCard = (props) => {
-    const { product, branchid, fetchProduct } = props;
+    const { product, branchid, fetchProduct,user } = props;
+    console.log(product,"product.....");
+    console.log(branchid,"branchId.....");
+    const branchProduct = product.productQtyWithBranchs?.find(
+        (e) => e.branchid === branchid
+      );
     const [Item, setItem] = useState(product);
     const handleToggle = (event) => {
         let temp = { ...product };
@@ -80,7 +85,6 @@ const ProductCard = (props) => {
                 <Box
                     sx={{
                         width: '100%',
-                        height: 280,
                         border: '1px solid lightGrey',
                         backgroundColor: 'white',
                         p: 2,
@@ -111,8 +115,25 @@ const ProductCard = (props) => {
                         <Typography variant="h5" style={{ fontSize: '14px' }}>
                             {product?.name}
                         </Typography>
-                        <EditIcon onClick={() => handleOpenModal()} fontSize="small" />
+                        {
+                        branchProduct && 
+                        <IconButton
+                        
+                        onClick={handleOpenModal}
+                        disabled={!branchProduct ||user?.isAccessRevoked}
+                        size="small"
+                        sx={{ color: !branchProduct ? 'gray' : 'inherit' }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                        
+                        }
                     </Box>
+         
+                    <Grid container justifyContent="space-between">
+                        <Typography variant="h5" style={{ fontSize: '14px' }} alignSelf="flex-start"> Price</Typography>
+                        <Typography alignSelf="flex-end">{product?.price}</Typography>
+                    </Grid>
                     {/* <Typography variant="h7" style={{ fontSize: '14px' }}>
                         Type: {type?.name}
                     </Typography> */}
@@ -125,48 +146,23 @@ const ProductCard = (props) => {
                     </Grid>
                     <Grid container justifyContent="space-between">
                     <Typography alignSelf="flex-start"> Change Availability</Typography>
-                    <Box >
-                            <Switch
-                                title="Show Product Availability"
-                                edge="end"
-                                onChange={(event) => handleToggle(event, product)}
-                                checked={product.isQtyAvailable}
-                            />
-                        </Box>
+                    <Box>
+                    {branchProduct && (
+                        <Switch
+                        title="Show Product Availability"
+                        edge="end"
+                        disabled={user?.isAccessRevoked}
+                        onChange={(event) => handleToggle(event, product)}
+                        checked={product.isQtyAvailable}
+                        
+                        />
+                    )}
+                    </Box>
+
                     </Grid>
                 </Box>
             </Box>
-            {/* <Card sx={{ maxWidth: 345 }}>
-                <CardMedia sx={{ height: 140 }} image={product.productImage || DefaultImg} title="green iguana" />
-                <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Box sx={{}}>
-                            <Typography gutterBottom variant="h5" sx={{ fontSize: '18px' }} component="div">
-                                {Item?.name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ fontSize: '18px' }} color="text.secondary">
-                                Stock:{Item?.branchQty}
-                            </Typography>
-                        </Box>
-                        <Box sx={{}}>
-                            <Switch
-                                title="Show Product Availability"
-                                edge="end"
-                                onChange={(event) => handleToggle(event, Item)}
-                                checked={Item.isQtyAvailable}
-                            />
-                        </Box>
-                    </Box>
-                </CardContent>
-                <CardActions>
-                    <Box sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => handleOpenModal()}>
-                        <IconButton aria-label="Example">
-                            <EditIcon sx={{ cursor: 'pointer' }} />
-                        </IconButton>
-                        <Typography variant="h5">Edit Stock</Typography>
-                    </Box>
-                </CardActions>
-            </Card> */}
+ 
             <EditStockModal open={isModalOpen} onClose={handleCloseModal} onUpdateStock={handleUpdateStock} selectedProduct={product} />
         </>
     );

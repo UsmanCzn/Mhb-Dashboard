@@ -6,7 +6,7 @@ import moment from 'moment/moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
 import { useSnackbar } from 'notistack';
-
+import { useAuth } from 'providers/authProvider';
 
 const PointsRequestTable = () => {
 
@@ -14,11 +14,13 @@ const PointsRequestTable = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    
+    const { user } = useAuth();
     const open = Boolean(anchorEl);
 
     useEffect(() => {
         getPointsRequest();
+    
+        
         // return () => {
         //   second
         // }
@@ -27,9 +29,8 @@ const PointsRequestTable = () => {
     // GET CREDIT DETAILS
     const getPointsRequest = async () => {
         await customerService
-            .getUsedPointsRequest()
+            .getUsedPointsRequest(user.roleId===2)
             .then((res) => {
-                console.log(res?.data?.result, 'request');
                 setPointsRequest(res.data.result);
                 // setWalletDetails(res?.data?.result);
             })
@@ -47,7 +48,6 @@ const PointsRequestTable = () => {
     };
 
     const handleClose = (data) => {
-        console.log(data);
         if (data.name == 'Accept') {
             const body = {
                 id: selectedRow.id,
@@ -166,7 +166,6 @@ const PointsRequestTable = () => {
             headerAlign: 'left',
 
             renderCell: (params) => {
-                console.log(params.row.isAct, 'ssoopd');
                 return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
             }
         }
@@ -205,7 +204,7 @@ const PointsRequestTable = () => {
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

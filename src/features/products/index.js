@@ -6,7 +6,11 @@ import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFet
 import UpdateProduct from 'components/store/products/updateProduct';
 import storeServices from 'services/storeServices';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
+import { useAuth } from 'providers/authProvider';
+
 const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrder, sortBy }) => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
     const { productTypes } = useFetchProductTypeList(true, selectedBranch);
     const navigate = useNavigate();
@@ -182,6 +186,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 <Button
                     size="small"
                     variant="contained"
+                    disabled={user?.isAccessRevoked}
                     sx={{ textTransform: 'capitalize' }}
                     onClick={() => navigate(`/addEditProduct/${selectedBranch.id}`)}
                 >

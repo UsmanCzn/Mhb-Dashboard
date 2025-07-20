@@ -6,8 +6,11 @@ import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import NewCustomer from 'components/customers/newCustomer';
 import TierTable from 'features/Customers/TierTable/tierTable';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+import { useAuth } from 'providers/authProvider';
 
 export default function TiersList() {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const { type } = useParams();
 
     const navigate = useNavigate();
@@ -62,6 +65,7 @@ export default function TiersList() {
                             <Button
                                 size="small"
                                 variant="contained"
+                                disabled={user?.isAccessRevoked}
                                 sx={{ textTransform: 'capitalize' }}
                                 onClick={() => {
                                     setNewModal(true);

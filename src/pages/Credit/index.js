@@ -9,7 +9,11 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import CustomerNotification from '../customer-notification/customer-notifcation';
 import FreeDrinksRequest from './free-drinks-request';
+import { useAuth } from 'providers/authProvider';
+
 const Credit = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const [value, setValue] = React.useState('1');
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -35,16 +39,16 @@ const Credit = () => {
                     </TabList>
                 </Box>
                 <TabPanel value="1">
-                    <CreditRequestTable />
+                    <CreditRequestTable user={user} />
                 </TabPanel>
                 <TabPanel value="2">
-                    <PointsRequestTable />
+                    <PointsRequestTable user={user} />
                 </TabPanel>
                 <TabPanel value="3">
-                    <CustomerNotification />
+                    <CustomerNotification user={user} />
                 </TabPanel>
                 <TabPanel value="4">
-                    <FreeDrinksRequest />
+                    <FreeDrinksRequest user={user} />
                 </TabPanel>
             </TabContext>
             <Grid item xs={12}></Grid>

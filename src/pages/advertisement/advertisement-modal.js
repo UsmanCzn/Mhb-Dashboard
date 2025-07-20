@@ -69,7 +69,10 @@ function AdvertisementDialog({ open, onClose, advertisement }) {
     
     const response = await customerService.GetCustomersGroups()
     if (response){
-      const tempGroup = response.data.result.data.data.filter((group)=> group.type=== "Base")
+      const tempGroup = response.data.result.data.data.filter((group) =>
+        (group.type === "DefaultBrandGroup" || group.type === "BrandGroup") &&
+        group.brandId == formData.brandId
+      );
       setCustomerGroup(tempGroup)
     } 
   }

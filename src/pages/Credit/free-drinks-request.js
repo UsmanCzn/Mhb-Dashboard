@@ -6,12 +6,15 @@ import moment from 'moment/moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
 import { useSnackbar } from 'notistack';
+import { useAuth } from 'providers/authProvider';
 
 const FreeDrinksRequest = () => {
         const [freeDrinksRequest, setFreeDinksRequest] = useState([]);
         const [anchorEl, setAnchorEl] = useState(null);
         const [selectedRow, setSelectedRow] = useState(null);
         const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+        const { user } = useAuth();
+
         const open = Boolean(anchorEl);
         useEffect(() => {
             getFreeDrinksRequest();
@@ -20,7 +23,7 @@ const FreeDrinksRequest = () => {
         // GET CREDIT DETAILS
         const getFreeDrinksRequest = async () => {
             await customerService
-                .getUsedPointsRequest()
+                .getUsedPointsRequest(user.roleId===2)
                 .then((res) => {
                     console.log(res?.data?.result, 'request');
                     setFreeDinksRequest(res.data.result);
@@ -160,7 +163,6 @@ const FreeDrinksRequest = () => {
                 headerAlign: 'left',
 
                 renderCell: (params) => {
-                    console.log(params.row.isAct, 'ssoopd');
                     return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
                 }
             }
@@ -200,7 +202,7 @@ const FreeDrinksRequest = () => {
                 >
                     {options.map((row, index) => {
                         return (
-                            <MenuItem onClick={() => handleClose(row)} value={row.name}>
+                            <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                                 {row.name}
                             </MenuItem>
                         );

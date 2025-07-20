@@ -6,10 +6,12 @@ import { useFetchBranchList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Switch from '@mui/material/Switch';
 import branchServices from 'services/branchServices';
+import { useAuth } from 'providers/authProvider';
 
 const label = { inputProps: { 'aria-label': 'Size switch demo' } };
 
 export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData, bid }) {
+    const { user, userRole, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList({ reload });
@@ -86,6 +88,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
                 return (
                     <Switch
                         {...label}
+                        disabled={user?.isAccessRevoked}
                         checked={params.row.isBusy}
                         onChange={(event) => {
                             branchSwitch(event, params.row);
@@ -104,6 +107,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
                 return (
                     <Switch
                         {...label}
+                        disabled={user?.isAccessRevoked}
                         checked={params.row.ishide}
                         onChange={(event) => {
                             hideBranch(event, params.row);
@@ -144,7 +148,9 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             flex: 1,
             headerAlign: 'left',
             renderCell: (params) => {
-                return <Switch {...label} checked={params.row.isRewardMissing} size="small" />;
+                return <Switch {...label}
+                disabled={user?.isAccessRevoked}
+                checked={params.row.isRewardMissing} size="small" />;
             }
         },
         {
@@ -216,7 +222,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

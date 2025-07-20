@@ -10,8 +10,13 @@ import moment from 'moment-jalaali';
  import UpdatePointCollection from "../updatePointCollection"
  import DuplicateReward from "../duplicateReward"
  import rewardService from 'services/rewardService';
-import NewRewardCollection from '../newRewardCollection';
-export default function PointsCollectionTable({ selectedBrand, customerGroups, }) {
+ import NewRewardCollection from '../newRewardCollection';
+ import { useAuth } from 'providers/authProvider';
+
+
+
+export default function PointsCollectionTable({ selectedBrand, customerGroups,user }) {
+
 
   const navigate = useNavigate();
 
@@ -189,6 +194,7 @@ export default function PointsCollectionTable({ selectedBrand, customerGroups, }
                     <Button
                         size="small"
                         variant="contained"
+                        disabled={user?.isAccessRevoked}
                         sx={{ textTransform: 'capitalize' }}
                         onClick={() => {
                             setNewModal(true);
@@ -218,7 +224,7 @@ export default function PointsCollectionTable({ selectedBrand, customerGroups, }
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

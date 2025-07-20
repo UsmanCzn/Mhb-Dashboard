@@ -9,7 +9,11 @@ import NotificationSound from 'assets/audio/orderSound.mp3';
 import orderServices from 'services/orderServices';
 import AssignTaskDialog from './assign-task-dialog';
 import { useSnackbar } from 'notistack';
+import { useAuth } from 'providers/authProvider';
+
 export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [selectedRow, setSelectedRow] = useState();
@@ -316,7 +320,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

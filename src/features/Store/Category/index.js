@@ -5,22 +5,9 @@ import {
     Typography,
     TextField,
     Grid,
-    Button,
-    Switch,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormControl,
-    FormLabel
-} from '@mui/material/index';
-import DropDown from 'components/dropdown';
-
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+    Button
+} from '@mui/material';
 import { CloudUploadOutlined } from '@ant-design/icons';
-import { ServiceFactory } from 'services/index';
-import constants from 'helper/constants';
 import { useSnackbar } from 'notistack';
 import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
@@ -36,7 +23,6 @@ const style = {
     p: 4,
     borderRadius: 1,
     overflow: 'scroll',
-
     height: '80%'
 };
 
@@ -49,14 +35,10 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
         subTypes: [],
         orderValue: 0
     };
-
+    
 
     const [data, setData] = useState(intialValue);
-
-    const [countries, setCountries] = useState([]);
-    const [groups, setGroups] = useState([]);
     const [p1, setP1] = useState(null);
-    const [p2, setP2] = useState(null);
     const [subTypeImages, setSubTypeImages] = useState({}); // Initialize an empty object
 
     useEffect(() => {
@@ -182,16 +164,23 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
             <form>
                 <Box sx={style}>
                     <Grid container spacing={4}>
-                        <Grid item>
-                            <Typography variant="h4">Edit Categories</Typography>
-                        </Grid>
+                    <Grid item>
+                    <Typography variant="h4" fontWeight="bold">
+                        Manage Subcategories
+                    </Typography>
+                    <Typography variant="subtitle1" color="text.secondary">
+                        Add a new subcategory or update existing ones below.
+                    </Typography>
+                    </Grid>
+
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item xs={6}>
-                                    <Typography variant="h5">Product Type : {data?.type}</Typography>
+                                    <Typography variant="h5">Category : {type.name}</Typography>
                                 </Grid>
                             </Grid>
                         </Grid>
+                        
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item xs={2}>
@@ -226,7 +215,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Category Name"
+                                        label="Subcategory Name"
                                         variant="outlined"
                                         required
                                         value={data.name}
@@ -238,7 +227,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                     <TextField
                                         id="outlined-basic"
                                         fullWidth
-                                        label="Category Native Name"
+                                        label="Subcategory Native Name"
                                         variant="outlined"
                                         required
                                         value={data.nativeName}
@@ -302,7 +291,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                             <TextField
                                                 id="outlined-basic"
                                                 fullWidth
-                                                label="Category Name"
+                                                label="Subcategory Name"
                                                 variant="outlined"
                                                 required
                                                 value={item?.name}
@@ -318,7 +307,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                                             <TextField
                                                 id="outlined-basic"
                                                 fullWidth
-                                                label="Category Native Name"
+                                                label="Subcategory Native Name"
                                                 variant="outlined"
                                                 required
                                                 value={item?.nativeName}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Grid, Typography, Button, Box, FormControl, InputLabel, MenuItem, Select, Avatar } from '@mui/material';
+import { Grid, Typography, Button, Box, FormControl, InputLabel, MenuItem, Select, Avatar,IconButton } from '@mui/material';
 import ConfirmationModal from '../../components/confirmation-modal';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
@@ -8,8 +8,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import OfferModal from './add-offer-modal';
 import offerServices from 'services/offerServices';
 import LinearProgress from '@mui/material/LinearProgress';
+import { useAuth } from 'providers/authProvider';
+
 
 const Offers = () => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const [page, setPage] = useState(0);
     const [selectedOffer, setSelectedOffer] = useState(null);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -105,12 +109,23 @@ const Offers = () => {
                     </Box>
                 </TableCell>
                 <TableCell>
-                    <Box display="flex" alignItems="center">
-                 
-                            <DeleteIcon style={{ color: '#DD4D2B', border: 'none', padding: 0,cursor:'pointer'}}  onClick={() => handleDelete(offer)}/>
-                    
-                            <EditIcon  style={{ color: '#44ab38f0', border: 'none', padding: 0 ,cursor:'pointer'}} onClick={() => handleEdit(offer)}/>
-                    </Box>
+                <Box display="flex" alignItems="center">
+                <IconButton
+                    disabled={user?.isAccessRevoked}
+                    onClick={() => handleDelete(offer)}
+                    sx={{ p: 0 }}
+                >
+                    <DeleteIcon sx={{ color: '#DD4D2B' }} />
+                </IconButton>
+
+                <IconButton
+                    disabled={user?.isAccessRevoked}
+                    onClick={() => handleEdit(offer)}
+                    sx={{ p: 0 }}
+                >
+                    <EditIcon sx={{ color: '#44ab38f0' }} />
+                </IconButton>
+                </Box>
                 </TableCell>
             </TableRow>
         ));
@@ -151,6 +166,7 @@ const Offers = () => {
                                     setSelectedOffer(null);
                                     setModalOpen(true);
                                 }}
+                                disabled={user?.isAccessRevoked}
                                 variant="contained"
                                 sx={{ textTransform: 'capitalize' }}
                             >

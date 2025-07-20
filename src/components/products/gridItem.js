@@ -3,8 +3,12 @@ import { Chip, Grid, Typography, Box, Menu, MenuItem, Button } from '@mui/materi
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
+import { useAuth } from 'providers/authProvider';
+
 
 const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setUpdate, duplicateProduct }) => {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const [anchorEl, setAnchorEl] = useState(null);
     const type = productTypes?.find((obj) => obj?.id === item?.productTypeId);
     const navigate = useNavigate();
@@ -103,9 +107,9 @@ const GridItem = ({ item, brand, productTypes, setModalOpen, setUpdateData, setU
                     </Grid>
 
                     {/* Menu for Edit and Duplicate */}
-                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-                        <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                        <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
+                    <Menu  anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+                        <MenuItem disabled={user?.isAccessRevoked} onClick={handleEdit}>Edit</MenuItem>
+                        <MenuItem disabled={user?.isAccessRevoked} onClick={handleDuplicate}>Duplicate</MenuItem>
                     </Menu>
                 </Box>
             </Box>

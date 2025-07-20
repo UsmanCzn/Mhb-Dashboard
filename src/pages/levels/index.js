@@ -16,10 +16,15 @@ import Slide from '@mui/material/Slide';
 import RedButton from 'components/redButton';
 import NewLevel from 'features/Levels/NewLevel';
 import { useSnackbar } from 'notistack';
+import { useAuth } from 'providers/authProvider';
+
+
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 export default function LevelForm() {
+    const { user, userRole, isAuthenticated } = useAuth();
+
     const { type } = useParams();
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
@@ -33,6 +38,7 @@ export default function LevelForm() {
     const [pointCollection, setPointCollection] = useState();
     const [deleteAlert, setDeleteAlert] = React.useState(false);
     const [newModal, setNewModal] = useState(false);
+
     const hideModal = (value) => {
         setNewModal(value);
     };
@@ -198,7 +204,7 @@ export default function LevelForm() {
                             </FormControl>
                         </Grid>
                         <Grid item xs={'auto'}>
-                            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
+                            <Button size="small" disabled={user?.isAccessRevoked} variant="contained" sx={{ textTransform: 'capitalize' }} onClick={showAddNew}>
                                 Add New Level
                             </Button>
                         </Grid>
@@ -226,7 +232,7 @@ export default function LevelForm() {
                     >
                         {options.map((row, index) => {
                             return (
-                                <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                                <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                                     {row.name}
                                 </MenuItem>
                             );

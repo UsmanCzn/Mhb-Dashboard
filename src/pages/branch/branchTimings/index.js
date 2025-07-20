@@ -18,6 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+import { useAuth } from 'providers/authProvider';
 
 
 
@@ -26,6 +27,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   });
   
 export default function BranchTimings() {
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const branchServices = ServiceFactory.get("branch")
     const [branch, setBranch] = useState({})
@@ -85,6 +87,7 @@ export default function BranchTimings() {
                             <Button
                                 size="small"
                                 variant="contained"
+                                disabled={user?.isAccessRevoked} 
                                 sx={{ textDecoration: 'none' }}
                                 onClick={() => {
                                     setModalOpen(true);
@@ -123,8 +126,8 @@ export default function BranchTimings() {
                     <DialogContentText id="alert-dialog-slide-description">Are you sure you want to delete this Timing?</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-                    <Button onClick={() => deleteTiming()}>Delete</Button>
+                    <Button  onClick={() => setDeleteOpen(false)}>Cancel</Button>
+                    <Button disabled={user?.isAccessRevoked} onClick={() => deleteTiming()}>Delete</Button>
                 </DialogActions>
             </Dialog>
         </>

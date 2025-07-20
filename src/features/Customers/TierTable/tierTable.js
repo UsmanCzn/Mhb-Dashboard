@@ -10,12 +10,14 @@ import rewardService from 'services/rewardService';
 import NewTier from '../newTier/newTier';
 import { useTiers } from '../hooks/useTiers';
 import { FaPencilAlt } from 'react-icons/fa';
+import { useAuth } from 'providers/authProvider';
 
 import LinearProgress from '@mui/material/LinearProgress';
 
 export default function TierTable({ selectedBrand, reload, customerGroups, setReload, newModal, setNewModal, setPointCollectionRef,pointCollectionRef }) {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, userRole, isAuthenticated } = useAuth();
 
     const { tiersList, fetchTiersList, totalRowCount, loading } = useTiers(reload, selectedBrand);
 
@@ -88,7 +90,10 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
     const handleClose = (data) => {
         if (data.modal && data?.name == 'Edit') {
             setNewModal(true);
-        } else if (data?.name == 'Delete') {
+        }else if(data.name === 'Customers'){
+            navigate(`/groups/customer/${pointCollection.id}`);
+        } 
+        else if (data?.name == 'Delete') {
             deletePointsCollection(pointCollection?.id);
         } else if (data?.name == 'Duplicate') {
             setDuplicateModal(true);
@@ -140,12 +145,12 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
             flex: 1,
             headerAlign: 'left'
         },
-        // {
-        //     field: 'numberOfCustomers',
-        //     headerName: 'Number of Customers',
-        //     flex: 1.2,
-        //     headerAlign: 'left'
-        // },
+        {
+            field: 'numberOfCustomers',
+            headerName: 'Number of Customers',
+            flex: 1.2,
+            headerAlign: 'left'
+        },
         // {
         //     field: 'sendNotification',
         //     headerName: 'Send Notification',
@@ -170,6 +175,10 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
         {
             name: 'Edit',
             modal: true
+        },
+        {
+            name: 'Customers',
+            modal: false
         }
     ];
 
@@ -212,7 +221,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem  disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );
@@ -341,7 +350,7 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
                     }}
                 >
                     {options.map((option, index) => (
-                        <MenuItem key={index} selected={option === 'Pyxis'} onClick={handleClose}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index}  selected={option === 'Pyxis'} onClick={handleClose}>
                             {option}
                         </MenuItem>
                     ))}

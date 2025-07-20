@@ -9,12 +9,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import orderServices from 'services/orderServices';
 import branchServices from 'services/branchServices';
-import { update } from 'lodash';
-import UpdateBranch from 'components/branches/updateBranch';
+
 
 export default function Orders() {
-    const { type } = useParams();
 
+
+    const { type } = useParams();
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [data, setData] = useState({});
@@ -59,27 +59,24 @@ export default function Orders() {
                 //     name: 'All Branches'
                 // })
                 setBranchZero((prev) => {
-                    setselectedBranch(prev[0]);
-                    return [...prev, ...branchesList];
+                    const merged = [...prev, ...branchesList]; // step 1: combine both lists
+                
+                    // step 2: remove duplicates using a Map
+                    const uniqueById = Array.from(
+                        new Map(merged.map(item => [item.id, item])).values()
+                    );
+                
+                    setselectedBranch(uniqueById[0]); // step 3: set first item as selected
+                    return uniqueById; // step 4: return the unique list
                 });
+                
             }
         } else {
             console.log('now goes to zero ', 'sb');
         }
     }, [branchesList]);
 
-    // const getBranch = async (branch) => {
-    //     console.log(branch, 'branch++++++++++');
-    //     await branchServices
-    //         .getBranchById(branch.id)
-    //         .then((res) => {
-    //             console.log(res, 'selected Branch============');
-    //             setChecked(res.data.result.isBusy);
-    //         })
-    //         .catch((err) => {
-    //             console.log(err.response);
-    //         });
-    // };
+
 
     const makeBranchBusy = async (event) => {
         try {
@@ -125,51 +122,78 @@ export default function Orders() {
     };
 
     const getAnalytics = async () => {
-        await orderServices
-            .getAcceptedOrdersNumbers(selectedBranch?.id)
-            .then((res) => {
-                setAnalytics((prevAnalytics) => ({
-                    ...prevAnalytics,
-                    accepted: res?.data?.result
-                }));
+        try{
+        const res= await orderServices.getAllOrderStatusCount(selectedBranch?.id,0)
+        console.log(res.data.result);
+        if(res){
+            const stats = res.data.result;
+        setAnalytics({
+            pending: stats.pending,
+            accepted: stats.accepted,
+            closed: stats.closed,
+            rejected: stats.rejected,
+            ready: stats.ready
+        })
+        }else{
+            setAnalytics({
+                pending: 0,
+                accepted: 0,
+                closed: 0,
+                rejected: 0,
+                ready: 0
             })
-            .catch((err) => {
-                console.log(err?.response?.data);
-            });
-        await orderServices
-            .getPendingOrdersNumbers(selectedBranch?.id)
-            .then((res) => {
-                setAnalytics((prevAnalytics) => ({
-                    ...prevAnalytics,
-                    pending: res?.data?.result
-                }));
-            })
-            .catch((err) => {
-                console.log(err?.response?.data);
-            });
-        await orderServices
-            .getReadyOrdersNumbers(selectedBranch?.id)
-            .then((res) => {
-                setAnalytics((prevAnalytics) => ({
-                    ...prevAnalytics,
-                    ready: res?.data?.result
-                }));
-            })
-            .catch((err) => {
-                console.log(err?.response?.data);
-            });
+        }
+        
+        }
+        catch(error){
 
-        await orderServices
-            .getClosedOrdersNumbers(selectedBranch?.id)
-            .then((res) => {
-                setAnalytics((prevAnalytics) => ({
-                    ...prevAnalytics,
-                    closed: res?.data?.result
-                }));
-            })
-            .catch((err) => {
-                console.log(err?.response?.data);
-            });
+        }
+
+        // await orderServices
+        //     .getAcceptedOrdersNumbers(selectedBranch?.id)
+        //     .then((res) => {
+        //         setAnalytics((prevAnalytics) => ({
+        //             ...prevAnalytics,
+        //             accepted: res?.data?.result
+        //         }));
+        //     })
+        //     .catch((err) => {
+        //         console.log(err?.response?.data);
+        //     });
+        // await orderServices
+        //     .getPendingOrdersNumbers(selectedBranch?.id)
+        //     .then((res) => {
+        //         setAnalytics((prevAnalytics) => ({
+        //             ...prevAnalytics,
+        //             pending: res?.data?.result
+        //         }));
+        //     })
+        //     .catch((err) => {
+        //         console.log(err?.response?.data);
+        //     });
+        // await orderServices
+        //     .getReadyOrdersNumbers(selectedBranch?.id)
+        //     .then((res) => {
+        //         setAnalytics((prevAnalytics) => ({
+        //             ...prevAnalytics,
+        //             ready: res?.data?.result
+        //         }));
+        //     })
+        //     .catch((err) => {
+        //         console.log(err?.response?.data);
+        //     });
+
+        // await orderServices
+        //     .getClosedOrdersNumbers(selectedBranch?.id)
+        //     .then((res) => {
+        //         setAnalytics((prevAnalytics) => ({
+        //             ...prevAnalytics,
+        //             closed: res?.data?.result
+        //         }));
+        //     })
+        //     .catch((err) => {
+        //         console.log(err?.response?.data);
+        //     });
         // await orderServices.getRejectedOrdersNumbers(selectedBranch?.id)
         // .then((res)=>{
         //     setAnalytics(prevAnalytics => ({
@@ -190,7 +214,9 @@ export default function Orders() {
     }, [selectedBranch, reload]);
 
     useEffect(() => {
+
     }, [reload]);
+    
     useEffect(() => {
         const interval = setInterval(() => {
             setReload((prev) => !prev);
@@ -198,6 +224,7 @@ export default function Orders() {
 
         return () => clearInterval(interval);
     }, []);
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>

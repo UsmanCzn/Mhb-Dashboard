@@ -21,8 +21,10 @@ import ConfirmationModal from '../../components/confirmation-modal';
 import paymentServices from 'services/paymentServices';
 import { useSnackbar } from 'notistack';
 import { ReversedPayementGateWayEnum } from '../../helper/constants';
+import { useAuth } from 'providers/authProvider';
 
 const PaymentMethodsListing = (props) => {
+    const { user, userRole, isAuthenticated } = useAuth();
     const { methods, brand, fetchData } = props;
     const [PaymentMehtods, setPaymentMehtods] = useState([]);
     const [selectedItem, setSelectedItem] = useState('');
@@ -35,7 +37,8 @@ const PaymentMethodsListing = (props) => {
         { title: 'Square', value: 4 },
         { title: 'Checkout', value: 5 },
         { title: 'MyFatoorah', value: 6 },
-        { title: 'Hesabi', value: 7 }
+        { title: 'Hesabi', value: 7 },
+        { title: 'SkipCash', value: 8 }
     ];
     const showPaymentGateway = (gatewayId) => {
         return gatewayOptions.find((e) => e.value == gatewayId)?.title || 'NONE';
@@ -143,9 +146,10 @@ const PaymentMethodsListing = (props) => {
                                             {/* <Typography variant="h5" sx={{ color: 'black' }}>
                                                 {method?.paymentGatewayName}
                                             </Typography> */}
-                                            <Switch edge="end" onChange={() => handleToggle(event, method)} checked={!method.isHidden} />
+                                            <Switch edge="end" disabled={user?.isAccessRevoked} onChange={() => handleToggle(event, method)} checked={!method.isHidden} />
                                             <IconButton
                                                 aria-label="Example"
+                                                disabled={user?.isAccessRevoked}
                                                 sx={{ backgroundColor: '#1890ff', color: 'white' }}
                                                 onClick={() => {
                                                     navigate(`/payments-settings/addEdit/${method.id}/${brand.id}`);
@@ -154,6 +158,7 @@ const PaymentMethodsListing = (props) => {
                                                 <ModeEditOutlineOutlinedIcon sx={{ cursor: 'pointer' }} />
                                             </IconButton>
                                             <IconButton
+                                                disabled={user?.isAccessRevoked}ss
                                                 sx={{ backgroundColor: '#ff1818', color: 'white' }}
                                                 aria-label="Example"
                                                 onClick={() => handleOpenConfirmation(method)}

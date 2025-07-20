@@ -20,8 +20,12 @@ import {
   import MoreVertIcon from '@mui/icons-material/MoreVert';
   import carService from 'services/carService';
   import CreateVehicleColor from "./create-vehicle-color";
+  import { useAuth } from 'providers/authProvider';
+
 
 const VechileColor = () => {
+  const { user, userRole, isAuthenticated } = useAuth();
+
     const [reload, setReload] = useState(false);
     const { brandsList } = useFetchBrandsList(false);
     const [selectedBrand, setselectedBrand] = useState('');
@@ -159,6 +163,7 @@ const VechileColor = () => {
                     size="small"
                     variant="contained"
                     sx={{ textTransform: 'capitalize' }}
+                    disabled={user?.isAccessRevoked}
                     onClick={() =>{ handleModalOpen (true); setselectedCarBrand("")}}
                 >
                     Create New Vechiles Color
@@ -209,7 +214,7 @@ const VechileColor = () => {
           {
             options.map((row, index) => { 
                    return (
-                       <MenuItem key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
+                       <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={()=> handleClose(row)} value={row.name}>{row.name}</MenuItem>
                    )
             }
             )
