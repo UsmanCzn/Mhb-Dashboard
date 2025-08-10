@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography, TextField, Button, Alert, Modal, Box, Checkbox,FormControl, InputLabel, Select,MenuItem  } from '@mui/material';
+import { Grid, Typography, TextField, Button, Modal, Box } from '@mui/material';
 
 import Counter from 'components/companies/counter';
 import DropDown from 'components/dropdown';
@@ -15,7 +15,7 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import { useSnackbar } from 'notistack';
 import tiersService from 'services/tiersService';
 
-const NewTier = ({ modal, setModal,brand, editItem,setReload }) => {
+const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
     const customerService = ServiceFactory.get('customer');
     const [isEditing, setIsEditing] = useState(false);
     const [selectedBrand, setselectedBrand] = useState(brand);
@@ -23,106 +23,102 @@ const NewTier = ({ modal, setModal,brand, editItem,setReload }) => {
         brandId: selectedBrand?.id ?? 0,
         name: '',
         nativeName: '',
+        benefits: '',
+        benefitsNative: '',
         bottomLimit: '',
         topLimit: 0,
         punchesForFreeItems: 0
     });
-    // const [reload, setReload] = useState(false);
 
     const { brandsList } = useFetchBrandsList(true);
 
-
-
     useEffect(() => {
         if (editItem !== undefined) {
-            const localBrand = brandsList.find((brand)=> brand.id ===editItem.brandId) ;
+            const localBrand = brandsList.find((b) => b.id === editItem.brandId);
             setselectedBrand(localBrand);
-            setData({
-                ...data,
-                name: editItem.name,
-                nativeName: editItem.nativeName,
+            setData((prev) => ({
+                ...prev,
+                name: editItem.name ?? '',
+                nativeName: editItem.nativeName ?? '',
+                benefits: editItem.benefits ?? '',
+                benefitsNative: editItem.benefitsNative ?? '',
                 bottomLimit: editItem.pointsProgramGroupSettings?.bottomLimit ?? '',
                 topLimit: editItem.pointsProgramGroupSettings?.topLimit ?? '',
                 punchesForFreeItems: editItem.pointsProgramGroupSettings?.punchesForFreeItems ?? '',
                 id: editItem.id
-            });
+            }));
             setIsEditing(true);
         } else {
-            setselectedBrand(brand)
-            setData({
-                ...data,
+            setselectedBrand(brand);
+            setData((prev) => ({
+                ...prev,
                 name: '',
                 nativeName: '',
+                benefits: '',
+                benefitsNative: '',
                 bottomLimit: '',
                 topLimit: '',
                 punchesForFreeItems: '',
                 id: 0
-            });
+            }));
             setIsEditing(false);
         }
-    }, [editItem,brand]);
+    }, [editItem, brand, brandsList]);
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const [err, setErr] = useState('');
 
     const createNewTier = async () => {
-        let payload = { ...data, brandId: selectedBrand?.id };
+        const payload = {
+            ...data,
+            brandId: selectedBrand?.id
+        };
+
         if (isEditing) {
-            console.log(JSON.stringify(payload));
-            await tiersService
-                .updateTier(payload)
-                .then((res) => {
-                    setData({
-                        ...data,
-                        name: '',
-                        nativeName: '',
-                        id: 0,
-                        bottomLimit: '',
-                        topLimit: '',
-                        punchesForFreeItems: ''
-                    });
-                    setModal(false);
-                    setReload((prev) => !prev);
-                })
-                .catch((err) => {
-                    if (err?.response?.data?.error?.validationErrors?.length > 0) {
-                        enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
-                            variant: 'error'
-                        });
-                    } else if(err?.response?.data?.error?.message) {
-                        enqueueSnackbar(err?.response?.data?.error?.message, {
-                            variant: 'error'
-                        });
-                    }
-                });
+            try {
+                await tiersService.updateTier(payload);
+                setData((prev) => ({
+                    ...prev,
+                    name: '',
+                    nativeName: '',
+                    benefits: '',
+                    benefitsNative: '',
+                    id: 0,
+                    bottomLimit: '',
+                    topLimit: '',
+                    punchesForFreeItems: ''
+                }));
+                setModal(false);
+                setReload((prev) => !prev);
+            } catch (err) {
+                if (err?.response?.data?.error?.validationErrors?.length > 0) {
+                    enqueueSnackbar(err.response.data.error.validationErrors[0].message, { variant: 'error' });
+                } else if (err?.response?.data?.error?.message) {
+                    enqueueSnackbar(err.response.data.error.message, { variant: 'error' });
+                }
+            }
         } else {
-            await tiersService
-                .createNewTier(payload)
-                .then((res) => {
-                    setData({
-                        ...data,
-                        name: '',
-                        nativeName: '',
-                        // id: 0,
-                        bottomLimit: '',
-                        topLimit: '',
-                        punchesForFreeItems: ''
-                    });
-                    setModal(false);
-                    setReload((prev) => !prev);
-                })
-                .catch((err) => {
-                    console.log(err?.response?.data);
-                    if (err?.response?.data?.error?.validationErrors?.length > 0) {
-                        enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
-                            variant: 'error'
-                        });
-                    } else if(err?.response?.data?.error?.message) {
-                        enqueueSnackbar(err?.response?.data?.error?.message, {
-                            variant: 'error'
-                        });
-                    }
-                });
+            try {
+                await tiersService.createNewTier(payload);
+                setData((prev) => ({
+                    ...prev,
+                    name: '',
+                    nativeName: '',
+                    benefits: '',
+                    benefitsNative: '',
+                    bottomLimit: '',
+                    topLimit: '',
+                    punchesForFreeItems: ''
+                }));
+                setModal(false);
+                setReload((prev) => !prev);
+            } catch (err) {
+                if (err?.response?.data?.error?.validationErrors?.length > 0) {
+                    enqueueSnackbar(err.response.data.error.validationErrors[0].message, { variant: 'error' });
+                } else if (err?.response?.data?.error?.message) {
+                    enqueueSnackbar(err.response.data.error.message, { variant: 'error' });
+                }
+            }
         }
     };
 
@@ -131,261 +127,110 @@ const NewTier = ({ modal, setModal,brand, editItem,setReload }) => {
             <Box sx={style}>
                 <Grid container spacing={4} mb={2}>
                     <Grid item xs={12}>
-                        <Typography required variant="h5">
-                            {'Create New Tier'}
-                        </Typography>
+                        <Typography variant="h5">Create New Tier</Typography>
                     </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
-                    <Typography variant="h7">Tier Name</Typography>
-                    <TextField
-                        id="outlined-basic"
-                        fullWidth
-                        label="Tier Name"
-                        variant="outlined"
-                        value={data.name}
-                        onChange={(e) => {
-                            setData({
-                                ...data,
-                                name: e.target.value
-                            });
-                        }}
-                        sx={{
-                            mt: 2
-                        }}
-                    />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                        <Typography>Tier Name</Typography>
+                        <TextField
+                            fullWidth
+                            label="Tier Name"
+                            variant="outlined"
+                            value={data.name}
+                            onChange={(e) => setData({ ...data, name: e.target.value })}
+                            sx={{ mt: 2 }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <Typography>Tier Name (Native language)</Typography>
+                        <TextField
+                            fullWidth
+                            label="Tier Name in native language"
+                            variant="outlined"
+                            value={data.nativeName}
+                            onChange={(e) => setData({ ...data, nativeName: e.target.value })}
+                            sx={{ mt: 2 }}
+                        />
+                    </Grid>
+
+                    {/* NEW: Benefits */}
+                    <Grid item xs={12} md={6}>
+                        <Typography>Benefits</Typography>
+                        <TextField
+                            fullWidth
+                            label="Benefits"
+                            variant="outlined"
+                            value={data.benefits}
+                            onChange={(e) => setData({ ...data, benefits: e.target.value })}
+                            multiline
+                            minRows={3}
+                            sx={{ mt: 2 }}
+                        />
+                    </Grid>
+
+                    {/* NEW: Benefits (Native) */}
+                    <Grid item xs={12} md={6}>
+                        <Typography>Benefits (Native language)</Typography>
+                        <TextField
+                            fullWidth
+                            label="Benefits in native language"
+                            variant="outlined"
+                            value={data.benefitsNative}
+                            onChange={(e) => setData({ ...data, benefitsNative: e.target.value })}
+                            multiline
+                            minRows={3}
+                            sx={{ mt: 2 }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <Typography>Points required</Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <TextField
+                                fullWidth
+                                label="From"
+                                variant="outlined"
+                                value={data.bottomLimit}
+                                onChange={(e) => setData({ ...data, bottomLimit: +e.target.value || '' })}
+                                sx={{ mt: 2, mr: 2 }}
+                            />
+                            <Typography>To</Typography>
+                            <TextField
+                                fullWidth
+                                label="To"
+                                variant="outlined"
+                                value={data.topLimit}
+                                onChange={(e) => setData({ ...data, topLimit: +e.target.value || '' })}
+                                sx={{ mt: 2, ml: 2 }}
+                            />
+                        </Box>
+
+                        <TextField
+                            fullWidth
+                            label="Punches For Free Items"
+                            variant="outlined"
+                            value={data.punchesForFreeItems}
+                            onChange={(e) => setData({ ...data, punchesForFreeItems: e.target.value })}
+                            sx={{ mt: 2 }}
+                        />
+                    </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
-                    <Typography variant="h7">Tier Name (Native language)</Typography>
-                    <TextField
-                        id="outlined-basic"
-                        fullWidth
-                        label="Tier Name in native language"
-                        variant="outlined"
-                        value={data.nativeName}
-                        onChange={(e) => {
-                            setData({
-                                ...data,
-                                nativeName: e.target.value
-                            });
-                        }}
-                        sx={{
-                            mt: 2
-                        }}
-                    />
-                </Grid>
-                {/* <Grid item xs={6}>
-                <Typography sx={{mt:1}} variant="h7">Brand</Typography>
-                <FormControl fullWidth>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={selectedBrand}
-                    onChange={(event) => {
-                        setselectedBrand(event.target.value);
-                    }}
-                    sx={{
-                        mb: 2
-                    }}
-                >
-                    {brandsList.map((row, index) => {
-                        return <MenuItem key={index} value={row}>{row?.name}</MenuItem>;
-                    })}
-                </Select>
-                </FormControl>
-                </Grid> */}
-                <Grid item xs={6}>
-                    <Typography variant="h7">Points required </Typography>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            direction: 'row',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="From"
-                            variant="outlined"
-                            value={data.bottomLimit}
-                            onChange={(e) => {
-                                setData({
-                                    ...data,
-                                    bottomLimit: +e.target.value
-                                });
-                            }}
-                            sx={{
-                                mt: 2,
-                                mr: 2
-                            }}
-                        />
-
-                        <Typography variant="h7">To </Typography>
-
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="To"
-                            variant="outlined"
-                            value={data.topLimit}
-                            onChange={(e) => {
-                                setData({
-                                    ...data,
-                                    topLimit: +e.target.value
-                                });
-                            }}
-                            sx={{
-                                mt: 2,
-                                ml: 2
-                            }}
-                        />
-                    </Box>
-                    <TextField
-                        id="outlined-basic"
-                        fullWidth
-                        label="Punches For Free Items"
-                        variant="outlined"
-                        value={data.punchesForFreeItems}
-                        onChange={(e) => {
-                            setData({
-                                ...data,
-                                punchesForFreeItems: e.target.value
-                            });
-                        }}
-                        sx={{
-                            mt: 2
-                        }}
-                    />
-                </Grid>
-
-                {/* <Grid item xs={6}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            direction: 'row',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <Typography variant="h7">Notify Users when joining </Typography>
-                        <Checkbox defaultChecked />
-                    </Box>
-                </Grid> */}
-                {/* <Grid item xs={6}>
-                    <Typography variant="h7">Notification Message </Typography>
-
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            direction: 'row',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Title"
-                            variant="outlined"
-                            value={data.notificationTitle}
-                            onChange={(e) => {
-                                setData({
-                                    ...data,
-                                    notificationTitle: e.target.value
-                                });
-                            }}
-                            sx={{
-                                mt: 2
-                            }}
-                        />
-
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Body"
-                            variant="outlined"
-                            value={data.notificationMessage}
-                            onChange={(e) => {
-                                setData({
-                                    ...data,
-                                    notificationMessage: e.target.value
-                                });
-                            }}
-                            sx={{
-                                mt: 2,
-                                ml: 2
-                            }}
-                        />
-                    </Box>
-                </Grid>
-
-                <Grid item xs={6}>
-                    <Typography variant="h7">Notification Message in Native Language</Typography>
-
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            direction: 'row',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Title"
-                            variant="outlined"
-                            // value={reward.amount}
-                            // onChange={
-                            //     (e)=>{
-                            //         setReward({
-                            //             ...reward,
-                            //             amount:e.target.value
-                            //         })
-                            //     }
-                            // }
-                            sx={{
-                                mt: 2
-                            }}
-                        />
-
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Body"
-                            variant="outlined"
-                            // value={reward.amount}
-                            // onChange={
-                            //     (e)=>{
-                            //         setReward({
-                            //             ...reward,
-                            //             amount:e.target.value
-                            //         })
-                            //     }
-                            // }
-                            sx={{
-                                mt: 2,
-                                ml: 2
-                            }}
-                        />
-                    </Box>
-                </Grid> */}
-
-                <Grid container spacing={4}>
+                <Grid container spacing={4} sx={{ mt: 2 }}>
                     <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item xs={8} />
-                            <Grid container spacing={2} justifyContent="flex-end">
-                                <Grid item>
-                                    <Button variant="outlined" onClick={() => setModal(false)}>
-                                        Cancel
-                                    </Button>
-                                </Grid>
-                                <Grid item>
-                                    <Button primay variant="contained" onClick={createNewTier}>
-                                        Save
-                                    </Button>
-                                </Grid>
+                        <Grid container justifyContent="flex-end" spacing={2}>
+                            <Grid item>
+                                <Button variant="outlined" onClick={() => setModal(false)}>
+                                    Cancel
+                                </Button>
+                            </Grid>
+                            <Grid item>
+                                <Button variant="contained" onClick={createNewTier}>
+                                    Save
+                                </Button>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -396,6 +241,7 @@ const NewTier = ({ modal, setModal,brand, editItem,setReload }) => {
 };
 
 export default NewTier;
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -406,5 +252,5 @@ const style = {
     boxShadow: 24,
     p: 4,
     borderRadius: 1,
-    overflow: 'scroll'
+    overflow: 'auto'
 };

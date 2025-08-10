@@ -128,7 +128,7 @@ const printOrder = () => {
         <div>Customer: ${data?.customerName ?? data?.name} ${data?.customerSurname ?? data?.surname}</div>
         <div>Mobile: ${data?.customerPhoneNumber ?? data?.displayPhoneNumber}</div>
         <div>Email: ${data?.customerEmail ?? data?.displayEmailAddress}</div>
-        <div>Date: ${moment(data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
+        <div>Date: ${moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}</div>
         <div>Payment Method: ${data?.paymentMethod}</div>
         <div> ${data?.carDetails}</div>
 
@@ -399,7 +399,7 @@ const printOrder = () => {
                                         }}
                                     >
                                         <Typography variant="h6" fontSize={16}>
-                                            Date :{' ' + moment(data?.date).format('DD-MMM-YYYY hh:mm a')}
+                                            Date :{' ' + moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}
                                         </Typography>
                                     </Box>
                                     <Box

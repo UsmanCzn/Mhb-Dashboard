@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Typography, Button, Box, TextField, InputLabel, MenuItem, Select, FormControl } from '@mui/material';
 import customerService from 'services/customerService';
-import constants from 'helper/constants';
 import { useParams } from 'react-router-dom';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
-import UpdateWallet from 'components/customers/updateWalletBalance';
-import UpdateFreeItems from 'components/customers/updateFreeItems';
+
 import UpdateCreditBalance from 'components/customers/updateCreditBalance';
 import LinearProgress from '@mui/material/LinearProgress';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';

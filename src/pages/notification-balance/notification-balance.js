@@ -85,7 +85,7 @@ const NotificationBalnce = () => {
   return (
     <div className="p-6">
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 className="text-xl font-bold mb-4">Payments</h2>
+        <h2 className="text-xl font-bold mb-4">Payment History</h2>
         <FormControl sx={{ minWidth: 200, mb: 2 }} size="small">
           <InputLabel>Companies</InputLabel>
           <Select

@@ -27,7 +27,7 @@ const style = {
 };
 
 const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand }) => {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const intialValue = {
         type: '',
         name: '',
@@ -35,38 +35,34 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
         subTypes: [],
         orderValue: 0
     };
-    
 
     const [data, setData] = useState(intialValue);
     const [p1, setP1] = useState(null);
-    const [subTypeImages, setSubTypeImages] = useState({}); // Initialize an empty object
+    const [subTypeImages, setSubTypeImages] = useState({});
 
     useEffect(() => {
         if (type) {
-            setData({
-                ...data,
+            setData(prev => ({
+                ...prev,
                 name: '',
                 nativeName: '',
-                subTypes:
-                    type && type?.subTypes?.length
-                        ? type?.subTypes.sort((a, b) => {
-                              if (a.orderValue == null) return 1; // `a` goes to the end
-                              if (b.orderValue == null) return -1; // `b` goes to the end
-                              return a.orderValue - b.orderValue; // Ascending sort by orderValue
-                          })
-                        : []
-            });
+                subTypes: type?.subTypes?.length
+                    ? type.subTypes.sort((a, b) => {
+                        if (a.orderValue == null) return 1;
+                        if (b.orderValue == null) return -1;
+                        return a.orderValue - b.orderValue;
+                    })
+                    : []
+            }));
         } else {
             setData(intialValue);
         }
+        setP1(null);
     }, [type]);
 
     const addNewSubType = async () => {
-        if (data?.name == '') {
-            enqueueSnackbar('Please add category name', {
-                variant: 'error'
-            });
-
+        if (!data.name) {
+            enqueueSnackbar('Please add category name', { variant: 'error' });
             return;
         }
         let payload = {
@@ -75,25 +71,24 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
             orderValue: +data.orderValue,
             productTypeId: type?.id
         };
-        await fileService
-            .uploadProductImage(p1)
-            .then((res) => {
+        if (p1) {
+            try {
+                const res = await fileService.uploadProductImage(p1);
                 payload.imageUrl = res.data?.result;
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            });
+            } catch (err) {
+                console.log(err?.response?.data);
+            }
+        }
         await storeServices
             .createProductSubType(payload)
-            .then((res) => {
-                setReload((prev) => {
-                    return !prev;
-                });
-                setData({
+            .then(() => {
+                setReload(prev => !prev);
+                setData(prev => ({
+                    ...prev,
                     name: '',
                     nativeName: '',
                     orderValue: ''
-                });
+                }));
             })
             .catch((err) => {
                 console.log(err);
@@ -102,53 +97,45 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                 setP1(null);
             });
     };
-    const updateSubType = async (item, index) => {
-        if (item?.name == '') {
-            enqueueSnackbar('Please add category name', {
-                variant: 'error'
-            });
 
+    // New: Save All SubTypes (bulk update)
+    const saveAllSubTypes = async () => {
+        if (!data.subTypes || data.subTypes.length === 0) {
+            enqueueSnackbar('No subcategories to save.', { variant: 'warning' });
             return;
         }
 
-        if (subTypeImages[index]) {
-            await fileService
-                .uploadProductImage(subTypeImages[index])
-                .then((res) => {
+        for (let index = 0; index < data.subTypes.length; index++) {
+            const item = { ...data.subTypes[index] };
+            if (!item.name) {
+                enqueueSnackbar('Please add category name for all subcategories.', { variant: 'error' });
+                return;
+            }
+            if (subTypeImages[index]) {
+                try {
+                    const res = await fileService.uploadProductImage(subTypeImages[index]);
                     item.imageUrl = res.data?.result;
-                })
-                .catch((err) => {
-                    console.log(err.response.data);
-                })
-                .finally(() => {
-                    // Clear the image state for this item
-                    const newSubTypeImages = { ...subTypeImages };
-                    delete newSubTypeImages[index];
-                    setSubTypeImages(newSubTypeImages);
-                });
+                } catch (err) {
+                    console.log(err?.response?.data);
+                }
+            }
+            try {
+                await storeServices.UpdateProductSubType(item);
+            } catch (err) {
+                enqueueSnackbar('Failed to save some subcategories.', { variant: 'error' });
+                console.log(err);
+            }
         }
 
-        await storeServices
-            .UpdateProductSubType(item)
-            .then((res) => {
-                setReload((prev) => {
-                    return !prev;
-                });
-                enqueueSnackbar('Saved Successfully');
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        enqueueSnackbar('All changes saved successfully.', { variant: 'success' });
+        setReload(prev => !prev);
+        setSubTypeImages({});
     };
 
     const deleteCategory = async (item) => {
         await storeServices
             .deleteProductSubType(item?.id)
-            .then((res) => {
-                setReload((prev) => {
-                    return !prev;
-                });
-            })
+            .then(() => setReload(prev => !prev))
             .catch((err) => {
                 console.log(err);
             });
@@ -164,180 +151,179 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
             <form>
                 <Box sx={style}>
                     <Grid container spacing={4}>
-                    <Grid item>
-                    <Typography variant="h4" fontWeight="bold">
-                        Manage Subcategories
-                    </Typography>
-                    <Typography variant="subtitle1" color="text.secondary">
-                        Add a new subcategory or update existing ones below.
-                    </Typography>
-                    </Grid>
-
+                        {/* Heading */}
                         <Grid item xs={12}>
-                            <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={6}>
-                                    <Typography variant="h5">Category : {type.name}</Typography>
-                                </Grid>
-                            </Grid>
+                            <Typography variant="h4" fontWeight="bold" gutterBottom>
+                                Manage Subcategories
+                            </Typography>
+                            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                                Add a new subcategory or update existing ones below.
+                            </Typography>
+                            <Box display="flex" alignItems="center" mt={2}>
+                                <Typography variant="h6" fontWeight="bold" sx={{ mr: 1 }}>
+                                    Category:
+                                </Typography>
+                                <Typography variant="h6" color="primary">
+                                    {type?.name}
+                                </Typography>
+                            </Box>
                         </Grid>
-                        
+
+                        {/* New Subcategory Form */}
                         <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item xs={2}>
-                                    <div
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={() => {
-                                            document.getElementById('fileInput').click();
-                                        }}
-                                        onKeyPress={(e) => {
-                                            if (e.key === 'Enter') {
-                                                document.getElementById('fileInput').click();
-                                            }
-                                        }}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer' }}
-                                    >
-                                        <CloudUploadOutlined
-                                            style={{ fontSize: '26px', color: '#08c', marginRight: 4, cursor: 'pointer' }}
-                                        />
-                                        {p1 ? <p>{p1.name}</p> : 'Upload image'}
-                                    </div>
+                                    <label htmlFor="fileInput">
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={<CloudUploadOutlined />}
+                                            component="span"
+                                            size="small"
+                                            sx={{ width: '100%' }}
+                                        >
+                                            {p1 ? p1.name : 'Upload image'}
+                                        </Button>
+                                    </label>
                                     <input
                                         type="file"
                                         id="fileInput"
-                                        style={{ display: 'none' }} // Hide the input
-                                        onChange={async (e) => {
-                                            setP1(e.currentTarget.files[0]);
-                                        }}
+                                        hidden
+                                        onChange={(e) => setP1(e.currentTarget.files[0])}
                                     />
                                 </Grid>
                                 <Grid item xs={3}>
                                     <TextField
-                                        id="outlined-basic"
                                         fullWidth
                                         label="Subcategory Name"
                                         variant="outlined"
                                         required
                                         value={data.name}
-                                        onChange={(e) => setData({ ...data, name: e.target.value })}
+                                        onChange={e => setData({ ...data, name: e.target.value })}
                                     />
                                 </Grid>
-
                                 <Grid item xs={3}>
                                     <TextField
-                                        id="outlined-basic"
                                         fullWidth
                                         label="Subcategory Native Name"
                                         variant="outlined"
                                         required
                                         value={data.nativeName}
-                                        onChange={(e) => setData({ ...data, nativeName: e.target.value })}
+                                        onChange={e => setData({ ...data, nativeName: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={2}>
                                     <TextField
-                                        id="outlined-basic"
                                         fullWidth
                                         label="Sort Order"
                                         variant="outlined"
                                         value={data.orderValue}
-                                        onChange={(e) => setData({ ...data, orderValue: e.target.value })}
+                                        onChange={e => setData({ ...data, orderValue: e.target.value })}
                                     />
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Button onClick={addNewSubType}>Add new</Button>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        onClick={addNewSubType}
+                                    >
+                                        Add New
+                                    </Button>
                                 </Grid>
                             </Grid>
                         </Grid>
 
+                        {/* Subcategory List */}
                         {data?.subTypes?.map((item, index) => {
-                            console.log(item, 'category');
                             const fileInputId = `fileInput${index}`;
                             const imgId = `img${index}`;
                             return (
-                                <Grid item xs={12} key={item?.id}>
+                                <Grid item xs={12} key={item?.id || index}>
                                     <Grid container spacing={2} alignItems="center">
                                         <Grid item xs={2}>
                                             <label htmlFor={fileInputId}>
-                                                {subTypeImages[index] ? (
-                                                    <img
-                                                        id={imgId}
-                                                        src={URL.createObjectURL(subTypeImages[index])}
-                                                        style={{ width: 40, height: 40, cursor: 'pointer' }}
-                                                        alt="img"
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        id={imgId}
-                                                        src={item?.imageUrl || selectedBrand?.logoUrl}
-                                                        style={{ width: 40, height: 40, cursor: 'pointer' }}
-                                                        alt="img"
-                                                    />
-                                                )}
+                                                <img
+                                                    id={imgId}
+                                                    src={
+                                                        subTypeImages[index]
+                                                            ? URL.createObjectURL(subTypeImages[index])
+                                                            : (item?.imageUrl || selectedBrand?.logoUrl)
+                                                    }
+                                                    style={{
+                                                        width: 40,
+                                                        height: 40,
+                                                        borderRadius: 8,
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #eee',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                    alt="img"
+                                                />
                                             </label>
                                             <input
                                                 type="file"
                                                 id={fileInputId}
-                                                style={{ display: 'none' }}
-                                                onChange={async (e) => {
+                                                hidden
+                                                onChange={(e) => {
                                                     const newSubTypeImages = { ...subTypeImages };
                                                     newSubTypeImages[index] = e.currentTarget.files[0];
                                                     setSubTypeImages(newSubTypeImages);
                                                 }}
                                             />
                                         </Grid>
-
                                         <Grid item xs={2}>
                                             <TextField
-                                                id="outlined-basic"
                                                 fullWidth
                                                 label="Subcategory Name"
                                                 variant="outlined"
                                                 required
                                                 value={item?.name}
-                                                onChange={(e) => {
-                                                    setData((prev) => {
-                                                        prev.subTypes[index].name = e.target.value;
-                                                        return { ...prev };
+                                                onChange={e => {
+                                                    setData(prev => {
+                                                        const newSubTypes = [...prev.subTypes];
+                                                        newSubTypes[index].name = e.target.value;
+                                                        return { ...prev, subTypes: newSubTypes };
                                                     });
                                                 }}
                                             />
                                         </Grid>
                                         <Grid item xs={2}>
                                             <TextField
-                                                id="outlined-basic"
                                                 fullWidth
                                                 label="Subcategory Native Name"
                                                 variant="outlined"
                                                 required
                                                 value={item?.nativeName}
-                                                onChange={(e) => {
-                                                    setData((prev) => {
-                                                        prev.subTypes[index].nativeName = e.target.value;
-                                                        return { ...prev };
+                                                onChange={e => {
+                                                    setData(prev => {
+                                                        const newSubTypes = [...prev.subTypes];
+                                                        newSubTypes[index].nativeName = e.target.value;
+                                                        return { ...prev, subTypes: newSubTypes };
                                                     });
                                                 }}
                                             />
                                         </Grid>
                                         <Grid item xs={2}>
                                             <TextField
-                                                id="outlined-basic"
                                                 fullWidth
                                                 label="Sort Order"
                                                 variant="outlined"
                                                 value={item?.orderValue}
-                                                onChange={(e) => {
-                                                    setData((prev) => {
-                                                        prev.subTypes[index].orderValue = e.target.value;
-                                                        return { ...prev };
+                                                onChange={e => {
+                                                    setData(prev => {
+                                                        const newSubTypes = [...prev.subTypes];
+                                                        newSubTypes[index].orderValue = e.target.value;
+                                                        return { ...prev, subTypes: newSubTypes };
                                                     });
                                                 }}
                                             />
                                         </Grid>
                                         <Grid item xs={4}>
-                                            <Button onClick={() => updateSubType(item, index)}>save</Button>
-                                            <Button onClick={() => deleteCategory(item)} color="error">
-                                                delete
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={() => deleteCategory(item)}
+                                            >
+                                                Delete
                                             </Button>
                                         </Grid>
                                     </Grid>
@@ -346,21 +332,15 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
                         })}
 
                         {/* Footer */}
-
                         <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={8} />
-                                <Grid container spacing={2} justifyContent="flex-end">
-                                    <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
-                                            Close
-                                        </Button>
-                                    </Grid>
-                                    {/* <Grid item>
-                  <Button primay variant="contained" type="Submit" >Save</Button>
-                </Grid> */}
-                                </Grid>
-                            </Grid>
+                            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+                                <Button variant="outlined" onClick={() => setModalOpen(false)}>
+                                    Close
+                                </Button>
+                                <Button variant="contained" color="primary" onClick={saveAllSubTypes}>
+                                    Save
+                                </Button>
+                            </Box>
                         </Grid>
                     </Grid>
                 </Box>

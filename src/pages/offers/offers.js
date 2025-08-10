@@ -72,8 +72,8 @@ const Offers = () => {
 
     // HANDLE OFFER MODAL CLOSE
     const handleOfferClose = () => {
-        getOffersByBrandId(brandsList[0].id);
-        setselectedBrand(brandsList[0]);
+        getOffersByBrandId(selectedBrand.id);
+        // setselectedBrand(brandsList[0]);
     };
     // HANDLE OFFER MODAL CLOSE
 
@@ -106,6 +106,11 @@ const Offers = () => {
                 <TableCell>
                     <Box display="flex" alignItems="center" gap={2}>
                         {getActionType(offer.actionType)}
+                    </Box>
+                </TableCell>
+                <TableCell>
+                   <Box display="flex" alignItems="center" gap={2}>
+                        {offer?.orderValue}
                     </Box>
                 </TableCell>
                 <TableCell>
@@ -145,6 +150,7 @@ const Offers = () => {
     const headers = [
         { name: 'Offer Name', value: 'offerName' },
         { name: 'Action Type', value: 'actionType' },
+        { name: 'Sort Order', value: 'orderValue' },
         { name: 'Action', value: 'action' }
     ];
 
@@ -164,7 +170,7 @@ const Offers = () => {
                                 size="small"
                                 onClick={() => {
                                     setSelectedOffer(null);
-                                    setModalOpen(true);
+                                   setModalOpen(true);
                                 }}
                                 disabled={user?.isAccessRevoked}
                                 variant="contained"

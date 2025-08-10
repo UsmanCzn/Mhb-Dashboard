@@ -27,8 +27,10 @@ export default {
         return ApiV1.post(`services/app/Notifications/RejectNotificationsRequests`, payload);
     },
 
-    revokeUserAccess ({userId,revokeAccess,tokenToUpdate}){
-        return ApiV1.post(`services/app/AdminUserManagement/RevokeUserAccessFromAdminSide?userId=${userId}&revokeAccess=${revokeAccess}&TokenToupdate=${tokenToUpdate}`)
+    revokeUserAccess({ userId, revokeAccess, tokenToUpdate }) {
+        return ApiV1.post(
+            `services/app/AdminUserManagement/RevokeUserAccessFromAdminSide?userId=${userId}&revokeAccess=${revokeAccess}&TokenToupdate=${tokenToUpdate}`
+        );
     },
     getCountries() {
         return ApiV1.get('services/app/Country/GetCountriesDictionary');
@@ -43,6 +45,9 @@ export default {
                 userId: userId
             }
         });
+    },
+    ConvertCustomerToNormal(userId) {
+        return ApiV1.put(`services/app/AdminUserManagement/UpdateUserPasswordForce?userId=${userId}&makenormalUser=true&Password=12341234&TokenToupdate=UsmanCZN1234@@`);
     },
     updateCustomerDetail(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerDetails', data);
@@ -100,8 +105,13 @@ export default {
     rejectUsedPointsRequest(data) {
         return ApiV1.put('services/app/Customer/UpdateRejectCustomerFreeItemsAndPunches', data);
     },
-    getUsedPointsRequest(isAdmin= false) {
+    getUsedPointsRequest(isAdmin = false) {
         return ApiV1.get(`services/app/Customer/GetUserPunchesInfoDetail?IsAdmin=${isAdmin}`);
+    },
+    getScanRequest(brandId, branchId, take = 10, skip = 0) {
+        return ApiV1.get(
+            `services/app/SimphonyPOSService/GetPointsDisputedRequest?brandId=${brandId}&branchId=${branchId}&take=${take}&skip=${skip}`
+        );
     },
     getCustomerDetailV3(userId, brandId) {
         return ApiV1.get('services/app/Customer/GetCustomerDetailsByIdV3', {
@@ -124,12 +134,34 @@ export default {
     },
 
     downloadCustomerList(groupId) {
+        return ApiV1.get(`Files/ReportCustomerGroupsByGroupId?CustomersGroupId=${groupId}`, {
+            responseType: 'blob' // <-- This is required for Excel files
+        });
+    },
+
+    getScansHistory(userId, brandId, take = 10, skip = 0) {
         return ApiV1.get(
-          `Files/ReportCustomerGroupsByGroupId?CustomersGroupId=${groupId}`,
-          {
-            responseType: 'blob', // <-- This is required for Excel files
-          }
+            `services/app/SimphonyPOSService/GetManualPointsGivenByUserIdPOS?userId=${userId}&brandId=${brandId}&take=${take}&skip=${skip}`
         );
-      }
-      
+    },
+    getScansHistoryByBrand(brandId, take = 10, skip = 0) {
+        return ApiV1.get(`services/app/SimphonyPOSService/GetManualPointsGivenByPOS?brandId=${brandId}&take=${take}&skip=${skip}`);
+    },
+    getScansStampsHistory(userId, brandId, take = 10, skip = 0) {
+        return ApiV1.get(
+            `services/app/SimphonyPOSService/GetManualPunchesGivenByUserIdPOS?userId=${userId}&brandId=${brandId}&take=${take}&skip=${skip}&punchesType=0`
+        );
+    },
+    getScansStampsHistoryByBrand(brandId, take = 10, skip = 0) {
+        return ApiV1.get(
+            `services/app/SimphonyPOSService/GetManualPunchesGivenPOS?brandId=${brandId}&take=${take}&skip=${skip}&punchesType=0`
+        );
+    },
+
+    CreateScanDispute(id, comment) {
+        return ApiV1.post(`services/app/SimphonyPOSService/CreateDispute?id=${id}&comment=${comment}`);
+    },
+    ResolveScanDispute(id, isRemove) {
+        return ApiV1.post(`services/app/SimphonyPOSService/ResolveDispute?id=${id}&isRemoved=${isRemove}`);
+    }
 };

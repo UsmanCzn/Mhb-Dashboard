@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Modal,
-    Box,
-    Typography,
-    TextField,
-    Grid,
-    Button,
-    Switch,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormControl,
-    FormLabel
-} from '@mui/material/index';
-import DropDown from 'components/dropdown';
+import { Typography, Grid, TextField, Button, Stack, Chip, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { ServiceFactory } from 'services/index';
 import moment from 'moment';
 import UpdateCustomer from 'components/customers/updateCustomer';
+import ConfirmationModal from 'components/confirmation-modal';
+import UpdateIcon from '@mui/icons-material/Update';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+
+const fieldMap = [
+    { label: 'First Name', key: 'name' },
+    { label: 'Last Name', key: 'surname' },
+    { label: 'Email', key: 'displayEmailAddress', type: 'email' },
+    { label: 'Phone', key: 'displayPhoneNumber' },
+    { label: 'Country', key: 'country' }
+];
 
 const CustomerInfo = ({ setReload }) => {
     const { cid } = useParams();
@@ -28,181 +25,152 @@ const CustomerInfo = ({ setReload }) => {
         password: '',
         displayPhoneNumber: '',
         gender: '',
-        dateOfBirth: new Date(),
+        dateOfBirth: '',
         customerGroups: [],
-        country: ''
+        country: '',
+        signupDate: ''
     });
     const [modalOpen, setModalOpen] = useState(false);
     const [reload2, setReload2] = useState(false);
-    const [countries, setCountries] = useState([]);
-    const [groups, setGroups] = useState([]);
     const customerServices = ServiceFactory.get('customer');
+    const [loading, setLoading] = useState(false);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const handleCancelDelete = () => {
+        setDeleteModalOpen(false);
+    };
 
     const getCustomer = async () => {
-        await customerServices
-            .getCustomerDetail(cid)
-            .then((res) => {
-                setData(res?.data?.result);
-            })
-            .catch((err) => {
-                console.log(err?.response);
-            });
+        setLoading(true);
+        try {
+            const res = await customerServices.getCustomerDetail(cid);
+            setData(res?.data?.result);
+        } catch (err) {
+            console.log(err?.response);
+        }
+        setLoading(false);
     };
 
-    const getCountries = async () => {
-        await customerServices
-            .getCountries()
-            .then((res) => {
-                setCountries(res?.data?.result);
-            })
-            .catch((err) => {
-                console.log(err?.data);
-            });
+    const convertCustomer = async () => {
+        try {
+            const res = await customerServices.ConvertCustomerToNormal(cid);
+            setDeleteModalOpen(false);
+            getCustomer();
+            enqueueSnackbar('Customer converted to normal successfully!', { variant: 'success' });
+        } catch (error) {
+            enqueueSnackbar('Failed to convert customer.', { variant: 'error' });
+        }
     };
+
     useEffect(() => {
         getCustomer();
-        getCountries();
-    }, [reload2]);
+    }, [reload2, cid]);
+
+    if (loading) return <Typography>Loading customer data...</Typography>;
 
     return (
-        <Grid container spacing={4}>
-            <Grid item xs={12}>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="First Name"
-                            variant="outlined"
-                            value={data?.name}
-                            onChange={(e) => setData({ ...data, name: e.target.value })}
-                            InputProps={{
-                                readOnly: true
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Last Name"
-                            variant="outlined"
-                            value={data?.surname}
-                            onChange={(e) => setData({ ...data, surname: e.target.value })}
-                            InputProps={{
-                                readOnly: true
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Email"
-                            type="email"
-                            variant="outlined"
-                            value={data?.displayEmailAddress}
-                            onChange={(e) => setData({ ...data, displayEmailAddress: e.target.value })}
-                            InputProps={{
-                                readOnly: true
-                            }}
-                        />
-                    </Grid>
+        <>
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" gutterBottom>
+                        Customer Information
+                    </Typography>
                 </Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={4}>
-                        <Typography variant="h6">Gender : {data?.gender}</Typography>
-                    </Grid>
-                    <Grid item xs={4}>
+
+                {/* Main Details */}
+                <Grid item xs={12}>
+                    <Stack direction="row" spacing={2}>
+                        {fieldMap.map((field) => (
+                            <TextField
+                                key={field.key}
+                                label={field.label}
+                                type={field.type || 'text'}
+                                variant="outlined"
+                                value={data[field.key] || ''}
+                                fullWidth
+                                InputProps={{ readOnly: true }}
+                            />
+                        ))}
+                    </Stack>
+                </Grid>
+
+                {/* Gender, Birthday, Signup */}
+                <Grid item xs={12}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <TextField label="Gender" value={data.gender || ''} variant="outlined" fullWidth InputProps={{ readOnly: true }} />
                         <TextField
-                            id="outlined-basic"
-                            fullWidth
                             label="Birthday"
+                            value={data.dateOfBirth ? moment(data.dateOfBirth).format('DD-MMM-YYYY') : ''}
                             variant="outlined"
-                            value={moment(data?.dateOfBirth).format('DD-MMM-YYYY')}
-                            InputProps={{
-                                readOnly: true
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            id="outlined-basic"
                             fullWidth
-                            label="Country"
-                            variant="outlined"
-                            value={data?.country}
-                            InputProps={{
-                                readOnly: true
-                            }}
+                            InputProps={{ readOnly: true }}
                         />
-                    </Grid>
-                </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
                         <TextField
-                            id="outlined-basic"
-                            fullWidth
-                            label="Phone"
+                            label="Signup Date"
+                            value={data.signupDate ? moment(data.signupDate).format('DD-MMM-YYYY') : ''}
                             variant="outlined"
-                            required
-                            value={data?.displayPhoneNumber}
-                            onChange={(e) => setData({ ...data, displayPhoneNumber: e.target.value })}
-                            InputProps={{
-                                readOnly: true
-                            }}
+                            fullWidth
+                            InputProps={{ readOnly: true }}
+                            disabled={!data.signupDate}
                         />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField id="outlined-basic" fullWidth label="Signup date" variant="outlined" disabled />
-                    </Grid>
+                    </Stack>
                 </Grid>
-            </Grid>
 
-            <Grid item xs={12}>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12}>
-                                <Typography variant="h6">Customer Groups</Typography>
-                            </Grid>
-                            {data?.customerGroups?.map((obj) => {
-                                return (
-                                    <Grid item xs="auto">
-                                        {' '}
-                                        <Typography variant="h6" px={2} mr={1} border={0.6} borderRadius={1}>
-                                            {obj?.name}
-                                        </Typography>
-                                    </Grid>
-                                );
-                            })}
-                        </Grid>
-                    </Grid>
+                {/* Customer Groups */}
+                <Grid item xs={12}>
+                    <Typography variant="h6" mb={1}>
+                        Customer Groups
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                        {(data.customerGroups || []).length > 0 ? (
+                            data.customerGroups.map((group) => (
+                                <Chip key={group.id || group.name} label={group.name} color="primary" variant="outlined" />
+                            ))
+                        ) : (
+                            <Typography variant="body2" color="textSecondary">
+                                No groups assigned
+                            </Typography>
+                        )}
+                    </Stack>
                 </Grid>
-            </Grid>
+                {/* Sign Up Status */}
+                {data?.AuthenticationSource && (
+                    <Grid item xs={12}>
+                        <Typography variant="h6" mb={1}>
+                            Sign Up Source : {data?.AuthenticationSource}
+                        </Typography>
+                    </Grid>
+                )}
 
-            {/* Footer */}
-
-            <Grid item xs={12}>
-                <Grid container>
-                    <Grid item xs={8} />
-                    <Grid container spacing={2} justifyContent="flex-end">
-                        <Grid item>
-                            <Button primay variant="contained" type="Submit" onClick={() => setModalOpen(true)}>
+                <Grid item xs={12}>
+                    <Box display="flex" justifyContent="flex-end">
+                        <Stack direction="row" spacing={2}>
+                            <Button variant="contained" color="primary" startIcon={<UpdateIcon />} onClick={() => setModalOpen(true)}>
                                 Update Customer
                             </Button>
-                        </Grid>
-                    </Grid>
+                            {data?.isExternalAuth && (
+                                <Button
+                                    variant="contained"
+                                    color="warning"
+                                    startIcon={<PersonRemoveIcon />}
+                                    onClick={() => setDeleteModalOpen(true)}
+                                >
+                                    Switch Customer to Email Sign-Up
+                                </Button>
+                            )}
+                        </Stack>
+                    </Box>
                 </Grid>
+
+                <UpdateCustomer modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload2} prevData={data} />
             </Grid>
 
-            <UpdateCustomer modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload2} prevData={data} />
-        </Grid>
+            <ConfirmationModal
+                open={isDeleteModalOpen}
+                onClose={handleCancelDelete}
+                onConfirm={convertCustomer}
+                statement={`Are you sure you want to switch this customer’s sign-up method to Email? `}
+            />
+        </>
     );
 };
 

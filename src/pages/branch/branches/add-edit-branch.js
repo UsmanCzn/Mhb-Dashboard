@@ -27,6 +27,7 @@ import { ServiceFactory } from 'services/index';
 import { useSnackbar } from 'notistack';
 import BranchTimings from '../../../pages/branch/branchTimings/index';
 import { useAuth } from 'providers/authProvider';
+import imageCompression from 'browser-image-compression';
 
 const AddEditBranch = () => {
     const brandService = ServiceFactory.get('brands');
@@ -217,45 +218,74 @@ const AddEditBranch = () => {
             latitude: formatDecimal(values?.latitude),
             longitude: formatDecimal(values?.longitude)
         };
-
+    
         setloading(true);
-        if (p1) {
-            try {
-                const logoResponse = await fileService.uploadBranchLogo(p1);
-                payload.logoUrl = logoResponse.data?.result;
-            } catch (err) {
-                console.error(err);
-            }
-        } else if (!id && !p1) {
-            enqueueSnackbar('Please Upload Image', {
-                variant: 'error'
-            });
+    
+        // Use the compression+upload utility here
+        let logoUrl;
+        try {
+            logoUrl = await handleBranchLogoUpload(p1, fileService);
+        } catch (err) {
+            console.error(err);
+            enqueueSnackbar('Image upload failed', { variant: 'error' });
             setloading(false);
             return;
         }
-
+    
+        // If creating and no image, show error
+        if (!id && !logoUrl) {
+            enqueueSnackbar('Please Upload Image', { variant: 'error' });
+            setloading(false);
+            return;
+        }
+    
+        // Only set if logoUrl exists
+        if (logoUrl) {
+            payload.logoUrl = logoUrl;
+        }
+    
         try {
             if (id) {
                 await branchServices.editBranch(payload);
                 console.log('Branch updated successfully');
-                setloading(false);
             } else {
                 await branchServices.createBranch(payload);
                 console.log('Branch created successfully');
-                enqueueSnackbar('Branch created successfully', {
-                    variant: 'success'
-                });
+                enqueueSnackbar('Branch created successfully', { variant: 'success' });
             }
             setloading(false);
             navigate(`/locations?brandId=${initialValues.brandId}`);
         } catch (error) {
             console.log(error);
             const errorMessage =
-                error.response?.data?.error?.validationErrors?.[0]?.message || error.response?.data?.error?.message || 'An error occurred';
-
+                error.response?.data?.error?.validationErrors?.[0]?.message ||
+                error.response?.data?.error?.message ||
+                'An error occurred';
             enqueueSnackbar(errorMessage, { variant: 'error' });
             setloading(false);
         }
+    };
+    
+    
+
+    const handleBranchLogoUpload = async (logoFile, fileService) => {
+        if (typeof logoFile === 'string') {
+            return logoFile;
+        }
+        if (!logoFile) {
+            return undefined;
+        }
+
+        const options = {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+
+        // Compress and upload
+        const compressedFile = await imageCompression(logoFile, options);
+        const response = await fileService.uploadBranchLogo(compressedFile);
+        return response.data?.result;
     };
 
     return (

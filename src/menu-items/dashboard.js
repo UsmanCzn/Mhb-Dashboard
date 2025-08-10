@@ -13,6 +13,8 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 import EventIcon from '@mui/icons-material/Event';
@@ -348,6 +350,15 @@ const dashboard = {
             forUserRoles: [ADMIN]
         },
         {
+            id: 'scans',
+            title: 'Scans',
+            type: 'item',
+            url: '/scans',
+            icon: QrCodeIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN]
+        },
+        {
             id: 'delivery-settings',
             title: 'Delivery Settings',
             type: 'item',
@@ -395,7 +406,7 @@ const dashboard = {
                 },
                 {
                     id: 'notificationBalanceHistory',
-                    title: 'Notification Balance',
+                    title: 'Notification History',
                     type: 'item',
                     url: '/notificationBalance',
                     breadcrumbs: false,

@@ -199,7 +199,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                     <CircularProgress />
                 </Box>
             ) : (
-                <Grid container spacing={2} justify="space-between">
+                <Grid container spacing={2} sx={{ mt: 2 }} justify="space-between">
                     {SortedProductList?.map((item, index) => {
                         return (
                             <GridItem
@@ -211,6 +211,7 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                                 setUpdate={setUpdate}
                                 setModalOpen={setUpdateModalOpen}
                                 duplicateProduct={duplicateProduct}
+                                user={user}
                             />
                         );
                     })}

@@ -349,7 +349,7 @@ const AddPaymentMethod = () => {
                     enqueueSnackbar('Action Performed Successfully', {
                         variant: 'success'
                     });
-                    navigate('/payments-settings/methods');
+                    navigate(`/payments-settings/methods?brandId=${bid}`);
                 }
             } catch (error) {
                 console.error('Error fetching brand payments:', error);
@@ -407,7 +407,7 @@ const AddPaymentMethod = () => {
                 enqueueSnackbar('Action Performed Successfully', {
                     variant: 'success'
                 });
-                navigate('/payments-settings/methods');
+                navigate(`/payments-settings/methods?brandId=${bid}`);
             }
         }
     };
@@ -543,6 +543,15 @@ const AddPaymentMethod = () => {
                     </Grid>
                 </CardContent>
                 <CardActions style={{ justifyContent: 'flex-end' }}>
+                <Button
+                    onClick={() => navigate(`/payments-settings/methods?brandId=${bid}`)}
+                    size="small"
+                    variant="outlined"
+                    style={{ marginRight: 8 }}
+                >
+                    Cancel
+                </Button>
+
                     <Button onClick={handleSubmit} size="small" variant="contained">
                         Save
                     </Button>

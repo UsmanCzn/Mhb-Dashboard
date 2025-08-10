@@ -41,6 +41,7 @@ import UpdateUser from '../pages/user-management/update-user';
 import RewardStats from 'pages/rewardStats/RewardStats';
 import Offers from 'pages/offers/offers';
 import Advertisement from 'pages/advertisement/advertisement';
+import Scans from 'pages/scans/scans';
 import Campaings from 'pages/campaings/index';
 import VechileType from 'pages/driveThru/vechile-type';
 import VechileBrand from 'pages/driveThru/vechile-brand'
@@ -124,6 +125,7 @@ export default function MainRoutes() {
                     <Route path="/rewards-stats" element={<RewardStats />} />
 
                     <Route path="/advertisement" element={<Advertisement />} />
+                    <Route path="/scans" element={<Scans />} />
 
                     <Route path="/drive/vechiles" element={<VechileType />} />
                     <Route path="/drive/brand" element={<VechileBrand />} />

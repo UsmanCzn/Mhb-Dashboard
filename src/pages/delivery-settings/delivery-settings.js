@@ -78,7 +78,6 @@ const DynamicCollapsibleFormsWithCards = () => {
     }, [brandsList, branchesList]);
 
     useEffect(() => {
-        console.log('dsfdsf', reload);
         setBranchReload((prev) => !prev);
     }, [reload]);
 
@@ -182,10 +181,7 @@ const DynamicCollapsibleFormsWithCards = () => {
                                 </FormControl>
                             </Grid>
                         </Box>
-                        {/* <Button size="small" variant="contained" 
-            sx={{ textTransform: 'capitalize' }} >
-                            Add New loyalty
-            </Button>  */}
+
                     </Grid>
                     {/* <Grid item xs={6}>
             <TableControl type="Customer"/>

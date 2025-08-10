@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Button, FormControl, InputLabel, Select, MenuItem, TextField, Box } from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import PaymentMethodsListing from './payment-methods-listing';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import paymentServices from 'services/paymentServices';
 import { ServiceFactory } from 'services/index';
 import { useAuth } from 'providers/authProvider';
 
 
+
 const PaymentMethods = () => {
+
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const queryBrandId = params.get('brandId');
+
     const { user, userRole, isAuthenticated } = useAuth();
 
     const [data, setData] = useState({ sandBoxKey: '', liveKey: '', sandboxApi: '', liveApi: '', CurrencyCode: '' });
@@ -30,16 +36,25 @@ const PaymentMethods = () => {
     };
 
     useEffect(() => {
-        // Check if brandsList has at least one item and selectedBrand is not set
         if (brandsList.length > 0) {
-            const initialBrand = brandsList[0];
+            let initialBrand = brandsList[0];
+            if (queryBrandId) {
+                const foundBrand = brandsList.find(b => String(b.id) === String(queryBrandId));
+                if (foundBrand) {
+                    initialBrand = foundBrand;
+                }
+            }
             setselectedBrand(initialBrand);
-            fetchData(initialBrand.id);
         }
-    }, [brandsList]);
+        // eslint-disable-next-line
+    }, [brandsList, location.search]);
+    
+
 
     useEffect(() => {
+        if(selectedBrand){
         fetchData(selectedBrand.id);
+        }
     }, [selectedBrand]);
     return (
         <>

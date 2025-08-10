@@ -62,7 +62,8 @@ const ProductAddEdit = () => {
         protien: 0,
         showIsOutOfStock: true,
         subTypes: [],
-        type: ''
+        type: '',
+        orderValue:0,
     };
 
     const [formValues, setFormValues] = useState(initialValues);
@@ -174,7 +175,8 @@ const ProductAddEdit = () => {
                 protien: Product.protien || 0,
                 showIsOutOfStock: Product.showIsOutOfStock || false,
                 subTypes: productTypes.find((type) => type.id === Product.productTypeId)?.subTypes || [],
-                type: Product.productTypeId || ''
+                type: Product.productTypeId || '',
+                orderValue:Product.orderValue
             };
 
             // Update form values in a single call
@@ -302,6 +304,7 @@ const ProductAddEdit = () => {
                                             price: values?.price,
                                             pointsOfCost: +values?.pointsOfCost || 0,
                                             nativeName: values?.nativeName,
+                                            orderValue: +values.orderValue,
                                             isDeliveryProduct: values?.isDeliveryProduct,
                                             productDescriptionNative: values?.productDescriptionNative,
                                             productDescription: values?.productDescription,

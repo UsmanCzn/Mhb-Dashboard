@@ -114,7 +114,6 @@ export default function LevelForm() {
         selectedBrand,
         reload
     );
-
     const groupsColumnFormater = (item) => {
         return (
             <Grid container spacing={1} direction="column">

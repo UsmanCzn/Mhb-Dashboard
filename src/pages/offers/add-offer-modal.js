@@ -36,6 +36,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
         brandId: 0,
         branchId: 0,
         offerName: '',
+        orderValue:0,
         offerImageUrl: '',
         actionType: 0,
         actionId: 0
@@ -71,7 +72,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
     };
 
     const handleClose = () => {
-        onClose();
+        onClose(brand.id);
         setModalOpen(false);
         setOffer(intialData);
     };
@@ -160,7 +161,8 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId
+                    actionId: Offer.actionId,
+                    orderValue: Offer.orderValue
                 };
 
                 await offerServices.CreateOffer(payload);
@@ -174,7 +176,8 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                     offerName: '',
                     offerImageUrl: '',
                     actionType: 0,
-                    actionId: 0
+                    actionId: 0,
+                    orderValue:0,
                 });
                 handleClose();
             } catch (err) {
@@ -189,7 +192,8 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId
+                    actionId: Offer.actionId,
+                    orderValue:Offer.orderValue
                 };
                 await offerServices.UpdateOffer(payload);
                 setImage(null);
@@ -202,7 +206,8 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                     offerName: Offer.offerName,
                     offerImageUrl: Offer.offerImageUrl,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId
+                    actionId: Offer.actionId,
+                    orderValue: Offer.orderValue
                 };
                 await offerServices.UpdateOffer(payload);
                 setImage(null);
@@ -325,6 +330,22 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                                 </Select>
                             </FormControl>
                         </Grid>
+                        <Grid item xs={6}>
+    <TextField
+        fullWidth
+        required
+        margin="dense"
+        id="sortOrder"
+        name="Sort Order"
+        label="Sort Order"
+        type="number"
+        inputProps={{ min: 1 }}
+        onChange={(event) => setOffer({ ...Offer, orderValue: +event.target.value })}
+        value={Offer.sortOrder}
+        variant="outlined"
+    />
+</Grid>
+
                     </Grid>
                 </DialogContent>
                 <DialogActions>
