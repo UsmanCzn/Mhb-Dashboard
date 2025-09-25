@@ -194,7 +194,7 @@ const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
                                 label="From"
                                 variant="outlined"
                                 value={data.bottomLimit}
-                                onChange={(e) => setData({ ...data, bottomLimit: +e.target.value || '' })}
+                                onChange={(e) => setData({ ...data, bottomLimit: +e.target.value })}
                                 sx={{ mt: 2, mr: 2 }}
                             />
                             <Typography>To</Typography>
@@ -203,7 +203,7 @@ const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
                                 label="To"
                                 variant="outlined"
                                 value={data.topLimit}
-                                onChange={(e) => setData({ ...data, topLimit: +e.target.value || '' })}
+                                onChange={(e) => setData({ ...data, topLimit: +e.target.value })}
                                 sx={{ mt: 2, ml: 2 }}
                             />
                         </Box>

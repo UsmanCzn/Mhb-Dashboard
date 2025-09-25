@@ -26,10 +26,13 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
         setCategory();
     }, [selectedBranch]);
 
-    const subTypes = useMemo(() => {
-        const temp = productTypes.find((e) => e.id === category?.id);
-        return temp ? temp?.subTypes : [];
-    }, [category]);
+const subTypes = useMemo(() => {
+  const temp = productTypes.find((e) => e.id === category?.id);
+  return temp
+    ? [...temp.subTypes].sort((a, b) => a.orderValue - b.orderValue) // ✅ ascending by id
+    : [];
+}, [category, productTypes]);
+
 
     const sortByProperty = (array, propertyName, sortOrder = 0) => {
         return array.sort((a, b) => {
@@ -59,7 +62,6 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
                 result = result.filter((item) => item.productTypeId === category?.id);
             }
         }
-        console.log(result, 'search');
 
         setSortedProductList(result);
     };

@@ -14,6 +14,7 @@ import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShopTwoIcon from '@mui/icons-material/ShopTwo';
 import QrCodeIcon from '@mui/icons-material/QrCode';
+import ExtensionIcon from '@mui/icons-material/Extension';
 
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ADMIN, BRANCH_USER, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
@@ -21,6 +22,7 @@ import EventIcon from '@mui/icons-material/Event';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import WalletIcon from '@mui/icons-material/Wallet';
 // icons
 const icons = {
     DashboardOutlined
@@ -90,6 +92,15 @@ const dashboard = {
             forUserRoles: [ADMIN, COMPANY_ADMIN]
         },
         {
+            id: 'wallet-topup',
+            title: 'Wallet Top ups',
+            type: 'item',
+            url: '/walletTopups',
+            icon: WalletIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN , BRAND_MANAGER]
+        },
+        {
             id: 'rewards',
             title: 'Rewards',
             type: 'collapse',
@@ -143,15 +154,15 @@ const dashboard = {
                 // }
             ]
         },
-        // {
-        //     id: 'rewardStats',
-        //     title: 'Rewards Stats',
-        //     type: 'item',
-        //     url: '/rewards-stats',
-        //     icon: icons.DashboardOutlined,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
-        // },
+        {
+            id: 'rewardStats',
+            title: 'Rewards Stats',
+            type: 'item',
+            url: '/rewards-stats',
+            icon: icons.DashboardOutlined,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
+        },
 
         {
             id: 'customers',
@@ -322,14 +333,6 @@ const dashboard = {
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
             isOpen: false,
             children: [
-                // {
-                //     id: 'providers',
-                //     title: 'Payment Providers',
-                //     type: 'item',
-                //     url: '/payments-settings/providers',
-                //     breadcrumbs: false,
-                //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
-                // },
                 {
                     id: 'methods',
                     title: 'Payment Method',
@@ -340,6 +343,15 @@ const dashboard = {
                 }
             ]
         },
+        // {
+        //     id: 'plugins',
+        //     title: 'Plugins',
+        //     type: 'item',
+        //     url: '/plugins',
+        //     icon: ExtensionIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        // },
         {
             id: 'advertisement',
             title: 'Advertisement',
@@ -356,7 +368,16 @@ const dashboard = {
             url: '/scans',
             icon: QrCodeIcon,
             breadcrumbs: false,
-            forUserRoles: [ADMIN]
+            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        },
+        {
+            id: 'credit-report',
+            title: 'Credit Reports',
+            type: 'item',
+            url: '/creditReports',
+            icon: QrCodeIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN,BRAND_MANAGER]
         },
         {
             id: 'delivery-settings',

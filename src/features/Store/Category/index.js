@@ -11,6 +11,7 @@ import { CloudUploadOutlined } from '@ant-design/icons';
 import { useSnackbar } from 'notistack';
 import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
+import imageCompression from 'browser-image-compression';
 
 const style = {
     position: 'absolute',
@@ -73,7 +74,13 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
         };
         if (p1) {
             try {
-                const res = await fileService.uploadProductImage(p1);
+        const options = {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+        const compressedFile = await imageCompression(p1, options);
+                const res = await fileService.uploadProductImage(compressedFile);
                 payload.imageUrl = res.data?.result;
             } catch (err) {
                 console.log(err?.response?.data);
@@ -113,7 +120,13 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
             }
             if (subTypeImages[index]) {
                 try {
-                    const res = await fileService.uploadProductImage(subTypeImages[index]);
+        const options = {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+        const compressedFile = await imageCompression(subTypeImages[index], options);
+                    const res = await fileService.uploadProductImage(compressedFile);
                     item.imageUrl = res.data?.result;
                 } catch (err) {
                     console.log(err?.response?.data);

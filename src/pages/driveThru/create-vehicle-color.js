@@ -128,7 +128,7 @@ const CreateVehicleColor = ({ open, onClose,onSave, car }) => {
     aria-labelledby="dialog-title"
     aria-describedby="dialog-description"
   >
-    <DialogTitle id="dialog-title">Create New Vehicle</DialogTitle>
+    <DialogTitle id="dialog-title">{car ?'Update Color':'Create New Color'}</DialogTitle>
     <DialogContent>
       <Grid container spacing={2}>
         {/* <Grid item xs={12}>
@@ -139,7 +139,7 @@ const CreateVehicleColor = ({ open, onClose,onSave, car }) => {
             margin="dense"
             id="carColorName"
             name="carColorName"
-            label="Vehicle Name"
+            label="Color Name"
             type="text"
             fullWidth
             variant="outlined"
@@ -152,7 +152,7 @@ const CreateVehicleColor = ({ open, onClose,onSave, car }) => {
             margin="dense"
             id="carColorNativeName"
             name="carColorNativeName"
-            label="Vehicle Native Name"
+            label="Color Native Name"
             type="text"
             variant="outlined"
             fullWidth

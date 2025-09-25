@@ -22,7 +22,7 @@ const DrawerHeader = ({ open }) => {
             <Stack direction="row" spacing={1} alignItems="center">
                
                <img style={{width:140,height:50}} 
-               src={user?.logoToShow}
+               src={'https://syyveprod.blob.core.windows.net/manual/Logo.png'}
                 alt="logo"/>
                
             </Stack>

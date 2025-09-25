@@ -43,6 +43,7 @@ import Offers from 'pages/offers/offers';
 import Advertisement from 'pages/advertisement/advertisement';
 import Scans from 'pages/scans/scans';
 import Campaings from 'pages/campaings/index';
+import WalletTopups from 'pages/wallet-topups/index';
 import VechileType from 'pages/driveThru/vechile-type';
 import VechileBrand from 'pages/driveThru/vechile-brand'
 import VechileColor from 'pages/driveThru/vechile-color';
@@ -62,7 +63,9 @@ import AddEditApp from 'pages/apps/addEditApp';
 import PaymentFailure from 'pages/payment-failure/index';
 import PaymentSuccess from 'pages/payment-success/index';
 import GroupCustomerTable from 'features/Customers/GroupCustomerTable/groupCustomerTable';
-import NotificationBalnce from 'pages/notification-balance/notification-balance'
+import NotificationBalnce from 'pages/notification-balance/notification-balance';
+import CreditReport from 'pages/credit-report'
+import Plugins from 'pages/plugins';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -96,6 +99,8 @@ export default function MainRoutes() {
                     <Route path="/addEditBrand" element={<AddEditBrand />} />
                     <Route path="/addEditBrand/:id" element={<AddEditBrand />} />
                     <Route path="/campaigns" element={<Campaings />} />
+                    <Route path="/walletTopups" element={<WalletTopups />} />
+                    <Route path="/creditReports" element={<CreditReport />} />
 
                     <Route path="/locations" element={<Branches />} />
                     <Route path="/locationAddEdit" element={<AddEditBranch />} />
@@ -125,6 +130,7 @@ export default function MainRoutes() {
                     <Route path="/rewards-stats" element={<RewardStats />} />
 
                     <Route path="/advertisement" element={<Advertisement />} />
+                    <Route path="/plugins" element={<Plugins />} />
                     <Route path="/scans" element={<Scans />} />
 
                     <Route path="/drive/vechiles" element={<VechileType />} />

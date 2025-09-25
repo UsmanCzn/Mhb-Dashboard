@@ -49,7 +49,7 @@ export default function CustomerDetail() {
                     <TabList onChange={handleChange}>
                         <Tab label="Info" value="1" />
                         <Tab label="Customer Orders" value="2" />
-                        <Tab label="Credit Balance" value="4" />
+                        <Tab label="Rewards" value="4" />
                         <Tab label="Scans History" value="5" />
                     </TabList>
                 </Box>

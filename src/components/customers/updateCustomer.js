@@ -163,6 +163,7 @@ const UpdateCustomer = ({
                                       type="email"
                                       variant="outlined"
                                       required
+                                      disabled
                                       value={data.displayEmailAddress}
                                       onChange={(e) => setData({ ...data, displayEmailAddress: e.target.value })}
                                   />

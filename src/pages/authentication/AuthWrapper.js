@@ -25,7 +25,6 @@ const AuthWrapper = ({ children }) => (
             }}
         >
             <Grid item xs={12} sx={{ ml: 3, mt: 3, display: 'flex', justifyContent: 'center' }}>
-                <img src="https://syyveprod.blob.core.windows.net/manual/Logo.png" alt="logo" width="200px" />
             </Grid>
             <Grid item xs={12}>
                 <Grid

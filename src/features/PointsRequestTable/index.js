@@ -189,6 +189,7 @@ const PointsRequestTable = () => {
                 loading={false}
                 getRowId={(row) => row.id}
                 rowsPerPageOptions={[10]}
+                pMode="client"
                 totalRowCount={pointsRequest?.length}
                 // fetchCallback={getCreditRequest}
             />

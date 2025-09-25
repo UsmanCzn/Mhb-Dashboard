@@ -114,6 +114,21 @@ const printOrder = () => {
     padding-top: 4px;
     margin-top: 8px;
   }
+    .m-0{
+    margin:0;}
+
+h2.center {
+  margin: 2px 0 0;       
+  font-size: 16px;       
+  line-height: 1.05; 
+}
+
+h6.center {
+  margin: 0 0 2px;       
+  font-size: 11px;       
+  line-height: 1.0;
+  font-weight: normal;   
+}
 </style>
 
 
@@ -123,6 +138,7 @@ const printOrder = () => {
         <div class="separator"></div>
         <div class="center">No of Items: ${data?.products?.reduce((sum, item) => sum + (item?.quantity || 0), 0)}</div>
         <h2 class="center">${data?.branchName}</h2>
+        <h6 class="center m-0">${data?.deliverySystem}</h6>
 
         <div>Order #${data?.orderNumber}</div>
         <div>Customer: ${data?.customerName ?? data?.name} ${data?.customerSurname ?? data?.surname}</div>
@@ -144,7 +160,7 @@ const printOrder = () => {
           ?.map(
             (item) => `
               <div class="item-row">
-                <span style="width: 60%">${item.name}</span>
+                <span style="width: 60%">${item.name} ${item.isRedeem ? '<strong>(R)</strong>&nbsp;' : ''}</span>
                 <span style="width: 20%">x ${item.quantity}</span>
                 <span style="width: 20%">${(item.quantity * item.itemPrice).toFixed(
                   data?.brandCurrencyDecimal || 3
@@ -335,6 +351,9 @@ const printOrder = () => {
                                     <Typography variant="h1" fontSize={32} fontFamily="Noto Sans Arabic">
                                         {data?.branchName}
                                     </Typography>
+                                    <Typography variant="h1" fontSize={16} fontFamily="Noto Sans Arabic">
+                                        {data?.deliverySystem}
+                                    </Typography>
                                     <Typography
                                         variant="h6"
                                         fontSize={16}
@@ -515,9 +534,16 @@ const printOrder = () => {
                                                         justifyContent: 'space-between'
                                                     }}
                                                 >
-                                                    <Typography variant="h2" fontSize={14} style={{ width: '50%' }}>
-                                                        {obj?.name}
+                                                    <Typography variant="h2" fontSize={14} sx={{ width: '50%' }}>
+          
+                                                    {obj?.name}
+                                                    {obj?.isRedeem && (
+                                                    <Typography component="span" fontWeight={700} sx={{ ml: 0.5 }}>
+                                                      (R)
                                                     </Typography>
+                                                    )}
+                                                    </Typography>
+
                                                     <Typography variant="h2" fontSize={14} style={{ width: '10%' }}>
                                                         {' '}
                                                         x {obj?.quantity}{' '}

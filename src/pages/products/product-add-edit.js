@@ -432,7 +432,33 @@ const ProductAddEdit = () => {
 
                                     {/* Tab Panels */}
                                     <TabPanel value="basicInfo">
-                                        <Grid container spacing={3}>
+                                        <Grid container spacing={2}>
+                                            {/* Navigation Button */}
+                                            <Grid item xs={12} container justifyContent="flex-end">
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{ minWidth: '120px' }}
+                                                    onClick={() => {
+                                                        if (!validationSchemas['basicInfo'].isValidSync(values)) {
+                                                            // Mark all fields in 'basicInfo' as touched
+
+                                                            const basicInfoFields = Object.keys(validationSchemas['basicInfo'].fields);
+
+                                                            // Mark only those fields as touched
+                                                            setTouched(
+                                                                basicInfoFields.reduce((acc, field) => {
+                                                                    acc[field] = true;
+                                                                    return acc;
+                                                                }, {})
+                                                            );
+                                                        } else {
+                                                            setTabValue('addOns');
+                                                        }
+                                                    }}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </Grid>
                                             {/* Product Name */}
                                             <Grid item xs={6}>
                                                 <TextField
@@ -622,37 +648,40 @@ const ProductAddEdit = () => {
                                                     helperText={touched.productDescriptionNative && errors.productDescriptionNative}
                                                 />
                                             </Grid>
-
-                                            {/* Navigation Button */}
-                                            <Grid item xs={12} container justifyContent="flex-end">
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{ minWidth: '120px' }}
-                                                    onClick={() => {
-                                                        if (!validationSchemas['basicInfo'].isValidSync(values)) {
-                                                            // Mark all fields in 'basicInfo' as touched
-
-                                                            const basicInfoFields = Object.keys(validationSchemas['basicInfo'].fields);
-
-                                                            // Mark only those fields as touched
-                                                            setTouched(
-                                                                basicInfoFields.reduce((acc, field) => {
-                                                                    acc[field] = true;
-                                                                    return acc;
-                                                                }, {})
-                                                            );
-                                                        } else {
-                                                            setTabValue('addOns');
-                                                        }
-                                                    }}
-                                                >
-                                                    Next
-                                                </Button>
-                                            </Grid>
                                         </Grid>
                                     </TabPanel>
 
                                     <TabPanel value="addOns">
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            style={{ marginBottom: '15px', paddingLeft: '18px' }}
+                                            container
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                            spacing={2}
+                                        >
+                                            {/* Back Button */}
+                                            <Box mr={2}>
+                                                <Button
+                                                    variant="outlined"
+                                                    sx={{ minWidth: '120px' }}
+                                                    onClick={() => setTabValue('basicInfo')} // Navigate to the previous tab
+                                                >
+                                                    Back
+                                                </Button>
+                                            </Box>
+
+                                            {/* Next Button */}
+                                            <Button
+                                                variant="contained"
+                                                sx={{ minWidth: '120px' }}
+                                                onClick={() => setTabValue('branches')} // Navigate to the next tab
+                                                disabled={!validationSchemas['addOns'].isValidSync(values)}
+                                            >
+                                                Next
+                                            </Button>
+                                        </Grid>
                                         <FieldArray
                                             name="addonGroups"
                                             render={(arrayHelpers) => (
@@ -732,13 +761,25 @@ const ProductAddEdit = () => {
                                                 </Grid>
                                             )}
                                         />
-                                        <Grid item xs={12} style={{ marginTop: '10px' }} container justifyContent="flex-end" spacing={2}>
+                                    </TabPanel>
+
+                                    {/*  */}
+                                    <TabPanel value="branches">
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            style={{ marginBottom: '18px', paddingLeft: '18px' }}
+                                            container
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                            spacing={2}
+                                        >
                                             {/* Back Button */}
                                             <Box mr={2}>
                                                 <Button
                                                     variant="outlined"
                                                     sx={{ minWidth: '120px' }}
-                                                    onClick={() => setTabValue('basicInfo')} // Navigate to the previous tab
+                                                    onClick={() => setTabValue('addOns')} // Navigate to the previous tab
                                                 >
                                                     Back
                                                 </Button>
@@ -748,16 +789,13 @@ const ProductAddEdit = () => {
                                             <Button
                                                 variant="contained"
                                                 sx={{ minWidth: '120px' }}
-                                                onClick={() => setTabValue('branches')} // Navigate to the next tab
-                                                disabled={!validationSchemas['addOns'].isValidSync(values)}
+                                                onClick={() => setTabValue(id ? 'settings' : 'image')} // Navigate to the next tab
+                                                disabled={!validationSchemas['branches'].isValidSync(values)}
                                             >
                                                 Next
                                             </Button>
                                         </Grid>
-                                    </TabPanel>
 
-                                    {/*  */}
-                                    <TabPanel value="branches">
                                         <FieldArray
                                             name="productQtyWithBranchs"
                                             render={(arrayHelpers) => (
@@ -814,42 +852,41 @@ const ProductAddEdit = () => {
                                                             <Typography color="error">{errors.productQtyWithBranchs}</Typography>
                                                         </Grid>
                                                     )}
-
-                                                    <Grid
-                                                        item
-                                                        xs={12}
-                                                        style={{ marginTop: '10px' }}
-                                                        container
-                                                        justifyContent="flex-end"
-                                                        spacing={2}
-                                                    >
-                                                        {/* Back Button */}
-                                                        <Box mr={2}>
-                                                            <Button
-                                                                variant="outlined"
-                                                                sx={{ minWidth: '120px' }}
-                                                                onClick={() => setTabValue('addOns')} // Navigate to the previous tab
-                                                            >
-                                                                Back
-                                                            </Button>
-                                                        </Box>
-
-                                                        {/* Next Button */}
-                                                        <Button
-                                                            variant="contained"
-                                                            sx={{ minWidth: '120px' }}
-                                                            onClick={() => setTabValue(id ? 'settings' : 'image')} // Navigate to the next tab
-                                                            disabled={!validationSchemas['branches'].isValidSync(values)}
-                                                        >
-                                                            Next
-                                                        </Button>
-                                                    </Grid>
                                                 </Grid>
                                             )}
                                         />
                                     </TabPanel>
 
                                     <TabPanel value="settings">
+                                        {/* Navigation Button */}
+                                        <Grid
+                                            sx={{ mb: 2, px: 3 }} // Padding from left & right
+                                            xs={12}
+                                            container
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                            spacing={2}
+                                        >
+                                            {/* Back Button */}
+                                            <Box mr={2}>
+                                                <Button
+                                                    variant="outlined"
+                                                    sx={{ minWidth: '120px' }}
+                                                    onClick={() => setTabValue('branches')} // Navigate to the previous tab
+                                                >
+                                                    Back
+                                                </Button>
+                                            </Box>
+
+                                            {/* Next Button */}
+                                            <Button
+                                                variant="contained"
+                                                sx={{ minWidth: '120px' }}
+                                                onClick={() => setTabValue('nutritions')} // Navigate to the next tab
+                                            >
+                                                Next
+                                            </Button>
+                                        </Grid>
                                         <Grid container spacing={3}>
                                             {/* Delivery Product */}
                                             <Grid item xs={4}>
@@ -970,33 +1007,40 @@ const ProductAddEdit = () => {
                                                     label="Don't Miss Out"
                                                 />
                                             </Grid>
+                                        </Grid>
+                                    </TabPanel>
 
-                                            {/* Navigation Button */}
-                                            <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
-                                                {/* Back Button */}
-                                                <Box mr={2}>
+                                    <TabPanel value="nutritions">
+                                        <Grid container spacing={3}>
+                                            {/* Navigation Buttons */}
+                                            <Grid
+                                                item
+                                                xs={12}
+                                                sx={{ mb: 2, px: 3 }} // Padding from left & right
+                                                container
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                                spacing={2}
+                                            >
+                                                <Grid item>
                                                     <Button
                                                         variant="outlined"
                                                         sx={{ minWidth: '120px' }}
-                                                        onClick={() => setTabValue('branches')} // Navigate to the previous tab
+                                                        onClick={() => setTabValue('settings')} // Navigate to the previous tab
                                                     >
                                                         Back
                                                     </Button>
-                                                </Box>
-
-                                                {/* Next Button */}
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{ minWidth: '120px' }}
-                                                    onClick={() => setTabValue('nutritions')} // Navigate to the next tab
-                                                >
-                                                    Next
-                                                </Button>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Button
+                                                        variant="contained"
+                                                        sx={{ minWidth: '120px' }}
+                                                        onClick={() => setTabValue('image')} // Navigate to the next tab
+                                                    >
+                                                        Next
+                                                    </Button>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </TabPanel>
-                                    <TabPanel value="nutritions">
-                                        <Grid container spacing={3}>
                                             {/* Calories */}
                                             <Grid item xs={6}>
                                                 <TextField
@@ -1052,100 +1096,88 @@ const ProductAddEdit = () => {
                                                     helperText={touched.carbo && errors.carbo}
                                                 />
                                             </Grid>
-
-                                            {/* Navigation Buttons */}
-                                            <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
-                                                <Grid item>
-                                                    <Button
-                                                        variant="outlined"
-                                                        sx={{ minWidth: '120px' }}
-                                                        onClick={() => setTabValue('settings')} // Navigate to the previous tab
-                                                    >
-                                                        Back
-                                                    </Button>
-                                                </Grid>
-                                                <Grid item>
-                                                    <Button
-                                                        variant="contained"
-                                                        sx={{ minWidth: '120px' }}
-                                                        onClick={() => setTabValue('image')} // Navigate to the next tab
-                                                    >
-                                                        Next
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>
                                         </Grid>
                                     </TabPanel>
                                     <TabPanel value="image">
-                                        <Grid container spacing={3}>
-                                            {/* File Upload Area */}
-                                            <Grid item xs={12}>
-                                                <Box
-                                                    sx={{
-                                                        border: '1px dashed #ccc',
-                                                        borderRadius: '4px',
-                                                        padding: 4,
-                                                        textAlign: 'center',
-                                                        backgroundColor: '#f9f9f9'
-                                                    }}
-                                                >
-                                                    {Product && <img width={100} src={Product?.productImage} alt="Product" />}
-                                                    <Typography variant="body1" gutterBottom>
-                                                        Click to upload
-                                                    </Typography>
-                                                    <Button variant="outlined" component="label" sx={{ mt: 2 }}>
-                                                        Choose File
-                                                        <input
-                                                            type="file"
-                                                            hidden
-                                                            name="productImage"
-                                                            onChange={(event) => {
-                                                                const file = event.target.files[0];
-                                                                setFieldValue('productImage', file); // Formik's setFieldValue
-                                                            }}
-                                                        />
-                                                    </Button>
-                                                    <Typography variant="body2" sx={{ mt: 1 }}>
-                                                        {values.productImage ? values.productImage.name : 'No file chosen'}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
+                                    <Grid container spacing={3}>
+                                        {/* Top Navigation Buttons */}
+                                        <Grid
+                                        item
+                                        xs={12}
+                                        container
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                        sx={{ mb: 2, px: 3 }} // space from top and sides
+                                        >
+                                        {/* Back Button */}
+                                        <Button
+                                            variant="outlined"
+                                            sx={{ minWidth: '120px' }}
+                                            onClick={() => setTabValue(id ? 'nutritions' : 'branches')}
+                                        >
+                                            Back
+                                        </Button>
 
-                                            {/* Navigation Buttons */}
-                                            <Grid item xs={12} container alignItems="center" justifyContent="space-between">
-                                                {/* Delete Product Button */}
-                                                {id && (
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="error"
-                                                        onClick={() => {
-                                                            // Handle delete logic here
-                                                            deleteProduct();
-                                                        }}
-                                                    >
-                                                        Delete This Product
-                                                    </Button>
-                                                )}
-                                                {/* Back and Save Buttons */}
-                                                <Box>
-                                                    <Button
-                                                        variant="outlined"
-                                                        sx={{ minWidth: '120px', marginRight: 2 }}
-                                                        onClick={() => setTabValue(id ? 'nutritions' : 'branches')} // Navigate to the previous tab
-                                                    >
-                                                        Back
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        sx={{ minWidth: '120px' }}
-                                                        type="submit" // Submit button for form submission
-                                                    >
-                                                        Save
-                                                    </Button>
-                                                </Box>
-                                            </Grid>
+                                        {/* Save Button */}
+                                        <Button
+                                            variant="contained"
+                                            sx={{ minWidth: '120px' }}
+                                            type="submit"
+                                        >
+                                            Save
+                                        </Button>
                                         </Grid>
+
+                                        {/* File Upload Area */}
+                                        <Grid item xs={12}>
+                                        <Box
+                                            sx={{
+                                            border: '1px dashed #ccc',
+                                            borderRadius: '4px',
+                                            padding: 4,
+                                            textAlign: 'center',
+                                            backgroundColor: '#f9f9f9'
+                                            }}
+                                        >
+                                            {Product && <img width={100} src={Product?.productImage} alt="Product" />}
+                                            <Typography variant="body1" gutterBottom>
+                                            Click to upload
+                                            </Typography>
+                                            <Button variant="outlined" component="label" sx={{ mt: 2 }}>
+                                            Choose File
+                                            <input
+                                                type="file"
+                                                hidden
+                                                name="productImage"
+                                                onChange={(event) => {
+                                                const file = event.target.files[0];
+                                                setFieldValue('productImage', file); // Formik's setFieldValue
+                                                }}
+                                            />
+                                            </Button>
+                                            <Typography variant="body2" sx={{ mt: 1 }}>
+                                            {values.productImage ? values.productImage.name : 'No file chosen'}
+                                            </Typography>
+                                        </Box>
+                                        </Grid>
+
+                                        {/* Delete Product Button at Bottom */}
+                                        {id && (
+                                        <Grid item xs={12} sx={{ px: 3 }}>
+                                            <Button
+                                            variant="outlined"
+                                            color="error"
+                                            onClick={() => {
+                                                deleteProduct();
+                                            }}
+                                            >
+                                            Delete This Product
+                                            </Button>
+                                        </Grid>
+                                        )}
+                                    </Grid>
                                     </TabPanel>
+
 
                                     {/* Repeat for other tabs */}
                                 </TabContext>

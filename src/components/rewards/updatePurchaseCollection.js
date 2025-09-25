@@ -19,6 +19,7 @@ const App = ({
     modal,
     setModal,
     setReload, 
+    selectedBrand
 }) => {
 
 
@@ -45,7 +46,8 @@ const App = ({
         await  customerService.GetCustomersGroups()
 
         .then((res)=>{
-            setCustomerGroups(res?.data?.result?.data?.data) 
+            const filteredGroups = res?.data?.result?.data?.data.filter((item)=> item.brandId === selectedBrand.id)
+            setCustomerGroups(filteredGroups) 
         })
         .catch((err)=>{
             console.log(err?.response?.data);
@@ -219,7 +221,7 @@ const App = ({
                         </Grid>
                     </Grid>
 
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <Typography required variant="h7">
                             Gift Programs
                         </Typography>
@@ -291,7 +293,7 @@ const App = ({
                                 </Grid>
                             );
                         })}
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12}>
                         <Grid container>

@@ -141,7 +141,7 @@ const Scans = (props) => {
       {selectedBrand?.isPointPrimaryBrand && (
         <div style={{  margin: '0 auto' }}>
           <Typography variant="h4" fontWeight={600} sx={{ mb: 1 }}>
-            Points History
+              Point Scans History
           </Typography>
           <TableContainer
             component={Paper}
@@ -218,7 +218,7 @@ const Scans = (props) => {
       {selectedBrand?.isStampPrimaryBrand && (
         <div style={{  margin: '0 auto' }}>
           <Typography variant="h4" fontWeight={600} sx={{ mb: 1 }}>
-            Stamps History
+            Stamp Scans History
           </Typography>
           <TableContainer
             component={Paper}

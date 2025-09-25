@@ -302,9 +302,9 @@ const CreateNotification = () => {
                                     <TextField
                                         id="notificationMessage"
                                         label="Notification Message"
-                                        multiline
+                                        
                                         fullWidth
-                                        rows={4}
+                                        
                                         value={formik.values.notificationMessage}
                                         onChange={(e) =>
                                             formik.setFieldValue('notificationMessage', removeEmojis(e.target.value))
@@ -320,9 +320,9 @@ const CreateNotification = () => {
                                     <TextField
                                         id="notificationMessageNative"
                                         label="Notification Message Native"
-                                        multiline
+                                        
                                         fullWidth
-                                        rows={4}
+                                        
                                         value={formik.values.notificationMessageNative}
                                         onChange={(e) =>
                                             formik.setFieldValue('notificationMessageNative', removeEmojis(e.target.value))

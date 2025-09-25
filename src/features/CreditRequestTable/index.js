@@ -40,7 +40,6 @@ const CreditRequestTable = ({user}) => {
 
     const handleClick = (event, params) => {
         setSelectedRow(params.row);
-        setAnchorEl(event.currentTarget);
 
         //   setBrand(params?.row);
         setAnchorEl(event.currentTarget);
@@ -201,9 +200,11 @@ const CreditRequestTable = ({user}) => {
                 columns={columns}
                 loading={reload}
                 getRowId={(row) => row.id}
+                pMode="client"
                 rowsPerPageOptions={[10]}
                 totalRowCount={creditRequest?.length}
                 // fetchCallback={getCreditRequest}
+                
             />
 
             <Menu

@@ -26,6 +26,7 @@ import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsLis
 import LinearProgress from '@mui/material/LinearProgress';
 import fileService from 'services/fileService';
 import offerServices from 'services/offerServices';
+import imageCompression from 'browser-image-compression';
 
 const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) => {
     const [Image, setImage] = useState(null);
@@ -118,7 +119,10 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
             setViewImage(null);
         }
     }, [offer]);
-    useEffect(() => {}, [Offer]);
+    useEffect(() => {
+        console.log(Offer,"Offer");
+        
+    }, [Offer]);
 
     const getAllSubTypes = (items) => {
         let allSubTypes = [];
@@ -153,7 +157,14 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
         if (!offer) {
             try {
                 setload(true);
-                const uploadRes = await fileService.uploadProductImage(Image);
+                const options = {
+                    maxSizeMB: 0.1,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true
+                };
+                const compressedFile = await imageCompression(Image, options);
+                
+                const uploadRes = await fileService.uploadProductImage(compressedFile);
                 const payload = {
                     id: 0,
                     brandId: brand.id,
@@ -185,7 +196,13 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
             }
         } else {
             if (Image) {
-                const uploadRes = await fileService.uploadProductImage(Image);
+                                const options = {
+                    maxSizeMB: 0.1,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true
+                };
+                const compressedFile = await imageCompression(Image, options);
+                const uploadRes = await fileService.uploadProductImage(compressedFile);
                 const payload = {
                     ...offer,
                     brandId: brand.id,
@@ -341,7 +358,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
         type="number"
         inputProps={{ min: 1 }}
         onChange={(event) => setOffer({ ...Offer, orderValue: +event.target.value })}
-        value={Offer.sortOrder}
+        value={Offer.orderValue}
         variant="outlined"
     />
 </Grid>

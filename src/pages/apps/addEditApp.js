@@ -258,6 +258,30 @@ const AddEditApp = () => {
                                     {/* Tab Content */}
                                     <TabPanel value={tabValue} index={0}>
                                         <Grid container spacing={3}>
+                                            <Grid container justifyContent="flex-end" alignItems="center" spacing={2} sx={{ p: 3 }}>
+                                                {tabValue > 0 && (
+                                                    <Grid item>
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="secondary"
+                                                            onClick={() => setTabValue((prev) => prev - 1)}
+                                                        >
+                                                            Back
+                                                        </Button>
+                                                    </Grid>
+                                                )}
+                                                <Grid item>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
+                                                    >
+                                                        {tabValue < (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1)
+                                                            ? 'Next'
+                                                            : 'Save'}
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -295,30 +319,7 @@ const AddEditApp = () => {
                                                     helperText={touched.branchesLimit && errors.branchesLimit}
                                                 />
                                             </Grid>
-                                            {/* <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Notifications Limit"
-                                                    name="notificationsLimit"
-                                                    value={values.notificationsLimit}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.notificationsLimit && Boolean(errors.notificationsLimit)}
-                                                    helperText={touched.notificationsLimit && errors.notificationsLimit}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Giftcards Limit"
-                                                    name="giftCardsLimit"
-                                                    value={values.giftCardsLimit}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.giftCardsLimit && Boolean(errors.giftCardsLimit)}
-                                                    helperText={touched.giftCardsLimit && errors.giftCardsLimit}
-                                                />
-                                            </Grid> */}
+
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     select
@@ -351,28 +352,6 @@ const AddEditApp = () => {
                                                     error={touched.endSubDate && Boolean(errors.endSubDate)}
                                                     helperText={touched.endSubDate && errors.endSubDate}
                                                 />
-                                            </Grid>
-                                        </Grid>
-                                        <Grid container justifyContent="flex-end" spacing={2} sx={{ p: 3 }}>
-                                            {tabValue > 0 && (
-                                                <Grid item>
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="secondary"
-                                                        onClick={() => setTabValue((prev) => prev - 1)}
-                                                    >
-                                                        Back
-                                                    </Button>
-                                                </Grid>
-                                            )}
-                                            <Grid item>
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
-                                                >
-                                                    {tabValue < (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1) ? 'Next' : 'Save'}
-                                                </Button>
                                             </Grid>
                                         </Grid>
                                     </TabPanel>
@@ -427,6 +406,37 @@ const AddEditApp = () => {
                                     {!id && (
                                         <TabPanel value={tabValue} index={1}>
                                             <Grid container spacing={3}>
+                                                <Grid
+                                                    container
+                                                    justifyContent="space-between"
+                                                    alignItems="center"
+                                                    spacing={2}
+                                                    sx={{ p: 3 }}
+                                                >
+                                                    {tabValue > 0 && (
+                                                        <Grid item>
+                                                            <Button
+                                                                variant="outlined"
+                                                                color="secondary"
+                                                                onClick={() => setTabValue((prev) => prev - 1)}
+                                                            >
+                                                                Back
+                                                            </Button>
+                                                        </Grid>
+                                                    )}
+                                                    <Grid item>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
+                                                        >
+                                                            {tabValue <
+                                                            (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1)
+                                                                ? 'Next'
+                                                                : 'Save'}
+                                                        </Button>
+                                                    </Grid>
+                                                </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         fullWidth
@@ -492,7 +502,11 @@ const AddEditApp = () => {
                                                     </Grid>
                                                 )}
                                             </Grid>
-                                            <Grid container justifyContent="flex-end" spacing={2} sx={{ p: 3 }}>
+                                        </TabPanel>
+                                    )}
+                                    <TabPanel value={tabValue} index={id ? 1 : 2}>
+                                        <Grid container spacing={3}>
+                                            <Grid container justifyContent="space-between" alignItems="center" spacing={2} sx={{ p: 3 }}>
                                                 {tabValue > 0 && (
                                                     <Grid item>
                                                         <Button
@@ -506,18 +520,15 @@ const AddEditApp = () => {
                                                 )}
                                                 <Grid item>
                                                     <Button
+                                                        disabled={user?.isAccessRevoked}
                                                         variant="contained"
                                                         color="primary"
-                                                        onClick={() => handleNext(validateForm, setErrors, setTouched, values)}
+                                                        type="submit"
                                                     >
-                                                        {tabValue < (id ? validationSchemasEdit.length - 1 : validationSchemas.length - 1) ? 'Next' : 'Save'}
+                                                        Submit
                                                     </Button>
                                                 </Grid>
                                             </Grid>
-                                        </TabPanel>
-                                    )}
-                                    <TabPanel value={tabValue} index={id ? 1 : 2}>
-                                        <Grid container spacing={3}>
                                             <Grid item xs={12}>
                                                 <Typography variant="h6">Upload Logo</Typography>
                                                 <Box
@@ -562,26 +573,6 @@ const AddEditApp = () => {
                                                         onChange={(e) => setLogoFile(e.currentTarget.files[0])}
                                                     />
                                                 </Box>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid container justifyContent="flex-end" spacing={2} sx={{ p: 3 }}>
-                                            {tabValue > 0 && (
-                                                <Grid item>
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="secondary"
-                                                        onClick={() => setTabValue((prev) => prev - 1)}
-                                                    >
-                                                        Back
-                                                    </Button>
-                                                </Grid>
-                                            )}
-                                            <Grid item>
-                                                <Button
-                                                disabled={user?.isAccessRevoked} 
-                                                variant="contained" color="primary" type="submit">
-                                                    Submit
-                                                </Button>
                                             </Grid>
                                         </Grid>
                                     </TabPanel>

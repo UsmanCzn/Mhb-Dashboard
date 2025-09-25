@@ -6,6 +6,7 @@ import { useFetchCustomerList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useFetchAppsList } from './hooks/useFetchAppsList';
 import moment from 'moment';
+import DefaultImage from '../../assets/images/users/default-image.png';
 
 export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOpen }) {
     const navigate = useNavigate();
@@ -16,7 +17,11 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
         return (
             <img
                 alt="img"
-                src={item?.logoUrl}
+                src={item?.logoUrl || DefaultImage}
+                onError={(e) => {
+                e.currentTarget.onerror = null; // prevent infinite loop
+                e.currentTarget.src = DefaultImage;
+            }}
                 style={{
                     width: 40,
                     height: 40

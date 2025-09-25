@@ -77,6 +77,7 @@ const AddEditBranch = () => {
                     deliveryFee: branch?.deliveryFee || '',
                     DeliveryFee: branch?.deliveryFee,
                     isCarService: branch?.isCarService || false,
+                    isDriveThru: branch?.isDriveThru || false,
                     isDelivery: branch?.isDelivery || false,
                     isPickup: branch?.isPickup || false,
                     logoUrl: branch?.logoUrl || '',
@@ -131,6 +132,7 @@ const AddEditBranch = () => {
         deliveryFee: 0,
         DeliveryFee: 0,
         isCarService: false,
+        isDriveThru: false,
         isDelivery: false,
         isPickup: false,
         logoUrl: '',
@@ -169,6 +171,7 @@ const AddEditBranch = () => {
         3: Yup.object().shape({
             isPickup: Yup.boolean(),
             isCarService: Yup.boolean(),
+            isDriveThru: Yup.boolean(),
             isDelivery: Yup.boolean(),
             DeliveryDistanceKM: Yup.number().when('isDelivery', {
                 is: true,
@@ -256,7 +259,6 @@ const AddEditBranch = () => {
             setloading(false);
             navigate(`/locations?brandId=${initialValues.brandId}`);
         } catch (error) {
-            console.log(error);
             const errorMessage =
                 error.response?.data?.error?.validationErrors?.[0]?.message ||
                 error.response?.data?.error?.message ||
@@ -330,6 +332,16 @@ const AddEditBranch = () => {
                                         {/* Tab 1: Basic Info */}
                                         <TabPanel value="1">
                                             <Grid container spacing={3}>
+                                                <Grid item container justifyContent="flex-end" xs={12}>
+                                                    <Button
+                                                        variant="contained"
+                                                        sx={{ minWidth: '120px' }}
+                                                        onClick={() => handleNext(validateForm, setTouched)}
+                                                        // disabled={!validationSchemas[1].isValidSync(values)} // Disable if the current tab's validation fails
+                                                    >
+                                                        Next
+                                                    </Button>
+                                                </Grid>
                                                 <Grid item xs={6}>
                                                     <TextField
                                                         label="Store Name"
@@ -418,30 +430,20 @@ const AddEditBranch = () => {
                                                     />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                            <FormControl fullWidth>
-                                                            <TextField
-                                                                label="Foodics Branch Id"
-                                                                fullWidth
-                                                                variant="outlined"
-                                                                type="text"
-                                                                name="foodicsId"
-                                                                value={values.foodicsId}
-                                                                onChange={handleChange}
-                                                                error={touched.foodicsId && Boolean(errors.foodicsId)}
-                                                                helperText={touched.foodicsId && errors.foodicsId}
-                                                                size="small"
-                                                            />
-                                                            </FormControl>
-                                                        </Grid>
-                                                <Grid item container justifyContent="flex-end" xs={12}>
-                                                    <Button
-                                                        variant="contained"
-                                                        sx={{ minWidth: '120px' }}
-                                                        onClick={() => handleNext(validateForm, setTouched)}
-                                                        // disabled={!validationSchemas[1].isValidSync(values)} // Disable if the current tab's validation fails
-                                                    >
-                                                        Next
-                                                    </Button>
+                                                    <FormControl fullWidth>
+                                                        <TextField
+                                                            label="Foodics Branch Id"
+                                                            fullWidth
+                                                            variant="outlined"
+                                                            type="text"
+                                                            name="foodicsId"
+                                                            value={values.foodicsId}
+                                                            onChange={handleChange}
+                                                            error={touched.foodicsId && Boolean(errors.foodicsId)}
+                                                            helperText={touched.foodicsId && errors.foodicsId}
+                                                            size="small"
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </Grid>
                                         </TabPanel>
@@ -449,6 +451,33 @@ const AddEditBranch = () => {
                                         {/* Tab 2: Timings */}
                                         <TabPanel value="2">
                                             <Grid container spacing={3}>
+                                                <Grid item xs={12} container justifyContent="space-between" alignItems="center" spacing={2}>
+                                                    <Grid item>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outlined"
+                                                            color="secondary"
+                                                            onClick={() => handleBackChange(validateForm, setTouched, isValid)}
+                                                            disabled={tabValue === 0} // Disable Back button on the first tab
+                                                            sx={{ minWidth: '120px' }} // Consistent button size
+                                                        >
+                                                            Back
+                                                        </Button>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Button
+                                                            type="button"
+                                                            variant="contained"
+                                                            color="primary"
+                                                            onClick={() => handleNext(validateForm, setTouched, isValid)}
+                                                            disabled={!isValid && tabValue < validationSchemas.length - 1} // Allow submission on the last tab
+                                                            sx={{ minWidth: '120px' }} // Consistent button size
+                                                        >
+                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}
+                                                            {/* Dynamically change label */}
+                                                        </Button>
+                                                    </Grid>
+                                                </Grid>
                                                 <Grid item xs={6}>
                                                     <TextField
                                                         label="Opening Time"
@@ -507,15 +536,22 @@ const AddEditBranch = () => {
                                                         helperText={touched.branchTimingsStringNative && errors.branchTimingsStringNative}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
+                                            </Grid>
+                                        </TabPanel>
+
+                                        {/* Tab 3: Settings */}
+                                        <TabPanel value="3">
+                                            <Grid container spacing={2}>
+                                                {/* Navigation Buttons */}
+                                                <Grid item xs={12} container alignItems="center" justifyContent="space-between" spacing={1}>
                                                     <Grid item>
                                                         <Button
                                                             type="button"
                                                             variant="outlined"
                                                             color="secondary"
                                                             onClick={() => handleBackChange(validateForm, setTouched, isValid)}
-                                                            disabled={tabValue === 0} // Disable Back button on the first tab
-                                                            sx={{ minWidth: '120px' }} // Consistent button size
+                                                            disabled={tabValue === 3}
+                                                            sx={{ minWidth: '100px', padding: '4px 8px' }}
                                                         >
                                                             Back
                                                         </Button>
@@ -526,20 +562,13 @@ const AddEditBranch = () => {
                                                             variant="contained"
                                                             color="primary"
                                                             onClick={() => handleNext(validateForm, setTouched, isValid)}
-                                                            disabled={!isValid && tabValue < validationSchemas.length - 1} // Allow submission on the last tab
-                                                            sx={{ minWidth: '120px' }} // Consistent button size
+                                                            disabled={!isValid && tabValue < validationSchemas.length - 1}
+                                                            sx={{ minWidth: '100px', padding: '4px 8px' }}
                                                         >
-                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}
-                                                            {/* Dynamically change label */}
+                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}
                                                         </Button>
                                                     </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </TabPanel>
-
-                                        {/* Tab 3: Settings */}
-                                        <TabPanel value="3">
-                                            <Grid container spacing={2}>
                                                 {/* Horizontal Toggles */}
                                                 <Grid item xs={12}>
                                                     <Box display="flex" flexDirection="row" gap={2} alignItems="center">
@@ -566,6 +595,18 @@ const AddEditBranch = () => {
                                                                 />
                                                             }
                                                             label="Enable Car Service"
+                                                        />
+                                                        {/* Enable Drive Thru */}
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Switch
+                                                                    name="isDriveThru"
+                                                                    checked={values.isDriveThru}
+                                                                    onChange={(e) => setFieldValue('isDriveThru', e.target.checked)}
+                                                                    size="small"
+                                                                />
+                                                            }
+                                                            label="Enable Drive Thru"
                                                         />
                                                         {/* Enable Delivery */}
                                                         <FormControlLabel
@@ -638,18 +679,21 @@ const AddEditBranch = () => {
                                                         </Grid>
                                                     </>
                                                 )}
+                                            </Grid>
+                                        </TabPanel>
 
-
-                                                {/* Navigation Buttons */}
-                                                <Grid item xs={12} container justifyContent="flex-end" spacing={1}>
+                                        {/* Tab 4: Address */}
+                                        <TabPanel value="4">
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={12} container justifyContent="space-between" alignItems="center" spacing={2}>
                                                     <Grid item>
                                                         <Button
                                                             type="button"
                                                             variant="outlined"
                                                             color="secondary"
                                                             onClick={() => handleBackChange(validateForm, setTouched, isValid)}
-                                                            disabled={tabValue === 3}
-                                                            sx={{ minWidth: '100px', padding: '4px 8px' }}
+                                                            disabled={tabValue === 0} // Disable Back button on the first tab
+                                                            sx={{ minWidth: '120px' }} // Consistent button size
                                                         >
                                                             Back
                                                         </Button>
@@ -660,19 +704,14 @@ const AddEditBranch = () => {
                                                             variant="contained"
                                                             color="primary"
                                                             onClick={() => handleNext(validateForm, setTouched, isValid)}
-                                                            disabled={!isValid && tabValue < validationSchemas.length - 1}
-                                                            sx={{ minWidth: '100px', padding: '4px 8px' }}
+                                                            disabled={!isValid && tabValue < validationSchemas.length - 1} // Allow submission on the last tab
+                                                            sx={{ minWidth: '120px' }} // Consistent button size
                                                         >
-                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}
+                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}
+                                                            {/* Dynamically change label */}
                                                         </Button>
                                                     </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </TabPanel>
-
-                                        {/* Tab 4: Address */}
-                                        <TabPanel value="4">
-                                            <Grid container spacing={3}>
                                                 <Grid item xs={6}>
                                                     <TextField
                                                         label="Address"
@@ -740,8 +779,13 @@ const AddEditBranch = () => {
                                                         helperText={touched.arrivalArea && errors.arrivalArea}
                                                     />
                                                 </Grid>
+                                            </Grid>
+                                        </TabPanel>
 
-                                                <Grid item xs={12} container justifyContent="flex-end" spacing={2}>
+                                        {/* Tab 5: Logo */}
+                                        <TabPanel value="5">
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={12} container justifyContent="space-between" alignItems="center" gap={2}>
                                                     <Grid item>
                                                         <Button
                                                             type="button"
@@ -754,26 +798,15 @@ const AddEditBranch = () => {
                                                             Back
                                                         </Button>
                                                     </Grid>
-                                                    <Grid item>
-                                                        <Button
-                                                            type="button"
-                                                            variant="contained"
-                                                            color="primary"
-                                                            onClick={() => handleNext(validateForm, setTouched, isValid)}
-                                                            disabled={ (!isValid && tabValue < validationSchemas.length - 1)} // Allow submission on the last tab
-                                                            sx={{ minWidth: '120px' }} // Consistent button size
-                                                        >
-                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}{' '}
-                                                            {/* Dynamically change label */}
-                                                        </Button>
-                                                    </Grid>
+                                                    <Button
+                                                        disabled={user?.isAccessRevoked}
+                                                        variant="contained"
+                                                        sx={{ minWidth: '120px' }}
+                                                        type="submit"
+                                                    >
+                                                        Save
+                                                    </Button>
                                                 </Grid>
-                                            </Grid>
-                                        </TabPanel>
-
-                                        {/* Tab 5: Logo */}
-                                        <TabPanel value="5">
-                                            <Grid container spacing={3}>
                                                 <Grid item xs={12}>
                                                     <Typography>Upload Logo</Typography>
                                                     <Box
@@ -801,23 +834,6 @@ const AddEditBranch = () => {
                                                             style={{ marginTop: 16 }}
                                                         />
                                                     </Box>
-                                                </Grid>
-                                                <Grid item xs={12} container justifyContent="flex-end" gap={2}>
-                                                    <Grid item>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outlined"
-                                                            color="secondary"
-                                                            onClick={() => handleBackChange(validateForm, setTouched, isValid)}
-                                                            disabled={tabValue === 0} // Disable Back button on the first tab
-                                                            sx={{ minWidth: '120px' }} // Consistent button size
-                                                        >
-                                                            Back
-                                                        </Button>
-                                                    </Grid>
-                                                    <Button disabled={user?.isAccessRevoked } variant="contained" sx={{ minWidth: '120px' }} type="submit">
-                                                        Save
-                                                    </Button>
                                                 </Grid>
                                             </Grid>
                                         </TabPanel>

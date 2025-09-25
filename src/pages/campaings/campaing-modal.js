@@ -157,17 +157,32 @@ const CampaingModal = ({ openModal, onCloseModal ,brandId,campaing}) => {
      }
   }
 
-  const getCustomerGroups =async ()=>{
-    try{
-    const response = await  tiersService.getCustomerGroups(0, 100)
-    if(response){
-      const tempgroups = response.data.result.data.data.filter(e=> (group.type === "DefaultBrandGroup" || group.type === "BrandGroup") && e.brandId ===brandId)
-      setCustomersGroups(tempgroups)
-    }
-    }catch(error){
+const getCustomerGroups = async () => {
+  try {
+    const response = await tiersService.getCustomerGroups(0, 100);
 
+    // Safely drill into the payload
+    const list = response?.data?.result?.data?.data;
+    if (!Array.isArray(list)) {
+      console.warn("Customer groups response is not an array.", list);
+      setCustomersGroups([]);
+      return;
     }
+
+    const brandIdNum = Number(brandId); // normalize in case it's a string
+
+    const filtered = list.filter((e) =>
+      (e?.type === "DynamicPointsGroup" || e?.type === "BrandGroup") &&
+      Number(e?.brandId) === brandIdNum
+    );
+
+    setCustomersGroups(filtered);
+  } catch (error) {
+    console.error("Failed to fetch customer groups:", error);
+    setCustomersGroups([]); // optional: clear on error
   }
+};
+
 
   useEffect(() => {
     getCustomerGroups();

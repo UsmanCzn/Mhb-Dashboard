@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import imageCompression from 'browser-image-compression';
 
 const UploadFile = (props) => {
     const { Image, setImage } = props;
@@ -16,6 +17,7 @@ const UploadFile = (props) => {
     }, [ImageView, Image]);
 
     const onChangeFile = (event) => {
+        
         const input = event.target;
         if (input.files && input.files[0]) {
             console.log(event.target.files[0]);

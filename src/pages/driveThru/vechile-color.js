@@ -198,8 +198,9 @@ const VechileColor = () => {
       loading={reload} 
       getRowId={(row)=>row.carColorId}
       rowsPerPageOptions={[10]}
-      totalRowCount={0}
+      totalRowCount={Car.length}
       fetchCallback={()=>{}} 
+      pMode="client"
     />
      <Menu
         id="basic-menu"

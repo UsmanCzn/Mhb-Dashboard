@@ -208,7 +208,7 @@ const App = ({
                             </Grid>
                         </Grid>
                     </Grid>
-
+{/* 
                     <Grid item xs={12}>
                         <Typography required variant="h7">
                             Gift Programs
@@ -281,7 +281,7 @@ const App = ({
                                 </Grid>
                             );
                         })}
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12}>
                         <Grid container>

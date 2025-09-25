@@ -193,8 +193,9 @@ const VechileBrand = () => {
       loading={reload} 
       getRowId={(row)=>row.carBrandId}
       rowsPerPageOptions={[10]}
-      totalRowCount={0}
+      totalRowCount={Car.length}
       fetchCallback={()=>{}} 
+      pMode="client"
     />
      <Menu
         id="basic-menu"

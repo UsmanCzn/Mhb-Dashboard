@@ -11,7 +11,7 @@ import constants from "helper/constants";
 import storeServices from "services/storeServices";
 import fileService from "services/fileService";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import imageCompression from 'browser-image-compression';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -105,16 +105,22 @@ const NewAddon = ({
             brandId: selectedBrand?.id,
             productId: selectedProduct?.id,
             posId: 1
+};
+                const options = {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
         };
-
+        if(p1){
+        const compressedFile = await imageCompression(p1, options);
         await fileService
-            .uploadProductImage(p1)
+            .uploadProductImage(compressedFile)
             .then((res) => {
                 payload.image = res.data?.result;
             })
             .catch((err) => {
                 console.log(err.response.data);
-            });
+            });}
         await storeServices
             .createProductAddition(payload)
 
@@ -154,15 +160,22 @@ const NewAddon = ({
             brandId: selectedBrand?.id,
             id: updateData?.id
         };
-
+        if(p1){
+        const options = {
+            maxSizeMB: 0.1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+        };
+        const compressedFile = await imageCompression(p1, options);
         await fileService
-            .uploadProductImage(p1)
+            .uploadProductImage(compressedFile)
             .then((res) => {
                 payload.image = res.data?.result;
             })
             .catch((err) => {
                 console.log(err.response.data);
             });
+        }
 
         await storeServices
             .updateProductAddition(payload, selectedBrand?.id)
@@ -195,7 +208,7 @@ const NewAddon = ({
                         <Grid item>
                             <Typography variant="h5" fontSize={26}>
                                 {' '}
-                                {update ? 'Edit Add-on' : 'Create Add-on'}{' '}
+                                {update ? 'Edit Add-on' : 'Create Add-on'}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>

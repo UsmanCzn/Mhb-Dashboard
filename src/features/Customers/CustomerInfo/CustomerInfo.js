@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Grid, TextField, Button, Stack, Chip, Box } from '@mui/material';
+import { Typography, Grid, TextField, Button, Stack, Chip, Box,Card, CardContent } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { ServiceFactory } from 'services/index';
 import moment from 'moment';
@@ -69,6 +69,8 @@ const CustomerInfo = ({ setReload }) => {
 
     return (
         <>
+        <Card sx={{ p: 2, boxShadow: 3, borderRadius: 2 }}>
+    <CardContent>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant="h5" gutterBottom>
@@ -163,7 +165,8 @@ const CustomerInfo = ({ setReload }) => {
 
                 <UpdateCustomer modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload2} prevData={data} />
             </Grid>
-
+             </CardContent>
+             </Card>               
             <ConfirmationModal
                 open={isDeleteModalOpen}
                 onClose={handleCancelDelete}

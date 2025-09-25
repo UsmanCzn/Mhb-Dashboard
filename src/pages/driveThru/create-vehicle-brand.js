@@ -129,7 +129,7 @@ const CreateVechileBrand = ({ open, onClose,onSave, car }) => {
     aria-labelledby="dialog-title"
     aria-describedby="dialog-description"
   >
-    <DialogTitle id="dialog-title">Create New Vehicle Brand</DialogTitle>
+    <DialogTitle id="dialog-title">{car?'Update Vehicle Brand':'Create Vehicle Brand'}</DialogTitle>
     <DialogContent>
       <Grid container spacing={2}>
         <Grid item xs={12}>

@@ -163,5 +163,12 @@ export default {
     },
     ResolveScanDispute(id, isRemove) {
         return ApiV1.post(`services/app/SimphonyPOSService/ResolveDispute?id=${id}&isRemoved=${isRemove}`);
-    }
+    },
+
+
+        getCreditReports(brandId,year,month, take = 10, skip = 0) {
+        return ApiV1.get(
+            `services/app/Wallet/GetCreditReport?brandId=${brandId}&year=${year}&month=${month}&page=${skip}&pageSize=${take}`
+        );
+    },
 };
