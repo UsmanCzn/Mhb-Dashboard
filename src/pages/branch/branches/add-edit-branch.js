@@ -33,6 +33,7 @@ const AddEditBranch = () => {
     const brandService = ServiceFactory.get('brands');
     const [tabValue, setTabValue] = useState('1');
     const [brands, setBrands] = useState([]);
+    const [brand, setBrand] = useState();
     const [p1, setP1] = useState(null);
     const { id } = useParams();
     const [branch, setBranch] = useState({});
@@ -99,15 +100,17 @@ const AddEditBranch = () => {
         }
     };
     const getBrands = async () => {
-        await brandService
-            .getAllBrands()
-            .then((res) => {
-                setBrands(res.data.result || []);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+    try {
+        const { data } = await brandService.getAllBrands();
+        const list = data?.result ?? [];
+
+        setBrands(list);
+
+    } catch (err) {
+        console.error('[getBrands] failed:', err);
+    }
     };
+
 
     useEffect(() => {
         getBrands();
@@ -115,6 +118,16 @@ const AddEditBranch = () => {
             getBranch();
         }
     }, [id]);
+
+    useEffect(() => {
+            if(branch){
+            
+            const found = brands.find(b => b.id === branch.brandId);
+            
+            if (found) setBrand(found);
+            }
+    }, [brands,branch])
+    
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -429,6 +442,7 @@ const AddEditBranch = () => {
                                                         helperText={touched.readyTime && errors.readyTime}
                                                     />
                                                 </Grid>
+                                               { brand && brand?.enableFoodics && 
                                                 <Grid item xs={12} sm={6}>
                                                     <FormControl fullWidth>
                                                         <TextField
@@ -445,6 +459,7 @@ const AddEditBranch = () => {
                                                         />
                                                     </FormControl>
                                                 </Grid>
+                                                }
                                             </Grid>
                                         </TabPanel>
 

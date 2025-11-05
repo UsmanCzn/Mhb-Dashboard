@@ -52,8 +52,8 @@ export default {
     return ApiV1.get(`services/app/NotificationCredits/GetNotificationBalanceToAddByCompany?companyId=${cId}`)
   }
    ,
-   AddNotificationBalance(orderPrice, companyId, productName,notificationCount) {
-    return ApiV1.post(`services/app/NotificationCredits/AddBalanceForNotification?orderPrice=${orderPrice}&companyId=${companyId}&ProductName=${productName}&NotificationCount=${notificationCount}`);
+   AddNotificationBalance(orderPrice, companyId, productName,notificationCount,PaymentSystemId) {
+    return ApiV1.post(`services/app/NotificationCredits/AddBalanceForNotification?orderPrice=${orderPrice}&companyId=${companyId}&ProductName=${productName}&PaymentSystemId=${PaymentSystemId}&NotificationCount=${notificationCount}`);
 },
 
 CheckNotificationBalanceStatus(cId) {

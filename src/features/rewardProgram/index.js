@@ -17,6 +17,7 @@ import CouponDiscount from 'components/rewards/couponDiscount';
 import { ServiceFactory } from 'services/index';
 import rewardService from 'services/rewardService';
 import customerService from 'services/customerService';
+import BirthdayGift from 'components/rewards/birthdayGift';
 import { useAuth } from 'providers/authProvider';
 
 export default function RewardProgram({
@@ -95,6 +96,7 @@ export default function RewardProgram({
                   <Tab label="Points" value="2" />
                   <Tab label="Discounts" value="3" />
                   <Tab label="Coupons" value="4" />
+                  <Tab label="Birthday Gift" value="5" />
               </TabList>
           </Box>
           <TabPanel value="1">
@@ -110,11 +112,19 @@ export default function RewardProgram({
           <TabPanel value="4">
               <CouponDiscount
                   selectedBrand={selectedBrand}
+                  user={user}
                   setReload={setReload}
                   reload={reload}
                   customerGroups={customerGroups}
-                  user={user}
               ></CouponDiscount>
+          </TabPanel>
+          <TabPanel value="5">
+            <BirthdayGift
+                  selectedBrand={selectedBrand}
+                  user={user}
+                  setReload={setReload}
+            />
+            
           </TabPanel>
       </TabContext>
   );

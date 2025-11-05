@@ -52,7 +52,6 @@ const NewScedule = ({ modalOpen, setModalOpen, updateData, branchId, setReload }
         await branchServices
             .EditBranchSchedule(payload)
             .then((res) => {
-                console.log(res.data, 'response');
             })
             .catch((err) => {
                 console.log(err.response);
@@ -79,7 +78,6 @@ const NewScedule = ({ modalOpen, setModalOpen, updateData, branchId, setReload }
             await branchServices
                 .createBranchSchedule(payload)
                 .then((res) => {
-                    console.log(res.data, 'response');
                 })
                 .catch((err) => {
                     console.log(err.response);

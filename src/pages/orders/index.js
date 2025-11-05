@@ -103,7 +103,7 @@ export default function Orders() {
             const res = await branchServices.editBranch(tempBranch);
 
             // Log the result to the console
-            console.log(res, 'updatee**************');
+     
         } catch (err) {
             // Handle any errors that occur during the process
             console.error(err);

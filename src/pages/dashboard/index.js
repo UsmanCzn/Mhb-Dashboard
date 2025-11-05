@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 // material-ui
 import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { useBranches } from 'providers/branchesProvider';
 
 // project import
 
@@ -56,6 +57,7 @@ const status = [
 const DashboardDefault = () => {
     const [reload, setReload] = useState(false);
     const { brandsList } = useFetchBrandsList(reload);
+    const { branchesList } = useBranches();
     const [startDate, setStartDate] = useState(() => {
         const currentDate = new Date();
         currentDate.setMonth(currentDate.getMonth() - 1);
@@ -67,6 +69,11 @@ const DashboardDefault = () => {
     const [topSales, setTopSales] = useState();
     const [ordersChartData, setOrdersChartData] = useState();
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
+    const [selectedBranch, setselectedBranch] = useState('');
+    const [filteredBranches, setFilteredBranches] = useState([]);
+
+
+    
 
     const { userRole } = useAuth();
 
@@ -160,13 +167,42 @@ const DashboardDefault = () => {
     const getData = () => {
         setReload((prev) => !prev);
     };
-    const { dashbaordBoardData, recallData, fetchRewardList, loading } = useDashboard(reload, selectedBrand?.id, startDate, endDate);
+    const { dashbaordBoardData, recallData, fetchRewardList, loading } = useDashboard(reload, selectedBrand?.id, startDate, endDate,selectedBranch?.id);
     useEffect(() => {
         setTopPayers(dashbaordBoardData?.topUsersFromSales);
         setTopSales(dashbaordBoardData?.topUsersFromOrders);
         setOrdersChartData(dashbaordBoardData?.ordersChartData);
         setChartDataUpdateCounter((prev) => prev + 1);
     }, [dashbaordBoardData]);
+    
+    // Filter Branches
+        const changeFilteredBranches = (brand) => {
+        // get branches for this brand
+        let branchesForSelectedBrand = branchesList.filter(
+            (branch) => branch.brandId === brand.id
+        );
+
+        // if role is ADMIN or COMPANY_ADMIN, add "All Branches" option at the top
+        if (userRole === 'ADMIN' || userRole === 'COMPANY_ADMIN' || userRole === 'BRAND_MANAGER') {
+            const allBranchesOption = {
+            id: 0,
+            name: 'All Branches',
+            // include whatever fields your UI expects so it doesn't break
+            brandId: brand.id,
+            };
+
+            branchesForSelectedBrand = [allBranchesOption, ...branchesForSelectedBrand];
+        }
+
+        // update state
+        setFilteredBranches(branchesForSelectedBrand);
+
+        // auto-select first option (which will be "All Branches" for admins)
+        if (branchesForSelectedBrand.length > 0) {
+            setselectedBranch(branchesForSelectedBrand[0]);
+        }
+        };
+
 
     const topCard = () => {
         let roundedNumber = dashbaordBoardData?.totalSale?.toFixed(3) || 0;
@@ -276,12 +312,14 @@ const DashboardDefault = () => {
     useEffect(() => {
         if (brandsList[0]?.id) {
             if (brandsList && brandsList.length > 2) {
+                
                 if (userRole === 'ADMIN') {
                     brandsList.unshift({ id: 0, name: 'All Brands' });
                 }
                 setselectedBrand(brandsList[0]);
             } else {
                 setselectedBrand(brandsList[0]);
+                changeFilteredBranches(brandsList[0])
             }
             setOrdersChartData(null);
             setReload((prev) => !prev);
@@ -293,38 +331,88 @@ const DashboardDefault = () => {
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             {/* row 1 */}
 
-            <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs={6}>
-                        <Typography fontSize={22} fontWeight={700}>
-                            Dashboard
-                        </Typography>
-                    </Grid>
-                    <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={'Brand'}
-                                onChange={(event) => {
-                                    setselectedBrand(event.target.value);
-                                    setReload((prev) => !prev);
-                                }}
-                            >
-                                {brandsList.map((row, index) => {
-                                    return (
-                                        <MenuItem key={index} value={row}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid>
-            </Grid>
+<Grid item xs={12}>
+  <Grid
+    container
+    alignItems="center"
+    justifyContent="space-between"
+    spacing={2}
+  >
+    {/* Left side: Title */}
+    <Grid item xs={12} md="auto">
+      <Typography fontSize={22} fontWeight={700}>
+        Dashboard
+      </Typography>
+    </Grid>
+
+    {/* Right side: Brand + Branch */}
+    <Grid
+      item
+      xs={12}
+      md={6}
+    >
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justifyContent="flex-end"
+      >
+        {/* Brand Select */}
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth>
+            <InputLabel id="brand-select-label">Brand</InputLabel>
+            <Select
+              labelId="brand-select-label"
+              id="brand-select"
+              value={selectedBrand}
+              label="Brand"
+              onChange={(event) => {
+                setselectedBrand(event.target.value);
+                setReload((prev) => !prev);
+                changeFilteredBranches(event.target.value);
+
+              }}
+            >
+              {brandsList.map((row, index) => (
+                <MenuItem key={index} value={row}>
+                  {row?.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        {/* Branch Select */}
+        {
+            selectedBrand?.id !==0 &&
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth>
+            <InputLabel id="branch-select-label">Branch</InputLabel>
+            <Select
+              labelId="branch-select-label"
+              id="branch-select"
+              value={selectedBranch}
+              label="Branch"
+              onChange={(event) => {
+                setselectedBranch(event.target.value);
+                setReload((prev) => !prev);
+
+              }}
+            >
+              {filteredBranches.map((row, index) => (
+                <MenuItem key={index} value={row}>
+                  {row?.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        }
+      </Grid>
+    </Grid>
+  </Grid>
+</Grid>
+
 
             <Grid item xs={12}>
                 <Grid container spacing={2} alignItems="center">

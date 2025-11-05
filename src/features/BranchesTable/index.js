@@ -142,17 +142,17 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
             flex: 1,
             headerAlign: 'left'
         },
-        {
-            field: 'isRewardMissing',
-            headerName: 'Rewards Program',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return <Switch {...label}
-                disabled={user?.isAccessRevoked}
-                checked={params.row.isRewardMissing} size="small" />;
-            }
-        },
+        // {
+        //     field: 'isRewardMissing',
+        //     headerName: 'Rewards Program',
+        //     flex: 1,
+        //     headerAlign: 'left',
+        //     renderCell: (params) => {
+        //         return <Switch {...label}
+        //         disabled={user?.isAccessRevoked}
+        //         checked={params.row.isRewardMissing} size="small" />;
+        //     }
+        // },
         {
             field: 'isRewardMissisng',
             headerName: 'Action',

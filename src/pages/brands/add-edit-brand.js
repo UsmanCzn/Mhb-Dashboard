@@ -32,6 +32,8 @@ import 'react-quill/dist/quill.snow.css'; // Import theme
 import { QRCodeCanvas } from 'qrcode.react';
 import { useFetchBranchList } from '../../features/BranchesTable/hooks/useFetchBranchesList';
 import { useAuth } from '../../providers/authProvider';
+import { TimeZonesList,formatOffset } from '../../helper/constants';
+import pluginService from "services/pluginService";
 
 
 function TabPanel(props) {
@@ -68,6 +70,8 @@ const FormComponent = () => {
         reportInterval: 1,
         secondaryLanguage: '',
         showFreeDrinkFeature: false,
+        enableGrubTech: false,
+        enableFoodics: false,
         twitterURL: '',
         useQRCode: false,
         walletSubtitle: '',
@@ -85,6 +89,7 @@ const FormComponent = () => {
         titleNameForPickUpNative: '',
         showMacros:false
     };
+    const timeZonesSorted = [...TimeZonesList].sort((a, b) => a.value - b.value || a.name.localeCompare(b.name));
 
     const [initialFormValues, setInitialFormValues] = useState(initialValues); // State to store form values
     const [loading, setloading] = useState(false);
@@ -129,18 +134,21 @@ const FormComponent = () => {
     const [companies, setCompanies] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [currencies, setCurrencies] = useState([]);
-    const [copied, setCopied] = useState(false);
+    const [IsMenuViewPaid, setIsMenuViewPaid] = useState(false);
+    const [IsOrderingPaid, setIsOrderingPaid] = useState(false);
+    const [pluginOrders, setPluginOrders] = useState([]);
+
 
     const [selectedBrand, setSelectedBrand] = useState('');
     const [brand, setBrand] = useState();
     const [p1, setP1] = useState(null);
-    const [value, setValue] = useState('');
     const qrRef = useRef(null);
     const branchRefs = useRef({});
     useEffect(() => {
         getCompanies();
         getLanguages();
         getCurrencies();
+        getPluginsOrders();
     }, []);
     useEffect(() => {
         if (id) {
@@ -162,6 +170,7 @@ const FormComponent = () => {
     const mainSiteURL = selectedBrand
         ? `https://menu.avorewards.com/menu/${selectedBrand?.name.replace(/\s/g, '')}/${selectedBrand.id}`
         : '';
+
     const changeTerms = (html) => {
         setInitialFormValues((prev) => ({
             ...prev,
@@ -179,9 +188,11 @@ const FormComponent = () => {
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
+
     const handleBackChange = (event, newValue) => {
         setTabValue((prev) => prev - 1);
     };
+    
     const handleNext = async (validateForm, setTouched, isValid) => {
         const errors = await validateForm();
         if (Object.keys(errors).length === 0) {
@@ -201,6 +212,43 @@ const FormComponent = () => {
                 console.log(err?.data);
             });
     };
+
+const getPluginsOrders = async () => {
+    try {
+        const orders = await pluginService.getPluginOrders(id);
+
+        // Safely normalize to an array
+        const items = Array.isArray(orders?.items) ? orders.items : [];
+
+        console.log('Plugin Orders:', items);
+        setPluginOrders(items);
+
+        // Check if TABLE ORDERING is paid (at least one match)
+        const isTableOrderingPaid = items.some(
+            (item) =>
+                item?.name === 'TABLE ORDERING' &&
+                item?.isPaid === true
+        );
+        setIsOrderingPaid(isTableOrderingPaid);
+
+        // Check if MENU VIEW is paid (at least one match)
+        const isMenuViewPaid = items.some(
+            (item) =>
+                item?.name === 'MENU VIEW' &&
+                item?.isPaid === true
+        );
+        setIsMenuViewPaid(isMenuViewPaid);
+
+    } catch (error) {
+        console.error('Failed to fetch plugin orders:', error);
+
+        // On error, safest default is: they are NOT paid/locked
+        setPluginOrders([]);
+        setIsOrderingPaid(false);
+        setIsMenuViewPaid(false);
+    }
+};
+
     const getLanguages = async () => {
         await brandsService
             .getLanguages()
@@ -261,6 +309,8 @@ const FormComponent = () => {
                     appleStoreUrl: selectedBrand?.appleStoreUrl || '',
                     useQRCode: selectedBrand?.showQrCode || false,
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
+                    enableGrubTech: selectedBrand.enableGrubTech || false,
+                    enableFoodics: selectedBrand.enableFoodics || false,
                     menuView: selectedBrand?.menuView || false,
                     menuOrdering: selectedBrand?.menuOrdering || false,
                     primaryThemeColor: selectedBrand?.primaryThemeColor,
@@ -332,6 +382,8 @@ const FormComponent = () => {
             privacyPolicyNative: '',
             reportInterval: value?.reportInterval,
             showFreeDrinkFeature: value?.showFreeDrinkFeature,
+            enableGrubTech: value?.enableGrubTech,
+            enableFoodics: value?.enableFoodics,
             socialFacebookUrl: value?.facebookURL,
             socialTikTokUrl: value?.tiktokURL,
             socialInstaUrl: value?.instagramURL,
@@ -401,6 +453,8 @@ const FormComponent = () => {
             initialCustomerBalance: value.initialCustomerBalance,
             pointsForWalletReplenishment: value.points,
             showFreeDrinkFeature: value?.showFreeDrinkFeature,
+            enableFoodics: value?.enableFoodics,
+            enableGrubTech: value?.enableGrubTech,
             socialFacebookUrl: value?.facebookURL,
             socialTikTokUrl: value?.tiktokURL,
             socialInstaUrl: value?.instagramURL,
@@ -645,21 +699,23 @@ const FormComponent = () => {
                                                     <MenuItem value="2">Monthly</MenuItem>
                                                 </Field>
                                             </Grid>
+                                            {/* TimeZone */}
                                             <Grid item xs={12} sm={6}>
-                                                <Field
-                                                    as={TextField}
-                                                    name="brandTimeZone"
-                                                    label="Brand Time Zone"
-                                                    select
-                                                    fullWidth
-                                                    variant="outlined"
-                                                    onChange={handleChange}
-                                                    error={touched.brandTimeZone && Boolean(errors.brandTimeZone)}
-                                                    helperText={touched.brandTimeZone && errors.brandTimeZone}
-                                                >
-                                                    <MenuItem value="1">GreenWich</MenuItem>
-                                                    <MenuItem value="2">Universal 2</MenuItem>
-                                                </Field>
+                                            <Field
+                                                as={TextField}
+                                                name="brandTimeZone"
+                                                label="Brand Time Zone"
+                                                select
+                                                fullWidth
+                                                variant="outlined"
+                                                // If you're already using Formik’s handleChange/touched/errors, this is enough
+                                            >
+                                                {timeZonesSorted.map(tz => (
+                                                <MenuItem key={tz.code} value={tz.value}>
+                                                    {formatOffset(tz.value)} — {tz.name} ({tz.code})
+                                                </MenuItem>
+                                                ))}
+                                            </Field>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
                                                 <Field
@@ -880,11 +936,28 @@ const FormComponent = () => {
                                                     }
                                                     label="Free Drinks"
                                                 />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Field name="enableGrubTech">
+                                                            {({ field }) => <Switch {...field} checked={field.value} />}
+                                                        </Field>
+                                                    }
+                                                    label="Enable Grub Tech"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Field name="enableFoodics">
+                                                            {({ field }) => <Switch {...field} checked={field.value} />}
+                                                        </Field>
+                                                    }
+                                                    label="Enable Foodics"
+                                                />
 
                                                 <FormControlLabel
                                                     control={
                                                         <Field name="menuView">
-                                                            {({ field }) => <Switch {...field} checked={field.value} />}
+                                                            {({ field }) => <Switch {...field}
+                                                            checked={field.value} />}
                                                         </Field>
                                                     }
                                                     label="Menu Viewing"
@@ -893,7 +966,8 @@ const FormComponent = () => {
                                                 <FormControlLabel
                                                     control={
                                                         <Field name="menuOrdering">
-                                                            {({ field }) => <Switch {...field} checked={field.value} />}
+                                                            {({ field }) => <Switch {...field}
+                                                            checked={field.value} />}
                                                         </Field>
                                                     }
                                                     label="Table Ordering"

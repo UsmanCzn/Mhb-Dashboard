@@ -162,15 +162,21 @@ const CreditRequestTable = ({user}) => {
             flex: 1,
             headerAlign: 'left'
         },
-        {
-            field: 'status',
-            headerName: 'Status',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return getStatus(params.row);
-            }
-        },
+
+                    {
+                        field: 'isAccepted',
+                        headerName: 'Approval Status',
+                        flex: 1,
+                        headerAlign: 'left',
+                        renderCell: (params) => {
+                            const refunded = params.row?.isAccepted;
+                            const acted = params.row?.isAct;
+                            if(!acted){
+                                return <Chip label="Pending" color="warning" />;
+                            }
+                            return refunded ? <Chip label="Refunded" color="success" /> : <Chip label="Rejected" color="error" />;
+                        }
+                    },
         {
             field: 'isRewardMfissisng',
             headerName: 'Action',

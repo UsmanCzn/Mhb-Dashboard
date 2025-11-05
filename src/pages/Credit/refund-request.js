@@ -5,11 +5,12 @@ import DataGridComponent from 'components/DataGridComponent';
 import moment from 'moment/moment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import customerService from 'services/customerService';
+import refundService from 'services/refundService'; 
 import { useSnackbar } from 'notistack';
 import { useAuth } from 'providers/authProvider';
 
-const FreeDrinksRequest = () => {
-        const [freeDrinksRequest, setFreeDinksRequest] = useState([]);
+const RefundRequest = () => {
+        const [refundRequest, setRefundRequest] = useState([]);
         const [anchorEl, setAnchorEl] = useState(null);
         const [selectedRow, setSelectedRow] = useState(null);
         const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -17,16 +18,16 @@ const FreeDrinksRequest = () => {
 
         const open = Boolean(anchorEl);
         useEffect(() => {
-            getFreeDrinksRequest();
+            getRefundRequest();
         }, []);
 
         // GET CREDIT DETAILS
-        const getFreeDrinksRequest = async () => {
-            await customerService
-                .getUsedPointsRequest(user.roleId===2)
+        const getRefundRequest = async () => {
+            await refundService
+                .getRefundRequests()
                 .then((res) => {
                     console.log(res?.data?.result, 'request');
-                    setFreeDinksRequest(res.data.result);
+                    setRefundRequest(res.data.result);
                     // setWalletDetails(res?.data?.result);
                 })
                 .catch((err) => {
@@ -46,26 +47,14 @@ const FreeDrinksRequest = () => {
             console.log(data);
             if (data.name == 'Accept') {
                 const body = {
-                    id: selectedRow.id,
-                    brandId: selectedRow?.brandId,
-                    customerId: selectedRow?.customerId,
-                    increaseFreeItemsCount: selectedRow.increaseFreeItemsCount,
-                    increasePunchesCount: 0,
-                    pointsUsed: 0,
-                    pointsEarned: 0,
-                    comments: ''
+                "refundId": selectedRow.id,
+                "action": true
                 };
                 acceptRequest(body);
             } else if (data.name == 'Reject') {
-                const body = {
-                    id: selectedRow.id,
-                    brandId: selectedRow?.brandId,
-                    customerId: selectedRow?.customerId,
-                    increaseFreeItemsCount: 0,
-                    increasePunchesCount: 0,
-                    pointsUsed: 0,
-                    pointsEarned: 0,
-                    comments: ''
+               const body = {
+                "refundId": selectedRow.id,
+                "action": false
                 };
                 rejectRequest(body);
             }
@@ -73,13 +62,13 @@ const FreeDrinksRequest = () => {
         };
 
         const acceptRequest = async (body) => {
-            await customerService
-                .acceptUsedPointsRequest(body)
+            await refundService
+                .ApproveRefundRequest(body)
                 .then((res) => {
                     enqueueSnackbar('Request Accepted', {
                         variant: 'success'
                     });
-                    getFreeDrinksRequest();
+                    getRefundRequest();
                 })
                 .catch((err) => {
                     console.log(err?.response?.data);
@@ -87,13 +76,13 @@ const FreeDrinksRequest = () => {
         };
 
         const rejectRequest = async (body) => {
-            await customerService
-                .rejectUsedPointsRequest(body)
+            await refundService
+                .ApproveRefundRequest(body)
                 .then((res) => {
                     enqueueSnackbar('Request Rejected', {
                         variant: 'error'
                     });
-                    getFreeDrinksRequest();
+                    getRefundRequest();
                 })
                 .catch((err) => {
                     console.log(err?.response?.data);
@@ -102,66 +91,63 @@ const FreeDrinksRequest = () => {
 
         const columns = [
             {
-                field: 'userName',
-                headerName: 'User Name',
-                headerAlign: 'left'
+                field: 'customerFullName',
+                headerName: 'Customer Name',
+                headerAlign: 'left',
+                flex: 1
             },
             {
-                field: 'email',
+                field: 'customerDisplayEmail',
                 headerName: 'Email',
+                headerAlign: 'left',
+                flex: 1
+            },
+            {
+                field: 'customerDisplayPhone',
+                headerName: 'Phone Number',
+                headerAlign: 'left',
+                flex: 1
+            },
+            {
+                field: 'orderNumber',
+                headerName: 'Order Number',
                 flex: 1,
                 headerAlign: 'left'
             },
             {
-                field: 'brandName',
-                headerName: 'Brand Name',
+                field: 'amount',
+                headerName: 'Amount',
                 flex: 1,
                 headerAlign: 'left'
             },
             {
-                field: 'phone',
-                headerName: 'PhoneNumber',
-                flex: 1,
-                headerAlign: 'left'
-            },
-            {
-                field: 'actionTime',
-                headerName: 'Action Time',
+                field: 'refundMethod',
+                headerName: 'Refund Method',
                 flex: 1,
                 headerAlign: 'left',
                 renderCell: (params) => {
-                    const actionTime = params.row?.actionTime;
-                    const actionType = params.row?.type; // Assuming `type` is available in the row data
-
-                    // Handle null or undefined case for actionTime
-                    const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
-
+                    const refundMethod = params.row?.refundMethod ;
+                    const method = refundMethod && refundMethod === 0 ?'Bank Transfer':'Credit Refund';
                     return (
                         <p>
-                            {formattedTime} {actionType ? `(${actionType})` : ''}
+                            {method} 
                         </p>
                     );
                 }
             },
             {
-                field: 'increaseFreeItemsCount',
-                headerName: 'Items Request',
+                field: 'refundReason',
+                headerName: 'Refund Reason',
                 flex: 1,
                 headerAlign: 'left'
             },
             {
-                field: 'comments',
-                headerName: 'Comments',
-                flex: 1,
-                headerAlign: 'left'
-            },
-            {
-                field: 'isAccepted',
-                headerName: 'Approval Status',
+                field: 'refunded',
+                headerName: 'Refund Status',
                 flex: 1,
                 headerAlign: 'left',
                 renderCell: (params) => {
-                    const refunded = params.row?.isAccepted;
+                    const refunded = params.row?.refunded;
                     const acted = params.row?.isAct;
                     if(!acted){
                         return <Chip label="Pending Action" color="warning" />;
@@ -169,6 +155,25 @@ const FreeDrinksRequest = () => {
                     return refunded ? <Chip label="Refunded" color="success" /> : <Chip label="Rejected" color="error" />;
                 }
             },
+            {
+                field: 'refundDoneTime',
+                headerName: 'Action Time',
+                flex: 1,
+                headerAlign: 'left',
+                renderCell: (params) => {
+                    const actionTime = params.row?.refundDoneTime;
+                    
+                    // Handle null or undefined case for actionTime
+                    const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+
+                    return (
+                        <p>
+                            {formattedTime} 
+                        </p>
+                    );
+                }
+            },
+
             {
                 field: 'isRewardMfissisng',
                 headerName: 'Action',
@@ -196,13 +201,13 @@ const FreeDrinksRequest = () => {
         return (
             <>
                 <DataGridComponent
-                    rows={freeDrinksRequest.filter((e) => e.increaseFreeItemsCount > 0)}
+                    rows={refundRequest}
                     columns={columns}
                     loading={false}
                     getRowId={(row) => row.id}
                     pMode="client"
                     rowsPerPageOptions={[10]}
-                    totalRowCount={freeDrinksRequest.filter((e) => e.increaseFreeItemsCount > 0)?.length}
+                    totalRowCount={refundRequest?.length}
                     // fetchCallback={getCreditRequest}
                 />
 
@@ -227,4 +232,4 @@ const FreeDrinksRequest = () => {
         );
 }
 
-export default FreeDrinksRequest
+export default RefundRequest

@@ -54,7 +54,6 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
 
             .then((res) => {
                 closeMenu();
-                // console.log(res?.data, "deleted");
             })
             .catch((err) => {
                 console.log(err);

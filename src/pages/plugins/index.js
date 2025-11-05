@@ -1,10 +1,6 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Container,
   Grid,
-  Card,
-  CardContent,
-  CardActions,
   Typography,
   Button,
   IconButton,
@@ -15,96 +11,26 @@ import {
   DialogTitle,
   DialogContent,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Card,
+  CardContent,
+  CardActions,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalCafeOutlinedIcon from "@mui/icons-material/LocalCafeOutlined";
 import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
 import RamenDiningOutlinedIcon from "@mui/icons-material/RamenDiningOutlined";
+import ExtensionOutlinedIcon from "@mui/icons-material/ExtensionOutlined";
+
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
-import { useAuth } from 'providers/authProvider';
+import { useAuth } from "providers/authProvider";
 import EditPluginDialog from "./plugin-add-edit";
-// ---- Data -------------------------------------------------------------
-
-const PLUGINS = [
-  {
-    id: "free-drinks",
-    title: "Free Drinks",
-    blurb:
-      "Reward loyal customers with a free drink upon collecting stamps. Drive repeat visits and increase engagement.",
-    price: "4.900 KWD",
-    cta: "Buy Now",
-    Icon: LocalCafeOutlinedIcon,
-    details: {
-      heading: "Free Drinks",
-      description:
-        "Let customers collect stamps and redeem a free drink once they hit the target. Simple to set up and fully automated.",
-      benefits: [
-        "Boost customer retention with rewards.",
-        "Automatic stamp tracking and redemption.",
-        "Customizable goals and eligibility rules.",
-        "Clear analytics on redemptions.",
-      ],
-      screenshots: [
-        "/images/screens/free-drinks-1.png",
-        "/images/screens/free-drinks-2.png",
-        "/images/screens/free-drinks-3.png",
-        "/images/screens/free-drinks-4.png",
-      ],
-    },
-  },
-  {
-    id: "menu-view",
-    title: "Menu View",
-    blurb:
-      "Let customers browse your menu from their phone using a beautifully branded digital view.",
-    price: "0.000 KWD",
-    cta: "Enable Plugin",
-    Icon: ViewModuleOutlinedIcon,
-    details: {
-      heading: "Menu View",
-      description:
-        "Publish your live menu with images, modifiers, and availability. Works great with QR codes on tables or at the entrance.",
-      benefits: [
-        "Customers browse your menu instantly.",
-        "Real-time price & availability sync.",
-        "Supports images, options, and dietary tags.",
-        "No app download required.",
-      ],
-      screenshots: [
-        "/images/screens/menu-view-1.png",
-        "/images/screens/menu-view-2.png",
-        "/images/screens/menu-view-3.png",
-        "/images/screens/menu-view-4.png",
-      ],
-    },
-  },
-  {
-    id: "table-ordering",
-    title: "Table Ordering",
-    blurb: "Let customers scan the QR and order directly from their table.",
-    price: "2.900 KWD",
-    cta: "Buy Now",
-    Icon: RamenDiningOutlinedIcon,
-    details: {
-      heading: "Table Ordering",
-      description:
-        "Let your customers scan a QR code placed on their table and order directly from their phone. No need to wait for a waiter — fast, convenient, and fully contactless. Ideal for dine-in cafes and restaurants looking to improve customer experience and streamline operations.",
-      benefits: [
-        "Customers browse your menu instantly.",
-        "Place orders directly to the kitchen.",
-        "Pay online or at the table.",
-        "Reduce wait time & increase table turnover.",
-      ],
-      screenshots: [
-        "/images/screens/table-ordering-1.png",
-        "/images/screens/table-ordering-2.png",
-        "/images/screens/table-ordering-3.png",
-        "/images/screens/table-ordering-4.png",
-      ],
-    },
-  },
-];
+import pluginService from "services/pluginService";
+import { useFetchBrandsList } from "features/BrandsTable/hooks/useFetchBrandsList";
 
 // ---- Small UI bits ----------------------------------------------------
 
@@ -156,11 +82,14 @@ function PhoneShot({ src, alt }) {
 
 // ---- Components -------------------------------------------------------
 
-function PluginCard({ item, onOpen, onBuy, onEdit, user }) {
+function PluginCard({ item, onOpen, onBuy, onEdit, user,orders }) {
   const { title, blurb, price, cta, Icon } = item;
   const isBuy = /buy/i.test(cta);
   const canEdit = user?.roleId === 2;
-  console.log({ user, canEdit });
+  let tempCta =cta
+  const ispurchased = orders && orders?.some(order => order.isPaid);
+  tempCta = ispurchased ? "Purchased" : cta;
+  console.log(ispurchased,"ispurchased");
   const handlePrimaryClick = (e) => {
     e.stopPropagation();
     if (canEdit) {
@@ -241,13 +170,12 @@ function PluginCard({ item, onOpen, onBuy, onEdit, user }) {
           sx={{ textTransform: "none", px: 3 }}
           onClick={handlePrimaryClick}
         >
-          {canEdit ? "Edit" : cta}
+          {canEdit ? "Edit" : tempCta}
         </Button>
       </CardActions>
     </Card>
   );
 }
-
 
 function PluginDialog({ open, onClose, details }) {
   if (!details) return null;
@@ -316,15 +244,33 @@ function PluginDialog({ open, onClose, details }) {
   );
 }
 
-// ----- PaymentDialog ---------------------------------------------------
+// ----- PaymentDialog (updated) -----------------------------------------
 
-function PaymentDialog({ open, onClose, item }) {
+const PAYMENT_SYSTEM = {
+  knet: 1,
+  apple: 14,
+};
+
+function getDecimals(dec) {
+  const n = Number(dec);
+  return Number.isFinite(n) && n >= 0 && n <= 6 ? n : 3;
+}
+function getCurrencyCode(brand) {
+  return brand?.currency || "KD";
+}
+function formatAmount(num, brand) {
+  return `${Number(num || 0).toFixed(getDecimals(brand?.currencyDecimals))} ${getCurrencyCode(brand)}`;
+}
+
+function PaymentDialog({ open, onClose, item, brand }) {
   const [method, setMethod] = React.useState("knet");
+  const [loading, setLoading] = React.useState(false);
 
-  const amount = React.useMemo(
-    () => Number(String(item?.price || "0").replace(/[^\d.]/g, "")) || 0,
-    [item]
-  );
+  const amount = React.useMemo(() => {
+    if (!item) return 0;
+    if (typeof item.amount === "number") return item.amount; // if you pass RAW
+    return Number(String(item?.price || "0").replace(/[^\d.]/g, "")) || 0; // if you pass mapped card item
+  }, [item]);
 
   if (!item) return null;
 
@@ -335,21 +281,47 @@ function PaymentDialog({ open, onClose, item }) {
 
   const isSelected = (id) => method === id;
 
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      const paymentSystemId = PAYMENT_SYSTEM[method];
+      if (!item.id || !paymentSystemId) throw new Error("Missing plugin ID or method mapping.");
+
+      const resp = await pluginService.checkoutForBrandPlugin(item.id, paymentSystemId);
+
+      if (resp?.redirectUrl) {
+        window.location.href = resp.redirectUrl;
+      } else if (resp?.paymentUrl) {
+        window.open(resp.paymentUrl, "_blank", "noopener");
+      } else {
+        console.log("Checkout response:", resp);
+      }
+      onClose?.();
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      alert("Unable to start checkout. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 3 } }}>
+    <Dialog open={open} onClose={loading ? undefined : onClose} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 3 } }}>
       <DialogTitle sx={{ pr: 7 }}>
         <Typography variant="h5" fontWeight={800}>
-          {item.title}
+          {item.title || item.name}
         </Typography>
-        <IconButton onClick={onClose} sx={{ position: "absolute", top: 10, right: 10 }} aria-label="close">
+        <IconButton onClick={onClose} disabled={loading} sx={{ position: "absolute", top: 10, right: 10 }} aria-label="close">
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 0, pb: 1.5 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {item.blurb}
-        </Typography>
+        {item.blurb && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {item.blurb}
+          </Typography>
+        )}
 
         <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1 }}>
           Payment Method
@@ -359,7 +331,7 @@ function PaymentDialog({ open, onClose, item }) {
           {methods.map((m) => (
             <Box
               key={m.id}
-              onClick={() => setMethod(m.id)}
+              onClick={() => !loading && setMethod(m.id)}
               sx={(t) => ({
                 display: "flex",
                 alignItems: "center",
@@ -369,7 +341,8 @@ function PaymentDialog({ open, onClose, item }) {
                 borderRadius: 2,
                 border: `1px solid ${isSelected(m.id) ? t.palette.success.light : t.palette.divider}`,
                 bgcolor: isSelected(m.id) ? "background.default" : "background.paper",
-                cursor: "pointer",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
                 transition: "0.2s ease",
               })}
               role="button"
@@ -400,11 +373,11 @@ function PaymentDialog({ open, onClose, item }) {
             <Typography variant="body2" color="text.secondary">
               Subtotal
             </Typography>
-            <Typography variant="body2">{amount.toFixed(3)} KD</Typography>
+            <Typography variant="body2">{formatAmount(amount, brand)}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
             <Typography variant="body2">Total</Typography>
-            <Typography variant="body2">{amount.toFixed(3)} KD</Typography>
+            <Typography variant="body2">{formatAmount(amount, brand)}</Typography>
           </Box>
         </Box>
       </DialogContent>
@@ -419,28 +392,90 @@ function PaymentDialog({ open, onClose, item }) {
           justifyContent: "flex-end",
         }}
       >
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="outlined" onClick={onClose} disabled={loading}>
           Cancel
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            // TODO: handle real checkout
-            onClose();
-          }}
-        >
-          {`Checkout (${amount.toFixed(3)} KD)`}
+        <Button variant="contained" onClick={handleCheckout} disabled={loading}>
+          {loading ? "Processing…" : `Checkout (${formatAmount(amount, brand)})`}
         </Button>
       </CardActions>
     </Dialog>
   );
 }
 
+// ---- Helpers: mapping + draft -----------------------------------------
+
+const DEFAULT_ICON = ViewModuleOutlinedIcon;
+
+function safeParseArray(val) {
+  if (Array.isArray(val)) return val;
+  if (typeof val === "string" && val.trim()) {
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function buildScreenshots(raw) {
+  const pics = [
+    raw?.firstImageUrl,
+    raw?.secondImageUrl,
+    raw?.thirdImageUrl,
+    raw?.forthImageUrl,
+    raw?.fifthImageUrl,
+    raw?.sixthImageUrl,
+  ].filter(Boolean);
+  return pics.length ? pics : [];
+}
+
+function mapToCardItem(raw, currency = "KD", decimals = 3) {
+  const amount = Number(raw?.amount || 0);
+  const price = `${amount.toFixed(decimals)} ${currency}`;
+  return {
+    ...raw,
+    title: raw?.name || "Untitled Plugin",
+    blurb: raw?.shortIntro || "",
+    price,
+    cta: "Buy Now",
+    Icon: DEFAULT_ICON,
+    details: {
+      heading: raw?.name || "Details",
+      description: raw?.description || "",
+      benefits: safeParseArray(raw?.benefits),
+      screenshots: buildScreenshots(raw),
+    },
+  };
+}
+
+function createEmptyPlugin() {
+  return {
+    id: 0,
+    name: "",
+    nameNative: "",
+    shortIntro: "",
+    shortIntroNative: "",
+    description: "",
+    descriptionNative: "",
+    benefits: "[]",
+    benefitsNative: "[]",
+    amount: 0,
+    firstImageUrl: "",
+    secondImageUrl: "",
+    thirdImageUrl: "",
+    forthImageUrl: "",
+    fifthImageUrl: "",
+    sixthImageUrl: "",
+  };
+}
+
 // ---- Page -------------------------------------------------------------
 
 export default function Plugins() {
-  const [plugins, setPlugins] = React.useState(PLUGINS); // <— stateful now
-
+  const [plugins, setPlugins] = React.useState([]);
   const [selected, setSelected] = React.useState(null);
   const [openDetails, setOpenDetails] = React.useState(false);
 
@@ -450,7 +485,48 @@ export default function Plugins() {
   const [editing, setEditing] = React.useState(null);
   const [openEdit, setOpenEdit] = React.useState(false);
 
-  const user = { roleId: 2 }; // or pull from your auth/store
+  const [reload, setReload] = useState(false);
+  const [pluginOrders, setPluginOrders] = useState([]);
+  const { brandsList } = useFetchBrandsList(reload);
+  const [selectedBrand, setselectedBrand] = useState("");
+
+  const { user } = useAuth();
+  const canEdit = user?.roleId === 2;
+  useEffect(() => {
+    if (brandsList?.length && !selectedBrand) {
+      setselectedBrand(brandsList[0]);
+    }
+  }, [brandsList]);
+
+  useEffect(() => {
+    if (!selectedBrand) return;
+    const fetchPlugins = async () => {
+      if (!selectedBrand || typeof selectedBrand === "string") return;
+      try {
+        const data = await pluginService.getPluginsByBrandId(selectedBrand.id);
+        const list = Array.isArray(data) ? data : data?.items || [];
+        setPlugins(list);
+      } catch (err) {
+        console.error("Failed to load plugins:", err);
+        setPlugins([]);
+      }
+    };
+    fetchPlugins();
+    getPluginsOrders();
+
+  }, [selectedBrand]);
+
+
+
+    const getPluginsOrders = async() =>{
+    try {
+      const orders = await pluginService.getPluginOrders(selectedBrand.id);
+      console.log('Plugin Orders:', orders.items);
+      setPluginOrders(orders.items);
+    } catch (error) {
+      console.error('Failed to fetch plugin orders:', error);
+    }
+  }
 
   const handleOpenDetails = (item) => { setSelected(item); setOpenDetails(true); };
   const handleCloseDetails = () => setOpenDetails(false);
@@ -459,35 +535,127 @@ export default function Plugins() {
   const handleCloseBuy = () => setOpenBuy(false);
 
   const handleOpenEdit = (item) => { setEditing(item); setOpenEdit(true); };
-  const handleCloseEdit = () => setOpenEdit(false);
+  const handleCloseEdit = () => { setOpenEdit(false); setEditing(null); };
 
-  const handleSaveEdit = (updated) => {
-    setPlugins((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-    setOpenEdit(false);
+  const handleSaveEdit = async (payloadFromDialog) => {
+    if (!selectedBrand || typeof selectedBrand === "string") return;
+    const payload = { ...payloadFromDialog, brandId: selectedBrand.id };
+    try {
+      if (payload.id && payload.id > 0) {
+        await pluginService.updatePlugin(payload);
+      } else {
+        await pluginService.createPlugin(payload);
+      }
+      const data = await pluginService.getPluginsByBrandId(selectedBrand.id);
+      const list = Array.isArray(data) ? data : data?.items || [];
+      setPlugins(list);
+      setOpenEdit(false);
+      setEditing(null);
+    } catch (e) {
+      console.error("Save failed:", e);
+    }
   };
 
-  return (
-    <Box sx={{ bgcolor: "grey.50", minHeight: "100vh", py: 6 }}>
-      <Container maxWidth="xl">
-        <Typography variant="h4" fontWeight={700} mb={3}>Plugins</Typography>
+  const currency = selectedBrand?.currency || "KD";
+  const decimals = getDecimals(selectedBrand?.currencyDecimals);
 
-        <Grid container spacing={3} alignItems="stretch">
-          {plugins.map((p) => (
-            <Grid key={p.id} item xs={12} sm={6} md={4}>
-              <PluginCard
-                item={p}
-                user={user}
-                onOpen={handleOpenDetails}
-                onBuy={handleOpenBuy}
-                onEdit={handleOpenEdit}
-              />
+  return (
+    <Box sx={{ bgcolor: "grey.50", minHeight: "100vh", py: 6, px: 4 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sx={{ mb: 3 }}>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item xs="auto">
+              <Typography fontSize={22} fontWeight={700}>
+                Plugins
+              </Typography>
             </Grid>
-          ))}
+
+            <Box sx={{ display: "flex", gap: "20px", alignItems: "center" }}>
+              { canEdit &&
+                <Grid item xs="auto">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={user?.isAccessRevoked}
+                  onClick={() => handleOpenEdit(createEmptyPlugin())}
+                >
+                  Add Plugin
+                </Button>
+              </Grid>
+              }
+
+              <Grid item xs="auto">
+                <FormControl sx={{ width: 240 }}>
+                  <InputLabel id="branch-select-label">Brand</InputLabel>
+                  <Select
+                    labelId="branch-select-label"
+                    id="branch-select"
+                    value={selectedBrand}
+                    label="Brand"
+                    onChange={(event) => setselectedBrand(event.target.value)}
+                    renderValue={(val) => (typeof val === "string" ? "" : (val?.name ?? ""))}
+                  >
+                    {brandsList.map((row, index) => (
+                      <MenuItem key={index} value={row}>
+                        {row?.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Box>
+          </Grid>
         </Grid>
-      </Container>
+
+<Grid container spacing={3} alignItems="stretch">
+  {plugins.length > 0 ? (
+    plugins.map((p) => {
+      const cardItem = mapToCardItem(p, currency, decimals);
+      return (
+        <Grid key={p.id} item xs={12} sm={6} md={4}>
+          <PluginCard
+            item={cardItem}
+            user={user}
+            onOpen={(it) => handleOpenDetails(it)}
+            onBuy={(it) => handleOpenBuy(it)}
+            onEdit={() => handleOpenEdit(p)}
+            orders={pluginOrders.some(order => order.brandPluginId === p.id) ? pluginOrders.filter(order => order.brandPluginId === p.id) : []}
+
+          />
+        </Grid>
+      );
+    })
+  ) : (
+    <Grid item xs={12}>
+      <Box
+        sx={{
+          border: "1px dashed",
+          borderColor: "grey.300",
+          bgcolor: "white",
+          borderRadius: 3,
+          p: 6,
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h6">No plugins exist</Typography>
+
+        {/* <Button
+          sx={{ mt: 2, borderRadius: 2, px: 3 }}
+          variant="contained"
+          onClick={() => handleOpenEdit(createEmptyPlugin())}
+          disabled={user?.isAccessRevoked}
+        >
+          Add Plugin
+        </Button> */}
+      </Box>
+    </Grid>
+  )}
+</Grid>
+
+      </Grid>
 
       <PluginDialog open={openDetails} onClose={handleCloseDetails} details={selected?.details || null} />
-      <PaymentDialog open={openBuy} onClose={handleCloseBuy} item={buying} />
+      <PaymentDialog open={openBuy} onClose={handleCloseBuy} item={buying} brand={selectedBrand} />
       <EditPluginDialog open={openEdit} item={editing} onClose={handleCloseEdit} onSave={handleSaveEdit} />
     </Box>
   );

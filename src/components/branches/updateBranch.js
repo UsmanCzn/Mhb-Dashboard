@@ -78,15 +78,7 @@ const UpdateBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }
 
     const createBranch = async (event) => {
         event.preventDefault();
-        // await fileService.uploadImage({
-        //   file:dataUri
-        // })
-        // .then((res)=>{
-        //   console.log(res.data);
-        // })
-        // .catch((err)=>{
-        //   console.log(err.response.data);
-        // })
+
         let payload = { ...data };
 
         await fileService

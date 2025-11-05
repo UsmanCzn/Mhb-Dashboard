@@ -10,6 +10,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import CustomerNotification from '../customer-notification/customer-notifcation';
 import FreeDrinksRequest from './free-drinks-request';
 import ScanRequest from './scans-request';
+import RefundRequest from './refund-request';
 import { useAuth } from 'providers/authProvider';
 
 const Credit = () => {
@@ -38,6 +39,7 @@ const Credit = () => {
                         <Tab label="Notification Request" value="3" />
                         <Tab label="Free Drinks Request" value="4" />
                         <Tab label="Remove Scan Request" value="5" />
+                        <Tab label="Refund Request" value="6" />
                     </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -54,6 +56,9 @@ const Credit = () => {
                 </TabPanel>
                 <TabPanel value="5">
                     <ScanRequest user={user} />
+                </TabPanel>
+                <TabPanel value="6">
+                    <RefundRequest user={user} />
                 </TabPanel>
             </TabContext>
             <Grid item xs={12}></Grid>

@@ -40,6 +40,7 @@ const ProductAddEdit = () => {
         commentAllowed: true,
         dontMissOutProduct: false,
         estimatePreparationTimeInMinutes: 0,
+        punchesType : 0,
         fat: 0,
         isDeliveryProduct: false,
         isEligibleForFreeItem: false,
@@ -76,7 +77,8 @@ const ProductAddEdit = () => {
             pointsOfCost: Yup.number().required('Points of Cost is required'),
             type: Yup.number().required('Category is required'),
             productSubTypeId: Yup.number().required('Subcategory is required'),
-            estimatePreparationTimeInMinutes: Yup.number().required('Estimated Time is required')
+            estimatePreparationTimeInMinutes: Yup.number().required('Estimated Time is required'),
+            punchesType : Yup.number().required('punchesType  is required')
         }),
         addOns: Yup.object().shape({
             // addonGroups: Yup.array().of(
@@ -154,6 +156,7 @@ const ProductAddEdit = () => {
                 commentAllowed: Product.commentAllowed || false,
                 dontMissOutProduct: Product.dontMissOutProduct || false,
                 estimatePreparationTimeInMinutes: Product.estimatePreparationTimeInMinutes || 0,
+                punchesType : Product.punchesType  || 0,
                 fat: Product.fat || 0,
                 isDeliveryProduct: Product.isDeliveryProduct || false,
                 isEligibleForFreeItem: Product.isEligibleForFreeItem || false,
@@ -176,7 +179,7 @@ const ProductAddEdit = () => {
                 showIsOutOfStock: Product.showIsOutOfStock || false,
                 subTypes: productTypes.find((type) => type.id === Product.productTypeId)?.subTypes || [],
                 type: Product.productTypeId || '',
-                orderValue:Product.orderValue
+                orderValue:Product.orderValue || 0
             };
 
             // Update form values in a single call
@@ -334,6 +337,7 @@ const ProductAddEdit = () => {
                                         protien: values.protien,
                                         carbo: values.carbo,
                                         estimatePreparationTimeInMinutes: values.estimatePreparationTimeInMinutes,
+                                        punchesType : values.punchesType,
                                         isFileRequired: values.isFileRequired,
                                         posId: 0,
                                         price: values.price,
@@ -572,7 +576,7 @@ const ProductAddEdit = () => {
                                                 <TextField
                                                     fullWidth
                                                     type="number"
-                                                    label="Punches For Purchase*"
+                                                    label="Stamps For Purchase*"
                                                     name="punchesForPurchase"
                                                     value={values.punchesForPurchase}
                                                     onChange={handleChange}
@@ -587,7 +591,7 @@ const ProductAddEdit = () => {
                                                 <TextField
                                                     fullWidth
                                                     type="number"
-                                                    label="Points of Cost"
+                                                    label="Price (Points)"
                                                     name="pointsOfCost"
                                                     value={values.pointsOfCost}
                                                     onChange={handleChange}
@@ -615,6 +619,41 @@ const ProductAddEdit = () => {
                                                         touched.estimatePreparationTimeInMinutes && errors.estimatePreparationTimeInMinutes
                                                     }
                                                 />
+                                            </Grid>
+                                            {/* Punch Type */}
+                                            <Grid item xs={6}>
+                                            <FormControl
+                                                fullWidth
+                                                error={touched.punchesType && Boolean(errors.punchesType)}
+                                            >
+                                                <InputLabel id="punchesType-label">Punch Type</InputLabel>
+
+                                                <Select
+                                                labelId="punchesType-label"
+                                                id="punchesType"
+                                                name="punchesType"
+                                                label="Punch Type"
+                                                value={values.punchesType}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                >
+                                                <MenuItem value={0}>Regular</MenuItem>
+                                                <MenuItem value={1}>FreeFood</MenuItem>
+                                                <MenuItem value={2}>SpecialItem</MenuItem>
+                                                <MenuItem value={3}>SpecialProduct</MenuItem>
+                                                <MenuItem value={4}>Speical1</MenuItem>
+                                                <MenuItem value={5}>Speical2</MenuItem>
+                                                <MenuItem value={6}>Speical3</MenuItem>
+                                                <MenuItem value={7}>Speical4</MenuItem>
+                                                <MenuItem value={8}>Acai_Bowl</MenuItem>
+                                                <MenuItem value={9}>Matcha</MenuItem>
+                                                <MenuItem value={10}>Drinks</MenuItem>
+                                                </Select>
+
+                                                {touched.punchesType && errors.punchesType && (
+                                                <FormHelperText>{errors.punchesType}</FormHelperText>
+                                                )}
+                                            </FormControl>
                                             </Grid>
 
                                             {/* Description */}
@@ -914,7 +953,7 @@ const ProductAddEdit = () => {
                                                             onBlur={handleBlur}
                                                         />
                                                     }
-                                                    label="Eligible for Free Drinks"
+                                                    label="Eligible for Free Items"
                                                 />
                                             </Grid>
 

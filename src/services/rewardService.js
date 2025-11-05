@@ -8,10 +8,10 @@ export default {
             }
         });
     },
-    getdashBoardData(brandId, startDate, endDate) {
+    getdashBoardData(brandId, startDate, endDate,branchId) {
         const baseUrl = 'https://nextwhitelabelling-prod.azurewebsites.net/api/services/app/Dashboard/GetLiveDashboardReport';
 
-        let url = `${baseUrl}?brandId=${brandId}&branchId=0`;
+        let url = `${baseUrl}?brandId=${brandId}&branchId=${branchId?branchId:0}`;
 
         if (startDate !== null) {
             url += `&startDate=${startDate}`;
@@ -24,39 +24,39 @@ export default {
         console.log(url);
         return ApiV1.get(url, {});
     },
-    getAvgDispatchTime(brandId, startDate, endDate) {
+    getAvgDispatchTime(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetAvgDisPatchTime?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetAvgDisPatchTime?brandId=${brandId}&branchId=${branchId||0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getTotalRegisteredCustomers(brandId, startDate, endDate) {
+    getTotalRegisteredCustomers(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTotalRegisteredCustomers?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTotalRegisteredCustomers?brandId=${brandId}&branchId=${branchId || 0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getTotalFreeDrinks(brandId, startDate, endDate) {
+    getTotalFreeDrinks(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTotalFreeDrinksConsumedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTotalFreeDrinksConsumedForDashboard?brandId=${brandId}&branchId=${branchId || 0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getTotalPointsEarned(brandId, startDate, endDate) {
+    getTotalPointsEarned(brandId, startDate, endDate, branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTotalPointosEarnedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTotalPointosEarnedForDashboard?brandId=${brandId}&branchId=${branchId||0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getTotalPointsRedeemed(brandId, startDate, endDate) {
+    getTotalPointsRedeemed(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTotalPointosRedeemedForDashboard?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTotalPointosRedeemedForDashboard?brandId=${brandId}&branchId=${branchId||0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getCustomersCountOrdered(brandId, startDate, endDate) {
+    getCustomersCountOrdered(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTotalCustomersOrders?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTotalCustomersOrders?brandId=${brandId}&branchId=${branchId||0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
-    getTopTenProducts(brandId, startDate, endDate) {
+    getTopTenProducts(brandId, startDate, endDate,branchId) {
         return ApiV1.get(
-            `services/app/Dashboard/GetTop10DrinksBySalesForReport?brandId=${brandId}&branchId=${0}&startDate=${startDate}&endDate=${endDate}`
+            `services/app/Dashboard/GetTop10DrinksBySalesForReport?brandId=${brandId}&branchId=${branchId|| 0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
     getCustomersLastOrders(brandId, startDate, endDate) {

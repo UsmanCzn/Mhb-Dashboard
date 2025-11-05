@@ -10,11 +10,11 @@ import orderServices from 'services/orderServices';
 import AssignTaskDialog from './assign-task-dialog';
 import { useSnackbar } from 'notistack';
 import { useAuth } from 'providers/authProvider';
-
+import RefundRequestDialog from 'features/refund/refund';
+import refundService from 'services/refundService';
 export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
     const { user, userRole, isAuthenticated } = useAuth();
-
-    const navigate = useNavigate();
+    const [isRefundOpen, setIsRefundOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [selectedRow, setSelectedRow] = useState();
     const location = useLocation();
@@ -25,6 +25,19 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         filter,
         filterStatus
     });
+        const shouldShowRefundButton = (order) => {
+        if (!order) return false;
+
+        const orderRefunded = order.isRefunded === true;
+
+        const anyProductRefunded =
+            Array.isArray(order.products) &&
+            order.products.some(p => p?.isRefunded === true);
+
+        // Show button ONLY if neither the order nor any product is refunded
+        return !orderRefunded && !anyProductRefunded;
+        };
+
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [brand, setBrand] = useState({});
@@ -72,7 +85,8 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         setData(params?.row);
         setSelectedRow(params?.row);
         // setModalOpen(true)
-
+        console.log(params?.row ,"order");
+        
         setAnchorEl(event.currentTarget);
         if (params?.row?.status == 'Open') {
             setOptions([
@@ -106,6 +120,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Open/Print',
                     modal: true
                 },
+ 
                 {
                     name: 'Ready',
                     modal: false
@@ -145,18 +160,22 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                 }
             ]);
         } else {
-            setOptions([
-                {
-                    name: 'Open/Print',
-                    modal: true
+        const base = [{ name: 'Open/Print', modal: true }];
+                if (shouldShowRefundButton(params?.row)) {
+                base.push({ name: 'Refund Request', modal: true });
                 }
-            ]);
-        }
-    };
+
+             setOptions(base);
+                }
+                };
     const handleClose = (Data) => {
         if (Data?.name == 'Open/Print') {
             setModalOpen(true);
-        } else if (Data?.name == 'Accept') {
+        }
+        else if (Data?.name === 'Refund Request') {
+      setIsRefundOpen(true);
+        }
+        else if (Data?.name == 'Accept') {
             updateOrderStatus(statustypes?.find((obj) => obj?.title == 'Accepted')?.id);
             console.log('Accept');
         } else if (Data?.name == 'Request Driver') {
@@ -175,6 +194,47 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         }
         setAnchorEl(null);
     };
+
+const submitRefund = async (dialogData) => {
+  // dialogData from RefundRequestDialog: { orderId, refundType: 'SYSTEM'|'PARTIAL', amount?, items? }
+//   const { orderId, refundType, amount, items = [],method } = dialogData;
+
+//   try {
+//     if (refundType === 'PARTIAL') {
+//       // POST services/app/Refund/InitiateRefundRequestManual
+//       await refundService.InitiateRefundRequestManual({
+//         orderId,
+//         refundType: 1,              // PARTIAL
+//         amountToRefund: Number(amount || 0),
+//       });
+//     } else {
+//       // Map items -> productItems with onlineOrderProductId
+//       const productItems = items
+//         .filter(i => (i.refundQty ?? 0) > 0)
+//         .map(i => {
+//           const match = selectedRow?.products?.find(p => p.id === i.productId) || {};
+//           return {
+//             onlineOrderProductId: match.onlineOrderProductId ?? i.productId,
+//             quantity: i.refundQty,
+//           };
+//         });
+
+//       // POST services/app/Refund/InitiateRefundRequestFromOrder
+//       await refundService.InitiateRefundRequestFromOrder({
+//         orderId,
+//         refundType: 0,              // SYSTEM
+//         productItems,
+//       });
+//     }
+
+//     enqueueSnackbar('Refund request submitted', { variant: 'success' });
+//     setIsRefundOpen(false);
+//     fetchOrdersList(); // refresh table
+//   } catch (e) {
+//     console.error(e);
+//     enqueueSnackbar('Failed to submit refund request', { variant: 'error' });
+//   }
+};
 
     const updateOrderStatus = async (id) => {
         let payload = {
@@ -328,6 +388,12 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
             </Menu>
 
             <AssignTaskDialog open={isDialogOpen} onClose={handleCloseDialog} onAssignTask={handleAssignTask} selectedOrder={data} />
+            <RefundRequestDialog
+            open={isRefundOpen}
+            onClose={() => setIsRefundOpen(false)}
+            onSubmit={submitRefund}
+            order={data ? { id: data.id, products: data.products || [] } : null}
+            />
             <audio ref={audioPlayer} src={NotificationSound}>
                 <track src="captions_en.vtt" kind="captions" srclang="en" label="english_captions" />
             </audio>

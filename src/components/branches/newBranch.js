@@ -74,15 +74,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
 
     const createBranch = async (event) => {
         event.preventDefault();
-        // await fileService.uploadImage({
-        //   file:dataUri
-        // })
-        // .then((res)=>{
-        //   console.log(res.data);
-        // })
-        // .catch((err)=>{
-        //   console.log(err.response.data);
-        // })
+
         let payload = { ...data };
         await fileService
             .uploadBranchLogo(p1)
@@ -113,15 +105,7 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
     };
     const updateBranch = async (event) => {
         event.preventDefault();
-        // await fileService.uploadImage({
-        //   file:dataUri
-        // })
-        // .then((res)=>{
-        //   console.log(res.data);
-        // })
-        // .catch((err)=>{
-        //   console.log(err.response.data);
-        // })
+
 
         let payload = { ...data };
         await fileService
@@ -136,7 +120,6 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
         await branchService
             .editBranch(payload)
             .then((res) => {
-                console.log(res.data);
                 setReload((prev) => !prev);
                 setModalOpen(false);
             })
@@ -154,7 +137,6 @@ const NewBranch = ({ modalOpen, setModalOpen, setReload, update, updateData }) =
             .getAllBrands()
             .then((res) => {
                 setBrands(res.data.result);
-                console.log(res.data);
             })
             .catch((err) => {
                 console.log(err.response.data);

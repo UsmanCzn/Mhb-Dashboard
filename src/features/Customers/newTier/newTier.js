@@ -122,6 +122,19 @@ const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
         }
     };
 
+    const fixedTextareaSx = {
+  mt: 2,
+  // Keep the label/input aligned nicely at the top
+  '& .MuiInputBase-root': { alignItems: 'flex-start' },
+  // Target the multiline textarea
+  '& textarea': {
+    height: 140,        // fixed height (px)
+    overflow: 'auto',   // scroll when content exceeds height
+    resize: 'none',     // prevent manual resize (optional)
+  },
+};
+
+
     return (
         <Modal open={modal} onClose={() => setModal(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
             <Box sx={style}>
@@ -167,6 +180,7 @@ const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
                             onChange={(e) => setData({ ...data, benefits: e.target.value })}
                             multiline
                             minRows={3}
+                            maxRows={6}
                             sx={{ mt: 2 }}
                         />
                     </Grid>
@@ -182,6 +196,7 @@ const NewTier = ({ modal, setModal, brand, editItem, setReload }) => {
                             onChange={(e) => setData({ ...data, benefitsNative: e.target.value })}
                             multiline
                             minRows={3}
+                            maxRows={6}
                             sx={{ mt: 2 }}
                         />
                     </Grid>

@@ -154,15 +154,15 @@ const dashboard = {
                 // }
             ]
         },
-        {
-            id: 'rewardStats',
-            title: 'Rewards Stats',
-            type: 'item',
-            url: '/rewards-stats',
-            icon: icons.DashboardOutlined,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
-        },
+        // {
+        //     id: 'rewardStats',
+        //     title: 'Rewards Stats',
+        //     type: 'item',
+        //     url: '/rewards-stats',
+        //     icon: icons.DashboardOutlined,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
+        // },
 
         {
             id: 'customers',
@@ -343,15 +343,15 @@ const dashboard = {
                 }
             ]
         },
-        // {
-        //     id: 'plugins',
-        //     title: 'Plugins',
-        //     type: 'item',
-        //     url: '/plugins',
-        //     icon: ExtensionIcon,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
-        // },
+        {
+            id: 'plugins',
+            title: 'Plugins',
+            type: 'item',
+            url: '/plugins',
+            icon: ExtensionIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        },
         {
             id: 'advertisement',
             title: 'Advertisement',

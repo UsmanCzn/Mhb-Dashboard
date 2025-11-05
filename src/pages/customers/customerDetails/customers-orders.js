@@ -112,6 +112,13 @@ const CustomerOrders = ({ user }) => {
             headerAlign: 'left'
         },
         {
+            field: 'isPaid',
+            headerName: 'Is Paid',
+            flex: 0.5,
+            headerAlign: 'left',
+            renderCell: (params) => <Typography>{params?.row?.isPaid?'Yes':'No'}</Typography>
+        },
+        {
             field: 'date',
             headerName: 'Date',
             flex: 1.2,

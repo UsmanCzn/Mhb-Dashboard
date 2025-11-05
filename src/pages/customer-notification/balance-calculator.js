@@ -6,15 +6,15 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AppleIcon from '@mui/icons-material/Apple';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 import Knet from '../../assets/images/users/knet.png'
 import { ServiceFactory } from 'services/index';
 import { useSnackbar } from 'notistack';
 
 
 const paymentMethods = [
-    { id: 1, name: 'Knet', icon: Knet },
-    // { id: 2, name: 'Apple Pay', icon: <AppleIcon /> },
+    { id: 1, name: 'Knet', icon: Knet,PaymentSystemId:1 },
+    { id: 2, name: 'Credit Card', icon: <CreditCardIcon />,PaymentSystemId:14 },
   ];
 
 export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlLoading}) {
@@ -58,7 +58,6 @@ export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlL
     setIsPaymentUrlLoading(true);
     const response = await brandService.GetNotificationBalanceToAddByCompany(brand?.companyId);
     if (response && response.data.result?.isManualOnly) {
-        console.log(response);
         enqueueSnackbar(response.data.result?.message, {
             variant: 'error'
         });
@@ -66,7 +65,7 @@ export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlL
 
     }
     else {
-        handleConfirmBalance(subtotal,response.data.result?.productName,quantity);
+        handleConfirmBalance(subtotal,response.data.result?.productName,quantity,selectedPayment?.PaymentSystemId);
       }
     // const response = await customerService.AddNotificationBalance(selectedBrand?.companyId);
     // if (response) {
@@ -74,11 +73,11 @@ export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlL
     // }
 };
 
-    const handleConfirmBalance = async (amount, productName, NotificationCount) => {
+    const handleConfirmBalance = async (amount, productName, NotificationCount,PaymentSystemId) => {
         setIsLoading(true);
         setIsPaymentUrlLoading(true)
         try {
-        const res = await brandService.AddNotificationBalance(amount, brand?.companyId, productName, NotificationCount);
+        const res = await brandService.AddNotificationBalance(amount, brand?.companyId, productName, NotificationCount,PaymentSystemId);
         setIsPaymentUrlLoading(false);
         if (res?.data?.result?.isSuccess && res?.data?.result?.paymentUrl) {
             // Redirect to the payment page
@@ -124,13 +123,13 @@ export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlL
             {paymentMethods.map((method) => (
               <Grid item xs={6} key={method.id}>
                 <Paper
-                  onClick={() => setSelectedPayment(method.id)}
+                  onClick={() => setSelectedPayment(method)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     p: 1.5,
-                    border: selectedPayment === method.id ? '2px solid #1976d2' : '1px solid #ddd',
+                    border: selectedPayment?.id === method.id ? '2px solid #1976d2' : '1px solid #ddd',
                     cursor: 'pointer',
                     borderRadius: 2,
                   }}
@@ -144,7 +143,7 @@ export default function AddBalanceModal({ open, onClose ,brand, setIsPaymentUrlL
 
                     <Typography variant="body2">{method.name}</Typography>
                   </Box>
-                  {selectedPayment === method.id && (
+                  {selectedPayment?.id === method.id && (
                     <CheckCircleIcon color="primary" fontSize="small" />
                   )}
                 </Paper>

@@ -15,10 +15,11 @@ const PaymentSuccess = () => {
       orderNumber: searchParams.get('orderNumber'),
       paymentId: searchParams.get('paymentId'),
       transactionId: searchParams.get('transactionId'),
+      type: searchParams.get('Type'),
     };
   };
 
-  const { orderId, orderNumber, paymentId, transactionId } = getQueryParams();
+  const { orderId, orderNumber, paymentId, transactionId, type } = getQueryParams();
 
   return (
     <Box
@@ -31,7 +32,7 @@ const PaymentSuccess = () => {
       <Card sx={{ p: 4, minWidth: 400, maxWidth: 400, textAlign: 'center' }}>
         <CheckCircleIcon sx={{ fontSize: 60, color: '#4caf50', mb: 2 }} />
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Balance Added Successfully
+          {type ==='Balance' ? 'Balance Added Successfully':'Plugin Enabled Successfully'}
         </Typography>
 
         <Divider sx={{ my: 3 }} />
@@ -61,7 +62,7 @@ const PaymentSuccess = () => {
               backgroundColor: '#43a047',
             },
           }}
-          onClick={() => navigate('/customernotification')}
+          onClick={() => navigate(type ==='Balance' ? '/customernotification':'/plugins')}
         >
           Go Back
         </Button>
