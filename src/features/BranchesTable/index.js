@@ -31,11 +31,7 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
         } else if (data?.name == 'Edit Location') {
-            navigate(`/locationAddEdit/${branch?.id}`);
-
-            // setUpdateData(branch);
-            // setUpdate(true);
-            // setModalOpen(true);
+            navigate(`/locationAddEdit/${branch?.id}/${bid}`);
         }
         setAnchorEl(null);
     };

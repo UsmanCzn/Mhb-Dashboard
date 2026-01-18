@@ -54,12 +54,19 @@ const PaymentMethodsListing = (props) => {
     };
 
     const paymentMethodImage = (type) => {
+
         const images = {
             KNET: Knet,
             ApplePay: ApplePay,
             GOOGLEPAY: GooglePay,
             APPLEPAY: ApplePay,
-            VISAMASTERCARD: MasterVisa
+            VISAMASTERCARD: MasterVisa,
+            'ApplePay (VISA/MASTER)': ApplePay,
+            'ApplePay (Knet)': ApplePay,
+            'CreditCard': 'https://whitelabellingprod.blob.core.windows.net/brand-banners/OnlinePayments02.png',
+            'WALLET':'https://whitelabellingprod.blob.core.windows.net/brand-banners/OnlinePayments02.png',
+            'Online':'https://whitelabellingprod.blob.core.windows.net/brand-banners/OnlinePayments02.png'
+
         };
         if (type === 'VISA/MASTER CARD') {
             return images['VISAMASTERCARD'] || DefaultImg;

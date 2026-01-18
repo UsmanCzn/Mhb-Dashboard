@@ -23,6 +23,8 @@ import AddAlertIcon from '@mui/icons-material/AddAlert';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import WalletIcon from '@mui/icons-material/Wallet';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // icons
 const icons = {
     DashboardOutlined
@@ -163,7 +165,43 @@ const dashboard = {
         //     breadcrumbs: false,
         //     forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER]
         // },
-
+        {
+            id: 'reports',
+            title: 'Reports',
+            type: 'item',
+            url: '/reports',
+            icon: BarChartIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER,BRANCH_USER]
+        },
+        {
+            id: 'comission',
+            title: 'Billing & Commissions',
+            type: 'collapse',
+            icon: BarChartIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN,],
+            children: [
+                {
+                    id: 'setup-commission',
+                    title: 'Commission Setup',
+                    type: 'item',
+                    url: '/setup-commission',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN]
+                },
+                {
+                    id: 'reports-invoices',
+                    title: 'Reports & Invoices',
+                    type: 'item',
+                    url: '/reports-invoices',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,COMPANY_ADMIN]
+                },
+            ]
+        },
         {
             id: 'customers',
             title: 'Customers',
@@ -261,6 +299,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
+        // {
+        //     id: 'Scheduledorders',
+        //     title: 'Scheduled Orders',
+        //     type: 'item',
+        //     url: '/scheduledorders',
+        //     icon: AccessTimeIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
+        // },
         {
             id: 'offer',
             title: 'Offers',

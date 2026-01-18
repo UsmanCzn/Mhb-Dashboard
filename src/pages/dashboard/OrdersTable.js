@@ -226,7 +226,7 @@ export default function OrderTable({ users, payers, headers, top10Products, last
                             {users && users.length > 0 ? (
                                 stableSort(users.slice(0, 10), getComparator(users, orderBy))?.map((row, index) => {
                                     const isItemSelected = isSelected(row.trackingNo);
-
+                                        const isReddemed = headers.some((e)=> e.label === 'Points Redeemed');
                                     return (
                                         <TableRow
                                             hover
@@ -245,6 +245,7 @@ export default function OrderTable({ users, payers, headers, top10Products, last
                                             <TableCell align="right">{row.totalOrders}</TableCell>
                                             <TableCell align="right">
                                                 {
+                                                    isReddemed? row?.pointsRedeemed:
                                                     selectedBrand?.currency
                                                     ? `${row.totalSale.toFixed(selectedBrand?.currencyDecimals)}  ${selectedBrand.currency}`
                                                     : `${row.totalSale.toFixed(3)}`

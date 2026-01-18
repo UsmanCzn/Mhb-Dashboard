@@ -59,6 +59,11 @@ export default {
             `services/app/Dashboard/GetTop10DrinksBySalesForReport?brandId=${brandId}&branchId=${branchId|| 0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
+    peakHoursData(brandId, startDate, endDate,branchId) {
+        return ApiV1.get(
+            `services/app/Dashboard/GetPeakHourStats?brandId=${brandId}&branchId=${branchId||0}&startDate=${startDate}&endDate=${endDate}`
+        );
+    },
     getCustomersLastOrders(brandId, startDate, endDate) {
         return ApiV1.get(`services/app/Store/GetUserOrdersForDashboardPage?brandId=${brandId}&Skip=0&Take=10`);
     },

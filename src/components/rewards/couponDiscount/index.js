@@ -80,10 +80,32 @@ const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload,user 
             {moment(item?.startDate).format('DD/MM/YYYY') + ' - ' + moment(item?.endDate)?.format('DD/MM/YYYY')}
         </Typography>
     );
+    const discountColumnFormatter = (row) => {
+  const { discountType, discountPercentage, flatDiscount } = row || {};
+
+  // 0 = percentage, 1 = flat
+  if (discountType === 0) {
+    return `${discountPercentage ?? 0}%`;
+  }
+
+  if (discountType === 1) {
+    return flatDiscount ?? 0;
+  }
+
+  // fallback if something is missing
+  return '-';
+};
+
 
     const columns = [
         { field: 'id', headerName: 'ID', headerAlign: 'left' },
-        { field: 'discountPercentage', headerName: 'Discount', flex: 0.7, headerAlign: 'left' },
+        { 
+           field: 'discountPercentage',
+           headerName: 'Discount',
+           flex: 0.7,
+           headerAlign: 'left',
+            renderCell: (params) => discountColumnFormatter(params.row)
+        },
         {
             field: 'branchId',
             headerName: 'Branch',

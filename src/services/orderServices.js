@@ -7,6 +7,15 @@ export default {
  
  
   
+  getScheduledOrdersList(data) { 
+    return ApiV1.get(
+      'services/app/Store/GetUserScheduleOrdersAsBranchUser',
+      {
+        params:data
+      }
+    );
+  },
+  
   getOrdersList(data) { 
     return ApiV1.get(
       'services/app/Store/GetUserOrdersAsBranchUser',
@@ -70,6 +79,10 @@ export default {
     return ApiV1.get(`services/app/Store/GetAllStatusCounts?branchId=${branchId}&StatusId=${statusId}`)
   },
    
+  getAllOrderStatusCountForScheduledOrders(branchId=0, statusId){
+    return ApiV1.get(`services/app/Store/GetPendingScheduleOrderStatusOrdersHistory?branchId=${branchId}&StatusId=${statusId}`)
+  },
+   
   updateOrderStatus(data) {  
     return ApiV1.put(
       'services/app/Store/UpdateOrderStatus', 
@@ -97,4 +110,5 @@ export default {
   getOrderDetails(id){
     return ApiV1.get(`services/app/Store/GetOrderDetails?orderId=${id}`)
   }
+
 }

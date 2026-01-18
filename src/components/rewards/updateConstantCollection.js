@@ -167,7 +167,7 @@ const App = ({
                             </Grid>
                             <Grid item xs={6}>
                                 <Counter
-                                    title="Set amount of points to get reward"
+                                    title="Set Discount Percentage (%)"
                                     value="amountPurchaseReward"
                                     data={data}
                                     setData={setData}

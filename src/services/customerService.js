@@ -11,6 +11,9 @@ export default {
     GetCustomersGroups() {
         return ApiV1.get('services/app/CustomersGroups/GetCustomersGroups');
     },
+    GetCustomerGroupsMaster(cid) {
+        return ApiV1.get(`services/app/Customer/GetCustomerGroupsByCompanyId?companyId=${cid}`);
+    },
     GetCustomersGroupsTree() {
         return ApiV1.get('services/app/CustomersGroups/GetCustomersGroupsTreeView');
     },

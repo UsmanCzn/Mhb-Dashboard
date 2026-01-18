@@ -57,6 +57,7 @@ const FormComponent = () => {
         contactEmail: '',
         currency: '',
         currencyDecimal: 0,
+        freeDrinkExxpiryDays:0,
         emailAddress: '',
         facebookURL: '',
         tiktokURL: '',
@@ -107,6 +108,7 @@ const FormComponent = () => {
             company: Yup.string().required('Company is required'),
             currency: Yup.string().required('Currency is required'),
             currencyDecimal: Yup.number(),
+            freeDrinkExxpiryDays: Yup.number(),
             // brandNameNative: Yup.string().required('Brand Name (Native) is required'),
             // secondaryLanguage: Yup.string().required('Secondary Language is required'),
             // phoneNumber: Yup.string().required('Phone Number is required'),
@@ -209,7 +211,7 @@ const FormComponent = () => {
                 setCompanies(res?.data?.result);
             })
             .catch((err) => {
-                console.log(err?.data);
+ 
             });
     };
 
@@ -292,6 +294,7 @@ const getPluginsOrders = async () => {
                     emailAddress: selectedBrand?.emailAddress || '',
                     currency: currencies.find((e) => e.name === selectedBrand?.currency)?.id || '',
                     currencyDecimal: selectedBrand?.currencyDecimals || 0,
+                    freeDrinkExxpiryDays: selectedBrand?.freeDrinkExxpiryDays || 0,
                     reportInterval: selectedBrand?.reportInterval || 1,
                     brandTimeZone: selectedBrand?.brandTimeZone || 1,
                     walletSubtitle: selectedBrand?.walletSubTitle || '',
@@ -365,6 +368,7 @@ const getPluginsOrders = async () => {
             contactUsEmailAddress: value?.contactEmail,
             currency: value.currency,
             currencyDecimals: value.currencyDecimal,
+            freeDrinkExxpiryDays: value.freeDrinkExxpiryDays,
             currencyId: value.currency,
             emailAddress: '',
             faq: '',
@@ -449,6 +453,7 @@ const getPluginsOrders = async () => {
             contactUsEmailAddress: value?.contactEmail,
             // currency: value.currency,
             currencyDecimals: value.currencyDecimal,
+            freeDrinkExxpiryDays: value.freeDrinkExxpiryDays,
             currencyId: value.currency,
             initialCustomerBalance: value.initialCustomerBalance,
             pointsForWalletReplenishment: value.points,
@@ -589,6 +594,7 @@ const getPluginsOrders = async () => {
                                                     helperText={touched.brandNameNative && errors.brandNameNative}
                                                 />
                                             </Grid>
+                                            { !id&&
                                             <Grid item xs={12} sm={6}>
                                                 <Field
                                                     as={TextField}
@@ -608,6 +614,7 @@ const getPluginsOrders = async () => {
                                                     ))}
                                                 </Field>
                                             </Grid>
+                                            }
                                             <Grid item xs={12} sm={6}>
                                                 <Field
                                                     as={TextField}
@@ -681,6 +688,19 @@ const getPluginsOrders = async () => {
                                                     onChange={handleChange}
                                                     error={touched.currencyDecimal && Boolean(errors.currencyDecimal)}
                                                     helperText={touched.currencyDecimal && errors.currencyDecimal}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
+                                                    name="freeDrinkExxpiryDays"
+                                                    label="Free Drinks Expiry Days"
+                                                    fullWidth
+                                                    type="number"
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={touched.freeDrinkExxpiryDays && Boolean(errors.freeDrinkExxpiryDays)}
+                                                    helperText={touched.freeDrinkExxpiryDays && errors.freeDrinkExxpiryDays}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>

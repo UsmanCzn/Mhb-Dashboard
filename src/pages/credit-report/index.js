@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, FormControl, InputLabel, Select, MenuItem, Box, Menu } from '@mui/material';
+import { Grid, FormControl, InputLabel, Select, MenuItem, Box, Menu, Button  } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DataGridComponent from 'components/DataGridComponent';
 import moment from 'moment/moment';
@@ -9,6 +9,12 @@ import { useAuth } from 'providers/authProvider';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useBranches } from 'providers/branchesProvider';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+
 
 const CreditReport = () => {
       const [creditReports, setCreditReports] = useState([]);
@@ -60,7 +66,7 @@ const CreditReport = () => {
       // API: Get Scan Requests
       const getCreditReport = async () => {
         try {
-          const res = await customerService.getCreditReports(selectedBrand?.id,year,month , 10, page+1);
+          const res = await customerService.getCreditReports(selectedBrand?.id,year,month , 1000, page+1);
             console.log(res);
             
           setCreditReports(res.data.result.rows);
@@ -170,6 +176,66 @@ const CreditReport = () => {
           { name: 'Reject', modal: false },
         ];
 
+        const formatAmount = (value, decimals = 2) =>
+          typeof value === 'number' ? value.toFixed(decimals) : '0.00';
+
+        const downloadPDF = () => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(14);
+  doc.text(
+    `Credit Report - ${selectedBrand?.name} (${month}/${year})`,
+    14,
+    15
+  );
+
+  autoTable(doc, {
+    startY: 22,
+    head: [[
+      'Customer Name',
+      'Credit Given',
+      'Credit Used',
+      'Remaining Credit',
+      'Last Usage'
+    ]],
+    body: creditReports.map((row) => [
+      row.customerName,
+      row.creditsGiven,
+      row.creditUsed,
+      row.remainingCredit,
+      row.lastUsageUtc
+        ? moment(row.lastUsageUtc).format('DD/MM/YYYY HH:mm')
+        : '--',
+    ]),
+  });
+
+  doc.save(`Credit_Report_${selectedBrand?.name}_${month}_${year}.pdf`);
+};
+
+const downloadExcel = () => {
+  const formattedData = creditReports.map((row) => ({
+    'Customer Name': row.customerName,
+    'Credit Given': row.creditsGiven,
+    'Credit Used': row.creditUsed,
+    'Remaining Credit': row.remainingCredit,
+    'Last Usage':
+      row.lastUsageUtc
+        ? moment(row.lastUsageUtc).format('DD/MM/YYYY HH:mm')
+        : '--',
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Credit Report');
+
+  XLSX.writeFile(
+    workbook,
+    `Credit_Report_${selectedBrand?.name}_${month}_${year}.xlsx`
+  );
+};
+
+
 
   return (
     <>
@@ -193,7 +259,6 @@ const CreditReport = () => {
                   label="Brand"
                   onChange={(event) => {
                     setselectedBrand(event.target.value);
-                    changeFilteredBranches(event.target.value);
                   }}
                 >
                   {brandsList.map((row, index) => (
@@ -239,16 +304,70 @@ const CreditReport = () => {
           </Grid>
         </Grid>
       </Grid>
+
+      <Grid container spacing={2} justifyContent="flex-end" sx={{ mb: 2 }}>
+  <Grid item>
+    <Button
+      variant="outlined"
+      startIcon={<FileDownloadIcon />}
+      onClick={downloadExcel}
+    >
+      Download Excel
+    </Button>
+  </Grid>
+
+  <Grid item>
+    <Button
+      variant="outlined"
+      color="error"
+      startIcon={<PictureAsPdfIcon />}
+      onClick={downloadPDF}
+    >
+      Download PDF
+    </Button>
+  </Grid>
+</Grid>
+
       <Grid container sx={{ mb: 2 }} spacing={2}>
-        <Grid item xs={3}>
-          <AnalyticEcommerce title="Total Credit Added" isLoading={false} count={creditSummary?.totalCreditsAdded} percentage={27.4} extra="1,943" />
-        </Grid>
-        <Grid item xs={3}>
-          <AnalyticEcommerce title="Total Credit Used" isLoading={false} count={creditSummary?.totalCreditsUsed} percentage={27.4} extra="1,943" />
-        </Grid>
-        <Grid item xs={3}>
-          <AnalyticEcommerce title="Remaining Unused Credits" isLoading={false} count={creditSummary?.remainingUnusedCredits} percentage={27.4} extra="1,943" />
-        </Grid>
+<Grid item xs={3}>
+  <AnalyticEcommerce
+    title="Total Credit Added"
+    isLoading={false}
+    count={formatAmount(
+      creditSummary?.totalCreditsAdded,
+      selectedBrand?.currencyDecimals
+    )}
+    percentage={27.4}
+    extra="1,943"
+  />
+</Grid>
+
+<Grid item xs={3}>
+  <AnalyticEcommerce
+    title="Total Credit Used"
+    isLoading={false}
+    count={formatAmount(
+      creditSummary?.totalCreditsUsed,
+      selectedBrand?.currencyDecimals
+    )}
+    percentage={27.4}
+    extra="1,943"
+  />
+</Grid>
+
+<Grid item xs={3}>
+  <AnalyticEcommerce
+    title="Remaining Unused Credits"
+    isLoading={false}
+    count={formatAmount(
+      creditSummary?.remainingUnusedCredits,
+      selectedBrand?.currencyDecimals
+    )}
+    percentage={27.4}
+    extra="1,943"
+  />
+</Grid>
+
         <Grid item xs={3}>
           <AnalyticEcommerce title="Top Spending Customer" isLoading={false} count={creditSummary?.topSpendingCustomer} percentage={27.4} extra="1,943" />
         </Grid>
@@ -260,7 +379,7 @@ const CreditReport = () => {
         columns={columns}
         loading={false}
         getRowId={(row) => row.userId}
-        rowsPerPageOptions={[10]}
+        rowsPerPageOptions={[1000]}
         totalRowCount={totalLength||0}
         fetchCallback={(e)=>setpage(e)}
       />

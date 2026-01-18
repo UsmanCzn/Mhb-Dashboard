@@ -15,6 +15,7 @@ import BranchUsers from 'pages/branch/branchUsers/index';
 import CustomerDetail from 'pages/customers/customerDetails/index';
 import Store from 'pages/store/index';
 import Orders from 'pages/orders';
+import ScheduledOrders from 'pages/orders-scheduled';
 import Products from 'pages/products';
 import Categories from 'pages/categories';
 import Addons from 'pages/addons';
@@ -66,6 +67,10 @@ import GroupCustomerTable from 'features/Customers/GroupCustomerTable/groupCusto
 import NotificationBalnce from 'pages/notification-balance/notification-balance';
 import CreditReport from 'pages/credit-report'
 import Plugins from 'pages/plugins';
+import DashboardReport from 'pages/dashboard-report/report';
+import CommissionSetup from 'pages/comissions/commission-setup';
+import ReportsAndStatements from 'pages/comissions/commission-invoices';
+import InvoicePaymentPage from 'pages/comissions/commission-payment';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -104,7 +109,7 @@ export default function MainRoutes() {
 
                     <Route path="/locations" element={<Branches />} />
                     <Route path="/locationAddEdit" element={<AddEditBranch />} />
-                    <Route path="/locationAddEdit/:id" element={<AddEditBranch />} />
+                    <Route path="/locationAddEdit/:id/:bid" element={<AddEditBranch />} />
 
                     {/* <Route path="/locations/:bhid" element={<LocationDetail />} />
                     <Route path="/locations/:bhid/branchTimings" element={<BranchTimings />} />
@@ -115,6 +120,14 @@ export default function MainRoutes() {
                     <Route path="/rewardcollection" element={<RewardCollection />} />
                     <Route path="/rewardredemption" element={<RewardRedemption />} />
                     <Route path="/rewardHistory" element={<RewardsHistory />} />
+                    
+                    <Route path="/setup-commission" element={<CommissionSetup />} />
+                    <Route path="/reports-invoices" element={<ReportsAndStatements />} />
+
+
+
+
+                    <Route path="/reports" element={<DashboardReport />} />
 
                     <Route path="/user-management" element={<UserList />} />
                     <Route path="/update-user/:id" element={<UpdateUser />} />
@@ -154,6 +167,7 @@ export default function MainRoutes() {
                     <Route path="/payments-settings/addEdit/:id/:bid" element={<AddPaymentMethod />} />
 
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/scheduledorders" element={<ScheduledOrders />} />
                     <Route path="/credit" element={<Credit />} />
                     <Route path="/levels" element={<LevelIndex />} />
                     <Route path="/bundles" element={<Bundles />} />
@@ -169,9 +183,10 @@ export default function MainRoutes() {
             </Route>
             <Route path="/paymentSuccess" element={<PaymentSuccess />} />
             <Route path="/paymentFailure" element={<PaymentFailure />} />
+
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                {/* <Route path="/register" element={<Register />} /> */}
             </Route>
         </Routes>
     );

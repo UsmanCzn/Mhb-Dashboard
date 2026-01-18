@@ -11,6 +11,7 @@ import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useDashboard } from 'features/dashbord/hooks/useDashboard';
 import MonthlyLineChart from './MonthlyBarChart';
+import HourlyActivityChart from './peakhoursChart';
 import OrdersTable from './OrdersTable';
 import { useSnackbar } from 'notistack';
 import { useAuth } from 'providers/authProvider';
@@ -66,6 +67,7 @@ const DashboardDefault = () => {
     const [endDate, setEndDate] = useState(new Date());
     const [selectedBrand, setselectedBrand] = useState({});
     const [topPayers, setTopPayers] = useState();
+    const [peakhours, setPeakhours] = useState()
     const [topSales, setTopSales] = useState();
     const [ordersChartData, setOrdersChartData] = useState();
     const [chartDataUpdateCounter, setChartDataUpdateCounter] = useState(0);
@@ -95,6 +97,26 @@ const DashboardDefault = () => {
             align: 'right',
             disablePadding: false,
             label: 'Amount'
+        }
+    ];
+    const headCellsForReddemed = [
+        {
+            id: 'name',
+            align: 'left',
+            disablePadding: true,
+            label: 'Name'
+        },
+        {
+            id: 'fat',
+            align: 'right',
+            disablePadding: false,
+            label: 'Total Order'
+        },
+        {
+            id: 'carbs',
+            align: 'right',
+            disablePadding: false,
+            label: 'Points Redeemed'
         }
     ];
     const headCellsTop10 = [
@@ -169,10 +191,13 @@ const DashboardDefault = () => {
     };
     const { dashbaordBoardData, recallData, fetchRewardList, loading } = useDashboard(reload, selectedBrand?.id, startDate, endDate,selectedBranch?.id);
     useEffect(() => {
+        console.log(dashbaordBoardData,"dashboardData");
+        
         setTopPayers(dashbaordBoardData?.topUsersFromSales);
-        setTopSales(dashbaordBoardData?.topUsersFromOrders);
+        setTopSales(dashbaordBoardData?.topUsersFromPointsRedeemed);
         setOrdersChartData(dashbaordBoardData?.ordersChartData);
         setChartDataUpdateCounter((prev) => prev + 1);
+        setPeakhours(dashbaordBoardData?.peakHoursData?.hourly)
     }, [dashbaordBoardData]);
     
     // Filter Branches
@@ -485,7 +510,7 @@ const DashboardDefault = () => {
                             <Grid item />
                         </Grid>
                         <MainCard sx={{ mt: 2 }} content={false}>
-                            <OrdersTable users={topSales} payers={false} headers={headCells} />
+                            <OrdersTable users={topSales} payers={false} headers={headCellsForReddemed} />
                         </MainCard>
                     </Box>
                 </Card>
@@ -542,6 +567,16 @@ const DashboardDefault = () => {
                     {ordersChartData && <MonthlyLineChart data={ordersChartData}
                         selectedBrand={selectedBrand}
                     key={chartDataUpdateCounter}  />}
+                </MainCard>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+                <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item>
+                        <Typography variant="h5">Peak Hours</Typography>
+                    </Grid>
+                </Grid>
+                <MainCard sx={{ mt: 2 }} content={false}>
+                    {peakhours && <HourlyActivityChart data={peakhours} /> }
                 </MainCard>
             </Grid>
         </Grid>

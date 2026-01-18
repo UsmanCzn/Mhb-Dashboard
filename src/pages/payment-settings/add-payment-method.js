@@ -90,18 +90,25 @@ const AddPaymentMethod = () => {
         }
     });
 
-    const PaymentsTypes = [
-        { name: 'Wallet', id: 1, arabicName: 'محفظة' },
-        { name: 'KNET', id: 2, arabicName: 'ك نت' },
-        { name: 'VISA/MASTER CARD', id: 3, arabicName: 'بطاقة ائتمان' },
-        { name: 'BENEFIT', id: 4, arabicName: 'بنفت' },
-        { name: 'Mada', id: 5, arabicName: 'مادہ' },
-        { name: 'Square', id: 6, arabicName: 'مربع' },
-        { name: 'ApplePay', id: 7, arabicName: 'ApplePay' },
-        { name: 'GooglePay', id: 8, arabicName: 'GooglePay' },
-        { name: 'CASH', id: 9, arabicName: 'CASH' },
-        { name: 'SkipCash', id: 10, arabicName: 'SkipCash' },
-    ];
+const PaymentsTypes = [
+  { id: 1, name: 'Wallet', arabicName: 'محفظة' },
+  { id: 2, name: 'KNET', arabicName: 'كي نت' },
+  { id: 3, name: 'VISA/MASTER CARD', arabicName: 'بطاقة ائتمان' },
+  { id: 4, name: 'BENEFIT', arabicName: 'بنفت' },
+  { id: 5, name: 'Mada', arabicName: 'مدى' },
+  { id: 6, name: 'Square', arabicName: 'سكوير' },
+  { id: 7, name: 'ApplePay', arabicName: 'أبل باي' },
+  { id: 8, name: 'GooglePay', arabicName: 'جوجل باي' },
+  { id: 9, name: 'CASH', arabicName: 'نقدي' },
+  { id: 10, name: 'SkipCash', arabicName: 'سكيب كاش' },
+
+  { id: 11, name: 'POSPayment', arabicName: 'دفع نقاط البيع' },
+  { id: 12, name: 'ApplePayE', arabicName: 'أبل باي (إلكتروني)' },
+  { id: 13, name: 'GooglePayE', arabicName: 'جوجل باي (إلكتروني)' },
+  { id: 14, name: 'CreditCardE', arabicName: 'بطاقة ائتمان (إلكتروني)' },
+  { id: 15, name: 'ApplePayKnet', arabicName: 'أبل باي كي نت' },
+];
+
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -186,13 +193,13 @@ const AddPaymentMethod = () => {
                     requiredFields = [
                         { field: 'liveSecretKey', label: 'Live Secret Key' },
                         { field: 'liveServerDomain', label: 'Live Server Domain' },
-                        { field: 'sandBoxSecretKey', label: 'Sandbox Secret Key' },
+                        { field: 'sandBoxSecretKey', label: 'Sandbox Token Key' },
                         { field: 'sandBoxServerDomain', label: 'Sandbox Server Domain' }
                     ];
                     schema = schema.shape({
                         liveSecretKey: Yup.string().required('Live Secret Key is required'),
                         liveServerDomain: Yup.string().required('Live Server Domain is required'),
-                        sandBoxSecretKey: Yup.string().required('Sandbox Secret Key is required'),
+                        sandBoxSecretKey: Yup.string().required('Sandbox Token Key is required'),
                         sandBoxServerDomain: Yup.string().required('Sandbox Server Domain is required')
                     });
                     break;
@@ -238,7 +245,7 @@ const AddPaymentMethod = () => {
                         { field: 'liveSecretKey', label: 'Live Secret Key' },
                         { field: 'liveServerDomain', label: 'Live Server Domain' },
                         { field: 'apiCheckOutUrl', label: 'API Checkout URL' },
-                        { field: 'sandBoxSecretKey', label: 'Sandbox Secret Key' },
+                        { field: 'sandBoxSecretKey', label: 'Sandbox Token Key' },
                         { field: 'sandBoxServerDomain', label: 'Sandbox Server Domain' },
                         { field: 'supplierCode', label: 'Supplier Code' },
                         { field: 'supplierShare', label: 'Supplier Share' }
@@ -247,7 +254,7 @@ const AddPaymentMethod = () => {
                         liveSecretKey: Yup.string().required('Live Secret Key is required'),
                         liveServerDomain: Yup.string().required('Live Server Domain is required'),
                         apiCheckOutUrl: Yup.string().required('API Checkout URL is required'),
-                        sandBoxSecretKey: Yup.string().required('Sandbox Secret Key is required'),
+                        sandBoxSecretKey: Yup.string().required('Sandbox Token Key is required'),
                         sandBoxServerDomain: Yup.string().required('Sandbox Server Domain is required'),
                         supplierCode: Yup.string().required('Supplier Code is required'),
                         supplierShare: Yup.number().required('Supplier Share is required').min(0)

@@ -207,7 +207,7 @@ const CreditBalance = (props) => {
                                         fullWidth
                                         label="Credit Balance"
                                         variant="outlined"
-                                        value={creditBalanceState?.creditBalance?.toFixed(2)}
+                                        value={creditBalanceState?.creditBalance?.toFixed(2)??'0.00'}
                                         InputProps={{ readOnly: true }}
                                     />
                                 </Box>

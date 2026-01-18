@@ -4,6 +4,7 @@ import moment from 'moment/moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchOrdersList } from './hooks';
+import { useFetchScheduledOrdersList } from './hooks/useFetchScheduledOrdersList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationSound from 'assets/audio/orderSound.mp3';
 import orderServices from 'services/orderServices';
@@ -13,7 +14,7 @@ import { useAuth } from 'providers/authProvider';
 import RefundRequestDialog from 'features/refund/refund';
 import refundService from 'services/refundService';
 
-export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
+export default function ScheduledOrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
     const { user, userRole, isAuthenticated } = useAuth();
     const [isRefundOpen, setIsRefundOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -23,7 +24,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
     // ===== NEW: audio enable/disable flag (default OFF) =====
     const [audioEnabled, setAudioEnabled] = useState(true);
 
-    const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchOrdersList({
+    const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchScheduledOrdersList({
         selectedBranch,
         playAudio,
         filter,
@@ -82,7 +83,6 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
     };
 
     useEffect(() => {
-        console.log('useEffect rerunning, Parent 2');
         getOrderTypes();
     }, []);
     const handleClick = (event, params) => {
@@ -200,44 +200,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
     };
 
 const submitRefund = async (dialogData) => {
-  // dialogData from RefundRequestDialog: { orderId, refundType: 'SYSTEM'|'PARTIAL', amount?, items? }
-//   const { orderId, refundType, amount, items = [],method } = dialogData;
 
-//   try {
-//     if (refundType === 'PARTIAL') {
-//       // POST services/app/Refund/InitiateRefundRequestManual
-//       await refundService.InitiateRefundRequestManual({
-//         orderId,
-//         refundType: 1,              // PARTIAL
-//         amountToRefund: Number(amount || 0),
-//       });
-//     } else {
-//       // Map items -> productItems with onlineOrderProductId
-//       const productItems = items
-//         .filter(i => (i.refundQty ?? 0) > 0)
-//         .map(i => {
-//           const match = selectedRow?.products?.find(p => p.id === i.productId) || {};
-//           return {
-//             onlineOrderProductId: match.onlineOrderProductId ?? i.productId,
-//             quantity: i.refundQty,
-//           };
-//         });
-
-//       // POST services/app/Refund/InitiateRefundRequestFromOrder
-//       await refundService.InitiateRefundRequestFromOrder({
-//         orderId,
-//         refundType: 0,              // SYSTEM
-//         productItems,
-//       });
-//     }
-
-//     enqueueSnackbar('Refund request submitted', { variant: 'success' });
-//     setIsRefundOpen(false);
-//     fetchOrdersList(); // refresh table
-//   } catch (e) {
-//     console.error(e);
-//     enqueueSnackbar('Failed to submit refund request', { variant: 'error' });
-//   }
 };
 
     const updateOrderStatus = async (id) => {

@@ -246,10 +246,7 @@ function PluginDialog({ open, onClose, details }) {
 
 // ----- PaymentDialog (updated) -----------------------------------------
 
-const PAYMENT_SYSTEM = {
-  knet: 1,
-  apple: 14,
-};
+ 
 
 function getDecimals(dec) {
   const n = Number(dec);
@@ -284,7 +281,7 @@ function PaymentDialog({ open, onClose, item, brand }) {
   const handleCheckout = async () => {
     try {
       setLoading(true);
-      const paymentSystemId = PAYMENT_SYSTEM[method];
+      const paymentSystemIdpaymentSystemId = PAYMENT_SYSTEM[method];
       if (!item.id || !paymentSystemId) throw new Error("Missing plugin ID or method mapping.");
 
       const resp = await pluginService.checkoutForBrandPlugin(item.id, paymentSystemId);

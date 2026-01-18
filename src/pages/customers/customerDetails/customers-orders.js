@@ -30,6 +30,7 @@ const CustomerOrders = ({ user }) => {
     const [reload, setReload] = useState(false);
     const [data, setData] = useState({});
     const open = Boolean(anchorEl);
+
     const handleClick = (event, params) => {
 
         setData({ ...params?.row, ...user });
@@ -192,7 +193,7 @@ const CustomerOrders = ({ user }) => {
                     })}
                 </Menu>
             </Grid>
-            <OrderDetail modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} data={data} statustypes={statustypes} />
+            <OrderDetail modalOpen={modalOpen} setModalOpen={setModalOpen} setReload={setReload} data={data} statustypes={statustypes} location='customer-order' />
         </Grid>
     );
 };

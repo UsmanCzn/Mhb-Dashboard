@@ -150,7 +150,7 @@ const RefundRequest = () => {
                     const refunded = params.row?.refunded;
                     const acted = params.row?.isAct;
                     if(!acted){
-                        return <Chip label="Pending Action" color="warning" />;
+                        return <Chip label="Pending" color="warning" />;
                     }
                     return refunded ? <Chip label="Refunded" color="success" /> : <Chip label="Rejected" color="error" />;
                 }

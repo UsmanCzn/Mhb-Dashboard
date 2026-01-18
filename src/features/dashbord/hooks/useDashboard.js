@@ -34,6 +34,7 @@ const fetchRewardList = useCallback(() => {
         rewardService.getTopTenProducts(brandId, apiStartDate, apiEndDate,branchId),
         rewardService.getCustomersCountOrdered(brandId, apiStartDate, apiEndDate,branchId),
         rewardService.getCustomersLastOrders(brandId, apiStartDate, apiEndDate),
+        rewardService.peakHoursData(brandId, apiStartDate, apiEndDate,branchId),
     ])
         .then((results) => {
             // index map just for readability
@@ -46,17 +47,61 @@ const fetchRewardList = useCallback(() => {
             const TOP_TEN_PRODUCTS = 6;
             const CUSTOMER_COUNT = 7;
             const LAST_ORDERS = 8;
+            const PEAK_HOUR = 9;
 
             // helper to safely read numeric/simple values with fallback
             const getData = (idx, fallback) => {
                 const r = results[idx];
                 if (r.status === "fulfilled") {
-                    return r.value && r.value.data && r.value.data.result !== undefined
+                    return r.value && r.value.data && r.value.data.result
                         ? r.value.data.result
                         : fallback;
                 }
                 console.error("Call " + idx + " failed:", r.reason);
                 return fallback;
+            };
+            const getPeakHoursData = (idx, fallback) => {
+            const r = results[idx];
+            if (r.status !== "fulfilled") {
+                console.error("Call " + idx + " failed:", r.reason);
+                return fallback;
+            }
+
+            const hourly = r?.value?.data?.result?.hourly ?? [];
+            if (!Array.isArray(hourly) || hourly.length === 0) {
+                return { hourly: [], peak: null };
+            }
+
+            // Normalize possible shapes: {hour,count} or {Hour,Count} or {h,c}
+            const norm = (it) => {
+                const hour =
+                typeof it.hour !== "undefined" ? it.hour :
+                typeof it.Hour !== "undefined" ? it.Hour :
+                typeof it.h !== "undefined" ? it.h : null;
+
+                const count =
+                typeof it.count !== "undefined" ? it.count :
+                typeof it.Count !== "undefined" ? it.Count :
+                typeof it.c !== "undefined" ? it.c : null;
+
+                return {
+                hour: typeof hour === "number" ? hour : Number(hour),
+                count: typeof count === "number" ? count : Number(count),
+                };
+            };
+
+            const normalized = hourly.map(norm).filter(x => Number.isFinite(x.hour) && Number.isFinite(x.count));
+
+            if (normalized.length === 0) {
+                return { hourly, peak: null };
+            }
+
+            // Find the item with max count (if tie, keeps the earliest hour)
+            const peak = normalized.reduce((best, cur) =>
+                cur.count > best.count || (cur.count === best.count && cur.hour < best.hour) ? cur : best
+            , normalized[0]);
+
+            return { hourly, peak }; // peak is { hour: number, count: number }
             };
 
             const dashboardRes =
@@ -77,6 +122,7 @@ const fetchRewardList = useCallback(() => {
                 totalPointsEarned: getData(POINTS_EARNED, 0),
                 pointsRedeemed: getData(POINTS_REDEEMED, 0),
                 avgDispatchTime: getData(AVG_DISPATCH, null),
+                peakHoursData: getPeakHoursData(PEAK_HOUR, { hourly: [], peak: null }),
 
                 topTenProducts:
                     results[TOP_TEN_PRODUCTS].status === "fulfilled"

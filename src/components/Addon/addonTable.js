@@ -28,6 +28,7 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
     };
     const closeMenu = () => {
         setAnchorEl(null);
+        setReload((prev) => !prev);
     };
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -42,9 +43,25 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
         setSelectedGroup(e);
     }
 
-    useEffect(() => {
-        setSelectedGroup(addonGroupList[0] ?? 0);
-    }, [addonGroupList]);
+useEffect(() => {
+  if (!addonGroupList?.length) {
+    setSelectedGroup(null);
+    return;
+  }
+
+  // Try to keep the previously selected group
+  const updatedSelectedGroup = addonGroupList.find(
+    (g) => g.id === selectedGroup?.id
+  );
+
+  if (updatedSelectedGroup) {
+    setSelectedGroup(updatedSelectedGroup);
+  } else {
+    // Fallback if deleted or not found
+    setSelectedGroup(addonGroupList[0]);
+  }
+}, [addonGroupList]);
+
 
 
 

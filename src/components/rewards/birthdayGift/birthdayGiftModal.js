@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Grid, TextField, Select, MenuItem, FormControl, InputLabel,
-  Button, InputAdornment, IconButton, Typography
+  Button, InputAdornment, IconButton, Typography, Switch,
+  FormControlLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -35,6 +36,9 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
   const [redemptionTypes, setRedemptionTypes] = useState(
     parseCSV(initialValues?.redemptionTypes)
   );
+  const [enabled, setEnabled] = useState(
+    !!initialValues?.enableBirthDayGiftsForBrand
+  );
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -44,6 +48,7 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
     setItems(initialValues?.items ?? 0);
     setExpiryDate(initialValues?.expiryDate ? dayjs(initialValues.expiryDate) : null);
     setRedemptionTypes(parseCSV(initialValues?.redemptionTypes));
+    setEnabled(!!initialValues?.enableBirthDayGiftsForBrand);
     setErrors({});
   }, [initialValues, open]);
 
@@ -52,8 +57,17 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
     if (points < 0) e.points = 'Points cannot be negative';
     if (credit < 0) e.credit = 'Credit cannot be negative';
     if (items < 0) e.items = 'Items cannot be negative';
-    if (!expiryDate || !expiryDate.isValid()) e.expiryDate = 'Select a valid expiry date';
-    if (toCSV(redemptionTypes) === '') e.redemptionTypes = 'Choose at least one order type';
+
+    // Only require expiry + redemption when the feature is enabled
+    if (enabled) {
+      if (!expiryDate ) {
+        e.expiryDate = 'Select a valid expiry days';
+      }
+      if (toCSV(redemptionTypes) === '') {
+        e.redemptionTypes = 'Choose at least one order type';
+      }
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -66,8 +80,11 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
         points: Math.trunc(points),
         credit: parseFloat(Number(credit).toFixed(2)),
         items: Math.trunc(items),
-        expiryDate: expiryDate.format('YYYY-MM-DD'),
-        redemptionTypes: toCSV(redemptionTypes),
+        expiryDate:
+          enabled && expiryDate ?expiryDate 
+            : null,
+        redemptionTypes: enabled ? toCSV(redemptionTypes) : '',
+        enableBirthDayGiftsForBrand: enabled,
       });
     } finally {
       setSaving(false);
@@ -118,7 +135,7 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
             <TextField
               label="Points"
               fullWidth
-              type="number"
+              type="number" 
               value={points}
               onChange={(e) => setPoints(Math.max(0, Number(e.target.value)))}
               InputProps={{ endAdornment: StepperAdornment(points, setPoints, 1) }}

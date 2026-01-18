@@ -174,7 +174,7 @@ const CreditRequestTable = ({user}) => {
                             if(!acted){
                                 return <Chip label="Pending" color="warning" />;
                             }
-                            return refunded ? <Chip label="Refunded" color="success" /> : <Chip label="Rejected" color="error" />;
+                            return refunded ? <Chip label="Accepted" color="success" /> : <Chip label="Rejected" color="error" />;
                         }
                     },
         {

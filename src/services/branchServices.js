@@ -120,5 +120,18 @@ export default {
       params  
     );
   },
+
+
+  copyProductsMenuToBranch(params) {  
+    return ApiV1.post(
+      `services/app/Products/DuplicateProductAvailabilityAsOtherBranch?prevBranchId=${params.prevId}&currentBranchId=${params.currentId}`,  
+    );
+  },
+  copyProductsAddOnsMenuToBranch(params) {  
+    return ApiV1.post(
+      `services/app/ProductAddition/DuplicateProductAdditionAvailabilityAsOtherBranch?prevBranchId=${params.prevId}&currentBranchId=${params.currentId}`, 
+  
+    );
+  }
    
 }

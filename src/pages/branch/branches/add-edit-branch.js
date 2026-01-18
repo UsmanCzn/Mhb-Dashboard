@@ -27,6 +27,7 @@ import { ServiceFactory } from 'services/index';
 import { useSnackbar } from 'notistack';
 import BranchTimings from '../../../pages/branch/branchTimings/index';
 import { useAuth } from 'providers/authProvider';
+import StoreCopy from '../copyMenu/copyMenu';
 import imageCompression from 'browser-image-compression';
 
 const AddEditBranch = () => {
@@ -43,14 +44,25 @@ const AddEditBranch = () => {
     const { user, userRole, isAuthenticated } = useAuth();
 
 
-    const handleNext = async (validateForm, setTouched) => {
-        const errors = await validateForm();
-        if (Object.keys(errors).length === 0) {
-            setTabValue((prev) => (parseInt(prev, 10) + 1).toString()); // Move to the next tab
-        } else {
-            setTouched(errors); // Show validation errors
-        }
-    };
+const handleNext = async (validateForm, setTouched, values) => {
+    const errors = await validateForm();
+
+    // 🛑 SPECIAL RULE FOR SETTINGS TAB (Tab 3)
+    if (tabValue === "3" && !requiresAtLeastOne(values)) {
+        enqueueSnackbar(
+            "Please select at least one service option: Pickup, Car Service, or Drive Thru",
+            { variant: "error" }
+        );
+        return;
+    }
+
+    if (Object.keys(errors).length === 0) {
+        setTabValue((prev) => (parseInt(prev, 10) + 1).toString());
+    } else {
+        setTouched(errors);
+    }
+};
+
 
     const handleBackChange = () => {
         setTabValue((prev) => (parseInt(prev, 10) - 1).toString()); // Move to the previous tab
@@ -66,7 +78,7 @@ const AddEditBranch = () => {
                 setloading(false);
                 setInitialValues((prev) => ({
                     ...branch,
-                    acceptTime: branch?.acceptTime || '',
+                    acceptTime: branch?.acceptTime || 0,
                     branchAddress: branch?.branchAddress || '',
                     branchPhoneNumber: branch?.branchPhoneNumber || '',
                     branchTimingsString: branch?.branchTimingsString || '',
@@ -110,6 +122,11 @@ const AddEditBranch = () => {
         console.error('[getBrands] failed:', err);
     }
     };
+    // --- Require at least one service selection ---
+    const requiresAtLeastOne = (values) => {
+        return values.isPickup || values.isCarService || values.isDriveThru;
+    };
+
 
 
     useEffect(() => {
@@ -147,7 +164,7 @@ const AddEditBranch = () => {
         isCarService: false,
         isDriveThru: false,
         isDelivery: false,
-        isPickup: false,
+        isPickup: true,
         logoUrl: '',
         latitude: 0,
         longitude: 0,
@@ -217,7 +234,6 @@ const AddEditBranch = () => {
         })
     };
     const formatDecimal = (value) => {
-        console.log(typeof value, 'hjghgb');
         const temp = +value || 0;
         if (typeof temp === 'number') {
             // Check if the value includes a decimal point
@@ -247,7 +263,15 @@ const AddEditBranch = () => {
             setloading(false);
             return;
         }
-    
+
+        if (!requiresAtLeastOne(values)) {
+        enqueueSnackbar(
+        "Please select at least one service option (Pickup, Car Service, Drive Thru)",
+        { variant: "error" }
+        );
+           setloading(false);
+        return;
+        }
         // If creating and no image, show error
         if (!id && !logoUrl) {
             enqueueSnackbar('Please Upload Image', { variant: 'error' });
@@ -339,6 +363,7 @@ const AddEditBranch = () => {
                                                 <Tab label="Address" value="4" disabled={!id && tabValue !== '4'} />
                                                 <Tab label="Logo" value="5" disabled={!id && tabValue !== '5'} />
                                                 {id && <Tab label="Branch Schedule" value="6" disabled={false} />}
+                                                {id && <Tab label="Copy Menu" value="7" disabled={false} />}
                                             </TabList>
                                         </Box>
 
@@ -572,16 +597,31 @@ const AddEditBranch = () => {
                                                         </Button>
                                                     </Grid>
                                                     <Grid item>
-                                                        <Button
-                                                            type="button"
-                                                            variant="contained"
-                                                            color="primary"
-                                                            onClick={() => handleNext(validateForm, setTouched, isValid)}
-                                                            disabled={!isValid && tabValue < validationSchemas.length - 1}
-                                                            sx={{ minWidth: '100px', padding: '4px 8px' }}
-                                                        >
-                                                            {tabValue === validationSchemas.length - 1 ? 'Submit' : 'Next'}
-                                                        </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={async () => {
+                                                            const errors = await validateForm();
+                                                            if (!requiresAtLeastOne(values)) {
+                                                                enqueueSnackbar(
+                                                                    "Please select at least one service option (Pickup, Car Service, Drive Thru)",
+                                                                    { variant: "error" }
+                                                                );
+                                                                return;
+                                                            }
+
+                                                            if (Object.keys(errors).length === 0) {
+                                                                handleNext(validateForm, setTouched, values);
+                                                            } else {
+                                                                setTouched(errors);
+                                                            }
+                                                        }}
+                                                        sx={{ minWidth: "100px", padding: "4px 8px" }}
+                                                    >
+                                                        Next
+                                                    </Button>
+
                                                     </Grid>
                                                 </Grid>
                                                 {/* Horizontal Toggles */}
@@ -856,6 +896,9 @@ const AddEditBranch = () => {
                                         {/* Tab 6: Branch Schedule */}
                                         <TabPanel value="6">
                                             <BranchTimings />
+                                        </TabPanel>
+                                        <TabPanel value="7">
+                                            <StoreCopy />
                                         </TabPanel>
                                     </TabContext>
                                 </Form>

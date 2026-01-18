@@ -19,11 +19,14 @@ export default function BirthdayGift({ selectedBrand, setReload, user }) {
         birthDayGiftItems: selectedBrand?.birthDayGiftItems ?? 0,
         birthDayGiftCredit: selectedBrand?.birthDayGiftCredit ?? 0,
         birthDayGiftRedemptionTypes: selectedBrand?.birthDayGiftRedemptionTypes ?? '',
-        birthDayGiftExpiryDate: selectedBrand?.birthDayGiftExpiryDate,
+        // <-- use a single canonical field name (number of days)
+        birthDayGiftExpiryDays: selectedBrand?.birthDayGiftExpiryDays ?? 0,
+        enableBirthDayGiftsForBrand: !!selectedBrand?.enableBirthDayGiftsForBrand,
       };
 
       setBirthdayGift([gift]);
       setSelectedGift(gift);
+      
     }
   }, [selectedBrand]);
 
@@ -53,10 +56,22 @@ export default function BirthdayGift({ selectedBrand, setReload, user }) {
           .join(', '),
     },
     {
-      field: 'birthDayGiftExpiryDate',
+      field: 'birthDayGiftExpiryDays',
       headerName: 'Expiry (Days)',
       flex: 0.8,
       headerAlign: 'left',
+      // optionally format to ensure we always display a number / fallback
+      valueGetter: ({ row }) =>
+        row.birthDayGiftExpiryDays !== undefined && row.birthDayGiftExpiryDays !== null
+          ? String(row.birthDayGiftExpiryDays)
+          : '0',
+    },
+    {
+      field: 'enableBirthDayGiftsForBrand',
+      headerName: 'Enabled',
+      flex: 0.5,
+      headerAlign: 'left',
+      valueGetter: ({ row }) => (row.enableBirthDayGiftsForBrand ? 'Yes' : 'No'),
     },
   ];
 
@@ -65,19 +80,37 @@ export default function BirthdayGift({ selectedBrand, setReload, user }) {
 
   const handleSaved = async (payload) => {
     try {
+      // normalize payload.expiryDate -> birthDayGiftExpiryDays (number)
+      const expiryDays = Number(payload.expiryDate ?? payload.expiryDays ?? 0) || 0;
+
       const updated = {
         ...selectedBrand,
         birthDayGiftPoints: Number(payload.points) || 0,
-        birthDayGiftItems: Number(payload.items) || 0, // save items
+        birthDayGiftItems: Number(payload.items) || 0,
         birthDayGiftCredit: Number(payload.credit) || 0,
         birthDayGiftRedemptionTypes: payload.redemptionTypes || '',
-        birthDayGiftExpiryDate: payload.expiryDate,
+        // canonical field on brand
+        birthDayGiftExpiryDays: expiryDays,
+        enableBirthDayGiftsForBrand: !!payload.enableBirthDayGiftsForBrand,
       };
+
+
 
       await brandServices.UpdateBrand(updated);
 
-      setBirthdayGift([updated]);
-      setSelectedGift(updated);
+      const gridRow = {
+        id: 'birthday-gift-row',
+        birthDayGiftPoints: updated.birthDayGiftPoints,
+        birthDayGiftItems: updated.birthDayGiftItems,
+        birthDayGiftCredit: updated.birthDayGiftCredit,
+        birthDayGiftRedemptionTypes: updated.birthDayGiftRedemptionTypes,
+        // keep the same canonical field name
+        birthDayGiftExpiryDays: updated.birthDayGiftExpiryDays,
+        enableBirthDayGiftsForBrand: updated.enableBirthDayGiftsForBrand,
+      };
+
+      setBirthdayGift([gridRow]);
+      setSelectedGift(gridRow);
       setOpenUpdate(false);
       setReload?.((x) => !x);
       enqueueSnackbar('Birthday gift updated successfully.', { variant: 'success' });
@@ -117,9 +150,11 @@ export default function BirthdayGift({ selectedBrand, setReload, user }) {
         initialValues={{
           points: selectedGift?.birthDayGiftPoints ?? 0,
           credit: selectedGift?.birthDayGiftCredit ?? 0,
-          items: selectedGift?.birthDayGiftItems ?? 0, // pass items
-          expiryDate: selectedGift?.birthDayGiftExpiryDate ?? '',
+          items: selectedGift?.birthDayGiftItems ?? 0,
+          // pass canonical expiry value to modal (string or number accepted)
+          expiryDate: selectedGift?.birthDayGiftExpiryDays ?? '',
           redemptionTypes: selectedGift?.birthDayGiftRedemptionTypes ?? [],
+          enableBirthDayGiftsForBrand: !!selectedGift?.enableBirthDayGiftsForBrand,
         }}
         onSave={handleSaved}
       />

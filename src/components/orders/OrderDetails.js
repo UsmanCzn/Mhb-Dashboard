@@ -42,8 +42,9 @@ const style = {
     overflowX: 'hidden'
 };
 
-const  OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes }) => {
+const  OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes,location='order' }) => {
  
+
 const printOrder = () => {
   const printContent = document.getElementById('my-box');
   if (!printContent) return;
@@ -57,6 +58,10 @@ const printOrder = () => {
           data?.brandCurrencyDecimal || 3
         )}</span></div>`
       : '';
+      const pointsEarnedHtml =
+  Number(data?.pointsEarned) > 0
+    ? `<div class="total-row"><span>Points Earned:</span><span>${data?.pointsEarned}</span></div>`
+    : '';
 
   const documentContent = `
     <html>
@@ -144,7 +149,7 @@ h6.center {
         <div>Customer: ${data?.customerName ?? data?.name} ${data?.customerSurname ?? data?.surname}</div>
         <div>Mobile: ${data?.customerPhoneNumber ?? data?.displayPhoneNumber}</div>
         <div>Email: ${data?.customerEmail ?? data?.displayEmailAddress}</div>
-        <div>Date: ${moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}</div>
+        <div>Date: ${moment(location ==='order'? data?.creationDate: data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
         <div>Payment Method: ${data?.paymentMethod}</div>
         <div> ${data?.carDetails}</div>
 
@@ -185,6 +190,8 @@ h6.center {
         <div class="total-row"><span>Items Total:</span><span>${data?.subTotal?.toFixed(
           data?.brandCurrencyDecimal || 3
         )}</span></div>
+        ${pointsEarnedHtml}
+
         <div class="total-row"><span>To Pay:</span><span>${data?.totalPrice?.toFixed(
           data?.brandCurrencyDecimal || 3
         )}</span></div>
@@ -418,7 +425,7 @@ h6.center {
                                         }}
                                     >
                                         <Typography variant="h6" fontSize={16}>
-                                            Date :{' ' + moment(data?.creationDate).format('DD-MMM-YYYY hh:mm a')}
+                                            Date :{' ' + moment(location ==='order'? data?.creationDate: data?.date).format('DD-MMM-YYYY hh:mm a')}
                                         </Typography>
                                     </Box>
                                     <Box
@@ -570,7 +577,7 @@ h6.center {
                                                                 {obj_?.name}
                                                             </Typography>
                                                             <Typography variant="h7" fontSize={12}>
-                                                            {Number(obj_?.priceStr).toFixed(data?.brandCurrencyDecimal || 3)}
+                                                            {Number(obj_?.priceStr ||obj_?.price).toFixed(data?.brandCurrencyDecimal || 3)}
                                                             </Typography>
 
                                                         </Box>
@@ -598,6 +605,25 @@ h6.center {
                                             {data?.subTotal?.toFixed(data?.brandCurrencyDecimal || 3)}
                                         </Typography>
                                     </Box>
+                                    {Number(data?.pointsEarned) > 0 && (
+                                    <Box
+                                        style={{
+                                        borderBottom: '1px dashed black',
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between'
+                                        }}
+                                    >
+                                        <Typography variant="h7" fontSize={14}>
+                                        Points Earned:
+                                        </Typography>
+                                        <Typography variant="h7" fontSize={14}>
+                                        {data?.pointsEarned}
+                                        </Typography>
+                                    </Box>
+                                    )}
+
                                     {/* <Box style={{  
           width:"100%",   
           display:"flex",

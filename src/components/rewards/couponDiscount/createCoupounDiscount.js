@@ -57,7 +57,7 @@ const CreateCoupounDiscount = ({ modal, setModal, setReload, branchesList,coupon
     };
 
     const createCouponDiscount = async () => {
-        if(data.limitPerMonth>data.limitPerYear){
+        if(+data.limitPerMonth>+data.limitPerYear){
             enqueueSnackbar('Limit for years should be greater than month', { variant: 'error' });
             return
         }

@@ -8,6 +8,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import { ServiceFactory } from "services/index";
 import constants from "helper/constants";
+ import { useAuth } from 'providers/authProvider';
 
 const style = {
   position: 'absolute',
@@ -30,7 +31,7 @@ const UpdateCustomer = ({
   prevData
 }) => {
 
- 
+ const { user, userRole, isAuthenticated } = useAuth();
   const [data, setData] = useState({
       name: '',
       surname: '',
@@ -60,7 +61,22 @@ const UpdateCustomer = ({
       await customerServices
           .GetCustomersGroups()
           .then((res) => {
+            console.log(res?.data?.result?.data?.data);
+            
               setGroups(res?.data?.result?.data?.data);
+          })
+          .catch((err) => {
+              console.log(err?.data);
+          });
+  };
+
+  const GetCustomersGroupsForMaster = async (cid) => {
+      await customerServices
+          .GetCustomerGroupsMaster(cid)
+          .then((res) => {
+            console.log(userRole,"userRoleuserRoleuserRole");
+            
+              setGroups(res?.data?.result);
           })
           .catch((err) => {
               console.log(err?.data);
@@ -69,7 +85,10 @@ const UpdateCustomer = ({
 
   useEffect(() => {
       getCountries();
-      GetCustomersGroups();
+    if(!(userRole && userRole==='ADMIN')){
+      GetCustomersGroups();      
+
+    }
   }, []);
 
   useEffect(() => {
@@ -84,11 +103,13 @@ const UpdateCustomer = ({
           countryId: prevData?.countryId,
           displayPhoneNumber: prevData?.displayPhoneNumber
       });
+      if(userRole&&userRole==='ADMIN'){
+      GetCustomersGroupsForMaster(prevData?.companyId)
+    }
   }, [prevData]);
 
   const updateCustomer = async (event) => {
       event.preventDefault();
-
       let payload = {
           id: prevData?.id,
           name: data.name,
@@ -98,8 +119,8 @@ const UpdateCustomer = ({
           displayEmail: data.displayEmailAddress,
           displayPhone: data.displayPhoneNumber,
           countryId: data.countryId,
-          applicationLanguage: 'string',
-          companyId: constants.COMPANY_ID,
+          applicationLanguage: '',
+          companyId: prevData?.companyId,
           customerGroups: [...data.customerGroups]
       };
 

@@ -3,23 +3,37 @@ import { Box, Card, Typography, Divider, Button } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+const TYPE_CONFIG = {
+  Balance: {
+    title: 'Balance Added Successfully',
+    backUrl: '/customernotification',
+  },
+  Commission: {
+    title: 'Commission Paid Successfully',
+    backUrl: '/reports-invoices',
+  },
+  Plugin: {
+    title: 'Plugin Enabled Successfully',
+    backUrl: '/plugins',
+  },
+};
+
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper function to extract query parameters
-  const getQueryParams = () => {
-    const searchParams = new URLSearchParams(location.search);
-    return {
-      orderId: searchParams.get('orderid'),
-      orderNumber: searchParams.get('orderNumber'),
-      paymentId: searchParams.get('paymentId'),
-      transactionId: searchParams.get('transactionId'),
-      type: searchParams.get('Type'),
-    };
-  };
+  const searchParams = new URLSearchParams(location.search);
 
-  const { orderId, orderNumber, paymentId, transactionId, type } = getQueryParams();
+  const orderId = searchParams.get('orderid');
+  const orderNumber = searchParams.get('orderNumber');
+  const paymentId = searchParams.get('paymentId');
+  const transactionId = searchParams.get('transactionId');
+  const type = searchParams.get('Type');
+
+  const config = TYPE_CONFIG[type] || {
+    title: 'Payment Completed Successfully',
+    backUrl: '/',
+  };
 
   return (
     <Box
@@ -31,27 +45,41 @@ const PaymentSuccess = () => {
     >
       <Card sx={{ p: 4, minWidth: 400, maxWidth: 400, textAlign: 'center' }}>
         <CheckCircleIcon sx={{ fontSize: 60, color: '#4caf50', mb: 2 }} />
+
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          {type ==='Balance' ? 'Balance Added Successfully':'Plugin Enabled Successfully'}
+          {config.title}
         </Typography>
 
         <Divider sx={{ my: 3 }} />
 
-        <Box display="flex" flexWrap="wrap" justifyContent="center" gap={2} my={2}>
-        <Typography variant="body2">
-          <strong>Order ID:</strong> {orderId}
-        </Typography>
-        <Typography variant="body2">
-          <strong>Order Number:</strong> {orderNumber}
-        </Typography>
-        <Typography variant="body2">
-          <strong>Payment ID:</strong> {paymentId}
-        </Typography>
-        <Typography variant="body2">
-          <strong>Transaction ID:</strong> {transactionId}
-        </Typography>
+        <Box
+          display="flex"
+          flexWrap="wrap"
+          justifyContent="center"
+          gap={2}
+          my={2}
+        >
+          {orderId && (
+            <Typography variant="body2">
+              <strong>Order ID:</strong> {orderId}
+            </Typography>
+          )}
+          {orderNumber && (
+            <Typography variant="body2">
+              <strong>Order Number:</strong> {orderNumber}
+            </Typography>
+          )}
+          {paymentId && (
+            <Typography variant="body2">
+              <strong>Payment ID:</strong> {paymentId}
+            </Typography>
+          )}
+          {transactionId && (
+            <Typography variant="body2">
+              <strong>Transaction ID:</strong> {transactionId}
+            </Typography>
+          )}
         </Box>
-
 
         <Button
           variant="contained"
@@ -62,7 +90,7 @@ const PaymentSuccess = () => {
               backgroundColor: '#43a047',
             },
           }}
-          onClick={() => navigate(type ==='Balance' ? '/customernotification':'/plugins')}
+          onClick={() => navigate(config.backUrl)}
         >
           Go Back
         </Button>
