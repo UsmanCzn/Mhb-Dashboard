@@ -127,49 +127,71 @@ export default function TierTable({ selectedBrand, reload, customerGroups, setRe
         setImageError(true);
     };
 
-    const columns = [
-        {
-            field: 'id',
-            headerName: 'ID',
-            headerAlign: 'left'
-        },
-        {
-            field: 'name',
-            headerName: 'Name',
-            flex: 0.7,
-            headerAlign: 'left'
-        },
-        {
-            field: 'brandName',
-            headerName: 'Brand',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'numberOfCustomers',
-            headerName: 'Number of Customers',
-            flex: 1.2,
-            headerAlign: 'left'
-        },
-        // {
-        //     field: 'sendNotification',
-        //     headerName: 'Send Notification',
-        //     flex: 1,
-        //     headerAlign: 'left'
-        // },
+const columns = [
+  {
+    field: 'id',
+    headerName: 'ID',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 80,
+    flex: 0.4
+  },
+  {
+    field: 'name',
+    headerName: 'Name',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 160,
+    flex: 1,
+    renderCell: (params) => (
+      <Typography variant="body2" noWrap title={params.value}>
+        {params.value}
+      </Typography>
+    )
+  },
+  {
+    field: 'brandName',
+    headerName: 'Brand',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 160,
+    flex: 1,
+    renderCell: (params) => (
+      <Typography variant="body2" noWrap title={params.value}>
+        {params.value}
+      </Typography>
+    )
+  },
+  {
+    field: 'numberOfCustomers',
+    headerName: 'Customers',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 150,
+    flex: 0.8,
+    renderCell: (params) => (
+      <Typography variant="body2">
+        {params.value ?? 0}
+      </Typography>
+    )
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    sortable: false,
+    headerAlign: 'center',
+    align: 'center',
+    minWidth: 80,
+    flex: 0.4,
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    )
+  }
+];
 
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

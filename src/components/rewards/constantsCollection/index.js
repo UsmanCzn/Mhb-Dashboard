@@ -97,63 +97,75 @@ export default function ConstantsCollectionTable({ selectedBrand,reload,customer
   };
     
  
-    const columns = [
-      {
-          field: "id",
-          headerName: "ID",
-          headerAlign: "left", 
-      },
-      {
-          field: "discountPercentage",
-          headerName: "Discount Percentage",
-          flex: 0.7,
-          headerAlign: "left",  
-      },
-      {
-          field: "branchId",
-          headerName: "Branch",
-          flex: 1,
-          headerAlign: "left", 
-          renderCell: params => branchColumnFormater(params.row)
-
-      },
-      {
-          field: "brandGroupId",
-          headerName: "Customer Group",
-          flex: 1.2,
-          headerAlign: "left",
-         renderCell: params => groupsColumnFormater(params?.row)
-
-      },
-      {
-        field: "emailAddresds",
-        headerName: "Rewards Program Gifts",
-        flex: 1,
-        headerAlign: "left",
-         renderCell: params =>rewardsColumnFormater(params?.row)
-
-    },
-    {
-      field: "emailAddress",
-      headerName: "Date Range",
-      flex: 1,
-      headerAlign: "left",
-      renderCell: params => dateColumnFormater(params?.row)
-
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    headerAlign: "left",
+    align: "left",
+    minWidth: 80
   },
-    {
-      field: "isRewardMfissisng",
-      headerName: "Action",
-      sortable: false,
-      flex: 0.5,
-      headerAlign: "left",
-      
-      renderCell: (params) => { 
-            return <MoreVertIcon 
-                onClick={(event)=>handleClick(event,params)} />
-          }
-    },
-      ];
+  {
+    field: "discountPercentage",
+    headerName: "Discount Percentage",
+    flex: 0.7,
+    minWidth: 160,
+    headerAlign: "left",
+    align: "left"
+  },
+  {
+    field: "branchId",
+    headerName: "Branch",
+    flex: 1,
+    minWidth: 180,
+    headerAlign: "left",
+    align: "left",
+    renderCell: (params) => branchColumnFormater(params.row)
+  },
+  {
+    field: "brandGroupId",
+    headerName: "Customer Group",
+    flex: 1.2,
+    minWidth: 220,
+    headerAlign: "left",
+    align: "left",
+    renderCell: (params) => groupsColumnFormater(params.row)
+  },
+  {
+    field: "emailAddresds",
+    headerName: "Rewards Program Gifts",
+    flex: 1,
+    minWidth: 240,
+    headerAlign: "left",
+    align: "left",
+    renderCell: (params) => rewardsColumnFormater(params.row)
+  },
+  {
+    field: "emailAddress",
+    headerName: "Date Range",
+    flex: 1,
+    minWidth: 200,
+    headerAlign: "left",
+    align: "left",
+    renderCell: (params) => dateColumnFormater(params.row)
+  },
+  {
+    field: "isRewardMfissisng",
+    headerName: "Action",
+    sortable: false,
+    flex: 0.5,
+    minWidth: 80,
+    headerAlign: "left",
+    align: "left",
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: "pointer" }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    )
+  }
+];
+
 
       const deletePointsCollection=async (id)=>{  
 

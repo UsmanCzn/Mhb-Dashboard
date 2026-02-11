@@ -22,6 +22,7 @@ import InvoicePaymentDialog from './commission-payment';
 import { useAuth } from 'providers/authProvider';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSnackbar } from 'notistack';
 
 const ReportsAndStatements = () => {
   /* =======================
@@ -65,7 +66,8 @@ const ReportsAndStatements = () => {
 
   const [openPayment, setOpenPayment] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
-
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [commission, setCommission] = useState(null);
   /* =======================
      INITIAL BRAND
   ======================= */
@@ -82,7 +84,7 @@ const ReportsAndStatements = () => {
     if (!selectedBrand) return;
 
     const fetchAll = async () => {
-      const [summaryRes, invoiceRes] = await Promise.all([
+      const [summaryRes, invoiceRes, commissionRes] = await Promise.all([
         brandCommissionService.GetCurrentMonthCommission(
           selectedBrand.id,
           selectedMonth,
@@ -93,10 +95,14 @@ const ReportsAndStatements = () => {
           selectedMonth,
           selectedYear
         ),
+        brandCommissionService.getBrandCommission(selectedBrand.id),
       ]);
 
       setSummaryData(summaryRes?.data?.result ?? null);
       setInvoices(invoiceRes?.data?.result ?? []);
+      console.log(commissionRes?.data?.result);
+      
+      setCommission(commissionRes?.data?.result ? commissionRes?.data?.result: null);
     };
 
     fetchAll();
@@ -140,6 +146,31 @@ const ReportsAndStatements = () => {
 
   const getMonthLabel = (month) =>
     MONTHS.find(m => m.value === month)?.label ?? `Month ${month}`;
+
+
+const senEmailInvoice = async (invoiceId) => {
+  try {
+    const res =
+      await brandCommissionService.SendEmailBrandCommissionInvoice(
+        invoiceId
+      );
+
+    if (res) {
+      enqueueSnackbar('Invoice email sent successfully', {
+        variant: 'success',
+        timeout: 1000,
+      });
+    }
+  } catch (error) {
+    enqueueSnackbar('Failed to send invoice email', {
+      variant: 'error',
+       timeout: 3000,
+    });
+  }
+};
+
+
+
 
   /* =======================
      PDF (UNCHANGED LOGIC)
@@ -298,6 +329,9 @@ const totals = paymentMethods.reduce(
 );
 
 
+
+
+
   /* =======================
      RENDER
   ======================= */
@@ -384,8 +418,11 @@ const totals = paymentMethods.reduce(
             </Grid>
 
             <Card sx={{ p: 2, mt: 2 }}>
-              {userRole === 'ADMIN' && !currentData?.isPaid && (
-                <Button variant="contained" fullWidth size="small" sx={{ mb: 1 }}>
+              {userRole === 'ADMIN' && !currentData?.isPaid && invoices.length>0 && (
+                <Button variant="contained" fullWidth size="small" sx={{ mb: 1 }} onClick={() => {
+                  setInvoiceData(currentData);
+                  senEmailInvoice(invoices?.[0]?.id);
+                }}>
                   Send Invoice
                 </Button>
               )}
@@ -404,8 +441,8 @@ const totals = paymentMethods.reduce(
                     <TableCell>Payment Method</TableCell>
                     <TableCell align="right">Orders</TableCell>
                     <TableCell align="right">Sales</TableCell>
-                    <TableCell align="right">Flat Commission</TableCell>
-                    <TableCell align="right">Commission %</TableCell>
+                    <TableCell align="right">Flat Commission ({commission?.flatCommission ?? ''})</TableCell>
+                    <TableCell align="right">Commission ( {commission?.percentageCommission ?? ''}%)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -521,12 +558,12 @@ const totals = paymentMethods.reduce(
                           Pay Now
                         </Button>
                       )}
-                      {!invoice.isPaid && userRole == 'ADMIN' && (
+                      {!invoice.isPaid && userRole == 'ADMIN' &&  (
                         <Button
                           size="small"
                           variant="outlined"
                           onClick={() => {
-       
+                            senEmailInvoice(invoices?.[0]?.id);
                           }}
                         >
                           Resend Invoice

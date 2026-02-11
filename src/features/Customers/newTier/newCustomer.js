@@ -83,93 +83,132 @@ const NewCustomer = ({
     }
   };
 
-  return (
-    <Modal
-      open={modal}
-      onClose={() => setModal(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
+return (
+  <Modal
+    open={modal}
+    onClose={() => setModal(false)}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: { xs: '95%', sm: '80%', md: '60%', lg: '45%' },
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: { xs: 2, sm: 4 },
+        borderRadius: 2
+      }}
     >
-      <Box sx={style}>
-        <Grid container spacing={4} mb={2}>
-          <Grid item xs={12}>
-            <Typography required variant="h5">
-              Create New Customer Group
-            </Typography>
-          </Grid>
+      {/* Header */}
+      <Grid container spacing={2} mb={2}>
+        <Grid item xs={12}>
+          <Typography variant="h5">
+            Create New Customer Group
+          </Typography>
         </Grid>
+      </Grid>
 
-        {/* Group Type Switch */}
+      {/* Group Type Switch */}
+      {!data?.id && (
         <Grid item xs={12} mb={2}>
-            { !data?.id &&
           <FormControlLabel
             control={
               <Switch
-                // checked={data.groupType === 3}
                 onChange={(e) =>
                   setData({
                     ...data,
-                    groupType: e.target.checked ? 1 : 3,
+                    groupType: e.target.checked ? 1 : 3
                   })
                 }
                 name="groupTypeSwitch"
                 color="primary"
               />
             }
-            label={data.groupType === 3 ? 'Dont add new customers' : 'Add new customers'}
-          />}
+            label={
+              data.groupType === 3
+                ? 'Dont add new customers'
+                : 'Add new customers'
+            }
+          />
+        </Grid>
+      )}
+
+      {/* Form Fields */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle2">Group Name</Typography>
+          <TextField
+            fullWidth
+            label="Group Name"
+            variant="outlined"
+            value={data.name}
+            onChange={(e) =>
+              setData({ ...data, name: e.target.value })
+            }
+            sx={{ mt: 1 }}
+          />
         </Grid>
 
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="h7">Group Name</Typography>
-            <TextField
-              id="outlined-basic"
-              fullWidth
-              label="Group Name"
-              variant="outlined"
-              value={data.name}
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-              sx={{ mt: 2 }}
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="h7">Group Name (Native language)</Typography>
-            <TextField
-              id="outlined-basic"
-              fullWidth
-              label="Group Name (native language)"
-              variant="outlined"
-              value={data.nativeName}
-              onChange={(e) => setData({ ...data, nativeName: e.target.value })}
-              sx={{ mt: 2 }}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle2">
+            Group Name (Native language)
+          </Typography>
+          <TextField
+            fullWidth
+            label="Group Name (native language)"
+            variant="outlined"
+            value={data.nativeName}
+            onChange={(e) =>
+              setData({ ...data, nativeName: e.target.value })
+            }
+            sx={{ mt: 1 }}
+          />
         </Grid>
+      </Grid>
 
-        <Grid container spacing={4} sx={{ mt: 2 }}>
-          <Grid item xs={12}>
-            <Grid container>
-              <Grid item xs={8} />
-              <Grid container spacing={2} justifyContent="flex-end">
-                <Grid item>
-                  <Button variant="outlined" onClick={() => {setModal(false);setData(initialValue)}}>
-                    Cancel
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button variant="contained" onClick={createNewTier}>
-                    Save
-                  </Button>
-                </Grid>
-              </Grid>
+      {/* Footer Actions */}
+      <Grid container mt={4}>
+        <Grid item xs={12}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+          >
+            <Grid item xs={12} sm="auto">
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  setModal(false);
+                  setData(initialValue);
+                }}
+              >
+                Cancel
+              </Button>
+            </Grid>
+
+            <Grid item xs={12} sm="auto">
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={createNewTier}
+              >
+                Save
+              </Button>
             </Grid>
           </Grid>
         </Grid>
-      </Box>
-    </Modal>
-  );
+      </Grid>
+    </Box>
+  </Modal>
+);
+ 
 };
 
 export default NewCustomer;

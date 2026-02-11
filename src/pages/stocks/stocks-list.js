@@ -79,57 +79,84 @@ const StockList = (props) => {
         return innermostChildren;
     };
 
-    return (
-        <>
-            <Box
-                sx={{
-                    // backgroundColor:"white",
-                    border: '1px solid lightGrey',
-                    borderRadius: 2,
-                    px: 2
-                }}
-                boxShadow={2}
-            >
-                {loading && <LinearProgress />}
-                <Box
-                    sx={{
-                        // backgroundColor:"red",
-                        // border: '1px solid lightGrey',
-                        borderRadius: 2,
-                        // mx: 2,
-                        // py: 2,
-                        px: 2,
-                        my: 3,
-                        width: '100%'
-                    }}
-                    display="flex"
-                    justifyContent="space-between"
-                    xs={12}
-                    boxShadow={0}
-                >
-                    <OutlinedInput
-                        id="email-login"
-                        type="email"
-                        name="Search"
-                        onChange={(e) => searchArray(e.target.value)}
-                        placeholder="Search by Product name"
-                        sx={{ width: '30%'}}
-                    />
+return (
+  <>
+    <Box
+      sx={{
+        border: '1px solid lightGrey',
+        borderRadius: 2,
+        px: { xs: 1, sm: 2 },
+      }}
+      boxShadow={2}
+    >
+      {loading && <LinearProgress />}
 
-                    <Typography>TOTAL ( {FilteredProductList.length} ) ITEMS</Typography>
-                </Box>
-                <Grid container spacing={2}>
-                    {FilteredProductList.map((ele, index) => {
-                        return (
-                            <Grid item key={index} xs={3} sx={{ margin: '10px 0 0 0' }}>
-                                <ProductCard product={ele} branchid={branchid} fetchProduct={getProductsList} user={user} />
-                            </Grid>
-                        );
-                    })}
-                </Grid>
-            </Box>
-        </>
-    );
+      {/* Header */}
+      <Box
+        sx={{
+          borderRadius: 2,
+          px: 2,
+          my: 3,
+          width: '100%',
+        }}
+      >
+        <Grid
+          container
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {/* Search */}
+          <Grid item xs={12} sm={6} md={4}>
+            <OutlinedInput
+              fullWidth
+              id="email-login"
+              type="email"
+              name="Search"
+              onChange={(e) => searchArray(e.target.value)}
+              placeholder="Search by Product name"
+            />
+          </Grid>
+
+          {/* Total Count */}
+          <Grid
+            item
+            xs={12}
+            sm="auto"
+            display="flex"
+            justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}
+          >
+            <Typography>
+              TOTAL ( {FilteredProductList.length} ) ITEMS
+            </Typography>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Product Grid */}
+      <Grid container spacing={2}>
+        {FilteredProductList.map((ele, index) => (
+          <Grid
+            item
+            key={index}
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+          >
+            <ProductCard
+              product={ele}
+              branchid={branchid}
+              fetchProduct={getProductsList}
+              user={user}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  </>
+);
+
 };
 
 export default StockList;

@@ -85,49 +85,72 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
         setAnchorEl(null);
     };
 
-    const columns = [
-        {
-            field: 'logo',
-            headerName: 'Logo',
-            headerAlign: 'left',
-            renderCell: (params) => activeColumnFormater(params.row)
-        },
-        {
-            field: 'name',
-            headerName: 'Company Name',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => nameColumnFormater(params.row)
-        },
-        {
-            field: 'category',
-            headerName: 'Category',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return params?.row?.categoryName;
-            }
-        },
+const columns = [
+  {
+    field: 'logo',
+    headerName: 'Logo',
+    flex: 0.5,
+    minWidth: 90,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false,
+    renderCell: (params) => activeColumnFormater(params.row),
+  },
+  {
+    field: 'name',
+    headerName: 'Company Name',
+    flex: 1.6,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => nameColumnFormater(params.row),
+  },
+  {
+    field: 'category',
+    headerName: 'Category',
+    flex: 1.2,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={params?.row?.categoryName}
+      >
+        {params?.row?.categoryName || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'endSubscriptionDate',
+    headerName: 'End Subscription Date',
+    flex: 1.1,
+    minWidth: 170,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => dateFormater(params.row),
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    ),
+  },
+];
 
-        {
-            field: 'endSubscriptionDate',
-            headerName: 'End Subscription date',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => dateFormater(params.row)
-        },
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 1,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

@@ -112,84 +112,109 @@ const NewProductType = ({ modalOpen, setModalOpen, setReload, update, updateData
             });
     };
 
-    return (
-        <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <form onSubmit={update ? EditType : createNewType}>
-                <Box sx={style}>
-                    <Grid container spacing={4}>
-                        <Grid item>
-                            <Typography variant="h4"> {update ? 'Edit Category' : 'Create new Category'} </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Product Type Name"
-                                        variant="outlined"
-                                        required
-                                        value={data.name}
-                                        onChange={(e) => setData({ ...data, name: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Product Type Native Name"
-                                        variant="outlined"
-                                        value={data.nativeName}
-                                        onChange={(e) => setData({ ...data, nativeName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Sort Order"
-                                        variant="outlined"
-                                        value={data.orderValue}
-                                        onChange={(e) => setData({ ...data, orderValue: Number(e.target.value) })}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Grid>
+return (
+  <Modal
+    open={modalOpen}
+    onClose={() => setModalOpen(false)}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <form onSubmit={update ? EditType : createNewType}>
+      <Box
+        sx={{
+          ...style,
+          width: { xs: '90%', sm: 600, md: 800 },
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <Grid container spacing={4}>
+          {/* Header */}
+          <Grid item xs={12}>
+            <Typography variant="h4">
+              {update ? 'Edit Category' : 'Create new Category'}
+            </Typography>
+          </Grid>
 
-                        {/* Footer */}
+          {/* Fields */}
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Product Type Name"
+                  variant="outlined"
+                  required
+                  value={data.name}
+                  onChange={(e) =>
+                    setData({ ...data, name: e.target.value })
+                  }
+                />
+              </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={8} />
-                                <Grid container spacing={2} justifyContent="flex-end">
-                                    <Grid item>
-                                        <Button
-                                            variant="outlined"
-                                            onClick={() => {
-                                                setModalOpen(false);
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Grid>
-                                    <Grid item>
-                                        <Button primay variant="contained" type="Submit">
-                                            {update ? 'Edit Category' : 'Create new Category'}
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </form>
-        </Modal>
-    );
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Product Type Native Name"
+                  variant="outlined"
+                  value={data.nativeName}
+                  onChange={(e) =>
+                    setData({ ...data, nativeName: e.target.value })
+                  }
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Sort Order"
+                  variant="outlined"
+                  value={data.orderValue}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      orderValue: Number(e.target.value),
+                    })
+                  }
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Footer */}
+          <Grid item xs={12}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            >
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  type="submit"
+                >
+                  {update ? 'Edit Category' : 'Create new Category'}
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
+  </Modal>
+);
+
 };
 
 export default NewProductType;

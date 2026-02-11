@@ -439,44 +439,70 @@ const DashboardDefault = () => {
 </Grid>
 
 
-            <Grid item xs={12}>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={2.2}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="Start"
-                                value={startDate}
-                                renderInput={(params) => <TextField {...params} />}
-                                onChange={(newValue) => {
-                                    handleDateChange(newValue);
-                                }}
-                                minDate={new Date(2023, 0, 1)}
-                                maxDate={new Date()}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
+<Grid item xs={12}>
+  <Grid
+    container
+    spacing={2}
+    alignItems="center"
+  >
+    {/* Start Date */}
+    <Grid item xs={12} sm={5} md={3} lg={2}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          label="Start"
+          value={startDate}
+          onChange={handleDateChange}
+          minDate={new Date(2023, 0, 1)}
+          maxDate={new Date()}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              size="small"
+            />
+          )}
+        />
+      </LocalizationProvider>
+    </Grid>
 
-                    <Grid item xs={2.2}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="End"
-                                value={endDate}
-                                renderInput={(params) => <TextField {...params} />}
-                                onChange={(newValue) => {
-                                    handleEndDateChange(newValue);
-                                }}
-                                minDate={new Date(2023, 0, 1)}
-                                maxDate={getMaxEndDate(startDate)}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
-                    <Grid item>
-                        <Button variant="contained" onClick={getData}>
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Grid>
+    {/* End Date */}
+    <Grid item xs={12} sm={5} md={3} lg={2}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          label="End"
+          value={endDate}
+          onChange={handleEndDateChange}
+          minDate={new Date(2023, 0, 1)}
+          maxDate={getMaxEndDate(startDate)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              size="small"
+            />
+          )}
+        />
+      </LocalizationProvider>
+    </Grid>
+
+    {/* Submit Button */}
+    <Grid item xs={12} sm={2} md={2} lg={1}>
+      <Button
+        variant="contained"
+        size="small"
+        fullWidth
+        sx={{
+          height: 40,          // matches small TextField
+          textTransform: 'none',
+        }}
+        onClick={getData}
+      >
+        Submit
+      </Button>
+    </Grid>
+  </Grid>
+</Grid>
+
 
             {topCard()}
 

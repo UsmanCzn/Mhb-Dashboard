@@ -106,120 +106,156 @@ const NewScedule = ({ modalOpen, setModalOpen, updateData, branchId, setReload }
         }
     }, [updateData]);
 
-    return (
-        <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <form>
-                <Box sx={style}>
-                    <Grid container spacing={4}>
-                        <Grid item>
-                            <Typography variant="h4"> {updateData?.dayOfTheWeek ? 'Update Scedule' : 'Create new Scedule'}</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <DropDown
-                                        title="Week Day"
-                                        list={Days}
-                                        data={data}
-                                        setData={setData}
-                                        keyo={updateData?.dayOfTheWeek ? 'dayOfTheWeekDisplay' : 'daysofTheWeek'}
-                                        type={updateData?.dayOfTheWeek ? 'day' : 'dateAdd'}
-                                    />
-                                </Grid>
-                                <Grid item xs={2} />
+return (
+  <Modal
+    open={modalOpen}
+    onClose={() => setModalOpen(false)}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <form>
+      <Box
+        sx={{
+          ...style,
+          width: { xs: '95%', sm: 600, md: 800 },
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <Grid container spacing={4}>
+          {/* Title */}
+          <Grid item xs={12}>
+            <Typography variant="h4">
+              {updateData?.dayOfTheWeek
+                ? 'Update Scedule'
+                : 'Create new Scedule'}
+            </Typography>
+          </Grid>
 
-                                <Grid item xs={4}>
-                                    <Typography required variant="h7">
-                                        Ordering Enabled
-                                    </Typography>
+          {/* Day + Ordering Enabled */}
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <DropDown
+                  title="Week Day"
+                  list={Days}
+                  data={data}
+                  setData={setData}
+                  keyo={
+                    updateData?.dayOfTheWeek
+                      ? 'dayOfTheWeekDisplay'
+                      : 'daysofTheWeek'
+                  }
+                  type={
+                    updateData?.dayOfTheWeek
+                      ? 'day'
+                      : 'dateAdd'
+                  }
+                />
+              </Grid>
 
-                                    <Switch
-                                        checked={data.isOrderingEnable}
-                                        onChange={(event) => {
-                                            setData((prev) => ({
-                                                ...prev,
-                                                isOrderingEnable: event.target.checked
-                                            }));
-                                        }}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="time"
-                                        label="Start time"
-                                        type="time"
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                        value={data.startTime}
-                                        onChange={(e) => {
-                                            setData((prev) => ({
-                                                ...prev,
-                                                startTime: e.target.value || '08:00'
-                                            }));
-                                        }}
-                                        inputProps={{
-                                            step: 300 // 5 min
-                                        }}
-                                        sx={{ width: 150 }}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="time"
-                                        label="End time"
-                                        type="time"
-                                        value={data.endTime}
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                        onChange={(e) => {
-                                            setData((prev) => ({
-                                                ...prev,
-                                                endTime: e.target.value || '08:00'
-                                            }));
-                                        }}
-                                        inputProps={{
-                                            step: 300 // 5 min
-                                        }}
-                                        sx={{ width: 150 }}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}></Grid>
-                            </Grid>
-                        </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography variant="subtitle1">
+                  Ordering Enabled
+                </Typography>
+                <Switch
+                  checked={data.isOrderingEnable}
+                  onChange={(event) => {
+                    setData((prev) => ({
+                      ...prev,
+                      isOrderingEnable:
+                        event.target.checked,
+                    }));
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={8} />
-                                <Grid container spacing={2} justifyContent="flex-end">
-                                    <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
-                                            Cancel
-                                        </Button>
-                                    </Grid>
-                                    <Grid item>
-                                        <Button primay variant="contained" onClick={updateData?.dayOfTheWeek ? save : createNew}>
-                                            Save
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </form>
-        </Modal>
-    );
+          {/* Time Inputs */}
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  id="start-time"
+                  label="Start time"
+                  type="time"
+                  InputLabelProps={{ shrink: true }}
+                  value={data.startTime}
+                  onChange={(e) => {
+                    setData((prev) => ({
+                      ...prev,
+                      startTime:
+                        e.target.value || '08:00',
+                    }));
+                  }}
+                  inputProps={{ step: 300 }}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  id="end-time"
+                  label="End time"
+                  type="time"
+                  InputLabelProps={{ shrink: true }}
+                  value={data.endTime}
+                  onChange={(e) => {
+                    setData((prev) => ({
+                      ...prev,
+                      endTime:
+                        e.target.value || '08:00',
+                    }));
+                  }}
+                  inputProps={{ step: 300 }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Footer */}
+          <Grid item xs={12}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent={{
+                xs: 'center',
+                sm: 'flex-end',
+              }}
+            >
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={
+                    updateData?.dayOfTheWeek
+                      ? save
+                      : createNew
+                  }
+                >
+                  Save
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
+  </Modal>
+);
+
 };
 
 export default NewScedule;

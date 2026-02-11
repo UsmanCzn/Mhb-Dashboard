@@ -46,56 +46,103 @@ const AdvertisementTable = ({selectAdvertisement , setModalOpen, reload, setrelo
         setAnchorEl(event.currentTarget);
     };
 
-    const columns = [
-    {
-        field: 'navme',
-        headerName: 'Image',
-        headerAlign: 'left',
-        renderCell: (params) => activeColumnFormater(params.row)
-    },
-    {
-        field: 'title',
-        headerName: 'Ttile',
-        flex: 1,
-        headerAlign: 'left'
-    },
-    {
-        field: 'startDate',
-        headerName: 'Start Date',
-        flex: 1,
-        headerAlign: 'left'
-    },
-    {
-        field: 'endDate',
-        headerName: 'End Date',
-        flex: 1,
-        headerAlign: 'left'
-    },
-    {
-        field: 'showingOccurence',
-        headerName: 'Show no of Times',
-        flex: 1,
-        headerAlign: 'left'
-    },
-    {
-        field: 'status',
-        headerName: 'Status',
-        flex: 1,
-        headerAlign: 'left'
-    },
-    {
-        field: "isRewardMissisng",
-        headerName: "Action",
-        sortable: false,
-        flex: 0.5,
-        headerAlign: "left",
+const columns = [
+  {
+    field: 'image',
+    headerName: 'Image',
+    minWidth: 80,
+    flex: 0.6,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false,
+    renderCell: (params) => (
+      <img
+        alt="logo"
+        src={params.row.brandNewsImageUrl || DefaultImg}
+        onError={(e) => (e.target.src = DefaultImg)}
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 6,
+          objectFit: 'cover',
+        }}
+      />
+    ),
+  },
+  {
+    field: 'title',
+    headerName: 'Title',
+    flex: 1.4,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'startDate',
+    headerName: 'Start Date',
+    flex: 1,
+    minWidth: 140,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'endDate',
+    headerName: 'End Date',
+    flex: 1,
+    minWidth: 140,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'showingOccurence',
+    headerName: 'Show Times',
+    flex: 1,
+    minWidth: 130,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 1,
+    minWidth: 130,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: ({ value }) => (
+      <Chip
+        size="small"
+        label={value || 'Unknown'}
+        color={value === 'Active' ? 'success' : 'default'}
+      />
+    ),
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <IconButton
+        size="small"
+        onClick={(event) => handleClick(event, params)}
+      >
+        <MoreVertIcon />
+      </IconButton>
+    ),
+  },
+];
 
-        renderCell: (params) => {
-            return <MoreVertIcon
-                onClick={(event)=>handleClick(event, params)} />
-            }
-    },
-    ];
     const getAdvertisements =async () => {
        
      setloading(true)

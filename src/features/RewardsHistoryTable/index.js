@@ -84,66 +84,53 @@ export default function RewardsHistoryTable({ reload, search ,branchId=5 }) {
     };
 
     const columns = [
-        {
-            field: 'id',
-            headerName: 'ID',
-            headerAlign: 'left'
-        },
-        {
-            field: 'name',
-            headerName: 'Name',
-            flex: 0.7,
-            headerAlign: 'left',
-            renderCell: (params) => nameColumnFormater(params.row)
-        },
-        {
-            field: 'customerPhoneNumber',
-            headerName: 'Phone Number',
-            flex: 1,
-            headerAlign: 'left'
-            // renderCell: params => groupsColumnFormater(params.row)
-        },
-        {
-            field: 'billedInvoice',
-            headerName: 'Billed Amount',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => `${params.row.billedInvoice} KD`
-        },
-        {
-            field: 'actualInvoice',
-            headerName: 'After Discount',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => `${params.row.actualInvoice} KD`
-        },
-        // {
-        //     field: 'emailAddresds',
-        //     headerName: 'Rewards Status',
-        //     flex: 1,
-        //     headerAlign: 'left',
-        //     renderCell: (params) => 'completed'
-        // },
-        // {
-        //     field: 'emailAddress',
-        //     headerName: 'Transaction Status',
-        //     flex: 1,
-        //     headerAlign: 'left',
-        //     renderCell: (params) => 'completed'
-        // }
-        // {
-        //   field: "isRewardMfissisng",
-        //   headerName: "Action",
-        //   sortable: false,
-        //   flex: 0.5,
-        //   headerAlign: "left",
-
-        //   renderCell: (params) => {
-        //         return <MoreVertIcon
-        //             onClick={(event)=>handleClick(event,params)} />
-        //       }
-        // },
+    {
+        field: 'id',
+        headerName: 'ID',
+        minWidth: 80,
+        flex: 0.4,
+        headerAlign: 'left',
+        align: 'left',
+    },
+    {
+        field: 'name',
+        headerName: 'Name',
+        minWidth: 180,
+        flex: 1,
+        headerAlign: 'left',
+        align: 'left',
+        renderCell: (params) => nameColumnFormater(params.row),
+    },
+    {
+        field: 'customerPhoneNumber',
+        headerName: 'Phone Number',
+        minWidth: 150,
+        flex: 1,
+        headerAlign: 'left',
+        align: 'left',
+    },
+    {
+        field: 'billedInvoice',
+        headerName: 'Billed Amount',
+        minWidth: 150,
+        flex: 1,
+        headerAlign: 'left',
+        align: 'left',
+        renderCell: (params) =>
+        params.value != null ? `${params.value} KD` : '--',
+    },
+    {
+        field: 'actualInvoice',
+        headerName: 'After Discount',
+        minWidth: 160,
+        flex: 1,
+        headerAlign: 'left',
+        align: 'left',
+        renderCell: (params) =>
+        params.value != null ? `${params.value} KD` : '--',
+    },
     ];
+
 
     const options = [
         {

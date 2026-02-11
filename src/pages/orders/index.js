@@ -269,73 +269,73 @@ export default function Orders() {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item xs={10}>
-                        <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="flex-end">
-                            <Grid item xs={2}>
-                                <AnalyticBox
-                                    title="All Orders"
-                                    // count={analytics?.pending}
-                                    value={'All'}
-                                    filter={filter}
-                                    handleClick={() => {
-                                        setFilter('All');
-                                        setFilterStatus(0);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <AnalyticBox
-                                    title="Pending Orders"
-                                    count={analytics?.pending}
-                                    value={'Open'}
-                                    filter={filter}
-                                    handleClick={() => {
-                                        setFilter('Open');
-                                        setFilterStatus(1);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <AnalyticBox
-                                    title="Preparing (Accepted)"
-                                    count={analytics?.accepted}
-                                    value={'Accepted'}
-                                    filter={filter}
-                                    handleClick={() => {
-                                        setFilter('Accepted');
-                                        setFilterStatus(3);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <AnalyticBox
-                                    title="Delivered"
-                                    count={analytics?.ready}
-                                    value={'Ready'}
-                                    filter={filter}
-                                    handleClick={() => {
-                                        setFilter('Ready');
-                                        setFilterStatus(4);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={2}>
-                                <AnalyticBox
-                                    title="Closed"
-                                    count={analytics?.closed}
-                                    value={'Close'}
-                                    filter={filter}
-                                    handleClick={() => {
-                                        setFilter('Close');
-                                        setFilterStatus(2);
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={2.4}>
+                <AnalyticBox
+                    title="All Orders"
+                    value="All"
+                    filter={filter}
+                    handleClick={() => {
+                    setFilter('All');
+                    setFilterStatus(0);
+                    }}
+                />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={2.4}>
+                <AnalyticBox
+                    title="Pending Orders"
+                    count={analytics?.pending}
+                    value="Open"
+                    filter={filter}
+                    handleClick={() => {
+                    setFilter('Open');
+                    setFilterStatus(1);
+                    }}
+                />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={2.4}>
+                <AnalyticBox
+                    title="Preparing (Accepted)"
+                    count={analytics?.accepted}
+                    value="Accepted"
+                    filter={filter}
+                    handleClick={() => {
+                    setFilter('Accepted');
+                    setFilterStatus(3);
+                    }}
+                />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={2.4}>
+                <AnalyticBox
+                    title="Delivered"
+                    count={analytics?.ready}
+                    value="Ready"
+                    filter={filter}
+                    handleClick={() => {
+                    setFilter('Ready');
+                    setFilterStatus(4);
+                    }}
+                />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={2.4}>
+                <AnalyticBox
+                    title="Closed"
+                    count={analytics?.closed}
+                    value="Close"
+                    filter={filter}
+                    handleClick={() => {
+                    setFilter('Close');
+                    setFilterStatus(2);
+                    }}
+                />
                 </Grid>
             </Grid>
+            </Grid>
+
 
             <Grid item xs={12}>
                 <OrdersTable

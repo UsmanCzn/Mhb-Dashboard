@@ -530,50 +530,60 @@ const AddEditApp = () => {
                                                 </Grid>
                                             </Grid>
                                             <Grid item xs={12}>
-                                                <Typography variant="h6">Upload Logo</Typography>
-                                                <Box
-                                                    sx={{
-                                                        width: '60%',
-                                                        height: 200,
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                        mt: 2,
-                                                        backgroundColor: '#eee',
-                                                        ml: '20%'
+                                            <Typography variant="h6">Upload Logo</Typography>
+
+                                            <Box
+                                                sx={{
+                                                width: { xs: '100%', sm: '70%', md: '60%' },
+                                                height: { xs: 160, sm: 200 },
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                mt: 2,
+                                                backgroundColor: '#eee',
+                                                mx: 'auto',            // replaces ml: '20%'
+                                                borderRadius: 2
+                                                }}
+                                            >
+                                                {logoFile && (
+                                                <img
+                                                    src={URL.createObjectURL(logoFile)}
+                                                    alt="Logo Preview"
+                                                    style={{
+                                                    width: 100,
+                                                    height: 70,
+                                                    marginBottom: 10,
+                                                    objectFit: 'contain'
                                                     }}
-                                                >
-                                                    {logoFile && (
-                                                        <img
-                                                            src={URL.createObjectURL(logoFile)}
-                                                            alt="Logo Preview"
-                                                            style={{
-                                                                width: 100,
-                                                                height: 70,
-                                                                marginBottom: 10
-                                                            }}
-                                                        />
-                                                    )}
-                                                    {!logoFile && logoUrl && (
-                                                        <img
-                                                            src={logoUrl}
-                                                            alt="Logo Preview"
-                                                            style={{
-                                                                width: 100,
-                                                                height: 70,
-                                                                marginBottom: 10
-                                                            }}
-                                                        />
-                                                    )}
-                                                    <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c', marginBottom: 10 }} />
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => setLogoFile(e.currentTarget.files[0])}
-                                                    />
-                                                </Box>
+                                                />
+                                                )}
+
+                                                {!logoFile && logoUrl && (
+                                                <img
+                                                    src={logoUrl}
+                                                    alt="Logo Preview"
+                                                    style={{
+                                                    width: 100,
+                                                    height: 70,
+                                                    marginBottom: 10,
+                                                    objectFit: 'contain'
+                                                    }}
+                                                />
+                                                )}
+
+                                                <CloudUploadOutlined
+                                                style={{ fontSize: 26, color: '#08c', marginBottom: 10 }}
+                                                />
+
+                                                <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setLogoFile(e.currentTarget.files[0])}
+                                                />
+                                            </Box>
                                             </Grid>
+
                                         </Grid>
                                     </TabPanel>
                                 </Box>

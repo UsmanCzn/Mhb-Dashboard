@@ -69,98 +69,99 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
     };
 
     const columns = [
-        {
-            field: 'navme',
-            headerName: 'Image',
-            headerAlign: 'left',
-            renderCell: (params) => activeColumnFormater(params.row)
-        },
-        {
-            field: 'isBusy',
-            headerName: 'Is Busy',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return (
-                    <Switch
-                        {...label}
-                        disabled={user?.isAccessRevoked}
-                        checked={params.row.isBusy}
-                        onChange={(event) => {
-                            branchSwitch(event, params.row);
-                        }}
-                        size="small"
-                    />
-                );
-            }
-        },
-        {
-            field: 'ishide',
-            headerName: 'Is Hide',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return (
-                    <Switch
-                        {...label}
-                        disabled={user?.isAccessRevoked}
-                        checked={params.row.ishide}
-                        onChange={(event) => {
-                            hideBranch(event, params.row);
-                        }}
-                        size="small"
-                    />
-                );
-                // return params.row.ishide ? <Tooltip title="Hidden"> <CheckCircleIcon  /> </Tooltip>: <Tooltip title="Not Hidden"><CancelIcon title="false"/></Tooltip> ;
-            }
-        },
-        {
-            field: 'name',
-            headerName: 'Store name',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'brand',
-            headerName: 'Brand',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'branchAddress',
-            headerName: 'Address',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'emailAddress',
-            headerName: 'Email',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        // {
-        //     field: 'isRewardMissing',
-        //     headerName: 'Rewards Program',
-        //     flex: 1,
-        //     headerAlign: 'left',
-        //     renderCell: (params) => {
-        //         return <Switch {...label}
-        //         disabled={user?.isAccessRevoked}
-        //         checked={params.row.isRewardMissing} size="small" />;
-        //     }
-        // },
-        {
-            field: 'isRewardMissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
+    {
+        field: 'navme',
+        headerName: 'Image',
+        minWidth: 80,
+        flex: 0.6,
+        headerAlign: 'center',
+        align: 'center',
+        sortable: false,
+        renderCell: (params) => activeColumnFormater(params.row),
+    },
+    {
+        field: 'isBusy',
+        headerName: 'Is Busy',
+        minWidth: 120,
+        flex: 0.8,
+        headerAlign: 'center',
+        align: 'center',
+        renderCell: (params) => (
+        <Switch
+            {...label}
+            disabled={user?.isAccessRevoked}
+            checked={params.row.isBusy}
+            onChange={(event) => branchSwitch(event, params.row)}
+            size="small"
+        />
+        ),
+    },
+    {
+        field: 'ishide',
+        headerName: 'Is Hidden',
+        minWidth: 120,
+        flex: 0.8,
+        headerAlign: 'center',
+        align: 'center',
+        renderCell: (params) => (
+        <Switch
+            {...label}
+            disabled={user?.isAccessRevoked}
+            checked={params.row.ishide}
+            onChange={(event) => hideBranch(event, params.row)}
+            size="small"
+        />
+        ),
+    },
+    {
+        field: 'name',
+        headerName: 'Store Name',
+        minWidth: 180,
+        flex: 1.2,
+        headerAlign: 'left',
+        align: 'left',
+    },
+    {
+        field: 'brand',
+        headerName: 'Brand',
+        minWidth: 150,
+        flex: 1,
+        headerAlign: 'left',
+        align: 'left',
+    },
+    {
+        field: 'branchAddress',
+        headerName: 'Address',
+        minWidth: 220,
+        flex: 1.5,
+        headerAlign: 'left',
+        align: 'left',
+    },
+    // {
+    //     field: 'emailAddress',
+    //     headerName: 'Email',
+    //     minWidth: 200,
+    //     flex: 1.3,
+    //     headerAlign: 'left',
+    //     align: 'left',
+    // },
+    {
+        field: 'isRewardMissisng',
+        headerName: 'Action',
+        sortable: false,
+        minWidth: 80,
+        flex: 0.5,
+        headerAlign: 'center',
+        align: 'center',
+        renderCell: (params) => (
+        <MoreVertIcon
+            sx={{ cursor: 'pointer' }}
+            onClick={(event) => handleClick(event, params)}
+        />
+        ),
+    },
     ];
+
 
     const options = [
         {

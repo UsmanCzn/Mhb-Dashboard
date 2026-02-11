@@ -46,6 +46,13 @@ export default {
             }
         });
     },
+    getProductListV3(id) {
+        return ApiV1.get('services/app/Products/GetProductListByBrandIdV3', {
+            params: {
+                brandId: id
+            }
+        });
+    },
 
     createNewProduct(data) {
         return ApiV1.post('services/app/Products/CreateProductsV2', data);
@@ -136,5 +143,15 @@ export default {
 
     enableDisableAddOn(payload) {
         return ApiV1.post( `services/app/ProductAddition/ProductAdditionUpdateOperationForBranchUser`,payload)
-    }
+    },
+
+
+bulkUploadProduct(brandId, formData) {
+  return ApiV1.post(
+    `/Files/UploadBulkProducts?brandId=${brandId}`,
+    formData
+  );
+}
+
+
 };

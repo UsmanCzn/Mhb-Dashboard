@@ -97,53 +97,75 @@ const CouponDiscount = ({ selectedBrand, reload, customerGroups, setReload,user 
 };
 
 
-    const columns = [
-        { field: 'id', headerName: 'ID', headerAlign: 'left' },
-        { 
-           field: 'discountPercentage',
-           headerName: 'Discount',
-           flex: 0.7,
-           headerAlign: 'left',
-            renderCell: (params) => discountColumnFormatter(params.row)
-        },
-        {
-            field: 'branchId',
-            headerName: 'Branch',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: params => branchColumnFormatter(params.row)
-        },
-        {
-            field: 'brandGroupId',
-            headerName: 'Customer Group',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: params => groupsColumnFormatter(params?.row)
-        },
-        {
-            field: 'couponText',
-            headerName: 'Coupon Title',
-            flex: 1,
-            headerAlign: 'left',
-        },
-        {
-            field: 'emailAddress',
-            headerName: 'Date Range',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: params => dateColumnFormatter(params?.row)
-        },
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-            renderCell: params => (
-                <MoreVertIcon onClick={event => handleClick(event, params)} />
-            )
-        },
-    ];
+const columns = [
+  {
+    field: 'id',
+    headerName: 'ID',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 80
+  },
+  {
+    field: 'discountPercentage',
+    headerName: 'Discount',
+    flex: 0.7,
+    minWidth: 120,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => discountColumnFormatter(params.row)
+  },
+  {
+    field: 'branchId',
+    headerName: 'Branch',
+    flex: 1,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => branchColumnFormatter(params.row)
+  },
+  {
+    field: 'brandGroupId',
+    headerName: 'Customer Group',
+    flex: 1.2,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => groupsColumnFormatter(params.row)
+  },
+  {
+    field: 'couponText',
+    headerName: 'Coupon Title',
+    flex: 1,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left'
+  },
+  {
+    field: 'emailAddress',
+    headerName: 'Date Range',
+    flex: 1,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => dateColumnFormatter(params.row)
+  },
+  {
+    field: 'isRewardMfissisng',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.5,
+    minWidth: 80,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    )
+  }
+];
+
 
     const options = [
         { name: 'Edit', modal: true },

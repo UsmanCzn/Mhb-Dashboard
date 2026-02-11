@@ -320,7 +320,7 @@ const CreateUser = () => {
     return (
         <form onSubmit={handleSubmit}>
             <Grid container spacing={2} className="userFormContainer">
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="firstName">First Name:</label>
                     </div>
@@ -335,7 +335,7 @@ const CreateUser = () => {
                     <p className="error">{errors.firstName}</p>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="lastName">Last Name:</label>
                     </div>
@@ -343,7 +343,7 @@ const CreateUser = () => {
                     <p className="error">{errors.lastName}</p>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="phoneNumber">Phone Number:</label>
                     </div>
@@ -358,7 +358,7 @@ const CreateUser = () => {
                     <p className="error">{errors.phoneNumber}</p>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="email">Email:</label>
                     </div>
@@ -366,7 +366,7 @@ const CreateUser = () => {
                     <p className="error">{errors.email}</p>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="password">Password:</label>
                     </div>
@@ -374,7 +374,7 @@ const CreateUser = () => {
                     <p className="error">{errors.password}</p>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="roles">Roles:</label>
                     </div>
@@ -395,7 +395,7 @@ const CreateUser = () => {
                     </Select>
                     <p className="error">{errors.roles}</p>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                     <div>
                         <label htmlFor="branches">
                             {formData.roles == '3'

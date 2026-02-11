@@ -87,74 +87,109 @@ const CustomerOrders = ({ user }) => {
         getCustomerOrders(page);
     }, [selectedBrand, page, getCustomerOrders]);
 
-    const columns = [
-        {
-            field: 'branchName',
-            headerName: 'For Branch',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'deliverySystem',
-            headerName: 'Type',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'orderNumber',
-            headerName: 'Order Number',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'status',
-            headerName: 'Status',
-            flex: 0.5,
-            headerAlign: 'left'
-        },
-        {
-            field: 'isPaid',
-            headerName: 'Is Paid',
-            flex: 0.5,
-            headerAlign: 'left',
-            renderCell: (params) => <Typography>{params?.row?.isPaid?'Yes':'No'}</Typography>
-        },
-        {
-            field: 'date',
-            headerName: 'Date',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: (params) => <Typography>{moment(params?.row?.date).format('DD-MMM-YYYY hh:mm a')}</Typography>
-        },
-        {
-            field: 'isHiddven',
-            headerName: 'Order details',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: (params) => (
-                <Grid container direction="column">
-                    <Typography component="div" sx={{ '& ul': { m: 0, p: 0 }, '& li': { marginLeft: '-1em' } }}>
-                        <ul>
-                            {params?.row?.products?.map((obj, index) => (
-                                <li key={index}>
-                                    <Typography variant="h6">{`${obj?.name} x ${obj?.quantity}`}</Typography>
-                                </li>
-                            ))}
-                        </ul>
-                    </Typography>
-                </Grid>
-            )
-        },
-        {
-            field: 'action',
-            headerName: 'Actions',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
+const columns = [
+  {
+    field: 'branchName',
+    headerName: 'For Branch',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1,
+    minWidth: 180
+  },
+  {
+    field: 'deliverySystem',
+    headerName: 'Type',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1,
+    minWidth: 140
+  },
+  {
+    field: 'orderNumber',
+    headerName: 'Order Number',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1,
+    minWidth: 160
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.5,
+    minWidth: 120
+  },
+  {
+    field: 'isPaid',
+    headerName: 'Is Paid',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.5,
+    minWidth: 100,
+    renderCell: (params) => (
+      <Typography>{params?.row?.isPaid ? 'Yes' : 'No'}</Typography>
+    )
+  },
+  {
+    field: 'date',
+    headerName: 'Date',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1.2,
+    minWidth: 200,
+    renderCell: (params) => (
+      <Typography>
+        {moment(params?.row?.date).format('DD-MMM-YYYY hh:mm a')}
+      </Typography>
+    )
+  },
+  {
+    field: 'isHiddven',
+    headerName: 'Order Details',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1.5,
+    minWidth: 300,
+    renderCell: (params) => (
+      <Grid container direction="column">
+        <Typography
+          component="div"
+          sx={{
+            '& ul': { m: 0, p: 0 },
+            '& li': { ml: '-1em' }
+          }}
+        >
+          <ul>
+            {params?.row?.products?.map((obj, index) => (
+              <li key={index}>
+                <Typography variant="body2">
+                  {`${obj?.name} x ${obj?.quantity}`}
+                </Typography>
+              </li>
+            ))}
+          </ul>
+        </Typography>
+      </Grid>
+    )
+  },
+  {
+    field: 'action',
+    headerName: 'Actions',
+    sortable: false,
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.6,
+    minWidth: 90,
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    )
+  }
+];
+
 
     return (
         <Grid container spacing={2}>

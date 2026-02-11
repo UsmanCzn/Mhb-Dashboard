@@ -19,4 +19,8 @@ export default {
     CheckoutForBrandCommissionInvoice(invoiceId,paymentSystemId) {
         return ApiV1.post(`services/app/BrandCommission/CheckoutForBrandCommissionInvoice?brandCommissionInvoiceId=${invoiceId}&PaymentSystemId=${paymentSystemId}`);
     }
+    ,
+    SendEmailBrandCommissionInvoice(invoiceId,paymentSystemId) {
+        return ApiV1.post(`services/app/BrandCommission/SendInvoiceEmailToCompanyAndBrandAdmin?id=${invoiceId}`);
+    }
 };

@@ -89,103 +89,171 @@ const RefundRequest = () => {
                 });
         };
 
-        const columns = [
-            {
-                field: 'customerFullName',
-                headerName: 'Customer Name',
-                headerAlign: 'left',
-                flex: 1
-            },
-            {
-                field: 'customerDisplayEmail',
-                headerName: 'Email',
-                headerAlign: 'left',
-                flex: 1
-            },
-            {
-                field: 'customerDisplayPhone',
-                headerName: 'Phone Number',
-                headerAlign: 'left',
-                flex: 1
-            },
-            {
-                field: 'orderNumber',
-                headerName: 'Order Number',
-                flex: 1,
-                headerAlign: 'left'
-            },
-            {
-                field: 'amount',
-                headerName: 'Amount',
-                flex: 1,
-                headerAlign: 'left'
-            },
-            {
-                field: 'refundMethod',
-                headerName: 'Refund Method',
-                flex: 1,
-                headerAlign: 'left',
-                renderCell: (params) => {
-                    const refundMethod = params.row?.refundMethod ;
-                    const method = refundMethod && refundMethod === 0 ?'Bank Transfer':'Credit Refund';
-                    return (
-                        <p>
-                            {method} 
-                        </p>
-                    );
-                }
-            },
-            {
-                field: 'refundReason',
-                headerName: 'Refund Reason',
-                flex: 1,
-                headerAlign: 'left'
-            },
-            {
-                field: 'refunded',
-                headerName: 'Refund Status',
-                flex: 1,
-                headerAlign: 'left',
-                renderCell: (params) => {
-                    const refunded = params.row?.refunded;
-                    const acted = params.row?.isAct;
-                    if(!acted){
-                        return <Chip label="Pending" color="warning" />;
-                    }
-                    return refunded ? <Chip label="Refunded" color="success" /> : <Chip label="Rejected" color="error" />;
-                }
-            },
-            {
-                field: 'refundDoneTime',
-                headerName: 'Action Time',
-                flex: 1,
-                headerAlign: 'left',
-                renderCell: (params) => {
-                    const actionTime = params.row?.refundDoneTime;
-                    
-                    // Handle null or undefined case for actionTime
-                    const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+const columns = [
+  {
+    field: 'customerFullName',
+    headerName: 'Customer Name',
+    flex: 1.2,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'customerDisplayEmail',
+    headerName: 'Email',
+    flex: 1.4,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'customerDisplayPhone',
+    headerName: 'Phone Number',
+    flex: 1,
+    minWidth: 150,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => value || '--',
+  },
+  {
+    field: 'orderNumber',
+    headerName: 'Order Number',
+    flex: 1,
+    minWidth: 150,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'amount',
+    headerName: 'Amount',
+    flex: 0.9,
+    minWidth: 140,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: ({ value }) =>
+      value != null ? `${value} KD` : '--',
+  },
+  {
+    field: 'refundMethod',
+    headerName: 'Refund Method',
+    flex: 1,
+    minWidth: 160,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      const refundMethod = params.row?.refundMethod;
+      const method =
+        refundMethod === 0
+          ? 'Bank Transfer'
+          : 'Credit Refund';
 
-                    return (
-                        <p>
-                            {formattedTime} 
-                        </p>
-                    );
-                }
-            },
+      return <span>{method}</span>;
+    },
+  },
+  {
+    field: 'refundReason',
+    headerName: 'Refund Reason',
+    flex: 1.4,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'refunded',
+    headerName: 'Refund Status',
+    flex: 0.9,
+    minWidth: 150,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => {
+      const refunded = params.row?.refunded;
+      const acted = params.row?.isAct;
 
-            {
-                field: 'isRewardMfissisng',
-                headerName: 'Action',
-                sortable: false,
-                flex: 0.5,
-                headerAlign: 'left',
+      if (!acted) {
+        return <Chip label="Pending" color="warning" size="small" />;
+      }
 
-                renderCell: (params) => {
-                    return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-                }
-            }
-        ];
+      return refunded ? (
+        <Chip label="Refunded" color="success" size="small" />
+      ) : (
+        <Chip label="Rejected" color="error" size="small" />
+      );
+    },
+  },
+  {
+    field: 'refundDoneTime',
+    headerName: 'Action Time',
+    flex: 1.1,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      const actionTime = params.row?.refundDoneTime;
+      const formattedTime = actionTime
+        ? moment(actionTime).format('DD/MM/YYYY')
+        : 'No Date Available';
+
+      return (
+        <span style={{ whiteSpace: 'nowrap' }}>
+          {formattedTime}
+        </span>
+      );
+    },
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) =>
+      !params.row.isAct && (
+        <MoreVertIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={(event) => handleClick(event, params)}
+        />
+      ),
+  },
+];
+
 
         const options = [
             {

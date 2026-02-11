@@ -330,7 +330,13 @@ const handleNext = async (validateForm, setTouched, values) => {
     return (
         <Grid container spacing={3}>
             <Grid item xs={12}>
-                <Typography variant="h4">{id ? 'Edit Store' : 'Create New Store'}</Typography>
+                <Typography
+                variant="h4"
+                sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem' } }}
+                >
+                {id ? 'Edit Store' : 'Create New Store'}
+                </Typography>
+
             </Grid>
             <Grid item xs={12}>
                 <Card sx={{ padding: 0, margin: '3px 0' }}>
@@ -351,7 +357,10 @@ const handleNext = async (validateForm, setTouched, values) => {
                                 <Form>
                                     <TabContext value={tabValue}>
                                         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-                                            <TabList onChange={handleTabChange}>
+                                            <TabList onChange={handleTabChange}
+                                             variant="scrollable"
+                                                scrollButtons="auto"
+                                            >
                                                 <Tab
                                                     label="Basic Info"
                                                     value="1"
@@ -380,7 +389,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         Next
                                                     </Button>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Store Name"
                                                         fullWidth
@@ -393,7 +402,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.name && errors.name}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Store Name (Native)"
                                                         fullWidth
@@ -406,7 +415,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.nativeName && errors.nativeName}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         select
                                                         label="Select Brand"
@@ -426,7 +435,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         ))}
                                                     </TextField>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Phone Number"
                                                         fullWidth
@@ -439,7 +448,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.branchPhoneNumber && errors.branchPhoneNumber}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Avg Order Accept Time In Minutes"
                                                         fullWidth
@@ -453,7 +462,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.acceptTime && errors.acceptTime}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Avg Order Ready Time In Minutes"
                                                         fullWidth
@@ -518,7 +527,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         </Button>
                                                     </Grid>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Opening Time"
                                                         fullWidth
@@ -532,7 +541,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.openTime && errors.openTime}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Closing Time"
                                                         fullWidth
@@ -546,7 +555,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.closeTime && errors.closeTime}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Working hours Text"
                                                         fullWidth
@@ -561,7 +570,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                 </Grid>
 
                                                 {/* Branch Timings String Native */}
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Working Hours Text (Native)"
                                                         fullWidth
@@ -626,7 +635,13 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                 </Grid>
                                                 {/* Horizontal Toggles */}
                                                 <Grid item xs={12}>
-                                                    <Box display="flex" flexDirection="row" gap={2} alignItems="center">
+                                                    <Box
+                                                    display="flex"
+                                                    flexWrap="wrap"
+                                                    gap={2}
+                                                    alignItems="center"
+                                                    >
+
                                                         {/* Enable Pickup */}
                                                         <FormControlLabel
                                                             control={
@@ -767,7 +782,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         </Button>
                                                     </Grid>
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Address"
                                                         fullWidth
@@ -780,7 +795,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.branchAddress && errors.branchAddress}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Native Address"
                                                         fullWidth
@@ -794,7 +809,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                     />
                                                 </Grid>
 
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Latitude"
                                                         fullWidth
@@ -807,7 +822,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.latitude && errors.latitude}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Longitude"
                                                         fullWidth
@@ -820,7 +835,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         helperText={touched.longitude && errors.longitude}
                                                     />
                                                 </Grid>
-                                                <Grid item xs={6}>
+                                               <Grid item xs={12} sm={6}>
                                                     <TextField
                                                         label="Arrival Area (Meters)"
                                                         fullWidth

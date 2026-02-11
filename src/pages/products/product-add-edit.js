@@ -417,7 +417,7 @@ const ProductAddEdit = () => {
                             <Form>
                                 <TabContext value={tabValue}>
                                     <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 3 }}>
-                                        <TabList onChange={handleTabChange}>
+                                        <TabList onChange={handleTabChange} scrollButtons="auto" variant="scrollable">
                                             <Tab label="Basic Info" value="basicInfo" disabled={!id && tabValue !== 'basicInfo'} />
                                             <Tab label="Add Ons" value="addOns" disabled={!id && tabValue !== 'addOns'} />
                                             <Tab label="Stores" value="branches" disabled={!id && tabValue !== 'branches'} />
@@ -436,371 +436,399 @@ const ProductAddEdit = () => {
 
                                     {/* Tab Panels */}
                                     <TabPanel value="basicInfo">
-                                        <Grid container spacing={2}>
-                                            {/* Navigation Button */}
-                                            <Grid item xs={12} container justifyContent="flex-end">
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{ minWidth: '120px' }}
-                                                    onClick={() => {
-                                                        if (!validationSchemas['basicInfo'].isValidSync(values)) {
-                                                            // Mark all fields in 'basicInfo' as touched
+                                    <Grid container spacing={2}>
 
-                                                            const basicInfoFields = Object.keys(validationSchemas['basicInfo'].fields);
+                                        {/* Navigation Button */}
+                                        <Grid item xs={12} container justifyContent="flex-end">
+                                        <Button
+                                            size="small"
+                                            variant="contained"
+                                            sx={{ minWidth: 100 }}
+                                            onClick={() => {
+                                            if (!validationSchemas['basicInfo'].isValidSync(values)) {
+                                                const basicInfoFields = Object.keys(
+                                                validationSchemas['basicInfo'].fields
+                                                );
 
-                                                            // Mark only those fields as touched
-                                                            setTouched(
-                                                                basicInfoFields.reduce((acc, field) => {
-                                                                    acc[field] = true;
-                                                                    return acc;
-                                                                }, {})
-                                                            );
-                                                        } else {
-                                                            setTabValue('addOns');
-                                                        }
-                                                    }}
-                                                >
-                                                    Next
-                                                </Button>
-                                            </Grid>
-                                            {/* Product Name */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Product Name*"
-                                                    name="name"
-                                                    value={values.name}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.name && Boolean(errors.name)}
-                                                    helperText={touched.name && errors.name}
-                                                />
-                                            </Grid>
-
-                                            {/* Product Name (Native) */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Product Name (Native)*"
-                                                    name="nativeName"
-                                                    value={values.nativeName}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.nativeName && Boolean(errors.nativeName)}
-                                                    helperText={touched.nativeName && errors.nativeName}
-                                                />
-                                            </Grid>
-
-                                            {/* Product Type */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    select
-                                                    label="Product Type*"
-                                                    name="type"
-                                                    value={values.type}
-                                                    onChange={(e) => {
-                                                        handleChange(e);
-                                                        const selectedType = ProductTypes.find((type) => type.id === +e.target.value);
-                                                        setFieldValue('productSubTypeId', '');
-                                                        if (selectedType) {
-                                                            setFieldValue('subTypes', selectedType.subTypes || []);
-                                                        }
-                                                    }}
-                                                    onBlur={handleBlur}
-                                                    error={touched.type && Boolean(errors.type)}
-                                                    helperText={touched.type && errors.type}
-                                                >
-                                                    {/* Example product type options */}
-                                                    {ProductTypes?.map((e) => (
-                                                        <MenuItem value={e?.id}>{e?.name}</MenuItem>
-                                                    ))}
-                                                    {/* <MenuItem value={2}>Type 2</MenuItem> */}
-                                                </TextField>
-                                            </Grid>
-
-                                            {/* Product Category */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    select
-                                                    label="Product Category*"
-                                                    name="productSubTypeId"
-                                                    value={values.productSubTypeId}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.productSubTypeId && Boolean(errors.productSubTypeId)}
-                                                    helperText={touched.productSubTypeId && errors.productSubTypeId}
-                                                    disabled={!values.type || !values.subTypes?.length}
-                                                >
-                                                    {values.subTypes.map((subType) => (
-                                                        <MenuItem key={subType.id} value={subType.id}>
-                                                            {subType.name}
-                                                        </MenuItem>
-                                                    ))}
-                                                </TextField>
-                                            </Grid>
-
-                                            {/* Price */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    type="number"
-                                                    label="Price*"
-                                                    name="price"
-                                                    value={values.price}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.price && Boolean(errors.price)}
-                                                    helperText={touched.price && errors.price}
-                                                />
-                                            </Grid>
-
-                                            {/* Sort Order */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    type="number"
-                                                    label="Sort Order"
-                                                    name="orderValue"
-                                                    value={values.orderValue}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.orderValue && Boolean(errors.orderValue)}
-                                                    helperText={touched.orderValue && errors.orderValue}
-                                                />
-                                            </Grid>
-
-                                            {/* Punches For Purchase */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    type="number"
-                                                    label="Stamps For Purchase*"
-                                                    name="punchesForPurchase"
-                                                    value={values.punchesForPurchase}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.punchesForPurchase && Boolean(errors.punchesForPurchase)}
-                                                    helperText={touched.punchesForPurchase && errors.punchesForPurchase}
-                                                />
-                                            </Grid>
-
-                                            {/* Points of Cost */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    type="number"
-                                                    label="Price (Points)"
-                                                    name="pointsOfCost"
-                                                    value={values.pointsOfCost}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.pointsOfCost && Boolean(errors.pointsOfCost)}
-                                                    helperText={touched.pointsOfCost && errors.pointsOfCost}
-                                                />
-                                            </Grid>
-
-                                            {/* Estimate Preparation Time */}
-                                            <Grid item xs={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    type="number"
-                                                    label="Estimate Preparation Time"
-                                                    name="estimatePreparationTimeInMinutes"
-                                                    value={values.estimatePreparationTimeInMinutes}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={
-                                                        touched.estimatePreparationTimeInMinutes &&
-                                                        Boolean(errors.estimatePreparationTimeInMinutes)
-                                                    }
-                                                    helperText={
-                                                        touched.estimatePreparationTimeInMinutes && errors.estimatePreparationTimeInMinutes
-                                                    }
-                                                />
-                                            </Grid>
-                                            {/* Punch Type */}
-                                            <Grid item xs={6}>
-                                            <FormControl
-                                                fullWidth
-                                                error={touched.punchesType && Boolean(errors.punchesType)}
-                                            >
-                                                <InputLabel id="punchesType-label">Punch Type</InputLabel>
-
-                                                <Select
-                                                labelId="punchesType-label"
-                                                id="punchesType"
-                                                name="punchesType"
-                                                label="Punch Type"
-                                                value={values.punchesType}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                                >
-                                                <MenuItem value={0}>Regular</MenuItem>
-                                                <MenuItem value={1}>FreeFood</MenuItem>
-                                                <MenuItem value={2}>SpecialItem</MenuItem>
-                                                <MenuItem value={3}>SpecialProduct</MenuItem>
-                                                <MenuItem value={4}>Speical1</MenuItem>
-                                                <MenuItem value={5}>Speical2</MenuItem>
-                                                <MenuItem value={6}>Speical3</MenuItem>
-                                                <MenuItem value={7}>Speical4</MenuItem>
-                                                <MenuItem value={8}>Acai_Bowl</MenuItem>
-                                                <MenuItem value={9}>Matcha</MenuItem>
-                                                <MenuItem value={10}>Drinks</MenuItem>
-                                                </Select>
-
-                                                {touched.punchesType && errors.punchesType && (
-                                                <FormHelperText>{errors.punchesType}</FormHelperText>
-                                                )}
-                                            </FormControl>
-                                            </Grid>
-
-                                            {/* Description */}
-                                            <Grid item xs={12}>
-                                                <TextField
-                                                    fullWidth
-                                                    multiline
-                                                    rows={3}
-                                                    label="Description"
-                                                    name="productDescription"
-                                                    value={values.productDescription}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.productDescription && Boolean(errors.productDescription)}
-                                                    helperText={touched.productDescription && errors.productDescription}
-                                                />
-                                            </Grid>
-
-                                            {/* Description (Native) */}
-                                            <Grid item xs={12}>
-                                                <TextField
-                                                    fullWidth
-                                                    multiline
-                                                    rows={3}
-                                                    label="Description (Native)"
-                                                    name="productDescriptionNative"
-                                                    value={values.productDescriptionNative}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    error={touched.productDescriptionNative && Boolean(errors.productDescriptionNative)}
-                                                    helperText={touched.productDescriptionNative && errors.productDescriptionNative}
-                                                />
-                                            </Grid>
+                                                setTouched(
+                                                basicInfoFields.reduce((acc, field) => {
+                                                    acc[field] = true;
+                                                    return acc;
+                                                }, {})
+                                                );
+                                            } else {
+                                                setTabValue('addOns');
+                                            }
+                                            }}
+                                        >
+                                            Next
+                                        </Button>
                                         </Grid>
+
+                                        {/* Product Name */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Product Name*"
+                                            name="name"
+                                            value={values.name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.name && Boolean(errors.name)}
+                                            helperText={touched.name && errors.name}
+                                        />
+                                        </Grid>
+
+                                        {/* Product Name (Native) */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Product Name (Native)*"
+                                            name="nativeName"
+                                            value={values.nativeName}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.nativeName && Boolean(errors.nativeName)}
+                                            helperText={touched.nativeName && errors.nativeName}
+                                        />
+                                        </Grid>
+
+                                        {/* Product Type */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            select
+                                            label="Product Type*"
+                                            name="type"
+                                            value={values.type}
+                                            onChange={(e) => {
+                                            handleChange(e);
+                                            const selectedType = ProductTypes.find(
+                                                (type) => type.id === +e.target.value
+                                            );
+                                            setFieldValue('productSubTypeId', '');
+                                            if (selectedType) {
+                                                setFieldValue('subTypes', selectedType.subTypes || []);
+                                            }
+                                            }}
+                                            onBlur={handleBlur}
+                                            error={touched.type && Boolean(errors.type)}
+                                            helperText={touched.type && errors.type}
+                                        >
+                                            {ProductTypes?.map((e) => (
+                                            <MenuItem key={e.id} value={e.id}>
+                                                {e.name}
+                                            </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        </Grid>
+
+                                        {/* Product Category */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            select
+                                            label="Product Category*"
+                                            name="productSubTypeId"
+                                            value={values.productSubTypeId}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                            touched.productSubTypeId &&
+                                            Boolean(errors.productSubTypeId)
+                                            }
+                                            helperText={
+                                            touched.productSubTypeId &&
+                                            errors.productSubTypeId
+                                            }
+                                            disabled={!values.type || !values.subTypes?.length}
+                                        >
+                                            {values.subTypes.map((subType) => (
+                                            <MenuItem key={subType.id} value={subType.id}>
+                                                {subType.name}
+                                            </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        </Grid>
+
+                                        {/* Price */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Price*"
+                                            name="price"
+                                            value={values.price}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.price && Boolean(errors.price)}
+                                            helperText={touched.price && errors.price}
+                                        />
+                                        </Grid>
+
+                                        {/* Sort Order */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Sort Order"
+                                            name="orderValue"
+                                            value={values.orderValue}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                            touched.orderValue &&
+                                            Boolean(errors.orderValue)
+                                            }
+                                            helperText={touched.orderValue && errors.orderValue}
+                                        />
+                                        </Grid>
+
+                                        {/* Punches For Purchase */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Stamps For Purchase*"
+                                            name="punchesForPurchase"
+                                            value={values.punchesForPurchase}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                            touched.punchesForPurchase &&
+                                            Boolean(errors.punchesForPurchase)
+                                            }
+                                            helperText={
+                                            touched.punchesForPurchase &&
+                                            errors.punchesForPurchase
+                                            }
+                                        />
+                                        </Grid>
+
+                                        {/* Points of Cost */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Price (Points)"
+                                            name="pointsOfCost"
+                                            value={values.pointsOfCost}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                            touched.pointsOfCost &&
+                                            Boolean(errors.pointsOfCost)
+                                            }
+                                            helperText={
+                                            touched.pointsOfCost && errors.pointsOfCost
+                                            }
+                                        />
+                                        </Grid>
+
+                                        {/* Estimate Preparation Time */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Estimate Preparation Time"
+                                            name="estimatePreparationTimeInMinutes"
+                                            value={values.estimatePreparationTimeInMinutes}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                            touched.estimatePreparationTimeInMinutes &&
+                                            Boolean(errors.estimatePreparationTimeInMinutes)
+                                            }
+                                            helperText={
+                                            touched.estimatePreparationTimeInMinutes &&
+                                            errors.estimatePreparationTimeInMinutes
+                                            }
+                                        />
+                                        </Grid>
+
+                                        {/* Punch Type */}
+                                        <Grid item xs={12} sm={6}>
+                                        <FormControl
+                                            fullWidth
+                                            error={
+                                            touched.punchesType &&
+                                            Boolean(errors.punchesType)
+                                            }
+                                        >
+                                            <InputLabel>Punch Type</InputLabel>
+                                            <Select
+                                            name="punchesType"
+                                            label="Punch Type"
+                                            value={values.punchesType}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            >
+                                            <MenuItem value={0}>Regular</MenuItem>
+                                            <MenuItem value={1}>FreeFood</MenuItem>
+                                            <MenuItem value={2}>SpecialItem</MenuItem>
+                                            <MenuItem value={3}>SpecialProduct</MenuItem>
+                                            <MenuItem value={4}>Speical1</MenuItem>
+                                            <MenuItem value={5}>Speical2</MenuItem>
+                                            <MenuItem value={6}>Speical3</MenuItem>
+                                            <MenuItem value={7}>Speical4</MenuItem>
+                                            <MenuItem value={8}>Acai_Bowl</MenuItem>
+                                            <MenuItem value={9}>Matcha</MenuItem>
+                                            <MenuItem value={10}>Drinks</MenuItem>
+                                            </Select>
+
+                                            {touched.punchesType && errors.punchesType && (
+                                            <FormHelperText>
+                                                {errors.punchesType}
+                                            </FormHelperText>
+                                            )}
+                                        </FormControl>
+                                        </Grid>
+
+                                        {/* Descriptions */}
+                                        <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={3}
+                                            label="Description"
+                                            name="productDescription"
+                                            value={values.productDescription}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={3}
+                                            label="Description (Native)"
+                                            name="productDescriptionNative"
+                                            value={values.productDescriptionNative}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                        </Grid>
+
+                                    </Grid>
                                     </TabPanel>
 
                                     <TabPanel value="addOns">
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            style={{ marginBottom: '15px', paddingLeft: '18px' }}
-                                            container
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                            spacing={2}
-                                        >
-                                            {/* Back Button */}
-                                            <Box mr={2}>
-                                                <Button
-                                                    variant="outlined"
-                                                    sx={{ minWidth: '120px' }}
-                                                    onClick={() => setTabValue('basicInfo')} // Navigate to the previous tab
-                                                >
-                                                    Back
-                                                </Button>
-                                            </Box>
-
-                                            {/* Next Button */}
+                                    {/* Navigation */}
+                                    <Grid container spacing={2} sx={{ mb: 2, px: 2 }}>
+                                        <Grid item xs={12}>
+                                        <Box display="flex" justifyContent="space-between">
                                             <Button
-                                                variant="contained"
-                                                sx={{ minWidth: '120px' }}
-                                                onClick={() => setTabValue('branches')} // Navigate to the next tab
-                                                disabled={!validationSchemas['addOns'].isValidSync(values)}
+                                            size="small"
+                                            variant="outlined"
+                                            onClick={() => setTabValue('basicInfo')}
                                             >
-                                                Next
+                                            Back
                                             </Button>
+
+                                            <Button
+                                            size="small"
+                                            variant="contained"
+                                            onClick={() => setTabValue('branches')}
+                                            disabled={!validationSchemas['addOns'].isValidSync(values)}
+                                            >
+                                            Next
+                                            </Button>
+                                        </Box>
                                         </Grid>
-                                        <FieldArray
-                                            name="addonGroups"
-                                            render={(arrayHelpers) => (
-                                                <Grid container spacing={2}>
-                                                    {/* Dropdown for selecting Addon Group */}
-                                                    <Grid item xs={5}>
-                                                        <TextField
-                                                            fullWidth
-                                                            select
-                                                            label="Addon Group"
-                                                            value={values.newAddonGroup || ''}
-                                                            onChange={(e) =>
-                                                                arrayHelpers.form.setFieldValue('newAddonGroup', e.target.value)
-                                                            }
-                                                        >
-                                                            {addonGroupList.map((group) => (
-                                                                <MenuItem key={group.id} value={group.id}>
-                                                                    {group.name}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </TextField>
-                                                    </Grid>
+                                    </Grid>
 
-                                                    {/* Add Button */}
-                                                    <Grid item xs={2} display="flex" alignItems="center">
-                                                        <Button
-                                                            variant="contained"
-                                                            onClick={() => {
-                                                                if (values.newAddonGroup) {
-                                                                    const selectedGroup = addonGroupList.find(
-                                                                        (g) => g.id === values.newAddonGroup
-                                                                    );
-                                                                    arrayHelpers.push({
-                                                                        groupId: selectedGroup.id,
-                                                                        groupName: selectedGroup.name
-                                                                    });
-                                                                    arrayHelpers.form.setFieldValue('newAddonGroup', ''); // Reset dropdown
-                                                                }
-                                                            }}
-                                                            disabled={!values.newAddonGroup} // Disable if no value selected
-                                                        >
-                                                            Add
-                                                        </Button>
-                                                    </Grid>
+                                    <FieldArray
+                                        name="addonGroups"
+                                        render={(arrayHelpers) => (
+                                        <Grid container spacing={2} px={2}>
+                                            {/* Addon Group Select */}
+                                            <Grid item xs={12} sm={6} md={4}>
+                                            <TextField
+                                                fullWidth
+                                                select
+                                                label="Addon Group"
+                                                value={values.newAddonGroup || ''}
+                                                onChange={(e) =>
+                                                arrayHelpers.form.setFieldValue(
+                                                    'newAddonGroup',
+                                                    e.target.value
+                                                )
+                                                }
+                                            >
+                                                {addonGroupList.map((group) => (
+                                                <MenuItem key={group.id} value={group.id}>
+                                                    {group.name}
+                                                </MenuItem>
+                                                ))}
+                                            </TextField>
+                                            </Grid>
 
-                                                    {/* Display existing addon groups */}
-                                                    {values.addonGroups?.map((addonGroup, index) => (
-                                                        <React.Fragment key={index}>
-                                                            {/* Group Name Display */}
-                                                            <Grid item xs={5}></Grid>
+                                            {/* Add Button */}
+                                            <Grid item xs={12}>
+                                            <Button
+                                                size="small"
+                                                fullWidth
+                                                variant="contained"
+                                                onClick={() => {
+                                                if (values.newAddonGroup) {
+                                                    const selectedGroup =
+                                                    addonGroupList.find(
+                                                        (g) => g.id === values.newAddonGroup
+                                                    );
 
-                                                            {/* Editable Input */}
-                                                            <Grid item xs={5}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="Custom Group Name"
-                                                                    name={`addonGroups[${index}].groupName`}
-                                                                    value={addonGroup.groupName || ''}
-                                                                    onChange={handleChange}
-                                                                    onBlur={handleBlur}
-                                                                    readonly
-                                                                />
-                                                            </Grid>
+                                                    arrayHelpers.push({
+                                                    groupId: selectedGroup.id,
+                                                    groupName: selectedGroup.name,
+                                                    });
 
-                                                            {/* Remove Button */}
-                                                            <Grid item xs={2} display="flex" alignItems="center">
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    color="error"
-                                                                    onClick={() => arrayHelpers.remove(index)}
-                                                                >
-                                                                    Remove
-                                                                </Button>
-                                                            </Grid>
-                                                        </React.Fragment>
-                                                    ))}
-                                                </Grid>
-                                            )}
-                                        />
+                                                    arrayHelpers.form.setFieldValue(
+                                                    'newAddonGroup',
+                                                    ''
+                                                    );
+                                                }
+                                                }}
+                                                disabled={!values.newAddonGroup}
+                                            >
+                                                Add
+                                            </Button>
+                                            </Grid>
+
+                                            {/* Existing Addon Groups */}
+                                            {values.addonGroups?.map((addonGroup, index) => (
+                                            <Grid item xs={12} key={index}>
+                                                <Box
+                                                display="flex"
+                                                flexDirection="column"
+                                                gap={1}
+                                                >
+                                                <TextField
+                                                    fullWidth
+                                                    label="Custom Group Name"
+                                                    name={`addonGroups[${index}].groupName`}
+                                                    value={addonGroup.groupName || ''}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    readonly
+                                                />
+
+                                                <Button
+                                                    size="small"
+                                                    variant="outlined"
+                                                    color="error"
+                                                    onClick={() => arrayHelpers.remove(index)}
+                                                >
+                                                    Remove
+                                                </Button>
+                                                </Box>
+                                            </Grid>
+                                            ))}
+                                        </Grid>
+                                        )}
+                                    />
                                     </TabPanel>
+
 
                                     {/*  */}
                                     <TabPanel value="branches">
@@ -897,157 +925,121 @@ const ProductAddEdit = () => {
                                     </TabPanel>
 
                                     <TabPanel value="settings">
-                                        {/* Navigation Button */}
-                                        <Grid
-                                            sx={{ mb: 2, px: 3 }} // Padding from left & right
-                                            xs={12}
-                                            container
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                            spacing={2}
-                                        >
-                                            {/* Back Button */}
-                                            <Box mr={2}>
-                                                <Button
-                                                    variant="outlined"
-                                                    sx={{ minWidth: '120px' }}
-                                                    onClick={() => setTabValue('branches')} // Navigate to the previous tab
-                                                >
-                                                    Back
-                                                </Button>
-                                            </Box>
-
-                                            {/* Next Button */}
+                                    {/* Navigation */}
+                                    <Grid
+                                        container
+                                        spacing={2}
+                                        sx={{ mb: 2, px: 3 }}
+                                    >
+                                        <Grid item xs={12}>
+                                        <Box display="flex" justifyContent="space-between">
                                             <Button
-                                                variant="contained"
-                                                sx={{ minWidth: '120px' }}
-                                                onClick={() => setTabValue('nutritions')} // Navigate to the next tab
+                                            size="small"
+                                            variant="outlined"
+                                            onClick={() => setTabValue('branches')}
                                             >
-                                                Next
+                                            Back
                                             </Button>
+
+                                            <Button
+                                            size="small"
+                                            variant="contained"
+                                            onClick={() => setTabValue('nutritions')}
+                                            >
+                                            Next
+                                            </Button>
+                                        </Box>
                                         </Grid>
-                                        <Grid container spacing={3}>
-                                            {/* Delivery Product */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isDeliveryProduct"
-                                                            checked={values.isDeliveryProduct}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Delivery Product"
-                                                />
-                                            </Grid>
+                                    </Grid>
 
-                                            {/* Eligible for Free Drinks */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isEligibleForFreeItem"
-                                                            checked={values.isEligibleForFreeItem}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Eligible for Free Items"
-                                                />
-                                            </Grid>
-
-                                            {/* Product Image Delete */}
-                                            {/* <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isProductImageDeleted"
-                                                            checked={values.isProductImageDeleted}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Product Image Delete"
-                                                />
-                                            </Grid> */}
-
-                                            {/* Quantity Available */}
-                                            {/* <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isQtyAvailable"
-                                                            checked={values.isQtyAvailable}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Quantity Available"
-                                                />
-                                            </Grid> */}
-
-                                            {/* Comment Allowed */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="commentAllowed"
-                                                            checked={values.commentAllowed}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Comment Allowed"
-                                                />
-                                            </Grid>
-
-                                            {/* To Selling */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isTopProduct"
-                                                            checked={values.isTopProduct}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Top Selling"
-                                                />
-                                            </Grid>
-
-                                            {/* Featured Product */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="isFeaturedProduct"
-                                                            checked={values.isFeaturedProduct}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Featured"
-                                                />
-                                            </Grid>
-
-                                            {/* Don't Miss Out */}
-                                            <Grid item xs={4}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch
-                                                            name="dontMissOutProduct"
-                                                            checked={values.dontMissOutProduct}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                        />
-                                                    }
-                                                    label="Don't Miss Out"
-                                                />
-                                            </Grid>
+                                    {/* Settings */}
+                                    <Grid container spacing={2} px={3}>
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="isDeliveryProduct"
+                                                checked={values.isDeliveryProduct}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Delivery Product"
+                                        />
                                         </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="isEligibleForFreeItem"
+                                                checked={values.isEligibleForFreeItem}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Eligible for Free Items"
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="commentAllowed"
+                                                checked={values.commentAllowed}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Comment Allowed"
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="isTopProduct"
+                                                checked={values.isTopProduct}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Top Selling"
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="isFeaturedProduct"
+                                                checked={values.isFeaturedProduct}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Featured"
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                name="dontMissOutProduct"
+                                                checked={values.dontMissOutProduct}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Don't Miss Out"
+                                        />
+                                        </Grid>
+                                    </Grid>
                                     </TabPanel>
+
 
                                     <TabPanel value="nutritions">
                                         <Grid container spacing={3}>

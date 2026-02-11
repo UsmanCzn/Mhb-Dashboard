@@ -45,43 +45,71 @@ const WalletTopups = () => {
       }, [selectedBrand]);
 
 
-        const columns = [ 
-          {
-              field: 'title',
-              headerName: 'Title',
-              flex: 1.2,
-              headerAlign: 'left'
+            const columns = [
+            {
+                field: 'title',
+                headerName: 'Title',
+                flex: 1,
+                minWidth: 160,
+                headerAlign: 'left',
+                align: 'left',
+                renderCell: ({ value }) => (
+                <span
+                    style={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    }}
+                    title={value}
+                >
+                    {value || '--'}
+                </span>
+                ),
             },
             {
-              field: 'topUpValue',
-              headerName: 'Amount in Wallet',
-              flex: 1.4,
-              headerAlign: 'left',
+                field: 'topUpValue',
+                headerName: 'Amount in Wallet',
+                flex: 1,
+                minWidth: 160,
+                headerAlign: 'right',
+                align: 'right',
+                renderCell: ({ value }) => (value != null ? value : '--'),
             },
             {
-              field: 'noOfDaysValidFor',
-              headerName: 'Valid Days',
-              flex: 1.4,
-              headerAlign: 'left',
+                field: 'noOfDaysValidFor',
+                headerName: 'Valid Days',
+                flex: 0.9,
+                minWidth: 130,
+                headerAlign: 'center',
+                align: 'center',
+                renderCell: ({ value }) => value ?? '--',
             },
             {
-              field: 'creditValue',
-              headerName: 'Credit',
-              flex: 1.4,
-              headerAlign: 'left',
+                field: 'creditValue',
+                headerName: 'Credit',
+                flex: 1,
+                minWidth: 130,
+                headerAlign: 'right',
+                align: 'right',
+                renderCell: ({ value }) => value ?? '--',
             },
             {
-              field: 'isRewardMfissisng',
-              headerName: 'Action',
-              sortable: false,
-              flex: 0.5,
-              headerAlign: 'left',
-              
-              renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-              }
-            }
-        ];
+                field: 'actions',
+                headerName: 'Action',
+                sortable: false,
+                flex: 0.4,
+                minWidth: 80,
+                headerAlign: 'center',
+                align: 'center',
+                renderCell: (params) => (
+                <MoreVertIcon
+                    sx={{ cursor: 'pointer' }}
+                    onClick={(event) => handleClick(event, params)}
+                />
+                ),
+            },
+            ];
+
 
         const options = [
             {

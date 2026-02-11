@@ -33,7 +33,7 @@ const Credit = () => {
             </Grid>
             <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                    <TabList scrollButtons="auto" variant="scrollable" onChange={handleChange} aria-label="lab API tabs example">
                         <Tab label="Credit Request" value="1" />
                         <Tab label="Points Request" value="2" />
                         <Tab label="Notification Request" value="3" />

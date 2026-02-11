@@ -1,87 +1,129 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Link,
-  Typography, Grid, Select, FormControl, InputLabel, MenuItem
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Link,
+  Typography,
+  Grid,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  TablePagination,
 } from '@mui/material';
 
 import customerService from 'services/customerService';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useSnackbar } from 'notistack';
-
 import AddCommentsModal from 'components/add-comment-modal';
 import LinearProgress from '@mui/material/LinearProgress';
-import moment from "moment";
+import moment from 'moment';
+
+const TAKE = 10;
 
 const ScansHistory = ({ user }) => {
   const { cid } = useParams();
+
   const [selectedBrandId, setSelectedBrandId] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [selectedRow, setSelectedRow] = useState();
+  const [selectedBrand, setSelectedBrand] = useState(null);
   const [filteredBrands, setFilteredBrands] = useState([]);
+
   const [pointsRows, setPointsRows] = useState([]);
   const [stampsRows, setStampsRows] = useState([]);
+
+  const [pointsPage, setPointsPage] = useState(0);
+  const [stampsPage, setStampsPage] = useState(0);
+
+  const [pointsTotal, setPointsTotal] = useState(0);
+  const [stampsTotal, setStampsTotal] = useState(0);
+
+  const [selectedRow, setSelectedRow] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isCommentsModalOpen, setCommentsModalOpen] = useState(false);
 
   const { brandsList } = useFetchBrandsList(true);
   const { enqueueSnackbar } = useSnackbar();
 
+  /* ------------------ DISPUTE ------------------ */
+
   const handleRemoveClick = (row) => {
     setSelectedRow(row);
     setCommentsModalOpen(true);
   };
 
-  const handleCommentSubmit = (comment) => {
-    CreateDispute(comment);
-    setCommentsModalOpen(false);
-  };
-
-  const CreateDispute = async (comment) => {
-    setLoading(true);
+  const handleCommentSubmit = async (comment) => {
     try {
+      setLoading(true);
       await customerService.CreateScanDispute(selectedRow?.id, comment);
       enqueueSnackbar('Dispute request has been created.', { variant: 'success' });
-    } catch (err) {
-      console.error('Failed to create dispute:', err);
-      enqueueSnackbar('Failed to create dispute.', { variant: 'error', autoHideDuration: 1000 });
+
+      if (selectedBrand?.isPointPrimaryBrand) {
+        fetchScanHistory(selectedBrandId, pointsPage);
+      }
+      if (selectedBrand?.isStampPrimaryBrand) {
+        fetchScanStampsHistory(selectedBrandId, stampsPage);
+      }
+    } catch {
+      enqueueSnackbar('Failed to create dispute.', { variant: 'error' });
     } finally {
       setLoading(false);
+      setCommentsModalOpen(false);
     }
   };
 
-  const fetchScanHistory = async (brandId) => {
+  /* ------------------ API CALLS ------------------ */
+
+  const fetchScanHistory = async (brandId, page = 0) => {
     if (!cid || !brandId) return;
-    setLoading(true);
+
     try {
-      const response = await customerService.getScansHistory(cid, brandId, 10, 0);
-      setPointsRows(response?.data?.result?.item1 || []);
-    } catch (err) {
+      setLoading(true);
+      const skip = page * TAKE;
+      const res = await customerService.getScansHistory(cid, brandId, TAKE, skip);
+
+      setPointsRows(res?.data?.result?.item1 || []);
+      setPointsTotal(res?.data?.result?.item2 || 0);
+    } catch {
       setPointsRows([]);
+      setPointsTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchScanStampsHistory = async (brandId) => {
+  const fetchScanStampsHistory = async (brandId, page = 0) => {
     if (!cid || !brandId) return;
-    setLoading(true);
+
     try {
-      const response = await customerService.getScansStampsHistory(cid, brandId, 10, 0);
-      setStampsRows(response?.data?.result?.item1 || []);
-    } catch (err) {
-      console.error('Failed to fetch scan stamps history:', err);
+      setLoading(true);
+      const skip = page * TAKE;
+      const res = await customerService.getScansStampsHistory(cid, brandId, TAKE, skip);
+
+      setStampsRows(res?.data?.result?.item1 || []);
+      setStampsTotal(res?.data?.result?.item2 || 0);
+    } catch {
       setStampsRows([]);
+      setStampsTotal(0);
     } finally {
       setLoading(false);
     }
   };
+
+  /* ------------------ EFFECTS ------------------ */
 
   useEffect(() => {
     if (brandsList.length && user?.companyId) {
-      const filtered = brandsList.filter((br) => br.companyId === user.companyId);
+      const filtered = brandsList.filter(
+        (br) => br.companyId === user.companyId
+      );
       setFilteredBrands(filtered);
+
       if (filtered.length) {
         setSelectedBrandId(filtered[0].id);
         setSelectedBrand(filtered[0]);
@@ -90,105 +132,93 @@ const ScansHistory = ({ user }) => {
   }, [brandsList, user]);
 
   useEffect(() => {
-    const brand = filteredBrands.find((br) => br.id === selectedBrandId);
+    const brand = filteredBrands.find((br) => br.id === selectedBrandId) || null;
     setSelectedBrand(brand);
 
+    setPointsPage(0);
+    setStampsPage(0);
     setPointsRows([]);
     setStampsRows([]);
+
     if (!brand) return;
 
-    if (brand.isPointPrimaryBrand) fetchScanHistory(selectedBrandId);
-    if (brand.isStampPrimaryBrand) fetchScanStampsHistory(selectedBrandId);
+    if (brand.isPointPrimaryBrand) {
+      fetchScanHistory(selectedBrandId, 0);
+    }
+    if (brand.isStampPrimaryBrand) {
+      fetchScanStampsHistory(selectedBrandId, 0);
+    }
   }, [selectedBrandId, filteredBrands, cid]);
+
+  /* ------------------ RENDER ------------------ */
 
   return (
     <>
       <Grid container spacing={4}>
-        <Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '10px' }}>
-          <Grid container alignItems="center" justifyContent="flex-end">
-     
-            <Grid item>
-              <FormControl fullWidth sx={{ minWidth: 200 }}>
-                <InputLabel id="brand-select-label">Brand</InputLabel>
-                <Select
-                  labelId="brand-select-label"
-                  id="brand-select"
-                  value={selectedBrandId}
-                  label="Brand"
-                  onChange={(event) => setSelectedBrandId(event.target.value)}
-                >
-                  {filteredBrands.map((brand) => (
-                    <MenuItem key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+        <Grid item xs={12} sx={{ mt: 1, mb: 1 }}>
+          <Grid container justifyContent="flex-end">
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>Brand</InputLabel>
+              <Select
+                value={selectedBrandId}
+                label="Brand"
+                onChange={(e) => setSelectedBrandId(e.target.value)}
+              >
+                {filteredBrands.map((brand) => (
+                  <MenuItem key={brand.id} value={brand.id}>
+                    {brand.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </Grid>
 
       {loading && <LinearProgress sx={{ mb: 0.5 }} />}
 
-      {/* Points Table */}
+      {/* ------------------ POINTS TABLE ------------------ */}
       {selectedBrand?.isPointPrimaryBrand && (
-        <div style={{  margin: '0 auto', marginBottom: 32 }}>
+        <>
           <Typography variant="h4" fontWeight={600} sx={{ mb: 1 }}>
             Points History
           </Typography>
-          <TableContainer
-            component={Paper}
-            elevation={2}
-            sx={{ maxHeight: 360, overflow: 'auto' }}
-          >
+
+          <TableContainer component={Paper} sx={{ maxHeight: 360 }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell><strong>Date & Time</strong></TableCell>
-                  <TableCell><strong>Points</strong></TableCell>
-                  <TableCell><strong>Amount</strong></TableCell>
-                  <TableCell><strong>Action</strong></TableCell>
+                  <TableCell>Date & Time</TableCell>
+                  <TableCell>Points</TableCell>
+                  <TableCell>Amount</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {pointsRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
+                    <TableCell colSpan={4} align="center">
                       No points history found.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  pointsRows.map((row, index) => (
-                    <TableRow key={index}>
+                  pointsRows.map((row, i) => (
+                    <TableRow key={i}>
                       <TableCell>
-                        {row.creationTime
-                          ? moment(row.creationTime).format('DD/MM/YYYY HH:mm')
-                          : '--'}
+                        {moment(row.creationTime).format('DD/MM/YYYY HH:mm')}
                       </TableCell>
-                      <TableCell>{row?.pointsEarned || 0}</TableCell>
+                      <TableCell>{row.pointsEarned}</TableCell>
                       <TableCell>
-                        {row?.amount || 0} {selectedBrand?.currency}
+                        {row.amount} {selectedBrand.currency}
                       </TableCell>
                       <TableCell>
                         {row.isAct ? (
-                          <span
-                            style={{
-                              color: '#bdbdbd',
-                              textDecoration: 'none',
-                              cursor: 'not-allowed',
-                              fontWeight: 500,
-                            }}
-                          >
-                            Remove
-                          </span>
+                          <span style={{ color: '#bdbdbd' }}>Remove</span>
                         ) : (
                           <Link
                             component="button"
                             color="error"
-                            underline="none"
                             onClick={() => handleRemoveClick(row)}
-                            sx={{ fontWeight: 500 }}
                           >
                             Remove
                           </Link>
@@ -200,79 +230,65 @@ const ScansHistory = ({ user }) => {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
+
+          <TablePagination
+            component="div"
+            count={pointsTotal}
+            page={pointsPage}
+            onPageChange={(_, p) => {
+              setPointsPage(p);
+              fetchScanHistory(selectedBrandId, p);
+            }}
+            rowsPerPage={TAKE}
+            rowsPerPageOptions={[10]}
+          />
+        </>
       )}
 
-      {/* Stamps Table */}
+      {/* ------------------ STAMPS TABLE ------------------ */}
       {selectedBrand?.isStampPrimaryBrand && (
-        <div style={{  margin: '0 auto', marginBottom: 32 }}>
-          <Typography variant="h4" fontWeight={600} sx={{ mb: 1 }}>
+        <>
+          <Typography variant="h4" fontWeight={600} sx={{ mt: 3, mb: 1 }}>
             Stamps History
           </Typography>
-          <TableContainer
-            component={Paper}
-            elevation={2}
-            sx={{ maxHeight: 360, overflow: 'auto' }}
-          >
+
+          <TableContainer component={Paper} sx={{ maxHeight: 360 }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell><strong>Date & Time</strong></TableCell>
-                  <TableCell><strong>Description</strong></TableCell>
-                  <TableCell><strong>Stamp Quantity</strong></TableCell>
-                  <TableCell><strong>Action</strong></TableCell>
+                  <TableCell>Date & Time</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Qty</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {stampsRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
+                    <TableCell colSpan={4} align="center">
                       No stamps history found.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  stampsRows.map((row, index) => (
-                    <TableRow key={index}>
+                  stampsRows.map((row, i) => (
+                    <TableRow key={i}>
                       <TableCell>
-                        {row.creationTime
-                          ? moment(row.creationTime).format('DD/MM/YYYY HH:mm')
-                          : '--'}
+                        {moment(row.creationTime).format('DD/MM/YYYY HH:mm')}
                       </TableCell>
                       <TableCell>
-                        {(() => {
-                          const value = row?.value ?? '';
-                          const invoice = row?.id ? `for #invoice${row.id}` : '';
-                          if (row?.freeItems === true && value < 0) {
-                            return `Drinks Redeemed ${Math.abs(value)} ${invoice}`;
-                          }
-                          if (row?.punches) {
-                            return `Stamp Increase by ${value} ${invoice}`;
-                          }
-                          return `Drinks Increase by ${value} ${invoice}`;
-                        })()}
+                        {row.freeItems && row.value < 0
+                          ? `Drinks Redeemed ${Math.abs(row.value)}`
+                          : `Increase ${row.value}`}
                       </TableCell>
-                      <TableCell>
-                        {row?.value}
-                      </TableCell>
+                      <TableCell>{row.value}</TableCell>
                       <TableCell>
                         {row.isAct ? (
-                          <span
-                            style={{
-                              color: '#bdbdbd',
-                              textDecoration: 'none',
-                              cursor: 'not-allowed',
-                              fontWeight: 500,
-                            }}
-                          >
-                            Remove
-                          </span>
+                          <span style={{ color: '#bdbdbd' }}>Remove</span>
                         ) : (
                           <Link
                             component="button"
                             color="error"
-                            underline="none"
                             onClick={() => handleRemoveClick(row)}
-                            sx={{ fontWeight: 500 }}
                           >
                             Remove
                           </Link>
@@ -284,7 +300,19 @@ const ScansHistory = ({ user }) => {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
+
+          <TablePagination
+            component="div"
+            count={stampsTotal}
+            page={stampsPage}
+            onPageChange={(_, p) => {
+              setStampsPage(p);
+              fetchScanStampsHistory(selectedBrandId, p);
+            }}
+            rowsPerPage={TAKE}
+            rowsPerPageOptions={[10]}
+          />
+        </>
       )}
 
       <AddCommentsModal

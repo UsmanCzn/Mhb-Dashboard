@@ -105,71 +105,78 @@ const CreditReport = () => {
           {
             field: 'customerName',
             headerName: 'Customer Name',
-            flex: 1,
+            flex: 1.2,
+            minWidth: 180,
             headerAlign: 'left',
+            align: 'left',
+            renderCell: (params) => (
+              <Typography variant="body2" noWrap>
+                {params.value || '--'}
+              </Typography>
+            ),
           },
           {
             field: 'creditsGiven',
             headerName: 'Credit Given',
             flex: 0.7,
+            minWidth: 130,
             headerAlign: 'left',
-            // valueFormatter: ({ value }) =>
-            //   value !== undefined && value !== null ? `${value.toFixed(2)} KWD` : '--',
+            align: 'left',
+            renderCell: (params) => (
+              <Typography variant="body2">
+                {params.value ?? '--'}
+                {/* Optional:
+                {params.value != null ? `${params.value.toFixed(2)} KWD` : '--'} */}
+              </Typography>
+            ),
           },
           {
             field: 'creditUsed',
             headerName: 'Credit Used',
             flex: 0.7,
+            minWidth: 130,
             headerAlign: 'left',
-            // valueFormatter: ({ value }) =>
-            //   value !== undefined && value !== null ? `${value.toFixed(2)} KWD` : '--',
+            align: 'left',
+            renderCell: (params) => (
+              <Typography variant="body2">
+                {params.value ?? '--'}
+              </Typography>
+            ),
           },
           {
             field: 'remainingCredit',
             headerName: 'Credit Remaining',
-            flex: 0.7,
+            flex: 0.8,
+            minWidth: 150,
             headerAlign: 'left',
-            // valueFormatter: ({ value }) =>
-            //   value !== undefined && value !== null ? `${value.toFixed(2)} KWD` : '--',
+            align: 'left',
+            renderCell: (params) => (
+              <Typography
+                variant="body2"
+                color={params.value < 0 ? 'error.main' : 'text.primary'}
+              >
+                {params.value ?? '--'}
+              </Typography>
+            ),
           },
           {
             field: 'lastUsageUtc',
             headerName: 'Creation Time',
             flex: 1.1,
+            minWidth: 180,
             headerAlign: 'left',
+            align: 'left',
             valueGetter: (params) => params.row?.lastUsageUtc,
-            renderCell: (params) =>
-              params.row?.lastUsageUtc
-                ? moment(params.row.lastUsageUtc).format('DD/MM/YYYY HH:mm')
-                : '--',
+            renderCell: (params) => (
+              <Typography variant="body2" noWrap>
+                {params.value
+                  ? moment(params.value).format('DD/MM/YYYY HH:mm')
+                  : '--'}
+              </Typography>
+            ),
           },
-          // {
-          //   field: 'pointsEarned',
-          //   headerName: 'Points Earned',
-          //   flex: 0.7,
-          //   headerAlign: 'left',
-          // },
-          // {
-          //   field: 'comment',
-          //   headerName: 'Comment',
-          //   flex: 1,
-          //   headerAlign: 'left',
-          // },
-      
-          // {
-          //   field: 'actions',
-          //   headerName: 'Actions',
-          //   sortable: false,
-          //   flex: 0.5,
-          //   headerAlign: 'left',
-          //   renderCell: (params) => (
-          //     !params.row.isAct && (
-          //       <MoreVertIcon onClick={(event) => handleClick(event, params)} style={{ cursor: 'pointer' }} />
-          //     )
-          //   ),
-          // },
         ];
-      
+
         // Options for menu actions
         const options = [
           { name: 'Accept', modal: false },

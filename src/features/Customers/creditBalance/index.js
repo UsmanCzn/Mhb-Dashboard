@@ -140,211 +140,241 @@ const CreditBalance = (props) => {
         }
     }, [brandsList, user?.companyId]);
 
-    return (
-        <>
-            {loading && (
-                <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
-                </Box>
-            )}
-            <Card sx={{ p: 2, boxShadow: 3, borderRadius: 2 }}>
-            <CardContent>
-            <Grid container spacing={4}>
-                {/* Brand select */}
-                <Grid item xs={12} sx={{ marginTop: '10px' }}>
-                    <Grid container alignItems="center" justifyContent="space-between">
-                        <Grid item xs="auto">
-                            <Typography fontSize={26} fontWeight={600}></Typography>
-                        </Grid>
+return (
+  <>
+    {loading && (
+      <Box sx={{ width: '100%' }}>
+        <LinearProgress />
+      </Box>
+    )}
 
-                        <Grid item xs="auto">
-                            <FormControl fullWidth>
-                                <InputLabel id="brand-select-label">{'Brand'}</InputLabel>
-                                <Select
-                                    labelId="brand-select-label"
-                                    id="brand-select"
-                                    value={selectedBrand}
-                                    label={'Brand'}
-                                    onChange={(event) => setselectedBrand(event.target.value)}
-                                    renderValue={(val) => (val?.name ? val.name : '')}
-                                >
-                                    {filteredBrand.map((row, index) => (
-                                        <MenuItem key={index} value={row}>
-                                            {row?.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                    </Grid>
-                </Grid>
+    <Card sx={{ p: { xs: 1.5, sm: 2 }, boxShadow: 3, borderRadius: 2 }}>
+      <CardContent>
+        <Grid container spacing={{ xs: 2, sm: 4 }}>
 
-                {/* Credit Balance card */}
-                <Grid item xs={12}>
-                    <Grid container spacing={3} alignItems="center">
-                        <Grid item xs={6} sm={4} md={3}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'start',
-                                    gap: '12px',
-                                    padding: '16px',
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: '8px',
-                                    backgroundColor: '#ffff'
-                                }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    {/* <AccessibilityNewIcon color="primary" /> */}
-                                    <Typography variant="subtitle1" fontWeight="bold">
-                                        Credit Balance:
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: 'flex', gap: '10px' }}>
-                                    <TextField
-                                        id="credit-balance-readonly"
-                                        fullWidth
-                                        label="Credit Balance"
-                                        variant="outlined"
-                                        value={creditBalanceState?.creditBalance?.toFixed(2)??'0.00'}
-                                        InputProps={{ readOnly: true }}
-                                    />
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={6} sm={4} md={3}>
-                            <Button variant="contained" onClick={() => setupdateCreditBalanceModalOpen(true)}>
-                                Update
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Grid>
+          {/* Brand select */}
+          <Grid item xs={12}>
+            <Grid
+              container
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="space-between"
+              spacing={2}
+            >
+              <Grid item xs={12} sm="auto">
+                <Typography fontSize={{ xs: 20, sm: 26 }} fontWeight={600} />
+              </Grid>
 
-                {/* Points (read-only + Update) */}
-                <Grid item xs={12}>
-                    <Grid container spacing={3} alignItems="center">
-                        <Grid item xs={6} sm={4} md={3}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'start',
-                                    gap: '12px',
-                                    padding: '16px',
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: '8px',
-                                    backgroundColor: '#ffff'
-                                }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    
-                                    <Typography variant="subtitle1" fontWeight="bold">
-                                        Total User Points: {totalPoints ?? 0}
-                                    </Typography>
-                                </Box>
-
-                                <TextField
-                                    id="current-points"
-                                    fullWidth
-                                    label="Current Points"
-                                    variant="outlined"
-                                    value={totalPoints ?? 0}
-                                    InputProps={{ readOnly: true }}
-                                />
-                            </Box>
-                        </Grid>
-
-                        <Grid item xs={6} sm={4} md={3}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                type="button"
-                                onClick={() => setAdjustModal({ open: true, mode: 'points' })}
-                                sx={{ padding: '6px 16px', fontSize: '0.875rem' }}
-                            >
-                                Update
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Grid>
-
-                {/* Free items (read-only + Update) */}
-                {selectedBrand?.showFreeDrinkFeature && (
-                    <Grid item xs={12}>
-                        <Grid container spacing={3} alignItems="center">
-                            <Grid item xs={6} sm={4} md={3}>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'start',
-                                        gap: '12px',
-                                        padding: '16px',
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: '8px',
-                                        backgroundColor: '#ffff'
-                                    }}
-                                >
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                       
-                                        <Typography variant="subtitle1" fontWeight="bold">
-                                            Total Free Drinks: {totalFreePoints ?? 0}
-                                        </Typography>
-                                    </Box>
-                                    <TextField
-                                        id="current-free-items"
-                                        fullWidth
-                                        label="Current Free Drinks"
-                                        variant="outlined"
-                                        value={totalFreePoints ?? 0}
-                                        InputProps={{ readOnly: true }}
-                                    />
-                                </Box>
-                            </Grid>
-
-                            <Grid item xs={6} sm={4} md={3}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="button"
-                                    onClick={() => setAdjustModal({ open: true, mode: 'freeItems' })}
-                                    sx={{ padding: '6px 16px', fontSize: '0.875rem' }}
-                                >
-                                    Update
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                )}
-
-                {/* Generic Adjust Modal (works for both) */}
-                <AdjustCustomerValueModal
-                    open={adjustModal.open}
-                    mode={adjustModal.mode}
-                    onClose={handleAdjustClose}
-                    prevData={{
-                        value: '',
-                        expiryDate: new Date(), // used only when mode='points'
-                        comments: ''
-                    }}
-                />
-
-                {/* Credit Balance Modal */}
-                <UpdateCreditBalance
-                    modalOpen={updateCreditBalanceModal}
-                    setModalOpen={setupdateCreditBalanceModalOpen}
-                    cid={cid}
-                    setReload={setReload}
-                    prevData={creditBalanceState}
-                    brandName={brandsList?.find((obj) => obj?.id === selectedBrand?.id)?.name}
-                    brand={brandsList?.find((obj) => obj?.id === selectedBrand?.id)}
-                />
+              <Grid item xs={12} sm={4} md={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="brand-select-label">Brand</InputLabel>
+                  <Select
+                    labelId="brand-select-label"
+                    id="brand-select"
+                    value={selectedBrand}
+                    label="Brand"
+                    onChange={(event) => setselectedBrand(event.target.value)}
+                    renderValue={(val) => (val?.name ? val.name : '')}
+                  >
+                    {filteredBrand.map((row, index) => (
+                      <MenuItem key={index} value={row}>
+                        {row?.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-            </CardContent>
-            </Card>
-        </>
-    );
+          </Grid>
+
+          {/* Credit Balance */}
+          <Grid item xs={12}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="stretch"
+            >
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    p: 2,
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 2,
+                    backgroundColor: '#fff',
+                    height: '100%'
+                  }}
+                >
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    Credit Balance
+                  </Typography>
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Credit Balance"
+                    value={creditBalanceState?.creditBalance?.toFixed(2) ?? '0.00'}
+                    InputProps={{ readOnly: true }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={2}
+                display="flex"
+                alignItems="center"
+              >
+                <Button
+                  size="small"
+                  variant="contained"
+                  fullWidth
+                  onClick={() => setupdateCreditBalanceModalOpen(true)}
+                >
+                  Update
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Points */}
+          <Grid item xs={12}>
+            <Grid container spacing={2} alignItems="stretch">
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    p: 2,
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 2,
+                    backgroundColor: '#fff',
+                    height: '100%'
+                  }}
+                >
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    Total User Points: {totalPoints ?? 0}
+                  </Typography>
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Current Points"
+                    value={totalPoints ?? 0}
+                    InputProps={{ readOnly: true }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={2}
+                display="flex"
+                alignItems="center"
+              >
+                <Button
+                  size="small"
+                  variant="contained"
+                  fullWidth
+                  onClick={() => setAdjustModal({ open: true, mode: 'points' })}
+                >
+                  Update
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Free Drinks */}
+          {selectedBrand?.showFreeDrinkFeature && (
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="stretch">
+                <Grid item xs={12} sm={6} md={4}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1.5,
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      backgroundColor: '#fff',
+                      height: '100%'
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Total Free Drinks: {totalFreePoints ?? 0}
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Current Free Drinks"
+                      value={totalFreePoints ?? 0}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={2}
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() =>
+                      setAdjustModal({ open: true, mode: 'freeItems' })
+                    }
+                  >
+                    Update
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+
+          {/* Modals */}
+          <AdjustCustomerValueModal
+            open={adjustModal.open}
+            mode={adjustModal.mode}
+            onClose={handleAdjustClose}
+            prevData={{
+              value: '',
+              expiryDate: new Date(),
+              comments: ''
+            }}
+          />
+
+          <UpdateCreditBalance
+            modalOpen={updateCreditBalanceModal}
+            setModalOpen={setupdateCreditBalanceModalOpen}
+            cid={cid}
+            setReload={setReload}
+            prevData={creditBalanceState}
+            brandName={
+              brandsList?.find((obj) => obj?.id === selectedBrand?.id)?.name
+            }
+            brand={
+              brandsList?.find((obj) => obj?.id === selectedBrand?.id)
+            }
+          />
+        </Grid>
+      </CardContent>
+    </Card>
+  </>
+);
+
 };
 
 export default CreditBalance;

@@ -89,9 +89,9 @@ export default function RewardProgram({
   }, [])
     
   return (
-      <TabContext value={value}>
+      <TabContext value={value} >
           <Box sx={{ borderBottom: 0.3, borderColor: 'divider' }}>
-              <TabList onChange={handleChange}>
+              <TabList onChange={handleChange} scrollButtons="auto" variant="scrollable">
                   <Tab label="Stamps" value="1" />
                   <Tab label="Points" value="2" />
                   <Tab label="Discounts" value="3" />

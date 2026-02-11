@@ -106,94 +106,138 @@ const CustomerNotification = ({user}) => {
         setAnchorEl(null);
     };
 
-    const columns = [
+        const columns = [
         {
             field: 'notificationTitle',
             headerName: 'Title',
+            flex: 0.8,
+            minWidth: 160,
             headerAlign: 'left',
-            flex: 0.5
+            align: 'left',
+            renderCell: ({ value }) => (
+            <span
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                title={value}
+            >
+                {value || '--'}
+            </span>
+            ),
         },
         {
             field: 'notificationMessage',
             headerName: 'Text',
-            flex: 1,
-            headerAlign: 'left'
+            flex: 1.4,
+            minWidth: 240,
+            headerAlign: 'left',
+            align: 'left',
+            renderCell: ({ value }) => (
+            <span
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                title={value}
+            >
+                {value || '--'}
+            </span>
+            ),
         },
         {
             field: 'comments',
             headerName: 'Comments',
-            flex: 1,
-            headerAlign: 'left'
+            flex: 1.2,
+            minWidth: 220,
+            headerAlign: 'left',
+            align: 'left',
+            renderCell: ({ value }) => (
+            <span
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                title={value}
+            >
+                {value || '--'}
+            </span>
+            ),
         },
         {
             field: 'notificationDate',
             headerName: 'Date',
-            flex: 0.5,
+            flex: 0.6,
+            minWidth: 130,
             headerAlign: 'left',
-            renderCell: (params) => {
-                return <p>{moment(params.row?.notificationDate).format('DD/MM/YYYY')}</p>;
-            }
+            align: 'left',
+            renderCell: (params) =>
+            params.row?.notificationDate
+                ? moment(params.row.notificationDate).format('DD/MM/YYYY')
+                : '--',
         },
         {
             field: 'actionTime',
             headerName: 'Action Time',
-            flex: 0.5,
+            flex: 0.9,
+            minWidth: 170,
             headerAlign: 'left',
+            align: 'left',
             renderCell: (params) => {
-                const actionTime = params.row?.actionTime;
-                const actionType = params.row?.type; // Assuming `type` is available in the row data
+            const actionTime = params.row?.actionTime;
+            const actionType = params.row?.type;
 
-                // Handle null or undefined case for actionTime
-                const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
-
-                return (
-                    <p>
-                        {formattedTime} {actionType ? `(${actionType})` : ''}
-                    </p>
-                );
-            }
+            return (
+                <span style={{ whiteSpace: 'nowrap' }}>
+                {actionTime
+                    ? moment(actionTime).format('DD/MM/YYYY')
+                    : 'No Date Available'}
+                {actionType ? ` (${actionType})` : ''}
+                </span>
+            );
+            },
         },
         {
             field: 'groups',
             headerName: 'Group of Customers',
-            flex: 1,
+            flex: 1.4,
+            minWidth: 240,
             headerAlign: 'left',
+            align: 'left',
+            sortable: false,
             renderCell: (params) => {
-                // Find all matching customer groups based on requestGroupID
-                const matchedGroups =
-                    customerGroup.filter((group) => params.row.requestGroup.some((request) => request?.requestGroupID === group.id)) || [];
-                return (
-                    <div sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {matchedGroups.length > 0 ? (
-                            matchedGroups.map((group) => (
-                                <Chip color="primary" key={group?.id} label={group?.name} style={{ margin: '2px' }} />
-                            ))
-                        ) : (
-                            <div></div>
-                        )}
-                    </div>
-                );
-            }
-        },
-        // {
-        //     field: 'date',
-        //     headerName: 'Date & Time',
-        //     flex: 1,
-        //     headerAlign: 'left'
-        // },
+            const matchedGroups =
+                customerGroup.filter((group) =>
+                params.row.requestGroup?.some(
+                    (request) => request?.requestGroupID === group.id
+                )
+                ) || [];
 
+            return (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {matchedGroups.length > 0
+                    ? matchedGroups.map((group) => (
+                        <Chip
+                        key={group.id}
+                        label={group.name}
+                        size="small"
+                        color="primary"
+                        />
+                    ))
+                    : '--'}
+                </div>
+            );
+            },
+        },
         {
-            field: 'isRewardMfissisng',
+            field: 'actions',
             headerName: 'Action',
             sortable: false,
-            flex: 1,
-            headerAlign: 'left',
+            flex: 0.4,
+            minWidth: 80,
+            headerAlign: 'center',
+            align: 'center',
+            renderCell: (params) =>
+            !params.row.isAct && (
+                <MoreVertIcon
+                sx={{ cursor: 'pointer' }}
+                onClick={(event) => handleClick(event, params)}
+                />
+            ),
+        },
+        ];
 
-            renderCell: (params) => {
-                return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

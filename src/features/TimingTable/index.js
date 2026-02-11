@@ -20,57 +20,87 @@ export default function TimingTable({
   const { timingList, fetchTimingList, totalRowCount, loading } = useFetchTimingList(id, reload);
 
  
-  const columns = [
-    {
-      field: "dayOfTheWeekDisplay",
-      headerName: "Day of Week",
-      flex: 1,
-      headerAlign: "left"
-    },
-    {
-      field: "startTime",
-      headerName: "Start Time",
-      flex: 1,
-      headerAlign: "left",
-    },
-    {
-      field: "endTime",
-      headerName: "End Time",
-      flex: 1,
-      headerAlign: "left",
-    },
-    {
-      field: "isOrderingEnable",
-      headerName: "Ordering enabled",
-      flex: 1,
-      headerAlign: "left"
-    },
-    {
-      field: "isHidden",
-      headerName: "Operation",
-      flex: 1,
-      headerAlign: "center",
-
-      renderCell: (params) => {
-        return <Grid
+const columns = [
+  {
+    field: 'dayOfTheWeekDisplay',
+    headerName: 'Day of Week',
+    flex: 1,
+    minWidth: 150,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'startTime',
+    headerName: 'Start Time',
+    flex: 1,
+    minWidth: 120,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'endTime',
+    headerName: 'End Time',
+    flex: 1,
+    minWidth: 120,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'isOrderingEnable',
+    headerName: 'Ordering Enabled',
+    flex: 1,
+    minWidth: 160,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <span>
+        {params.value ? 'Yes' : 'No'}
+      </span>
+    ),
+  },
+  {
+    field: 'actions',
+    headerName: 'Operation',
+    sortable: false,
+    flex: 1,
+    minWidth: 180,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <Grid
         container
-        direction="row"
-        justifyContent="space-evenly"
+        spacing={1}
+        justifyContent="center"
         alignItems="center"
+        wrap="nowrap"
       >
-      
-          <Button variant="outlined" disabled={user?.isAccessRevoked} onClick={(event)=>updateTiming(event,params)}>
+        <Grid item>
+          <Button
+            size="small"
+            variant="outlined"
+            disabled={user?.isAccessRevoked}
+            onClick={(event) => updateTiming(event, params)}
+          >
             Edit
           </Button>
-          <Button variant="outlined" disabled={user?.isAccessRevoked}  color="error" onClick={(event)=>deleteTiming(event,params)}>
+        </Grid>
+
+        <Grid item>
+          <Button
+            size="small"
+            variant="outlined"
+            color="error"
+            disabled={user?.isAccessRevoked}
+            onClick={(event) => deleteTiming(event, params)}
+          >
             Delete
           </Button>
         </Grid>
-      }
-    },
+      </Grid>
+    ),
+  },
+];
 
-
-  ];
 
 
   return (

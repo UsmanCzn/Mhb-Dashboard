@@ -117,62 +117,68 @@ export default function PurchaseCollectionTable({ selectedBrand,reload,customerG
   };
     
  
-    const columns = [
-      {
-          field: "id",
-          headerName: "ID",
-          headerAlign: "left", 
-      },
-      {
-          field: "amount",
-          headerName: "Amount",
-          flex: 0.7,
-          headerAlign: "left",  
-      },
-      {
-          field: "branchId",
-          headerName: "Branch",
-          flex: 1,
-          headerAlign: "left", 
-          renderCell: params => branchColumnFormater(params.row)
-
-      },
-      {
-          field: "brandGroupId",
-          headerName: "Customer Group",
-          flex: 1.2,
-          headerAlign: "left",
-         renderCell: params => groupsColumnFormater(params?.row)
-
-      },
-      {
-        field: "emailAddresds",
-        headerName: "Rewards Program Gifts",
-        flex: 1,
-        headerAlign: "left",
-         renderCell: params =>rewardsColumnFormater(params?.row)
-
+  const columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      headerAlign: "left",
+      minWidth: 80
+    },
+    {
+      field: "amount",
+      headerName: "Amount",
+      flex: 0.7,
+      minWidth: 120,
+      headerAlign: "left"
+    },
+    {
+      field: "branchId",
+      headerName: "Branch",
+      flex: 1,
+      minWidth: 180,
+      headerAlign: "left",
+      renderCell: (params) => branchColumnFormater(params.row)
+    },
+    {
+      field: "brandGroupId",
+      headerName: "Customer Group",
+      flex: 1.2,
+      minWidth: 200,
+      headerAlign: "left",
+      renderCell: (params) => groupsColumnFormater(params.row)
+    },
+    {
+      field: "emailAddresds",
+      headerName: "Rewards Program Gifts",
+      flex: 1,
+      minWidth: 220,
+      headerAlign: "left",
+      renderCell: (params) => rewardsColumnFormater(params.row)
     },
     {
       field: "emailAddress",
       headerName: "Date Range",
       flex: 1,
+      minWidth: 180,
       headerAlign: "left",
-      renderCell: params => dateColumnFormater(params?.row)
-  },
+      renderCell: (params) => dateColumnFormater(params.row)
+    },
     {
       field: "isRewardMfissisng",
       headerName: "Action",
       sortable: false,
       flex: 0.5,
+      minWidth: 80,
       headerAlign: "left",
-      
-      renderCell: (params) => { 
-            return <MoreVertIcon 
-                onClick={(event)=>handleClick(event,params)} />
-          }
-    },
-      ];
+      renderCell: (params) => (
+        <MoreVertIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={(event) => handleClick(event, params)}
+        />
+      )
+    }
+  ];
+
 
 
     const options=[

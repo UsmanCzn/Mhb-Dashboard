@@ -265,96 +265,113 @@ const submitRefund = async (dialogData) => {
             });
     };
 
-    const columns = [
-        {
-            field: 'branchName',
-            headerName: 'For Branch',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'deliverySystem',
-            headerName: 'Type',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'orderNumber',
-            headerName: 'Order Number',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'status',
-            headerName: 'Status',
-            flex: 0.5,
-            headerAlign: 'left'
-        },
-        {
-            field: 'customerPhoneNumber',
-            headerName: 'Customer',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return (
-                    <Typography variant="h6">
-                        {
-                            params?.row?.customerName + ' ' + params?.row?.customerSurname
-                            // +"\n" +
-                            //  params?.row?.customerPhoneNumber
-                        }
-                    </Typography>
-                );
-            }
-        },
-        {
-            field: 'creationDate',
-            headerName: 'Date',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return <Typography>{moment(params?.row?.creationDate).format('DD-MMM-YYYY hh:mm a')}</Typography>;
-            }
-        },
-        // {
-        //   field: "paymentMethod",
-        //   headerName: "Payment Type",
-        //   flex: 1,
-        //   headerAlign: "left",
-        // },
-        {
-            field: 'isHiddven',
-            headerName: 'Order details',
-            flex: 1.2,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return (
-                    <Grid container direction="column">
-                        <Typography component="div" sx={{ '& ul': { m: 0, p: 0 }, '& li': { marginLeft: '-1em' } }}>
-                            <ul>
-                                {params?.row?.products?.map((obj) => (
-                                    <li key={obj?.id ?? obj?.name}>
-                                        <Typography variant="h6">{obj?.name + ' x ' + obj?.quantity}</Typography>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Typography>
-                    </Grid>
-                );
-            }
-        },
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
+const columns = [
+  {
+    field: 'branchName',
+    headerName: 'For Branch',
+    flex: 1,
+    minWidth: 150,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'deliverySystem',
+    headerName: 'Type',
+    flex: 1,
+    minWidth: 120,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'orderNumber',
+    headerName: 'Order Number',
+    flex: 1,
+    minWidth: 140,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 0.6,
+    minWidth: 110,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'customer',
+    headerName: 'Customer',
+    flex: 1.2,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    valueGetter: (params) =>
+      `${params.row?.customerName ?? ''} ${params.row?.customerSurname ?? ''}`,
+    renderCell: (params) => (
+      <Typography variant="body2" noWrap>
+        {params.value}
+      </Typography>
+    ),
+  },
+  {
+    field: 'creationDate',
+    headerName: 'Date',
+    flex: 1.2,
+    minWidth: 170,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <Typography variant="body2" noWrap>
+        {moment(params.row?.creationDate).format(
+          'DD-MMM-YYYY hh:mm a'
+        )}
+      </Typography>
+    ),
+  },
+  {
+    field: 'orderDetails',
+    headerName: 'Order Details',
+    flex: 1.5,
+    minWidth: 220,
+    sortable: false,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <Box
+        sx={{
+          maxHeight: 80,
+          overflowY: 'auto',
+          width: '100%',
+        }}
+      >
+        <ul style={{ margin: 0, paddingLeft: 16 }}>
+          {params.row?.products?.map((obj) => (
+            <li key={obj?.id ?? obj?.name}>
+              <Typography variant="body2">
+                {obj?.name} × {obj?.quantity}
+              </Typography>
+            </li>
+          ))}
+        </ul>
+      </Box>
+    ),
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    ),
+  },
+];
 
     const audioPlayer = useRef(null);
 

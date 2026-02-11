@@ -58,15 +58,84 @@ export default function DataGridComponent(props) {
 
   return (
     <Box
-      sx={{
-        width: '100%',
-        bgcolor: '#fff',
-        border: '1px solid',
+    sx={{
+      backgroundColor: '#fff',
+      border: 'none',
+
+      // Responsive font sizing
+      fontSize: {
+        xs: 12,
+        sm: 13,
+        md: 14
+      },
+
+      // Density paddings (mobile-friendly)
+      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': {
+        py: { xs: '4px', sm: '8px' }
+      },
+      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+        py: { xs: '8px', sm: '15px' }
+      },
+      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': {
+        py: { xs: '12px', sm: '22px' }
+      },
+
+      // Header
+      '& .MuiDataGrid-columnHeaders': {
+        backgroundColor: 'grey.50',
+        color: 'text.primary',
+        fontWeight: 600,
+        borderBottom: '1px solid',
         borderColor: 'divider',
-        borderRadius: 2,
-        boxShadow: 2,
-        overflow: 'hidden'
-      }}
+        minHeight: { xs: 44, sm: 56 }
+      },
+
+      // Header text - NO WRAP, FULL CONTENT
+      '& .MuiDataGrid-columnHeaderTitle': {
+        fontSize: { xs: 12, sm: 13.5 },
+        whiteSpace: 'nowrap'
+      },
+
+      // Cells - NO WRAP, FULL CONTENT
+      '& .MuiDataGrid-cell': {
+        borderColor: 'divider',
+        backgroundColor: '#fff',
+        whiteSpace: 'nowrap'
+      },
+
+      // Ensure inner content does not wrap
+      '& .MuiDataGrid-cellContent': {
+        whiteSpace: 'nowrap'
+      },
+
+      // Row hover
+      '& .MuiDataGrid-row:hover': {
+        backgroundColor: 'grey.100'
+      },
+
+      // Footer
+      '& .MuiDataGrid-footerContainer': {
+        borderTop: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: '#fff',
+        minHeight: { xs: 48, sm: 56 }
+      },
+
+      // Horizontal scrolling for long content
+      '& .MuiDataGrid-virtualScroller': {
+        overflowX: 'auto'
+      },
+
+      // Focus polish
+      '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus': {
+        outline: 'none'
+      },
+      '& .MuiDataGrid-cell:focus-within': {
+        outline: 'none'
+      }
+    }}
+
+
     >
       <DataGrid
         {...props}

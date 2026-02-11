@@ -1401,51 +1401,57 @@ const getPluginsOrders = async () => {
                                                     </Button>
                                                 </Grid>
                                             </Grid>
-                                            <Grid item xs={12}>
-                                                <Grid container>
-                                                    <Grid item xs={4}>
-                                                        <Typography variant="h7">Upload Logo</Typography>
-                                                    </Grid>
-                                                    <Grid item xs={8} />
+                      
+                                                      <Grid item xs={12}>
+                                                        <Grid container spacing={2}>
+                                                        <Grid item xs={12} sm={4}>
+                                                            <Typography fontWeight={600}>Upload Logo</Typography>
+                                                        </Grid>
 
-                                                    <Grid item xs={12}>
-                                                        <Box
+                                                        <Grid item xs={12}>
+                                                            <Box
                                                             sx={{
-                                                                width: '60%',
-                                                                height: 200,
+                                                                width: { xs: '100%', sm: '70%', md: '60%' },
+                                                                height: { xs: 160, sm: 200 },
                                                                 display: 'flex',
                                                                 justifyContent: 'center',
                                                                 flexDirection: 'column',
                                                                 alignItems: 'center',
                                                                 mt: 2,
                                                                 backgroundColor: '#eee',
-                                                                ml: '20%'
+                                                                mx: 'auto', // replaces ml: '20%'
+                                                                borderRadius: 2
                                                             }}
-                                                        >
+                                                            >
                                                             {!p1 && brand && brand.logoUrl && (
                                                                 <img
-                                                                    src={brand?.logoUrl}
-                                                                    style={{
-                                                                        width: 100,
-                                                                        height: 70
-                                                                    }}
-                                                                    alt="img"
+                                                                src={brand.logoUrl}
+                                                                alt="img"
+                                                                style={{
+                                                                    width: 100,
+                                                                    height: 70,
+                                                                    objectFit: 'contain',
+                                                                    marginBottom: 8
+                                                                }}
                                                                 />
                                                             )}
-                                                            <CloudUploadOutlined style={{ fontSize: '26px', color: '#08c' }} />
+
+                                                            <CloudUploadOutlined
+                                                                style={{ fontSize: 26, color: '#08c', marginBottom: 6 }}
+                                                            />
 
                                                             <input
                                                                 type="file"
-                                                                onChange={async (e) => {
-                                                                    setP1(e.currentTarget.files[0]);
+                                                                onChange={(e) => {
+                                                                setP1(e.currentTarget.files[0]);
                                                                 }}
                                                             />
-                                                        </Box>
+                                                            </Box>
+                                                        </Grid>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </Grid>
+                                                    </Grid>
 
-                                        </Grid>
                                     </TabPanel>
 
                                     {/* Add other TabPanel components for the other tabs (Rewards, Settings, etc.) */}

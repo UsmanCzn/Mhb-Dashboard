@@ -40,83 +40,111 @@ export default function BrandsTable({ type, setUpdate, setUpdateData, setModalOp
         setAnchorEl(null);
     };
 
-    const columns = [
-        {
-            field: 'image',
-            headerName: 'Image',
-            headerAlign: 'left',
-            renderCell: ({ row }) => {
-                const handleError = (event) => {
-                    event.target.src = 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'; // Provide a fallback image
-                };
+const columns = [
+  {
+    field: 'image',
+    headerName: 'Image',
+    minWidth: 80,
+    flex: 0.6,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false,
+    renderCell: ({ row }) => {
+      const handleError = (event) => {
+        event.target.src =
+          'https://syyve.blob.core.windows.net/users-avatar/default-user.png';
+      };
 
-                return (
-                    <img
-                        style={{
-                            width: 40,
-                            height: 40
-                        }}
-                        onError={handleError}
-                        src={row.logoUrl || 'https://syyve.blob.core.windows.net/users-avatar/default-user.png'}
-                        alt="brand logo"
-                    />
-                );
-            }
-        },
-        {
-            field: 'name',
-            headerName: 'Brand Name',
-            headerAlign: 'left'
-        },
-        {
-            field: 'amountOfBranches',
-            headerName: 'Branches',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'amountOfGroups',
-            headerName: 'Group of Customers',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'amountOfCustomers',
-            headerName: 'Customers',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'isHidden',
-            headerName: 'Hidden',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return params.row.isHidden ? (
-                    <Tooltip title="Hidden">
-                        {' '}
-                        <CheckCircleIcon />{' '}
-                    </Tooltip>
-                ) : (
-                    <Tooltip title="Not Hidden">
-                        <CancelIcon />
-                    </Tooltip>
-                );
-            }
-        },
+      return (
+        <img
+          src={
+            row.logoUrl ||
+            'https://syyve.blob.core.windows.net/users-avatar/default-user.png'
+          }
+          onError={handleError}
+          alt="brand logo"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 6,
+            objectFit: 'cover',
+          }}
+        />
+      );
+    },
+  },
+  {
+    field: 'name',
+    headerName: 'Brand Name',
+    minWidth: 180,
+    flex: 1.4,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {params.value}
+      </span>
+    ),
+  },
+  {
+    field: 'amountOfBranches',
+    headerName: 'Branches',
+    minWidth: 120,
+    flex: 0.8,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'amountOfGroups',
+    headerName: 'Customer Groups',
+    minWidth: 160,
+    flex: 1,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'amountOfCustomers',
+    headerName: 'Customers',
+    minWidth: 140,
+    flex: 1,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'isHidden',
+    headerName: 'Hidden',
+    minWidth: 100,
+    flex: 0.7,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) =>
+      params.row.isHidden ? (
+        <Tooltip title="Hidden">
+          <CheckCircleIcon color="error" />
+        </Tooltip>
+      ) : (
+        <Tooltip title="Visible">
+          <CancelIcon color="success" />
+        </Tooltip>
+      ),
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    minWidth: 80,
+    flex: 0.5,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    ),
+  },
+];
 
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

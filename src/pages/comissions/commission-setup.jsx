@@ -63,25 +63,34 @@ const columns = [
     field: 'percentageCommission',
     headerName: 'Commission (%)',
     flex: 0.6,
-    valueFormatter: (params) =>
-      params.value !== null && params.value !== undefined
-        ? `${params.value}%`
+    minWidth: 150,
+    headerAlign: 'right',
+    align: 'right',
+    valueFormatter: ({ value }) =>
+      value !== null && value !== undefined
+        ? `${value}%`
         : '-',
   },
   {
     field: 'flatCommission',
     headerName: 'Flat Commission',
     flex: 0.6,
-    valueFormatter: (params) =>
-      params.value !== null && params.value !== undefined
-        ? `${params.value} KD`
+    minWidth: 160,
+    headerAlign: 'right',
+    align: 'right',
+    valueFormatter: ({ value }) =>
+      value !== null && value !== undefined
+        ? `${value} KD`
         : '-',
   },
   {
     field: 'methods',
     headerName: 'Payment Methods',
-    flex: 1,
+    flex: 1.2,
+    minWidth: 220,
     sortable: false,
+    headerAlign: 'left',
+    align: 'left',
     renderCell: ({ row }) => {
       const methods = [];
 
@@ -91,26 +100,42 @@ const columns = [
       if (row.isWalletCreditEnabled) methods.push('Wallet');
       if (row.isOtherPaymentEnabled) methods.push('Other');
 
-      return methods.length ? methods.join(', ') : '-';
+      return (
+        <span
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+          title={methods.join(', ')}
+        >
+          {methods.length ? methods.join(', ') : '-'}
+        </span>
+      );
     },
   },
   {
     field: 'isEnabled',
     headerName: 'Status',
     flex: 0.6,
+    minWidth: 120,
+    headerAlign: 'center',
+    align: 'center',
     renderCell: ({ value }) => (
       <span
         style={{
           color: value ? '#2e7d32' : '#d32f2f',
           fontWeight: 600,
+          fontSize: 13,
+          whiteSpace: 'nowrap',
         }}
       >
         {value ? 'Enabled' : 'Disabled'}
       </span>
     ),
   },
-
 ];
+
 
 
 const handleUpdateCommission = async (payload) => {

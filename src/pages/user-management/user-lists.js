@@ -216,7 +216,14 @@ const UserList = () => {
                 </Grid>
                 <Grid item xs={12}>
                     <div>
-                        <TableContainer component={Paper}>
+                        <TableContainer
+                            component={Paper}
+                            sx={{
+                                width: '100%',
+                                overflowX: 'auto'
+                            }}
+                            >
+
                             <Table>
                                 <TableHead>
                                     <TableRow>

@@ -84,51 +84,66 @@ export default function CustomerTable({ type, reload, setCustomerStats, setModal
         setAnchorEl(null);
     };
 
-    const columns = [
-        {
-            field: 'userAvatar',
-            headerName: 'Image',
-            headerAlign: 'left',
-            renderCell: (params) => activeColumnFormater(params.row)
-        },
-        {
-            field: 'name',
-            headerName: 'Name',
-            flex: 0.7,
-            headerAlign: 'left',
-            renderCell: (params) => nameColumnFormater(params.row)
-        },
-        {
-            field: 'customerGroups',
-            headerName: 'Company',
-            flex: 1.5,
-            headerAlign: 'left',
-            renderCell: (params) => companyFormatter(params.row)
-        },
-        {
-            field: 'displayPhoneNumber',
-            headerName: 'Phone Number',
-            flex: 0.7,
-            headerAlign: 'left'
-        },
-        {
-            field: 'displayEmailAddress',
-            headerName: 'Email',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
+const columns = [
+  {
+    field: 'userAvatar',
+    headerName: 'Image',
+    headerAlign: 'left',
+    align: 'left',
+    minWidth: 80,
+    renderCell: (params) => activeColumnFormater(params.row)
+  },
+  {
+    field: 'name',
+    headerName: 'Name',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.7,
+    minWidth: 160,
+    renderCell: (params) => nameColumnFormater(params.row)
+  },
+  {
+    field: 'customerGroups',
+    headerName: 'Company',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1.5,
+    minWidth: 220,
+    renderCell: (params) => companyFormatter(params.row)
+  },
+  {
+    field: 'displayPhoneNumber',
+    headerName: 'Phone Number',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.7,
+    minWidth: 160
+  },
+  {
+    field: 'displayEmailAddress',
+    headerName: 'Email',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1,
+    minWidth: 220
+  },
+  {
+    field: 'isRewardMfissisng',
+    headerName: 'Action',
+    sortable: false,
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.5,
+    minWidth: 80,
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    )
+  }
+];
 
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

@@ -127,156 +127,177 @@ const NewAddonGroup = ({ modalOpen, setModalOpen, setReload, update, updateData,
             });
     };
 
-    return (
-        <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <form onSubmit={update ? EditType : createNewType}>
-                <Box sx={style}>
-                    <Grid container spacing={4}>
-                        <Grid item>
-                            <Typography variant="h4"> {update ? 'Edit Add-on Group' : 'Create new Add-on Group'} </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
-                                        Brand : {selectedBrand?.name}{' '}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4}>
-                                    {/* <Typography variant="h6">Product : {selectedProduct?.name} </Typography> */}
-                                </Grid>
-                            </Grid>
-                        </Grid>
+return (
+  <Modal
+    open={modalOpen}
+    onClose={() => setModalOpen(false)}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <form onSubmit={update ? EditType : createNewType}>
+      <Box
+        sx={{
+          ...style,
+          width: { xs: '95%', sm: 700, md: 900 },
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <Grid container spacing={4}>
+          {/* Title */}
+          <Grid item xs={12}>
+            <Typography variant="h4">
+              {update ? 'Edit Add-on Group' : 'Create new Add-on Group'}
+            </Typography>
+          </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Add-on Group Name"
-                                        variant="outlined"
-                                        required
-                                        value={data.name}
-                                        onChange={(e) => setData({ ...data, name: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Add-on Group Native Name"
-                                        variant="outlined"
-                                        value={data.nativeName}
-                                        onChange={(e) => setData({ ...data, nativeName: e.target.value })}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        fullWidth
-                                        label="Sort Order"
-                                        variant="outlined"
-                                        value={data.orderValue}
-                                        onChange={(e) => setData({ ...data, orderValue: e.target.value })}
-                                    />
-                                </Grid>
-                                {data.allowMultiple && (
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            id="outlined-basic"
-                                            fullWidth
-                                            label="Max Value"
-                                            variant="outlined"
-                                            value={data.maxMultipleValue}
-                                            onChange={(e) => setData({ ...data, maxMultipleValue: e.target.value })}
-                                        />
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </Grid>
+          {/* Brand Info */}
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
+                  Brand : {selectedBrand?.name}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
 
-                        <Grid item xs={4}>
-                            <Typography required variant="h7">
-                                Allow Multiple
-                            </Typography>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    mt: 2
-                                }}
-                            >
-                                <Switch
-                                    checked={data.allowMultiple}
-                                    onChange={(event) => {
-                                        setData({
-                                            ...data,
-                                            allowMultiple: event.target.checked
-                                        });
-                                    }}
-                                />
-                            </Box>
-                        </Grid>
+          {/* Form Fields */}
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Add-on Group Name"
+                  variant="outlined"
+                  required
+                  value={data.name}
+                  onChange={(e) =>
+                    setData({ ...data, name: e.target.value })
+                  }
+                />
+              </Grid>
 
-                        <Grid item xs={4}>
-                            <Typography required variant="h7">
-                                Required
-                            </Typography>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    mt: 2
-                                }}
-                            >
-                                <Switch
-                                    checked={data.isRequired}
-                                    onChange={(event) => {
-                                        setData({
-                                            ...data,
-                                            isRequired: event.target.checked
-                                        });
-                                    }}
-                                />
-                            </Box>
-                        </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Add-on Group Native Name"
+                  variant="outlined"
+                  value={data.nativeName}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      nativeName: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-                        {/* Footer */}
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="Sort Order"
+                  variant="outlined"
+                  value={data.orderValue}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      orderValue: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
 
-                        <Grid item xs={12}>
-                            <Grid container>
-                                <Grid item xs={8} />
-                                <Grid container spacing={2} justifyContent="flex-end">
-                                    <Grid item>
-                                        <Button variant="outlined" onClick={() => setModalOpen(false)}>
-                                            Cancel
-                                        </Button>
-                                    </Grid>
-                                    <Grid item>
-                                        <Button primay variant="contained" type="Submit">
-                                            {update ? 'Edit Add-on Group' : 'Create new Add-on Group'}
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </form>
-        </Modal>
-    );
+              {data.allowMultiple && (
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    fullWidth
+                    label="Max Value"
+                    variant="outlined"
+                    value={data.maxMultipleValue}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        maxMultipleValue: e.target.value,
+                      })
+                    }
+                  />
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+
+          {/* Switches */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">
+              Allow Multiple
+            </Typography>
+            <Box mt={1}>
+              <Switch
+                checked={data.allowMultiple}
+                onChange={(event) =>
+                  setData({
+                    ...data,
+                    allowMultiple: event.target.checked,
+                  })
+                }
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">
+              Required
+            </Typography>
+            <Box mt={1}>
+              <Switch
+                checked={data.isRequired}
+                onChange={(event) =>
+                  setData({
+                    ...data,
+                    isRequired: event.target.checked,
+                  })
+                }
+              />
+            </Box>
+          </Grid>
+
+          {/* Footer */}
+          <Grid item xs={12}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            >
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+
+              <Grid item xs={12} sm="auto">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  type="submit"
+                >
+                  {update
+                    ? 'Edit Add-on Group'
+                    : 'Create new Add-on Group'}
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
+  </Modal>
+);
+
 };
 
 export default NewAddonGroup;

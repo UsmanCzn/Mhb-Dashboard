@@ -88,45 +88,55 @@ const handleClose = (data) => {
      
 
 
-  return (
-      <>
-          <Grid item xs={12} mb={2}>
-              <Grid container alignItems="center" justifyContent="space-between">
-                  <Grid item xs={6}>
-                      <Typography fontSize={22} fontWeight={700}>
-                          Add-Ons
-                      </Typography>
-                  </Grid>
-                  <Grid item xs="auto">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{"Brand"}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBrand}
-                                label={"Brand"}
-                                onChange={(event) => {
-                                  setselectedBrand(event.target.value)
-                                }}
-                            >
-                                {
-                                    brandsList.map((row, index) => {
-                                        return (
-                                            <MenuItem value={row} >
-                                                {row?.name}
-                                            </MenuItem>
-                                        )
-                                    }
-                                    )
-                                }
+return (
+  <>
+    <Grid item xs={12} mb={2}>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        {/* Title */}
+        <Grid item xs={12} sm={6}>
+          <Typography fontSize={22} fontWeight={700}>
+            Add-Ons
+          </Typography>
+        </Grid>
 
-                            </Select>
-                        </FormControl>
-                    </Grid>
-              </Grid>
-          </Grid>
+        {/* Brand Select */}
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">
+              Brand
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedBrand}
+              label="Brand"
+              onChange={(event) => {
+                setselectedBrand(event.target.value);
+              }}
+            >
+              {brandsList.map((row, index) => (
+                <MenuItem key={index} value={row}>
+                  {row?.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+    </Grid>
 
-          <AddonTable selectedBrand={selectedBrand} reload={reload} setReload={setReload} />
-      </>
-  );
+    <AddonTable
+      selectedBrand={selectedBrand}
+      reload={reload}
+      setReload={setReload}
+    />
+  </>
+);
+
+
 }

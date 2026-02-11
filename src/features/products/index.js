@@ -1,22 +1,30 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
-import { Grid, Box, OutlinedInput, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Grid, Box, OutlinedInput, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem, Typography, Link, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useFetchProductsList } from 'features/Store/Products/hooks/useFetchProductsList';
 import GridItem from 'components/products/gridItem';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
+import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
 import UpdateProduct from 'components/store/products/updateProduct';
+import ProductEditableTable from './ProductEditableTable';
 import storeServices from 'services/storeServices';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 import { useAuth } from 'providers/authProvider';
+import { useSnackbar } from 'notistack';
+import GridViewIcon from '@mui/icons-material/GridView';
+import TableChartIcon from '@mui/icons-material/TableChart';
 
 const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrder, sortBy }) => {
     const { user, userRole, isAuthenticated } = useAuth();
 
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
     const { productTypes } = useFetchProductTypeList(true, selectedBranch);
+    const { addonGroupList } = useFetchAddonGroupList(false, selectedBranch);
     const navigate = useNavigate();
     const [category, setCategory] = useState();
     const [subCategory, setSubCategory] = useState();
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
 
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
@@ -109,6 +117,26 @@ const subTypes = useMemo(() => {
         return () => {};
     }, [sortOrder, sortBy, productsList]);
 
+    const handleFileUpload = async (file) => {
+      try {
+        const formData = new FormData();
+        formData.append('file', file); // 👈 MUST be "file"
+
+        await storeServices.bulkUploadProduct(
+          selectedBranch.id,
+          formData
+        );
+        enqueueSnackbar('File uploaded successfully', { variant: 'success' });
+        setReload((prev) => !prev);
+
+      } catch (error) {
+        console.error('Upload failed:', error);
+        enqueueSnackbar('File upload failed. Please try again.', { variant: 'error' });
+      }
+    };
+
+
+
     return (
         <Box
             sx={{
@@ -120,87 +148,166 @@ const subTypes = useMemo(() => {
             }}
             boxShadow={2}
         >
-            <Box
-                sx={{
-                    borderRadius: 2,
-                    px: 2,
-                    width: '100%'
-                }}
-                display="flex"
-                justifyContent="space-between"
-                xs={12}
-                boxShadow={0}
-            >
-                <Box sx={{ display: 'flex', gap: '20px' }}>
-                    <OutlinedInput
-                        id="email-login"
-                        type="text"
-                        name="Search"
-                        placeholder="Search by Product name"
-                        // sx={{
-                        //     width: '30%'
-                        // }}
-                        onChange={(event) => {
-                            searchProducts(event.target.value);
-                        }}
-                    />
-                    <FormControl sx={{ width: '150px' }}>
-                        <InputLabel id="demo-simple-select-label">{'Category'}</InputLabel>
-                        <Select
-                            placeholder=" Select Category"
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={category}
-                            label={'Category'}
-                            onChange={(event) => {
-                                setCategory(event.target.value);
-                            }}
-                        >
-                            {productTypes.map((row, index) => {
-                                return (
-                                    <MenuItem key={index} value={row}>
-                                        {row?.name}
-                                    </MenuItem>
-                                );
-                            })}
-                        </Select>
-                    </FormControl>
-                    <FormControl sx={{ width: '150px' }}>
-                        <InputLabel id="demo-simple-select-label">SubCategory</InputLabel>
-                        <Select
-                            placeholder="Select Category"
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={subCategory}
-                            label="SubCategory"
-                            onChange={handleSubCategoryChange}
-                        >
-                            {subTypes && subTypes.length > 0 && <MenuItem value={0}>All SubCategories</MenuItem>}
+        <Box
+          sx={{
+            px: 2,
+            width: '100%',
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 2,
+            alignItems: { md: 'center' },
+            justifyContent: 'space-between'
+          }}
+        >
+          {/* Filters */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 2,
+              flex: 1
+            }}
+          >
+            <OutlinedInput
+              placeholder="Search by Product name"
+              onChange={(e) => searchProducts(e.target.value)}
+              sx={{ width: { xs: '100%', sm: 260 } }}
+            />
 
-                            {subTypes?.map((row, index) => (
-                                <MenuItem key={row.id || index} value={row.id}>
-                                    {row?.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-                <Button
-                    size="small"
-                    variant="contained"
-                    disabled={user?.isAccessRevoked}
-                    sx={{ textTransform: 'capitalize' }}
-                    onClick={() => navigate(`/addEditProduct/${selectedBranch.id}`)}
-                >
-                    Add new Product
-                </Button>
+            <FormControl sx={{ width: { xs: '100%', sm: 160 } }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={category}
+                label="Category"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {productTypes.map((row, index) => (
+                  <MenuItem key={index} value={row}>
+                    {row?.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl sx={{ width: { xs: '100%', sm: 180 } }}>
+              <InputLabel>SubCategory</InputLabel>
+              <Select
+                value={subCategory}
+                label="SubCategory"
+                onChange={handleSubCategoryChange}
+              >
+                {subTypes?.length > 0 && (
+                  <MenuItem value={0}>All SubCategories</MenuItem>
+                )}
+                {subTypes?.map((row) => (
+                  <MenuItem key={row.id} value={row.id}>
+                    {row.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Actions */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: { xs: 'stretch', md: 'flex-end' },
+              gap: 0.5
+            }}
+          >
+            {/* View Toggle */}
+            <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+              <ToggleButtonGroup
+                value={viewMode}
+                exclusive
+                onChange={(event, newMode) => {
+                  if (newMode !== null) {
+                    setViewMode(newMode);
+                  }
+                }}
+                size="small"
+              >
+                <ToggleButton value="grid" aria-label="grid view">
+                  <GridViewIcon fontSize="small" />
+                </ToggleButton>
+                <ToggleButton value="table" aria-label="table view">
+                  <TableChartIcon fontSize="small" />
+                </ToggleButton>
+              </ToggleButtonGroup>
             </Box>
+
+            {/* Buttons Row */}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="contained"
+                size="small"
+                disabled={user?.isAccessRevoked}
+                sx={{ textTransform: 'capitalize' }}
+                onClick={() => navigate(`/addEditProduct/${selectedBranch.id}`)}
+              >
+                Add new Product
+              </Button>
+
+              <Button
+                component="label"
+                size="small"
+                variant="outlined"
+                disabled={user?.isAccessRevoked}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                Upload file
+                <input
+                  hidden
+                  type="file"
+                  accept=".csv,.xlsx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    // ✅ Validate CSV only
+                    const isCsv =
+                      file.type === 'text/csv' ||
+                      file.name.toLowerCase().endsWith('.csv');
+
+                    if (!isCsv) {
+                      alert('Only CSV files are allowed');
+                      e.target.value = ''; // reset input
+                      return;
+                    }
+
+                    // ✅ Valid CSV file
+                    console.log('CSV file uploaded:', file);
+                    handleFileUpload(file);
+                  }}
+                />
+              </Button>
+            </Box>
+
+            {/* Sample Download */}
+            <Link
+              href={encodeURI('/Product Bulk Sample.csv')}
+              download
+              underline="hover"
+              sx={{
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                color: 'primary.main',
+                textDecoration: 'underline',
+                textAlign: { xs: 'left', md: 'right' }
+              }}
+            >
+              Download sample file
+            </Link>
+          </Box>
+        </Box>
 
             {loading ? (
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <CircularProgress />
                 </Box>
-            ) : (
+            ) : viewMode === 'grid' ? (
                 <Grid container spacing={2} sx={{ mt: 2 }} justify="space-between">
                     {SortedProductList?.map((item, index) => {
                         return (
@@ -218,6 +325,15 @@ const subTypes = useMemo(() => {
                         );
                     })}
                 </Grid>
+            ) : (
+                <ProductEditableTable
+                    products={productsList}
+                    filteredProducts={SortedProductList}
+                    productTypes={productTypes}
+                    selectedBrand={selectedBranch}
+                    onReload={() => setReload((prev) => !prev)}
+                    addonGroupList={addonGroupList}
+                />
             )}
 
             {/* <UpdateProduct

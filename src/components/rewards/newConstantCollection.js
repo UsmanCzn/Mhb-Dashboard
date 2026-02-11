@@ -62,42 +62,53 @@ return aYearFromNow
         })
     }
    
-    const createConstantCollection=async ()=>{
-        // console.log(data); 
- 
-        let payload={...data}
-        payload.discountPercentage=data.amountPurchaseReward
-        payload.brandGroupId=data.groupOfCustomers;
-        payload.rewardProgramGifts=data.giftPrograms;
-        payload .limitPerMonth= +data.limitPerMonth;
-        payload .limitPerYear= +data.limitPerYear;
+const createConstantCollection = async () => {
+  try {
+    const limitPerMonth = Number(data.limitPerMonth);
+    const limitPerYear = Number(data.limitPerYear);
 
-        if(data.limitPerYear< data.limitPerMonth){
-            enqueueSnackbar('Limit per year show be grater than limit per month', {
-                variant: 'error',
-              });
-              return
-        }
-        await  rewardService.createConstantsCollectionProgram(payload) 
-        .then((res)=>{ 
-            console.log("customers groups Edit response Points", res?.data),
-            setReload(prev=>!prev)
-            setModal(false)
-        })
-        .catch((err)=>{
-            console.log(err?.response?.data);
-            if(err?.response?.data?.error?.validationErrors?.length>0){
-                enqueueSnackbar(err?.response?.data?.error?.validationErrors[0]?.message, {
-                    variant: 'error',
-                  });
-            }
-            else{ 
-            enqueueSnackbar(err?.response?.data?.error?.message, {
-                variant: 'error',
-              });
-            }
-        })
+    if (limitPerYear < limitPerMonth) {
+      enqueueSnackbar(
+        'Limit per year should be greater than limit per month',
+        { variant: 'error' }
+      );
+      return;
     }
+    
+    const payload = {
+      ...data,
+      discountPercentage: data.amountPurchaseReward,
+      brandGroupId: data.groupOfCustomers,
+      rewardProgramGifts: data.giftPrograms,
+      limitPerMonth,
+      limitPerYear,
+    };
+
+    const res = await rewardService.createConstantsCollectionProgram(payload);
+    console.log('customers groups Edit response Points', res?.data);
+
+    setReload(prev => !prev);
+    setModal(false);
+
+  } catch (err) {
+    console.log(err?.response?.data);
+
+    const validationErrors =
+      err?.response?.data?.error?.validationErrors;
+
+    if (validationErrors?.length > 0) {
+      enqueueSnackbar(validationErrors[0]?.message, {
+        variant: 'error',
+      });
+    } else {
+      enqueueSnackbar(
+        err?.response?.data?.error?.message || 'Something went wrong',
+        { variant: 'error' }
+      );
+    }
+  }
+};
+
 
     const addNewProgram=()=>{
 

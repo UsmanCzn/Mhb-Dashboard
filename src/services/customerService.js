@@ -147,8 +147,8 @@ export default {
             `services/app/SimphonyPOSService/GetManualPointsGivenByUserIdPOS?userId=${userId}&brandId=${brandId}&take=${take}&skip=${skip}`
         );
     },
-    getScansHistoryByBrand(brandId, take = 10, skip = 0) {
-        return ApiV1.get(`services/app/SimphonyPOSService/GetManualPointsGivenByPOS?brandId=${brandId}&take=${take}&skip=${skip}`);
+    getScansHistoryByBrand(branchId, take = 10, skip = 0) {
+        return ApiV1.get(`services/app/SimphonyPOSService/GetManualPointsGivenByPOS?branchId=${branchId }&take=${take}&skip=${skip}`);
     },
     getScansStampsHistory(userId, brandId, take = 10, skip = 0) {
         return ApiV1.get(

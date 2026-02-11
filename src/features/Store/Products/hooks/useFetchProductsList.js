@@ -14,7 +14,7 @@ export function useFetchProductsList(reload, selectedBrand) {
         (pageNo) => {
             setloading(true);
             storeServices
-                .getProductList(selectedBrand?.id)
+                .getProductList (selectedBrand?.id)
                 .then(
                     (res) => {
                         setProductsList(res.data.result);

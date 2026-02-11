@@ -104,57 +104,85 @@ export default function ProductType({sortOrder }) {
             setDeleteModalOpen(false);
     };
 
-    const columns = [
-        {
-            field: 'ids',
-            headerName: ' ',
-            flex: 0.1,
-            headerAlign: 'left'
-        },
-        //   {
-        //     field: "orderValue",
-        //     headerName: "Order Value",
-        //     flex: 0.5,
-        //     headerAlign: "left",
-        // },
-        {
-            field: 'name',
-            headerName: 'Category',
-            flex: 1,
-            headerAlign: 'left'
-        },
+ 
+const columns = [
+  {
+    field: 'ids',
+    headerName: '',
+    flex: 0.2,
+    minWidth: 60,
+    headerAlign: 'left',
+    align: 'left',
+  },
+  {
+    field: 'name',
+    headerName: 'Category',
+    flex: 1.4,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'subTypes',
+    headerName: 'Sub Categories',
+    flex: 1.8,
+    minWidth: 260,
+    headerAlign: 'left',
+    align: 'left',
+    sortable: false,
+    renderCell: (params) => groupsColumnFormater(params.row),
+  },
+  {
+    field: 'orderValue',
+    headerName: 'Sort Order',
+    flex: 0.8,
+    minWidth: 120,
+    headerAlign: 'right',
+    align: 'right',
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 1,
+    minWidth: 220,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <Grid container alignItems="center" justifyContent="center" spacing={1}>
+        <Grid item>
+          <Button
+            size="small"
+            disabled={user?.isAccessRevoked}
+            onClick={(event) => handleClickCategory(event, params)}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            Edit categories
+          </Button>
+        </Grid>
+        <Grid item>
+          <MoreVertIcon
+            sx={{ cursor: 'pointer' }}
+            onClick={(event) => handleClick(event, params)}
+          />
+        </Grid>
+      </Grid>
+    ),
+  },
+];
 
-        {
-            field: 'subTypes',
-            headerName: 'Sub Categories',
-            flex: 1.4,
-            headerAlign: 'left',
-            renderCell: (params) => groupsColumnFormater(params.row)
-        },
-        {
-            field: 'orderValue',
-            headerName: 'Sort Order',
-            flex: 1,
-            headerAlign: 'left'
-        },
-
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.8,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return (
-                    <Grid container direction="row" alignItems="center">
-                        <Button disabled={user?.isAccessRevoked} onClick={(event) => handleClickCategory(event, params)}>Edit categories</Button>
-                        <MoreVertIcon onClick={(event) => handleClick(event, params)} />
-                    </Grid>
-                );
-            }
-        }
-    ];
 
     const options = [
         {
@@ -176,7 +204,7 @@ export default function ProductType({sortOrder }) {
                             Categories
                         </Typography>
                     </Grid>
-                    <Box alignItems="center" sx={{ display: 'flex', gap: '10px' }}>
+                    <Box alignItems="center" sx={{ display: 'flex', gap: '20px' }}>
                         <Grid item xs="auto">
                             <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-label">{'Brand'}</InputLabel>

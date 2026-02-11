@@ -37,43 +37,72 @@ export default function BirthdayGift({ selectedBrand, setReload, user }) {
   ];
   const ORDER_MAP = ORDER_TYPES.reduce((m, o) => ((m[o.key] = o.label), m), {});
 
-  const columns = [
-    { field: 'birthDayGiftPoints', headerName: 'Points', headerAlign: 'left', flex: 0.6 },
-    { field: 'birthDayGiftItems', headerName: 'Items', flex: 0.6, headerAlign: 'left' },
-    { field: 'birthDayGiftCredit', headerName: 'Credit', flex: 0.6, headerAlign: 'left' },
-    {
-      field: 'birthDayGiftRedemptionTypes',
-      headerName: 'Redemption Types',
-      flex: 1.2,
-      headerAlign: 'left',
-      valueGetter: ({ row }) =>
-        (row.birthDayGiftRedemptionTypes || '')
-          .toString()
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-          .map((k) => ORDER_MAP[k] || k)
-          .join(', '),
-    },
-    {
-      field: 'birthDayGiftExpiryDays',
-      headerName: 'Expiry (Days)',
-      flex: 0.8,
-      headerAlign: 'left',
-      // optionally format to ensure we always display a number / fallback
-      valueGetter: ({ row }) =>
-        row.birthDayGiftExpiryDays !== undefined && row.birthDayGiftExpiryDays !== null
-          ? String(row.birthDayGiftExpiryDays)
-          : '0',
-    },
-    {
-      field: 'enableBirthDayGiftsForBrand',
-      headerName: 'Enabled',
-      flex: 0.5,
-      headerAlign: 'left',
-      valueGetter: ({ row }) => (row.enableBirthDayGiftsForBrand ? 'Yes' : 'No'),
-    },
-  ];
+const columns = [
+  {
+    field: 'birthDayGiftPoints',
+    headerName: 'Points',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.6,
+    minWidth: 100
+  },
+  {
+    field: 'birthDayGiftItems',
+    headerName: 'Items',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.6,
+    minWidth: 120
+  },
+  {
+    field: 'birthDayGiftCredit',
+    headerName: 'Credit',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.6,
+    minWidth: 120
+  },
+  {
+    field: 'birthDayGiftRedemptionTypes',
+    headerName: 'Redemption Types',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 1.2,
+    minWidth: 260,
+    valueGetter: ({ row }) =>
+      (row.birthDayGiftRedemptionTypes || '')
+        .toString()
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((k) => ORDER_MAP[k] || k)
+        .join(', ')
+  },
+  {
+    field: 'birthDayGiftExpiryDays',
+    headerName: 'Expiry (Days)',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.8,
+    minWidth: 140,
+    valueGetter: ({ row }) =>
+      row.birthDayGiftExpiryDays !== undefined &&
+      row.birthDayGiftExpiryDays !== null
+        ? String(row.birthDayGiftExpiryDays)
+        : '0'
+  },
+  {
+    field: 'enableBirthDayGiftsForBrand',
+    headerName: 'Enabled',
+    headerAlign: 'left',
+    align: 'left',
+    flex: 0.5,
+    minWidth: 100,
+    valueGetter: ({ row }) =>
+      row.enableBirthDayGiftsForBrand ? 'Yes' : 'No'
+  }
+];
+
 
   const getErrorMessage = (err) =>
     err?.response?.data?.message || err?.message || 'Something went wrong. Please try again.';

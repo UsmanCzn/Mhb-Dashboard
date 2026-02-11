@@ -114,58 +114,98 @@ const ScanRequest = () => {
   };
 
   // DataGrid Columns
-  const columns = [
-    {
-      field: 'customerName',
-      headerName: 'Customer Name',
-      flex: 1,
-      headerAlign: 'left',
-    },
-    {
-      field: 'amount',
-      headerName: 'Amount',
-      flex: 0.7,
-      headerAlign: 'left',
-      valueFormatter: ({ value }) =>
-        value !== undefined && value !== null ? `${value.toFixed(2)} KWD` : '--',
-    },
-    {
-      field: 'creationTime',
-      headerName: 'Creation Time',
-      flex: 1.1,
-      headerAlign: 'left',
-      valueGetter: (params) => params.row?.creationTime,
-      renderCell: (params) =>
-        params.row?.creationTime
-          ? moment(params.row.creationTime).format('DD/MM/YYYY HH:mm')
-          : '--',
-    },
-    {
-      field: 'pointsEarned',
-      headerName: 'Points Earned',
-      flex: 0.7,
-      headerAlign: 'left',
-    },
-    {
-      field: 'comment',
-      headerName: 'Comment',
-      flex: 1,
-      headerAlign: 'left',
-    },
-
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      sortable: false,
-      flex: 0.5,
-      headerAlign: 'left',
-      renderCell: (params) => (
-        !params.row.isAct && (
-          <MoreVertIcon onClick={(event) => handleClick(event, params)} style={{ cursor: 'pointer' }} />
-        )
+const columns = [
+  {
+    field: 'customerName',
+    headerName: 'Customer Name',
+    flex: 1.2,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'amount',
+    headerName: 'Amount',
+    flex: 0.7,
+    minWidth: 140,
+    headerAlign: 'right',
+    align: 'right',
+    valueFormatter: ({ value }) =>
+      value !== undefined && value !== null
+        ? `${value.toFixed(2)} KWD`
+        : '--',
+  },
+  {
+    field: 'creationTime',
+    headerName: 'Creation Time',
+    flex: 1.1,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    valueGetter: (params) => params.row?.creationTime,
+    renderCell: (params) =>
+      params.value
+        ? moment(params.value).format('DD/MM/YYYY HH:mm')
+        : '--',
+  },
+  {
+    field: 'pointsEarned',
+    headerName: 'Points Earned',
+    flex: 0.7,
+    minWidth: 130,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: ({ value }) => value ?? '--',
+  },
+  {
+    field: 'comment',
+    headerName: 'Comment',
+    flex: 1.2,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    sortable: false,
+    flex: 0.5,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) =>
+      !params.row.isAct && (
+        <MoreVertIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={(event) => handleClick(event, params)}
+        />
       ),
-    },
-  ];
+  },
+];
+
 
   // Options for menu actions
   const options = [

@@ -143,59 +143,91 @@ export default function BundlesForm() {
             />
         );
     };
-    const columns = [
-        {
-            field: 'id',
-            headerName: 'Image',
-            headerAlign: 'left',
-            renderCell: (params) => activeColumnFormater(params.row)
-        },
-
-        {
-            field: 'bundleName',
-            headerName: 'Bundle Name',
-            flex: 1.2,
-            headerAlign: 'left'
-        },
-        {
-            field: 'price',
-            headerName: 'Price',
-            flex: 1.4,
-            headerAlign: 'left', 
-        },
-        {
-            field: 'quantity',
-            headerName: 'Quantity',
-            flex: 1,
-            headerAlign: 'left', 
-        },
-        {
-            field: 'discountUpTo',
-            headerName: 'Discount',
-            flex: 1,
-            headerAlign: 'left', 
-
-            renderCell: (params) => <Typography variant="h7">{params?.row?.discountUpTo} %</Typography>
-        },
-        {
-            field: 'validityDays',
-            headerName: 'Validity',
-            flex: 1,
-            headerAlign: 'left', 
-        },
-        
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Actions',
-            sortable: false,
-            flex: 0,
-            headerAlign: 'left',
-
-            renderCell: (params) => {
-                return <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        },
-    ];
+const columns = [
+  {
+    field: 'image',
+    headerName: 'Image',
+    minWidth: 80,
+    flex: 0.6,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false,
+    renderCell: (params) => activeColumnFormater(params.row),
+  },
+  {
+    field: 'bundleName',
+    headerName: 'Bundle Name',
+    flex: 1.6,
+    minWidth: 200,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'price',
+    headerName: 'Price',
+    flex: 1,
+    minWidth: 120,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: ({ value }) => (value != null ? `${value}` : '--'),
+  },
+  {
+    field: 'quantity',
+    headerName: 'Quantity',
+    flex: 0.9,
+    minWidth: 110,
+    headerAlign: 'right',
+    align: 'right',
+  },
+  {
+    field: 'discountUpTo',
+    headerName: 'Discount',
+    flex: 1,
+    minWidth: 120,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <Typography fontSize={13} fontWeight={600}>
+        {params?.row?.discountUpTo ?? 0} %
+      </Typography>
+    ),
+  },
+  {
+    field: 'validityDays',
+    headerName: 'Validity (Days)',
+    flex: 1,
+    minWidth: 130,
+    headerAlign: 'center',
+    align: 'center',
+  },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <MoreVertIcon
+        sx={{ cursor: 'pointer' }}
+        onClick={(event) => handleClick(event, params)}
+      />
+    ),
+  },
+];
 
     const options = [
         {

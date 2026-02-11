@@ -103,91 +103,146 @@ const CreditRequestTable = ({user}) => {
         }
     };
 
-    const columns = [
-        {
-            field: 'fullName',
-            headerName: 'User Name',
-            headerAlign: 'left'
-        },
-        {
-            field: 'emailAddress',
-            headerName: 'Email',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'phoneNumber',
-            headerName: 'PhoneNumber',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'creationTime',
-            headerName: 'Created Date',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return <p>{moment(params.row?.creationTime).format('DD/MM/YYYY')}</p>;
-            }
-        },
-        {
-            field: 'actionTime',
-            headerName: 'Action Time',
-            flex: 1,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                const actionTime = params.row?.actionTime;
-                const actionType = params.row?.type; // Assuming `type` is available in the row data
+const columns = [
+  {
+    field: 'fullName',
+    headerName: 'User Name',
+    flex: 1.2,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'emailAddress',
+    headerName: 'Email',
+    flex: 1.4,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'phoneNumber',
+    headerName: 'Phone Number',
+    flex: 1,
+    minWidth: 150,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => value || '--',
+  },
+  {
+    field: 'creationTime',
+    headerName: 'Created Date',
+    flex: 1,
+    minWidth: 160,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) =>
+      params.row?.creationTime
+        ? moment(params.row.creationTime).format('DD/MM/YYYY')
+        : '--',
+  },
+  {
+    field: 'actionTime',
+    headerName: 'Action Time',
+    flex: 1.1,
+    minWidth: 180,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      const actionTime = params.row?.actionTime;
+      const actionType = params.row?.type;
+      const formattedTime = actionTime
+        ? moment(actionTime).format('DD/MM/YYYY')
+        : 'No Date Available';
 
-                // Handle null or undefined case for actionTime
-                const formattedTime = actionTime ? moment(actionTime).format('DD/MM/YYYY') : 'No Date Available';
+      return (
+        <span style={{ whiteSpace: 'nowrap' }}>
+          {formattedTime} {actionType ? `(${actionType})` : ''}
+        </span>
+      );
+    },
+  },
+  {
+    field: 'increaseBalanceAmount',
+    headerName: 'Amount Request',
+    flex: 0.9,
+    minWidth: 150,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: ({ value }) => (value != null ? `${value} KD` : '--'),
+  },
+  {
+    field: 'walletComments',
+    headerName: 'Comments',
+    flex: 1.4,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        title={value}
+      >
+        {value || '--'}
+      </span>
+    ),
+  },
+  {
+    field: 'isAccepted',
+    headerName: 'Approval Status',
+    flex: 0.9,
+    minWidth: 150,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => {
+      const acted = params.row?.isAct;
+      const accepted = params.row?.isAccepted;
 
-                return (
-                    <p>
-                        {formattedTime} {actionType ? `(${actionType})` : ''}
-                    </p>
-                );
-            }
-        },
+      if (!acted) {
+        return <Chip label="Pending" color="warning" size="small" />;
+      }
 
-        {
-            field: 'increaseBalanceAmount',
-            headerName: 'Amount Request',
-            flex: 1,
-            headerAlign: 'left'
-        },
-        {
-            field: 'walletComments',
-            headerName: 'Comments',
-            flex: 1,
-            headerAlign: 'left'
-        },
+      return accepted ? (
+        <Chip label="Accepted" color="success" size="small" />
+      ) : (
+        <Chip label="Rejected" color="error" size="small" />
+      );
+    },
+  },
+  {
+    field: 'actions',
+    headerName: 'Action',
+    sortable: false,
+    flex: 0.4,
+    minWidth: 80,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) =>
+      !params.row.isAct && (
+        <MoreVertIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={(event) => handleClick(event, params)}
+        />
+      ),
+  },
+];
 
-                    {
-                        field: 'isAccepted',
-                        headerName: 'Approval Status',
-                        flex: 1,
-                        headerAlign: 'left',
-                        renderCell: (params) => {
-                            const refunded = params.row?.isAccepted;
-                            const acted = params.row?.isAct;
-                            if(!acted){
-                                return <Chip label="Pending" color="warning" />;
-                            }
-                            return refunded ? <Chip label="Accepted" color="success" /> : <Chip label="Rejected" color="error" />;
-                        }
-                    },
-        {
-            field: 'isRewardMfissisng',
-            headerName: 'Action',
-            sortable: false,
-            flex: 0.5,
-            headerAlign: 'left',
-            renderCell: (params) => {
-                return !params.row.isAct && <MoreVertIcon onClick={(event) => handleClick(event, params)} />;
-            }
-        }
-    ];
 
     const options = [
         {

@@ -84,24 +84,16 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
         },
-        {
-            id: 'campaings',
-            title: 'Campaigns',
-            type: 'item',
-            url: '/campaigns',
-            icon: EventIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN]
-        },
-        {
-            id: 'wallet-topup',
-            title: 'Wallet Top ups',
-            type: 'item',
-            url: '/walletTopups',
-            icon: WalletIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN , BRAND_MANAGER]
-        },
+        // {
+        //     id: 'campaings',
+        //     title: 'Campaigns',
+        //     type: 'item',
+        //     url: '/campaigns',
+        //     icon: EventIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN, COMPANY_ADMIN]
+        // },
+
         {
             id: 'rewards',
             title: 'Rewards',
@@ -174,34 +166,7 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN,COMPANY_ADMIN, BRAND_MANAGER,BRANCH_USER]
         },
-        {
-            id: 'comission',
-            title: 'Billing & Commissions',
-            type: 'collapse',
-            icon: BarChartIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN,COMPANY_ADMIN,],
-            children: [
-                {
-                    id: 'setup-commission',
-                    title: 'Commission Setup',
-                    type: 'item',
-                    url: '/setup-commission',
-                    icon: TimelineIcon,
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN]
-                },
-                {
-                    id: 'reports-invoices',
-                    title: 'Reports & Invoices',
-                    type: 'item',
-                    url: '/reports-invoices',
-                    icon: TimelineIcon,
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN,COMPANY_ADMIN]
-                },
-            ]
-        },
+
         {
             id: 'customers',
             title: 'Customers',
@@ -390,15 +355,15 @@ const dashboard = {
                 }
             ]
         },
-        {
-            id: 'plugins',
-            title: 'Plugins',
-            type: 'item',
-            url: '/plugins',
-            icon: ExtensionIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
-        },
+        // {
+        //     id: 'plugins',
+        //     title: 'Plugins',
+        //     type: 'item',
+        //     url: '/plugins',
+        //     icon: ExtensionIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        // },
         {
             id: 'advertisement',
             title: 'Advertisement',
@@ -408,15 +373,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
-        {
-            id: 'scans',
-            title: 'Scans',
-            type: 'item',
-            url: '/scans',
-            icon: QrCodeIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
-        },
+        // {
+        //     id: 'scans',
+        //     title: 'Scans',
+        //     type: 'item',
+        //     url: '/scans',
+        //     icon: QrCodeIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        // },
         {
             id: 'credit-report',
             title: 'Credit Reports',
@@ -445,6 +410,34 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
+                {
+            id: 'comission',
+            title: 'Billing',
+            type: 'collapse',
+            icon: BarChartIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN,],
+            children: [
+                {
+                    id: 'setup-commission',
+                    title: 'Commission Setup',
+                    type: 'item',
+                    url: '/setup-commission',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN]
+                },
+                {
+                    id: 'reports-invoices',
+                    title: 'Reports & Invoices',
+                    type: 'item',
+                    url: '/reports-invoices',
+                    icon: TimelineIcon,
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN,COMPANY_ADMIN]
+                },
+            ]
+        },
         {
             id: 'CreditBalance',
             title: 'All Request',
@@ -453,6 +446,15 @@ const dashboard = {
             icon: CreditCardIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN,]
+        },
+                {
+            id: 'wallet-topup',
+            title: 'Wallet Top ups',
+            type: 'item',
+            url: '/walletTopups',
+            icon: WalletIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN , BRAND_MANAGER]
         },
         {
             id: 'CustomerNotification',
@@ -482,33 +484,33 @@ const dashboard = {
                 },
             ]
         },
-        {
-            id: 'subscription',
-            title: 'Subscriptions',
-            type: 'collapse',
-            icon: SubscriptionsIcon,
-            breadcrumbs: false,
-            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
-            isOpen: false,
-            children: [
-                {
-                    id: 'membership',
-                    title: 'Membership',
-                    type: 'item',
-                    url: '/membership',
-                    breadcrumbs: false,
-                    forUserRoles: [ADMIN]
-                },
-                {
-                    id: 'membership-details',
-                    title: 'Membership Details',
-                    type: 'item',
-                    url: '/membership-detail',
-                    breadcrumbs: false,
-                    forUserRoles: [COMPANY_ADMIN, BRAND_MANAGER]
-                }
-            ]
-        }
+        // {
+        //     id: 'subscription',
+        //     title: 'Subscriptions',
+        //     type: 'collapse',
+        //     icon: SubscriptionsIcon,
+        //     breadcrumbs: false,
+        //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
+        //     isOpen: false,
+        //     children: [
+        //         {
+        //             id: 'membership',
+        //             title: 'Membership',
+        //             type: 'item',
+        //             url: '/membership',
+        //             breadcrumbs: false,
+        //             forUserRoles: [ADMIN]
+        //         },
+        //         {
+        //             id: 'membership-details',
+        //             title: 'Membership Details',
+        //             type: 'item',
+        //             url: '/membership-detail',
+        //             breadcrumbs: false,
+        //             forUserRoles: [COMPANY_ADMIN, BRAND_MANAGER]
+        //         }
+        //     ]
+        // }
     ]
 };
 
