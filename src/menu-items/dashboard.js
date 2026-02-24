@@ -46,6 +46,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRANCH_USER, BRAND_MANAGER]
         },
+        {
+            id: 'admin-stats',
+            title: 'Admin Stats',
+            type: 'item',
+            url: '/admin-stats',
+            icon: BarChartIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN]
+        },
 
         {
             id: 'apps',
@@ -84,15 +93,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
         },
-        // {
-        //     id: 'campaings',
-        //     title: 'Campaigns',
-        //     type: 'item',
-        //     url: '/campaigns',
-        //     icon: EventIcon,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN, COMPANY_ADMIN]
-        // },
+        {
+            id: 'campaings',
+            title: 'Campaigns',
+            type: 'item',
+            url: '/campaigns',
+            icon: EventIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN]
+        },
 
         {
             id: 'rewards',
@@ -355,15 +364,15 @@ const dashboard = {
                 }
             ]
         },
-        // {
-        //     id: 'plugins',
-        //     title: 'Plugins',
-        //     type: 'item',
-        //     url: '/plugins',
-        //     icon: ExtensionIcon,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
-        // },
+        {
+            id: 'plugins',
+            title: 'Plugins',
+            type: 'item',
+            url: '/plugins',
+            icon: ExtensionIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        },
         {
             id: 'advertisement',
             title: 'Advertisement',
@@ -373,15 +382,15 @@ const dashboard = {
             breadcrumbs: false,
             forUserRoles: [ADMIN]
         },
-        // {
-        //     id: 'scans',
-        //     title: 'Scans',
-        //     type: 'item',
-        //     url: '/scans',
-        //     icon: QrCodeIcon,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
-        // },
+        {
+            id: 'scans',
+            title: 'Scans',
+            type: 'item',
+            url: '/scans',
+            icon: QrCodeIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN,COMPANY_ADMIN,BRAND_MANAGER]
+        },
         {
             id: 'credit-report',
             title: 'Credit Reports',
@@ -484,33 +493,33 @@ const dashboard = {
                 },
             ]
         },
-        // {
-        //     id: 'subscription',
-        //     title: 'Subscriptions',
-        //     type: 'collapse',
-        //     icon: SubscriptionsIcon,
-        //     breadcrumbs: false,
-        //     forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
-        //     isOpen: false,
-        //     children: [
-        //         {
-        //             id: 'membership',
-        //             title: 'Membership',
-        //             type: 'item',
-        //             url: '/membership',
-        //             breadcrumbs: false,
-        //             forUserRoles: [ADMIN]
-        //         },
-        //         {
-        //             id: 'membership-details',
-        //             title: 'Membership Details',
-        //             type: 'item',
-        //             url: '/membership-detail',
-        //             breadcrumbs: false,
-        //             forUserRoles: [COMPANY_ADMIN, BRAND_MANAGER]
-        //         }
-        //     ]
-        // }
+        {
+            id: 'subscription',
+            title: 'Subscriptions',
+            type: 'collapse',
+            icon: SubscriptionsIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER],
+            isOpen: false,
+            children: [
+                {
+                    id: 'membership',
+                    title: 'Membership',
+                    type: 'item',
+                    url: '/membership',
+                    breadcrumbs: false,
+                    forUserRoles: [ADMIN]
+                },
+                {
+                    id: 'membership-details',
+                    title: 'Membership Details',
+                    type: 'item',
+                    url: '/membership-detail',
+                    breadcrumbs: false,
+                    forUserRoles: [COMPANY_ADMIN, BRAND_MANAGER]
+                }
+            ]
+        }
     ]
 };
 

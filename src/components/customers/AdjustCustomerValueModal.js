@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 // Icons
 import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
 import LocalCafeOutlinedIcon from '@mui/icons-material/LocalCafeOutlined';
+import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
@@ -27,12 +28,13 @@ const bodySx = { p: { xs: 3, sm: 4 } };
  * Props:
  * - open: boolean
  * - onClose: (result|null) => void
- * - mode: 'points' | 'freeItems'
+ * - mode: 'points' | 'freeItems' | 'stamps'
  * - prevData?: { value?: number|string; comments?: string }
  * - title?: string
  */
 const AdjustCustomerValueModal = ({ open, onClose, mode = 'points', prevData, title }) => {
     const isPoints = mode === 'points';
+    const isStamps = mode === 'stamps';
 
     const validationSchema = Yup.object({
         value: Yup.number()
@@ -70,9 +72,9 @@ const AdjustCustomerValueModal = ({ open, onClose, mode = 'points', prevData, ti
   onClose?.(null);
 };
 
-    const heading = title || (isPoints ? 'Update User Points' : 'Update Free Drinks');
-    const valueLabel = isPoints ? 'Points' : 'Free Drinks';
-    const ValueIcon = isPoints ? LoyaltyOutlinedIcon : LocalCafeOutlinedIcon;
+    const heading = title || (isPoints ? 'Update User Points' : isStamps ? 'Update Stamps' : 'Update Free Drinks');
+    const valueLabel = isPoints ? 'Points' : isStamps ? 'Stamps' : 'Free Drinks';
+    const ValueIcon = isPoints ? LoyaltyOutlinedIcon : isStamps ? LocalOfferOutlinedIcon : LocalCafeOutlinedIcon;
 
     return (
         <Modal open={open} onClose={handleCancel} closeAfterTransition aria-labelledby="adjust-customer-value-modal-title">

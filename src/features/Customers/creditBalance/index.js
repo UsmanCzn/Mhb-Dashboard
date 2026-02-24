@@ -23,6 +23,7 @@ const CreditBalance = (props) => {
     const [loading, setLoading] = useState(false);
     const [totalPoints, setTotalPoints] = useState(0);
     const [totalFreePoints, setTotalFreePoints] = useState(0);
+    const [totalStamps, setTotalStamps] = useState(0);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
 
     // Avoid name clash with component name
@@ -34,7 +35,7 @@ const CreditBalance = (props) => {
 
     const [customerDetails, setCustomerDetails] = useState();
 
-    // Single modal controller (mode: 'points' | 'freeItems')
+    // Single modal controller (mode: 'points' | 'freeItems' | 'stamps')
     const [adjustModal, setAdjustModal] = useState({ open: false, mode: 'points' });
 
     const GetCreditDetails = async () => {
@@ -42,6 +43,7 @@ const CreditBalance = (props) => {
             const res = await customerService.getCreditDetailsByCustomerId(cid, selectedBrand.id);
             setCreditBalanceState(res.data.result[0]);
             setTotalFreePoints(res.data.result[0]?.freeItems);
+            setTotalStamps(res.data.result[0]?.punches);
         } catch (err) {
             console.log(err?.response?.data);
         }
@@ -75,7 +77,7 @@ const CreditBalance = (props) => {
             };
             const response = await customerService.updateUsedPoints(data);
             if (response) {
-                enqueueSnackbar('Points updated', { variant: 'success' });
+                enqueueSnackbar('Points request generated', { variant: 'success' });
                 await getCustomerPoints();
             }
         } catch (err) {
@@ -101,7 +103,34 @@ const CreditBalance = (props) => {
             };
             const response = await customerService.updateUsedPoints(data);
             if (response) {
-                enqueueSnackbar('Free drinks updated', { variant: 'success' });
+                enqueueSnackbar('Free drinks request generated', { variant: 'success' });
+                await getCustomerPoints();
+                await GetCreditDetails();
+            }
+        } catch (err) {
+            // optionally enqueue error
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Stamps update
+    const updateCustomerStamps = async (count, comments = '') => {
+        setLoading(true);
+        try {
+            const data = {
+                id: 0,
+                brandId: selectedBrand.id,
+                increaseFreeItemsCount: 0,
+                increasePunchesCount: +count ?? 0,
+                pointsUsed: 0,
+                pointsEarned: 0,
+                comments,
+                customerId: customerDetails.id
+            };
+            const response = await customerService.updateUsedPoints(data);
+            if (response) {
+                enqueueSnackbar('Stamps request generated', { variant: 'success' });
                 await getCustomerPoints();
                 await GetCreditDetails();
             }
@@ -119,8 +148,10 @@ const CreditBalance = (props) => {
 
         if (result.mode === 'points') {
             await updateCustomerPoints(result.value, result.comments);
-        } else {
+        } else if (result.mode === 'freeItems') {
             await updateCustomerItem(result.value, result.comments);
+        } else if (result.mode === 'stamps') {
+            await updateCustomerStamps(result.value, result.comments);
         }
     };
 
@@ -207,13 +238,13 @@ return (
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={600}>
-                    Credit Balance
+                    Credit 
                   </Typography>
 
                   <TextField
                     fullWidth
                     size="small"
-                    label="Credit Balance"
+                    label="Credit "
                     value={creditBalanceState?.creditBalance?.toFixed(2) ?? '0.00'}
                     InputProps={{ readOnly: true }}
                   />
@@ -257,7 +288,7 @@ return (
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={600}>
-                    Total User Points: {totalPoints ?? 0}
+                    User Points: {totalPoints ?? 0}
                   </Typography>
 
                   <TextField
@@ -308,7 +339,7 @@ return (
                     }}
                   >
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Total Free Drinks: {totalFreePoints ?? 0}
+                      Free Drinks: {totalFreePoints ?? 0}
                     </Typography>
 
                     <TextField
@@ -335,6 +366,60 @@ return (
                     fullWidth
                     onClick={() =>
                       setAdjustModal({ open: true, mode: 'freeItems' })
+                    }
+                  >
+                    Update
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+
+                    {/* Stamps */}
+          {selectedBrand?.showFreeDrinkFeature && (
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="stretch">
+                <Grid item xs={12} sm={6} md={4}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1.5,
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      backgroundColor: '#fff',
+                      height: '100%'
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Stamps: {totalStamps ?? 0}
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Current Stamps"
+                      value={totalStamps ?? 0}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={2}
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() =>
+                      setAdjustModal({ open: true, mode: 'stamps' })
                     }
                   >
                     Update

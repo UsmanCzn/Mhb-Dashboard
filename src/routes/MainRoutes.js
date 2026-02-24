@@ -74,6 +74,7 @@ import InvoicePaymentPage from 'pages/comissions/commission-payment';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
+const AdminStats = Loadable(lazy(() => import('pages/admin-stats')));
 const Brands = Loadable(lazy(() => import('pages/brands')));
 const Branches = Loadable(lazy(() => import('pages/branch/branches')));
 
@@ -95,7 +96,7 @@ export default function MainRoutes() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<DashboardDefault />} />
                     <Route path="/dashboard" element={<DashboardDefault />} />
-
+                    <Route path="/admin-stats" element={<AdminStats />} />
                     <Route path="/apps" element={<Apps />} />
                     <Route path="/addEditCompany" element={<AddEditApp />} />
                     <Route path="/addEditCompany/:id" element={<AddEditApp />} />

@@ -13,7 +13,6 @@ import {
   Select
 } from "@mui/material";
 
-import Counter from "components/companies/counter";
 import DropDown from "components/dropdown";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -155,6 +154,21 @@ const CreateCoupounDiscount = ({
 
   const handlePromoCodeChange = (event) => {
     setData({ ...data, isPromoCode: event.target.value });
+  };
+
+  const handleDiscountValueChange = (event) => {
+    const { value } = event.target;
+
+    if (data.discountType === 1) {
+      if (/^\d*(\.\d*)?$/.test(value)) {
+        setData({ ...data, flatDiscount: value });
+      }
+      return;
+    }
+
+    if (/^\d*$/.test(value)) {
+      setData({ ...data, discountPercentage: value });
+    }
   };
 
   useEffect(() => {
@@ -309,27 +323,28 @@ const CreateCoupounDiscount = ({
             </FormControl>
           </Grid>
 
-          {data.discountType === 0 && (
-            <Grid item xs={12} sm={6}>
-              <Counter
-                title="Set discount percentage"
-                value="discountPercentage"
-                data={data}
-                setData={setData}
-              />
-            </Grid>
-          )}
-
-          {data.discountType === 1 && (
-            <Grid item xs={12} sm={6}>
-              <Counter
-                title="Set flat discount"
-                value="flatDiscount"
-                data={data}
-                setData={setData}
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              type="number"
+              label={
+                data.discountType === 1
+                  ? "Set flat discount"
+                  : "Set discount percentage"
+              }
+              value={
+                data.discountType === 1
+                  ? data.flatDiscount
+                  : data.discountPercentage
+              }
+              onChange={handleDiscountValueChange}
+              inputProps={{
+                min: 0,
+                step: data.discountType === 1 ? "0.01" : "1"
+              }}
+            />
+          </Grid>
 
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth size="small">
