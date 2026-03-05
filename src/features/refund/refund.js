@@ -105,7 +105,7 @@ export default function RefundRequestDialog({
           orderId: order.id,
           refundType: Number(refundMethod),
           productItems,
-        //   refundMethod: Number(refundMethod),
+          refundMethod: Number(refundMethod),
           reason: comment.trim(),
         };
         await refundService.InitiateRefundRequestFromOrder(payload);

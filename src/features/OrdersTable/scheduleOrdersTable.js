@@ -14,7 +14,7 @@ import { useAuth } from 'providers/authProvider';
 import RefundRequestDialog from 'features/refund/refund';
 import refundService from 'services/refundService';
 
-export default function ScheduledOrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
+export default function ScheduledOrdersTable({ type, setData, setModalOpen, selectedBranch, selectedBrand, data, filter, filterStatus }) {
     const { user, userRole, isAuthenticated } = useAuth();
     const [isRefundOpen, setIsRefundOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -26,6 +26,7 @@ export default function ScheduledOrdersTable({ type, setData, setModalOpen, sele
 
     const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchScheduledOrdersList({
         selectedBranch,
+        selectedBrand,
         playAudio,
         filter,
         filterStatus

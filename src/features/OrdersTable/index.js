@@ -13,7 +13,7 @@ import { useAuth } from 'providers/authProvider';
 import RefundRequestDialog from 'features/refund/refund';
 import refundService from 'services/refundService';
 
-export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, data, filter, filterStatus }) {
+export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, selectedBrand, data, filter, filterStatus }) {
     const { user, userRole, isAuthenticated } = useAuth();
     const [isRefundOpen, setIsRefundOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -25,6 +25,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
 
     const { ordersList, fetchOrdersList, totalRowCount, loading } = useFetchOrdersList({
         selectedBranch,
+        selectedBrand,
         playAudio,
         filter,
         filterStatus

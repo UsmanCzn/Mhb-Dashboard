@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState,useRef } from "react";
 import { ServiceFactory } from "services/index";
 import orderServices from "services/orderServices";
 
-export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus}){
+export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus,selectedBrand}){
 
     const [loading, setloading] = useState(false);
 
@@ -27,7 +27,8 @@ export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus
           branchId:selectedBranch?.id,
           Skip:pageNo*10,
           Take: 10,
-          StatusId:filterStatus
+          StatusId:filterStatus,
+          brandId:selectedBrand?.id??0
         }
       await  orderServices.getOrdersList(payload)
         .then(
@@ -58,7 +59,7 @@ export function useFetchOrdersList({selectedBranch,playAudio,filter,filterStatus
             setPrevPage(pageNo)
             setPrevFil(filterStatus)
         });
-      },[selectedBranch,filterStatus,reload])
+      },[selectedBranch, selectedBrand, filterStatus, reload])
       // [filterStatus,timerReload],
     
 

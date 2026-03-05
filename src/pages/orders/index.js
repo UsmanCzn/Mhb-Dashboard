@@ -4,11 +4,14 @@ import Switch from '@mui/material/Switch';
 import OrderDetail from 'components/orders/OrderDetails';
 import AnalyticBox from 'components/orders/analyticsBox';
 import { OrdersTable } from 'features';
+import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import { useBranches } from 'providers/branchesProvider';
-import { useEffect, useState } from 'react';
+import { useAuth } from 'providers/authProvider';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import orderServices from 'services/orderServices';
 import branchServices from 'services/branchServices';
+import { ADMIN, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 
 
 export default function Orders() {
@@ -31,16 +34,15 @@ export default function Orders() {
     const [filter, setFilter] = useState('All');
     const [filterStatus, setFilterStatus] = useState(0);
 
-    const [branchZero, setBranchZero] = useState([
-        {
-            id: 0,
-            name: 'All Branches'
-        }
-    ]);
+    const [branchZero, setBranchZero] = useState([]);
 
     const { branchesList } = useBranches();
+    const { brandsList } = useFetchBrandsList();
+    const { userRole } = useAuth();
+    const prevBrandIdRef = useRef(null);
 
-    const [selectedBranch, setselectedBranch] = useState({});
+    const [selectedBranchId, setselectedBranchId] = useState('');
+    const [selectedBrandId, setselectedBrandId] = useState('');
     const [checked, setChecked] = useState(false);
     const [statustypes, setStatusTypes] = useState([
         { id: 1, title: 'Open' },
@@ -50,31 +52,72 @@ export default function Orders() {
         { id: 5, title: 'Rejected' }
     ]);
 
-    useEffect(() => {
-        if (branchesList[0]?.id) {
-            if (branchZero?.length == 1) {
-                //  setBranchZero([...branchZero, ...branchesList])
-                //  setselectedBranch( {
-                //     id: 0,
-                //     name: 'All Branches'
-                // })
-                setBranchZero((prev) => {
-                    const merged = [...prev, ...branchesList]; // step 1: combine both lists
-                
-                    // step 2: remove duplicates using a Map
-                    const uniqueById = Array.from(
-                        new Map(merged.map(item => [item.id, item])).values()
-                    );
-                
-                    setselectedBranch(uniqueById[0]); // step 3: set first item as selected
-                    return uniqueById; // step 4: return the unique list
-                });
-                
-            }
-        } else {
-            console.log('now goes to zero ', 'sb');
+    const canSelectBrand = userRole === ADMIN;
+
+    const selectedBrand = useMemo(() => {
+        if (selectedBrandId === 0) {
+            return { id: 0, name: 'All Brands' };
         }
-    }, [branchesList]);
+
+        return brandsList.find((brand) => brand.id === selectedBrandId) || {};
+    }, [brandsList, selectedBrandId]);
+
+    const selectedBranch = useMemo(() => {
+        return branchZero.find((branch) => branch.id === selectedBranchId) || {};
+    }, [branchZero, selectedBranchId]);
+
+    useEffect(() => {
+        if (!brandsList?.length || selectedBrandId !== '') {
+            return;
+        }
+
+        if (canSelectBrand) {
+            setselectedBrandId(0);
+            return;
+        }
+
+        setselectedBrandId(brandsList[0]?.id);
+    }, [brandsList, selectedBrandId, canSelectBrand]);
+
+    useEffect(() => {
+        if (!branchesList?.length) {
+            setBranchZero([]);
+            return;
+        }
+
+        let branchesForSelectedBrand = branchesList;
+
+        if (selectedBrandId && selectedBrandId !== 0) {
+            branchesForSelectedBrand = branchesList.filter((branch) => branch.brandId === selectedBrandId);
+        }
+
+        const shouldIncludeAllBranches =
+            userRole === ADMIN || userRole === COMPANY_ADMIN || userRole === BRAND_MANAGER;
+
+        if (shouldIncludeAllBranches) {
+            const allBranchesOption = {
+                id: 0,
+                name: 'All Branches',
+                brandId: selectedBrandId || 0
+            };
+            branchesForSelectedBrand = [allBranchesOption, ...branchesForSelectedBrand];
+        }
+
+        setBranchZero(branchesForSelectedBrand);
+
+        const currentBranchId = selectedBranchId;
+        const stillExists = branchesForSelectedBrand.some((branch) => branch.id === currentBranchId);
+
+        const brandChanged = prevBrandIdRef.current !== selectedBrandId;
+
+        if (!stillExists || brandChanged) {
+            const nextBranch = branchesForSelectedBrand[0] || {};
+            setselectedBranchId(nextBranch?.id ?? '');
+            setChecked(Boolean(nextBranch?.isBusy));
+        }
+
+        prevBrandIdRef.current = selectedBrandId;
+    }, [branchesList, selectedBrandId, userRole, selectedBranchId]);
 
 
 
@@ -84,7 +127,7 @@ export default function Orders() {
             const tempBranch = { ...selectedBranch, isBusy: event.target.checked };
 
             // Find the index of the selectedBranch in branchZero array
-            const selectedIndex = branchZero.findIndex((bran) => bran.id === selectedBranch.id);
+            const selectedIndex = branchZero.findIndex((bran) => bran.id === selectedBranchId);
 
             if (selectedIndex >= 0) {
                 // Create a copy of branchZero and update the element at the selectedIndex
@@ -93,7 +136,7 @@ export default function Orders() {
 
                 // Update the state variable with the new array
                 setBranchZero(tempBranchZero);
-                setselectedBranch(tempBranch);
+                setselectedBranchId(tempBranch.id);
             }
 
             // Update the state variable with the checked property
@@ -123,7 +166,7 @@ export default function Orders() {
 
     const getAnalytics = async () => {
         try{
-        const res= await orderServices.getAllOrderStatusCount(selectedBranch?.id,0)
+        const res= await orderServices.getAllOrderStatusCount(selectedBranchId || 0,0)
         console.log(res.data.result);
         if(res){
             const stats = res.data.result;
@@ -211,7 +254,7 @@ export default function Orders() {
     // }, []);
     useEffect(() => {
         getAnalytics();
-    }, [selectedBranch, reload]);
+    }, [selectedBranchId, reload]);
 
     useEffect(() => {
 
@@ -234,29 +277,60 @@ export default function Orders() {
                             All Orders
                         </Typography>
                     </Grid>
-                    <Grid item xs="auto" justifyContent="space-between">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedBranch}
-                                label={'Branch'}
-                                onChange={(event) => {
-                                    setselectedBranch(event.target.value);
-                                    setChecked(event.target.value.isBusy);
-                                }}
-                            >
-                                {branchZero.map((row, index) => {
-                                    return (
-                                        <MenuItem value={row} key={index}>
-                                        {row?.name === 'All Branches' ? row?.name : `${row?.name} (${row?.brand})`}
-                                      </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                        {selectedBranch.id != 0 && (
+                    <Grid item xs="auto">
+                        <Grid container spacing={2} alignItems="center" wrap="nowrap">
+                            {canSelectBrand && (
+                                <Grid item>
+                                    <FormControl sx={{ width: 220 }}>
+                                        <InputLabel id="brand-select-label">{'Brand'}</InputLabel>
+                                        <Select
+                                            labelId="brand-select-label"
+                                            id="brand-select"
+                                            value={selectedBrandId}
+                                            label={'Brand'}
+                                            onChange={(event) => {
+                                                setselectedBrandId(event.target.value);
+                                            }}
+                                        >
+                                            {[{ id: 0, name: 'All Brands' }, ...brandsList]
+                                                .filter((row, index, self) => self.findIndex((item) => item.id === row.id) === index)
+                                                .map((row, index) => {
+                                                return (
+                                                    <MenuItem value={row?.id} key={index}>
+                                                        {row?.name}
+                                                    </MenuItem>
+                                                );
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            )}
+                            <Grid item>
+                                <FormControl sx={{ width: 240 }}>
+                                    <InputLabel id="demo-simple-select-label">{'Branch'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={selectedBranchId}
+                                        label={'Branch'}
+                                        onChange={(event) => {
+                                            const selected = branchZero.find((row) => row.id === event.target.value);
+                                            setselectedBranchId(event.target.value);
+                                            setChecked(Boolean(selected?.isBusy));
+                                        }}
+                                    >
+                                        {branchZero.map((row, index) => {
+                                            return (
+                                                <MenuItem value={row?.id} key={index}>
+                                                {row?.name === 'All Branches' ? row?.name : `${row?.name} (${row?.brand})`}
+                                              </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        {selectedBranchId != 0 && (
                             <FormControlLabel
                                 control={<Switch checked={checked} onChange={(e) => makeBranchBusy(e)} />}
                                 label="Make Branch Busy"
@@ -341,6 +415,7 @@ export default function Orders() {
                 <OrdersTable
                     reload={reload}
                     selectedBranch={selectedBranch}
+                    selectedBrand={selectedBrand}
                     setData={setData}
                     data={data}
                     setModalOpen={setModalOpen}

@@ -275,7 +275,7 @@ export default function ScheduledOrders() {
                         <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="flex-end">
                             <Grid item xs={2}>
                                 <AnalyticBox
-                                    title="All Orders"
+                                    title="All Scheduled Orders"
                                     // count={analytics?.pending}
                                     value={'All'}
                                     filter={filter}
