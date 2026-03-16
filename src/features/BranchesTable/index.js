@@ -1,49 +1,74 @@
-import { Chip, IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
+import {
+    Avatar,
+    Box,
+    Card,
+    CardContent,
+    CircularProgress,
+    Grid,
+    IconButton,
+    Menu,
+    MenuItem,
+    Stack,
+    Switch,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography
+} from '@mui/material';
 import DataGridComponent from 'components/DataGridComponent';
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchBranchList } from './hooks';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Switch from '@mui/material/Switch';
+import GridViewIcon from '@mui/icons-material/GridView';
+import TableRowsIcon from '@mui/icons-material/TableRows';
+import Tooltip from '@mui/material/Tooltip';
 import branchServices from 'services/branchServices';
 import { useAuth } from 'providers/authProvider';
 
 const label = { inputProps: { 'aria-label': 'Size switch demo' } };
+const DEFAULT_LOGO = 'https://syyve.blob.core.windows.net/users-avatar/default-user.png';
 
 export default function BranchTable({ type, reload, setModalOpen, setUpdate, setUpdateData, bid }) {
-    const { user, userRole, isAuthenticated } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const { branchesList, fetchBranchesList, totalRowCount, loading } = useFetchBranchList({ reload });
-    const filteredBranchList = bid === 'all' || !bid ? branchesList : branchesList.filter((e) => e.brandId == bid);
+    const { branchesList, fetchBranchesList, loading } = useFetchBranchList({ reload });
+    const filteredBranchList =
+        bid === 'all' || !bid ? branchesList : branchesList.filter((e) => String(e.brandId) === String(bid));
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [branch, setBranch] = useState({});
-    useEffect(() => {}, [bid]);
+    const [viewMode, setViewMode] = useState('table');
 
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
         setBranch(params?.row);
         setAnchorEl(event.currentTarget);
-        // navigate(`${location.pathname}/${params.row?.id}`);
     };
-    const handleClose = (data) => {
+
+    const closeMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOptionClick = (data) => {
         if (!data.modal && data.route) {
             navigate(`${location.pathname}/${branch?.id}/${data.route}`);
-        } else if (data?.name == 'Edit Location') {
+        } else if (data?.name === 'Edit Location') {
             navigate(`/locationAddEdit/${branch?.id}/${bid}`);
         }
-        setAnchorEl(null);
+        closeMenu();
     };
 
     const activeColumnFormater = (item) => {
         return (
             <img
                 alt="logo"
-                src={item.logoUrl}
+                src={item.logoUrl || DEFAULT_LOGO}
                 style={{
                     width: 40,
-                    height: 40
+                    height: 40,
+                    borderRadius: 6,
+                    objectFit: 'cover'
                 }}
             />
         );
@@ -196,30 +221,128 @@ export default function BranchTable({ type, reload, setModalOpen, setUpdate, set
 
     return (
         <>
-            <DataGridComponent
-                rows={filteredBranchList}
-                columns={columns}
-                loading={loading}
-                getRowId={(row) => row.id}
-                rowsPerPageOptions={[10]}
-                totalRowCount={filteredBranchList?.length ?? 0}
-                // fetchCallback={fetchBranchesList}
-                onRowClick={(row) => {}}
-                pSize={10}
-                pMode={'client'}
-            />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                <ToggleButtonGroup
+                    value={viewMode}
+                    exclusive
+                    size="small"
+                    onChange={(event, newMode) => {
+                        if (newMode !== null) {
+                            setViewMode(newMode);
+                        }
+                    }}
+                >
+                    <ToggleButton value="grid" aria-label="grid view">
+                        <GridViewIcon fontSize="small" />
+                    </ToggleButton>
+                    <ToggleButton value="table" aria-label="table view">
+                        <TableRowsIcon fontSize="small" />
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Box>
+
+            {loading ? (
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <CircularProgress />
+                </Box>
+            ) : viewMode === 'table' ? (
+                <DataGridComponent
+                    rows={filteredBranchList}
+                    columns={columns}
+                    loading={loading}
+                    getRowId={(row) => row.id}
+                    rowsPerPageOptions={[10]}
+                    totalRowCount={filteredBranchList?.length ?? 0}
+                    onRowClick={() => {}}
+                    pSize={10}
+                    pMode={'client'}
+                />
+            ) : (
+                <Grid container spacing={2}>
+                    {(filteredBranchList || []).map((item) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+                            <Card variant="outlined" sx={{ height: '100%' }}>
+                                <CardContent>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                        <Avatar
+                                            src={item.logoUrl || DEFAULT_LOGO}
+                                            alt={item.name}
+                                            variant="rounded"
+                                            sx={{ width: 52, height: 52 }}
+                                        />
+
+                                        <IconButton
+                                            size="small"
+                                            disabled={user?.isAccessRevoked}
+                                            onClick={(event) => handleClick(event, { row: item })}
+                                        >
+                                            <MoreVertIcon fontSize="small" />
+                                        </IconButton>
+                                    </Box>
+
+                                    <Typography variant="subtitle1" fontWeight={700} noWrap>
+                                        {item.name || '-'}
+                                    </Typography>
+
+                                    <Stack spacing={0.75} sx={{ mt: 1.5 }}>
+                                        <Typography variant="body2" color="text.secondary" noWrap>
+                                            Brand: {item.brand || '-'}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Address: {item.branchAddress || '-'}
+                                        </Typography>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Is Busy
+                                            </Typography>
+                                            <Switch
+                                                {...label}
+                                                disabled={user?.isAccessRevoked}
+                                                checked={!!item.isBusy}
+                                                onChange={(event) => branchSwitch(event, item)}
+                                                size="small"
+                                            />
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Is Hidden
+                                            </Typography>
+                                            <Switch
+                                                {...label}
+                                                disabled={user?.isAccessRevoked}
+                                                checked={!!item.ishide}
+                                                onChange={(event) => hideBranch(event, item)}
+                                                size="small"
+                                            />
+                                        </Box>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
+
+            {!loading && (filteredBranchList || []).length === 0 && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                    No stores found.
+                </Typography>
+            )}
+
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
                 open={open}
-                onClose={handleClose}
+                onClose={closeMenu}
                 MenuListProps={{
                     'aria-labelledby': 'basic-button'
                 }}
             >
                 {options.map((row, index) => {
                     return (
-                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
+                        <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleOptionClick(row)} value={row.name}>
                             {row.name}
                         </MenuItem>
                     );

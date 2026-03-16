@@ -26,7 +26,9 @@ import ReactApexChart from 'react-apexcharts';
 import dayjs from 'dayjs';
 import { useBranches } from 'providers/branchesProvider';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+import { useDashboard } from 'features/dashbord/hooks/useDashboard';
 import adminStatsService from 'services/adminStatsService';
+import MonthlyLineChart from '../dashboard/MonthlyBarChart';
 
 const FILTER_TYPES = [
     { label: 'Today', value: '1' },
@@ -186,6 +188,22 @@ const AdminStats = () => {
         if (!selectedBrand?.id) return [];
         return branchesList.filter((branch) => branch.brandId === selectedBrand.id);
     }, [branchesList, selectedBrand]);
+
+    const dashboardStartDate = useMemo(() => (startDate?.toDate ? startDate.toDate() : startDate), [startDate]);
+    const dashboardEndDate = useMemo(() => (endDate?.toDate ? endDate.toDate() : endDate), [endDate]);
+
+    const { dashbaordBoardData: primaryBrandDashboardData } = useDashboard(
+        false,
+        primaryBrandFetched ? selectedBrand?.id : undefined,
+        dashboardStartDate,
+        dashboardEndDate,
+        selectedBranch?.id || 0
+    );
+
+    const primaryIncomeOverviewData = useMemo(
+        () => primaryBrandDashboardData?.ordersChartData || [],
+        [primaryBrandDashboardData]
+    );
 
     const revenueChartData = useMemo(() => {
         const categories = results.totalRevenueByBrand.map((item) => item.brandName || 'Unknown');
@@ -767,7 +785,7 @@ const AdminStats = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={12}>
                         <DataTableCard
                             title="Revenue Growth (Multi-brand)"
                             scopes={[
@@ -841,7 +859,7 @@ const AdminStats = () => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={12}>
                         <DataTableCard
                             title="Returning Customers Percentage (Multi-brand)"
                             scopes={[
@@ -869,6 +887,26 @@ const AdminStats = () => {
                         <Typography variant="h4" fontWeight={700} sx={{ mt: 3, mb: 2 }}>
                             Primary Brand Analysis Results
                         </Typography>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Card sx={{ p: 2, height: '100%' }}>
+                            <Typography variant="h6" sx={{ mb: 1 }}>
+                                {`Income Overview (${primaryBrandLabel})`}
+                            </Typography>
+                            <ScopeChips
+                                scopes={[
+                                    `Date Range: ${formatDate(startDate)} to ${formatDate(endDate)}`,
+                                    `Primary Brand: ${primaryBrandLabel}`,
+                                    `Branch: ${selectedBranch?.name || ''}`
+                                ]}
+                            />
+                            {primaryIncomeOverviewData.length ? (
+                                <MonthlyLineChart data={primaryIncomeOverviewData} selectedBrand={selectedBrand} />
+                            ) : (
+                                <Typography color="text.secondary">No data found.</Typography>
+                            )}
+                        </Card>
                     </Grid>
 
                     <Grid item xs={12} md={6}>
