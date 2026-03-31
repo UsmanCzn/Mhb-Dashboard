@@ -73,7 +73,7 @@ const ProductAddEdit = () => {
     const validationSchemas = {
         basicInfo: Yup.object().shape({
             name: Yup.string().required('Product Name is required'),
-            price: Yup.number().required('Price is required').moreThan(0, 'Price must be greater than 0'),
+            price: Yup.number().required('Price is required').moreThan(-1, 'Price must be greater than equal to zero'),
             pointsOfCost: Yup.number().required('Points of Cost is required'),
             type: Yup.number().required('Category is required'),
             productSubTypeId: Yup.number().required('Subcategory is required'),

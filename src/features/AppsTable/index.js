@@ -1,8 +1,5 @@
 import {
-    Avatar,
     Box,
-    Card,
-    CardContent,
     CircularProgress,
     Grid,
     IconButton,
@@ -57,7 +54,7 @@ export default function AppsTable({ reload, setUpdate, setUpdateData, setModalOp
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [customer, setCustomer] = useState({});
-    const [viewMode, setViewMode] = useState('table');
+    const [viewMode, setViewMode] = useState('grid');
 
     const open = Boolean(anchorEl);
     const handleClick = (event, params) => {
@@ -208,33 +205,62 @@ const columns = [
                 <Grid container spacing={2}>
                     {(appsList || []).map((item) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
-                            <Card variant="outlined" sx={{ height: '100%' }}>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                        <Avatar src={item?.logoUrl || DefaultImage} alt={item?.name} variant="rounded" sx={{ width: 52, height: 52 }} />
-                                        <IconButton
-                                            size="small"
-                                            disabled={user?.isAccessRevoked}
-                                            onClick={(event) => handleClick(event, { row: item })}
-                                        >
-                                            <MoreVertIcon fontSize="small" />
-                                        </IconButton>
-                                    </Box>
+                            <Box
+                                sx={{
+                                    bgcolor: '#fff',
+                                    borderRadius: 3,
+                                    border: '1px solid #eee',
+                                    overflow: 'hidden',
+                                    minHeight: 320,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    position: 'relative',
+                                    p: 2
+                                }}
+                            >
+                                <IconButton
+                                    size="small"
+                                    disabled={user?.isAccessRevoked}
+                                    onClick={(event) => handleClick(event, { row: item })}
+                                    sx={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}
+                                >
+                                    <MoreVertIcon fontSize="small" />
+                                </IconButton>
 
-                                    <Typography variant="subtitle1" fontWeight={700} noWrap>
-                                        {item?.name || '--'}
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        height: 140,
+                                        mb: 2,
+                                        borderRadius: 2,
+                                        overflow: 'hidden',
+                                        bgcolor: '#f9f9f9',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <img
+                                        src={item?.logoUrl || DefaultImage}
+                                        alt={item?.name}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        loading="lazy"
+                                    />
+                                </Box>
+
+                                <Typography variant="subtitle1" fontWeight={700} noWrap>
+                                    {item?.name || '--'}
+                                </Typography>
+
+                                <Stack spacing={0.5} sx={{ mt: 1.5 }}>
+                                    <Typography variant="body2" color="text.secondary" noWrap>
+                                        Category: {item?.categoryName || '--'}
                                     </Typography>
-
-                                    <Stack spacing={0.5} sx={{ mt: 1.5 }}>
-                                        <Typography variant="body2" color="text.secondary" noWrap>
-                                            Category: {item?.categoryName || '--'}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            End Subscription: {item?.endSubscriptionDate ? moment(item.endSubscriptionDate.toString()).format('DD-MMM-YYYY') : '--'}
-                                        </Typography>
-                                    </Stack>
-                                </CardContent>
-                            </Card>
+                                    <Typography variant="body2" color="text.secondary">
+                                        End Subscription: {item?.endSubscriptionDate ? moment(item.endSubscriptionDate.toString()).format('DD-MMM-YYYY') : '--'}
+                                    </Typography>
+                                </Stack>
+                            </Box>
                         </Grid>
                     ))}
                 </Grid>

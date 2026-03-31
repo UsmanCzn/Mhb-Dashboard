@@ -339,7 +339,7 @@ return (
                     }}
                   >
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Free Drinks: {totalFreePoints ?? 0}
+                      Free Items: {totalFreePoints ?? 0}
                     </Typography>
 
                     <TextField
