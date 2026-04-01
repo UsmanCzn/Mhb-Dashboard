@@ -158,7 +158,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
             try {
                 setload(true);
                 const options = {
-                    maxSizeMB: 0.1,
+                    maxSizeMB: 1,
                     maxWidthOrHeight: 1920,
                     useWebWorker: true
                 };

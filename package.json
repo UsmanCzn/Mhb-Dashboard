@@ -10,6 +10,7 @@
         "@emotion/cache": "^11.10.3",
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.4",
+        "@hello-pangea/dnd": "^18.0.1",
         "@material-ui/core": "^4.12.4",
         "@material-ui/icons": "^4.11.3",
         "@mui/icons-material": "^5.10.9",

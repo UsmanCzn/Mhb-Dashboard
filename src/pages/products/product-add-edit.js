@@ -367,7 +367,7 @@ const ProductAddEdit = () => {
                                     };
                                 }
                                 const options = {
-                                    maxSizeMB: 0.1,
+                                    maxSizeMB: 1,
                                     maxWidthOrHeight: 1920,
                                     useWebWorker: true
                                 };
