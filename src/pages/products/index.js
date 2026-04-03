@@ -22,14 +22,6 @@ export default function Products() {
     const [selectedBranch, setselectedBranch] = useState({});
     const [statustypes, setStatusTypes] = useState([]);
 
-    const [sortOrder, setSortOrder] = useState(0);
-    const sortOrders = [
-        { value: 0, label: 'Ascending' },
-        { value: 1, label: 'Descending' }
-    ];
-    const [sortBy, setSortBy] = useState('name');
-    const sortArr = [{ value: 'name', label: 'Name' }];
-
     useEffect(() => {
         if (!brandId) {
             if (brandsList[0]?.id) {
@@ -84,8 +76,6 @@ export default function Products() {
                     setModalOpen={setModalOpen}
                     statustypes={statustypes}
                     setReload={setReload}
-                    sortOrder={sortOrder}
-                    sortBy={sortBy}
                 />
             </Grid>
 

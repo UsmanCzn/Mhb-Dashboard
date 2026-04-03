@@ -33,7 +33,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSnackbar } from 'notistack';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
 import imageCompression from 'browser-image-compression';
@@ -45,7 +47,9 @@ const ProductEditableTable = ({
   selectedBrand,
   onReload,
   filteredProducts = null,
-  addonGroupList = []
+  addonGroupList = [],
+  isDragEnabled = false,
+  onReorder
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -236,6 +240,11 @@ const ProductEditableTable = ({
         <Table stickyHeader aria-label="products table" sx={{ width: '100%', minWidth: 700, tableLayout: 'auto' }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              {isDragEnabled && (
+                <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: isMobile ? '0.7rem' : isTablet ? '0.8rem' : '0.9rem', padding: isMobile ? '4px' : '8px', minWidth: '40px', width: '40px' }}>
+                  #
+                </TableCell>
+              )}
               {!isMobile && (
                 <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: isMobile ? '0.7rem' : isTablet ? '0.8rem' : '0.9rem', padding: isMobile ? '4px' : '8px', minWidth: '120px' }}>
                   Image
@@ -312,15 +321,38 @@ const ProductEditableTable = ({
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {displayProducts.map((product) => (
+          <DragDropContext onDragEnd={(result) => {
+            if (!result.destination || !isDragEnabled || !onReorder) return;
+            if (result.source.index === result.destination.index) return;
+            onReorder(result.source.index, result.destination.index);
+          }}>
+            <Droppable droppableId="products-table">
+              {(droppableProvided) => (
+          <TableBody ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
+            {displayProducts.map((product, productIndex) => (
+              <Draggable
+                key={String(product.id)}
+                draggableId={String(product.id)}
+                index={productIndex}
+                isDragDisabled={!isDragEnabled || isEditing(product.id)}
+              >
+                {(draggableProvided, snapshot) => (
               <TableRow
-                key={product.id}
+                ref={draggableProvided.innerRef}
+                {...draggableProvided.draggableProps}
                 sx={{
-                  backgroundColor: isEditing(product.id) ? '#f0f7ff' : 'white',
-                  '&:hover': { backgroundColor: isEditing(product.id) ? '#f0f7ff' : '#fafafa' }
+                  backgroundColor: snapshot.isDragging ? '#e3f2fd' : isEditing(product.id) ? '#f0f7ff' : 'white',
+                  '&:hover': { backgroundColor: isEditing(product.id) ? '#f0f7ff' : '#fafafa' },
+                  ...(snapshot.isDragging ? { display: 'table', width: '100%' } : {})
                 }}
               >
+
+                {/* Drag Handle */}
+                {isDragEnabled && (
+                  <TableCell align="center" sx={{ padding: '4px', width: '40px' }} {...draggableProvided.dragHandleProps}>
+                    <DragIndicatorIcon sx={{ color: '#999', cursor: 'grab', fontSize: 20 }} />
+                  </TableCell>
+                )}
 
                 {/* Product Image */}
                 {!isMobile && (
@@ -809,8 +841,14 @@ const ProductEditableTable = ({
                   </Box>
                 </TableCell>
               </TableRow>
+                )}
+              </Draggable>
             ))}
+            {droppableProvided.placeholder}
           </TableBody>
+              )}
+            </Droppable>
+          </DragDropContext>
         </Table>
       </TableContainer>
 

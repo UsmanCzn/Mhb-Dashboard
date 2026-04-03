@@ -19,20 +19,26 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Chip,
+  CircularProgress
 } from '@mui/material';
 import ConfirmationModal from '../../components/confirmation-modal';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import OfferModal from './add-offer-modal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import offerServices from 'services/offerServices';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useAuth } from 'providers/authProvider';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useSnackbar } from 'notistack';
 
 const Offers = () => {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [page] = useState(0); // (unused for now)
   const [rowsPerPage] = useState(5); // (unused for now)
@@ -42,6 +48,10 @@ const Offers = () => {
   const [Load, setLoad] = useState(true);
   const { brandsList } = useFetchBrandsList(reload);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // DnD state
+  const [orderDirty, setOrderDirty] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
 
   const actions = [
     { value: 0, label: 'Menu' },
@@ -102,7 +112,41 @@ const Offers = () => {
       getOffersByBrandId(selectedBrand.id);
     }
   }, [selectedBrand?.id]);
+  // DnD handlers
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const srcIndex = result.source.index;
+    const destIndex = result.destination.index;
+    if (srcIndex === destIndex) return;
+    setOffers((prev) => {
+      const updated = [...prev];
+      const [moved] = updated.splice(srcIndex, 1);
+      updated.splice(destIndex, 0, moved);
+      return updated.map((item, i) => ({ ...item, orderValue: i }));
+    });
+    setOrderDirty(true);
+  };
 
+  const handleSaveOrder = async () => {
+    setSavingOrder(true);
+    try {
+      for (const offer of offers) {
+        await offerServices.UpdateOffer(offer);
+      }
+      enqueueSnackbar('Offer order saved successfully', { variant: 'success' });
+      setOrderDirty(false);
+    } catch (error) {
+      console.error('Error saving offer order:', error);
+      enqueueSnackbar('Failed to save offer order', { variant: 'error' });
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
+  const handleCancelOrder = () => {
+    if (selectedBrand?.id) getOffersByBrandId(selectedBrand.id);
+    setOrderDirty(false);
+  };
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -127,7 +171,21 @@ const Offers = () => {
 
   const memoizedTableRows = useMemo(() => {
     return offers.map((offer, index) => (
-      <TableRow key={index}>
+      <Draggable key={offer.id} draggableId={String(offer.id)} index={index}>
+        {(provided, snapshot) => (
+      <TableRow
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        sx={{
+          backgroundColor: snapshot.isDragging ? '#e3f2fd' : 'inherit',
+          ...(snapshot.isDragging && { display: 'table', width: '100%' }),
+        }}
+      >
+        <TableCell sx={{ width: 40, p: 0, pl: 1 }}>
+          <Box {...provided.dragHandleProps} sx={{ display: 'flex', alignItems: 'center', cursor: 'grab', color: 'text.secondary' }}>
+            <DragIndicatorIcon fontSize="small" />
+          </Box>
+        </TableCell>
         <TableCell>
           <Box display="flex" alignItems="center" gap={2}>
             <Avatar alt="offer picture" src={offer?.offerImageUrl} />
@@ -161,6 +219,8 @@ const Offers = () => {
           </IconButton>
         </TableCell>
       </TableRow>
+        )}
+      </Draggable>
     ));
   }, [offers, user?.isAccessRevoked, handleMenuOpen, menuOpen]);
 
@@ -182,6 +242,7 @@ const getOffersByBrandId = async (id) => {
 
 
   const headers = [
+    { name: '', value: 'drag' },
     { name: 'Offer Name', value: 'offerName' },
     { name: 'Action Type', value: 'actionType' },
     { name: 'Sort Order', value: 'orderValue' },
@@ -251,7 +312,16 @@ const getOffersByBrandId = async (id) => {
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody>{memoizedTableRows}</TableBody>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="offers-table">
+                  {(provided) => (
+                    <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                      {memoizedTableRows}
+                      {provided.placeholder}
+                    </TableBody>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </Table>
           </TableContainer>
         </Grid>
@@ -290,6 +360,53 @@ const getOffersByBrandId = async (id) => {
         offer={selectedOffer}
         brand={selectedBrand}
       />
+
+      {/* Save/Cancel Order Bar */}
+      {orderDirty && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1200,
+            backgroundColor: 'background.paper',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.15)',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+            px: 3,
+            py: 1.5,
+          }}
+        >
+          <Chip
+            label="Drag rows to reorder, then save"
+            size="small"
+            color="info"
+            variant="outlined"
+          />
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleCancelOrder}
+            disabled={savingOrder}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveOrder}
+            disabled={savingOrder}
+            startIcon={savingOrder ? <CircularProgress size={16} /> : null}
+          >
+            {savingOrder ? 'Saving...' : 'Save Order'}
+          </Button>
+        </Box>
+      )}
     </>
   );
 };

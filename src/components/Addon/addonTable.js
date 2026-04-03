@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Box, Typography, ButtonBase, Button, CircularProgress, Menu, MenuItem, Divider } from '@mui/material/index';
+import { Grid, Box, Typography, ButtonBase, Button, CircularProgress, Menu, MenuItem, Divider, Chip } from '@mui/material/index';
 import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
 import { useFetchAddonList } from 'features/Store/Addons/hooks/useFetchAddonList';
 import AddonItem from 'components/Addon/addonItem';
@@ -8,7 +8,9 @@ import { useAuth } from 'providers/authProvider';
 import NewAddon from 'components/store/addon/newAddon';
 import storeServices from 'services/storeServices';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { BorderBottom } from '../../../node_modules/@mui/icons-material/index';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useSnackbar } from 'notistack';
 
 
 
@@ -23,6 +25,103 @@ const AddonTable = ({ reload, selectedBrand, setReload,selectedBranch=null }) =>
     }, [selectedBranch]);
     const [anchorEl, setAnchorEl] = useState(null);
     const { user } = useAuth();
+    const { enqueueSnackbar } = useSnackbar();
+
+    // DnD state for groups
+    const [sortedGroups, setSortedGroups] = useState([]);
+    const [groupOrderDirty, setGroupOrderDirty] = useState(false);
+    const [savingGroupOrder, setSavingGroupOrder] = useState(false);
+
+    // DnD state for addons
+    const [sortedAddons, setSortedAddons] = useState([]);
+    const [addonOrderDirty, setAddonOrderDirty] = useState(false);
+    const [savingAddonOrder, setSavingAddonOrder] = useState(false);
+
+    // Sync groups from API
+    useEffect(() => {
+        setSortedGroups([...addonGroupList].sort((a, b) => (a.orderValue ?? 0) - (b.orderValue ?? 0)));
+        setGroupOrderDirty(false);
+    }, [addonGroupList]);
+
+    // Sync addons from API
+    useEffect(() => {
+        setSortedAddons([...addonList].sort((a, b) => (a.orderValue ?? 0) - (b.orderValue ?? 0)));
+        setAddonOrderDirty(false);
+    }, [addonList]);
+
+    const handleGroupDragEnd = (result) => {
+        if (!result.destination) return;
+        const srcIndex = result.source.index;
+        const destIndex = result.destination.index;
+        if (srcIndex === destIndex) return;
+        setSortedGroups((prev) => {
+            const updated = [...prev];
+            const [moved] = updated.splice(srcIndex, 1);
+            updated.splice(destIndex, 0, moved);
+            return updated.map((item, i) => ({ ...item, orderValue: i }));
+        });
+        setGroupOrderDirty(true);
+    };
+
+    const handleAddonDragEnd = (result) => {
+        if (!result.destination) return;
+        const srcIndex = result.source.index;
+        const destIndex = result.destination.index;
+        if (srcIndex === destIndex) return;
+        setSortedAddons((prev) => {
+            const updated = [...prev];
+            const [moved] = updated.splice(srcIndex, 1);
+            updated.splice(destIndex, 0, moved);
+            return updated.map((item, i) => ({ ...item, orderValue: i }));
+        });
+        setAddonOrderDirty(true);
+    };
+
+    const handleSaveGroupOrder = async () => {
+        setSavingGroupOrder(true);
+        try {
+            for (const group of sortedGroups) {
+                await storeServices.updateProductAdditionGroup(group, selectedBrand?.id);
+            }
+            enqueueSnackbar('Group order saved successfully', { variant: 'success' });
+            setGroupOrderDirty(false);
+            setReload((prev) => !prev);
+        } catch (error) {
+            console.error('Error saving group order:', error);
+            enqueueSnackbar('Failed to save group order', { variant: 'error' });
+        } finally {
+            setSavingGroupOrder(false);
+        }
+    };
+
+    const handleCancelGroupOrder = () => {
+        setSortedGroups([...addonGroupList].sort((a, b) => (a.orderValue ?? 0) - (b.orderValue ?? 0)));
+        setGroupOrderDirty(false);
+    };
+
+    const handleSaveAddonOrder = async () => {
+        setSavingAddonOrder(true);
+        try {
+            for (const addon of sortedAddons) {
+                await storeServices.updateProductAddition(addon, selectedBrand?.id);
+            }
+            enqueueSnackbar('Add-on order saved successfully', { variant: 'success' });
+            setAddonOrderDirty(false);
+            setAddsonReload((prev) => !prev);
+        } catch (error) {
+            console.error('Error saving addon order:', error);
+            enqueueSnackbar('Failed to save add-on order', { variant: 'error' });
+        } finally {
+            setSavingAddonOrder(false);
+        }
+    };
+
+    const handleCancelAddonOrder = () => {
+        setSortedAddons([...addonList].sort((a, b) => (a.orderValue ?? 0) - (b.orderValue ?? 0)));
+        setAddonOrderDirty(false);
+    };
+
+    const canDrag = user && user?.roleId !== 7 && !selectedBranch;
     const openMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -144,52 +243,86 @@ return (
 
             <Divider sx={{ borderColor: 'lightGrey', borderWidth: 1 }} />
 
-            <Box
-              sx={{
-                maxHeight: { xs: 'auto', md: 'calc(100vh - 320px)' },
-                overflowY: 'auto',
-              }}
-            >
-              {addonGroupList?.map((item, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    height: 45,
-                    backgroundColor:
-                      selectedGroup?.id === item?.id
-                        ? 'primary.lighter'
-                        : 'transparent',
-                    borderRight:
-                      selectedGroup?.id === item?.id
-                        ? '2px solid #69c0ff'
-                        : 'none',
-                  }}
-                  display="flex"
-                  alignItems="center"
-                >
-                  <ButtonBase
-                    sx={{ width: '100%', height: '100%' }}
-                    onClick={() => handleClick(item)}
+            <DragDropContext onDragEnd={handleGroupDragEnd}>
+              <Droppable droppableId="addon-groups">
+                {(droppableProvided) => (
+                  <Box
+                    ref={droppableProvided.innerRef}
+                    {...droppableProvided.droppableProps}
+                    sx={{
+                      maxHeight: { xs: 'auto', md: 'calc(100vh - 320px)' },
+                      overflowY: 'auto',
+                    }}
                   >
-                    <Typography
-                      fontSize={14}
-                      sx={{ textAlign: 'left', px: 2, flexGrow: 1 }}
-                    >
-                      {item?.name}
-                    </Typography>
+                    {sortedGroups?.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={String(item.id)}
+                        index={index}
+                        isDragDisabled={!canDrag}
+                      >
+                        {(provided, snapshot) => (
+                          <Box
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            sx={{
+                              height: 45,
+                              backgroundColor: snapshot.isDragging
+                                ? '#e3f2fd'
+                                : selectedGroup?.id === item?.id
+                                ? 'primary.lighter'
+                                : 'transparent',
+                              borderRight:
+                                selectedGroup?.id === item?.id
+                                  ? '2px solid #69c0ff'
+                                  : 'none',
+                            }}
+                            display="flex"
+                            alignItems="center"
+                          >
+                            {canDrag && (
+                              <Box
+                                {...provided.dragHandleProps}
+                                sx={{ display: 'flex', alignItems: 'center', pl: 1, cursor: 'grab', color: 'text.secondary' }}
+                              >
+                                <DragIndicatorIcon fontSize="small" />
+                              </Box>
+                            )}
+                            <ButtonBase
+                              sx={{ width: '100%', height: '100%' }}
+                              onClick={() => handleClick(item)}
+                            >
+                              <Typography
+                                fontSize={14}
+                                sx={{ textAlign: 'left', px: canDrag ? 1 : 2, flexGrow: 1 }}
+                              >
+                                {item?.name}
+                              </Typography>
+                              <Typography
+                                fontSize={12}
+                                sx={{ color: 'text.secondary', px: 1, whiteSpace: 'nowrap' }}
+                              >
+                                #{item?.orderValue ?? '-'}
+                              </Typography>
 
-                    {user &&
-                      user?.roleId !== 7 &&
-                      !selectedBranch && (
-                        <MoreVertIcon
-                          fontSize="small"
-                          onClick={openMenu}
-                        />
-                      )}
-                  </ButtonBase>
-                </Box>
-              ))}
-            </Box>
+                              {user &&
+                                user?.roleId !== 7 &&
+                                !selectedBranch && (
+                                  <MoreVertIcon
+                                    fontSize="small"
+                                    onClick={openMenu}
+                                  />
+                                )}
+                            </ButtonBase>
+                          </Box>
+                        )}
+                      </Draggable>
+                    ))}
+                    {droppableProvided.placeholder}
+                  </Box>
+                )}
+              </Droppable>
+            </DragDropContext>
 
             <Menu
               anchorEl={anchorEl}
@@ -299,27 +432,136 @@ return (
               <CircularProgress />
             </Box>
           ) : (
-            <Grid container spacing={2} mt={1} px={2}>
-              {addonList?.map((item, index) => (
-                <AddonItem
-                  key={index}
-                  item={item}
-                  user={user}
-                  selectedBranch={selectedBranch}
-                  addonGroupList={addonGroupList}
-                  brand={selectedBrand}
-                  setModalOpen={setModalOpenA}
-                  setUpdate={setUpdateA}
-                  setUpdateData={setUpdateDataA}
-                  modalOpenA={modalOpenA}
-                  setAddsonReload={setAddsonReload}
-                />
-              ))}
-            </Grid>
+            <DragDropContext onDragEnd={handleAddonDragEnd}>
+              <Droppable droppableId="addons" direction="horizontal">
+                {(droppableProvided) => (
+                  <Grid
+                    container
+                    spacing={2}
+                    mt={1}
+                    px={2}
+                    ref={droppableProvided.innerRef}
+                    {...droppableProvided.droppableProps}
+                  >
+                    {sortedAddons?.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={String(item.id)}
+                        index={index}
+                        isDragDisabled={!canDrag}
+                      >
+                        {(provided, snapshot) => (
+                          <Grid
+                            item
+                            xs={6}
+                            sm={4}
+                            md={4}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            sx={{
+                              opacity: snapshot.isDragging ? 0.8 : 1,
+                              cursor: canDrag ? 'grab' : 'default',
+                            }}
+                          >
+                            <AddonItem
+                              item={item}
+                              user={user}
+                              selectedBranch={selectedBranch}
+                              addonGroupList={addonGroupList}
+                              brand={selectedBrand}
+                              setModalOpen={setModalOpenA}
+                              setUpdate={setUpdateA}
+                              setUpdateData={setUpdateDataA}
+                              modalOpenA={modalOpenA}
+                              setAddsonReload={setAddsonReload}
+                              isDragging={snapshot.isDragging}
+                            />
+                          </Grid>
+                        )}
+                      </Draggable>
+                    ))}
+                    {droppableProvided.placeholder}
+                  </Grid>
+                )}
+              </Droppable>
+            </DragDropContext>
           )}
         </Box>
       </Grid>
     </Grid>
+
+    {/* Save/Cancel Order Bar */}
+    {(groupOrderDirty || addonOrderDirty) && (
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1200,
+          backgroundColor: 'background.paper',
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 -2px 8px rgba(0,0,0,0.15)',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 1,
+          px: 3,
+          py: 1.5,
+        }}
+      >
+        <Chip
+          label={groupOrderDirty ? 'Group order changed' : 'Add-on order changed'}
+          size="small"
+          color="info"
+          variant="outlined"
+        />
+        {groupOrderDirty && (
+          <>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleCancelGroupOrder}
+              disabled={savingGroupOrder}
+            >
+              Cancel Groups
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveGroupOrder}
+              disabled={savingGroupOrder}
+              startIcon={savingGroupOrder ? <CircularProgress size={16} /> : null}
+            >
+              {savingGroupOrder ? 'Saving...' : 'Save Group Order'}
+            </Button>
+          </>
+        )}
+        {addonOrderDirty && (
+          <>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleCancelAddonOrder}
+              disabled={savingAddonOrder}
+            >
+              Cancel Add-ons
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveAddonOrder}
+              disabled={savingAddonOrder}
+              startIcon={savingAddonOrder ? <CircularProgress size={16} /> : null}
+            >
+              {savingAddonOrder ? 'Saving...' : 'Save Add-on Order'}
+            </Button>
+          </>
+        )}
+      </Box>
+    )}
 
     {/* MODALS */}
     <NewAddonGroup

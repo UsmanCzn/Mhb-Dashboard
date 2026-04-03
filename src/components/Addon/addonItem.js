@@ -7,7 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import DefaultImage from '../../assets/images/users/default-image.png';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import storeServices from 'services/storeServices';
-const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData, setAddsonReload,user, selectedBranch=null }) => {
+const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUpdateData, setAddsonReload,user, selectedBranch=null, isDragging }) => {
 
     const handleClick = async () => {
         setModalOpen(true);
@@ -55,16 +55,13 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
     };
     
     return (
-        <Grid
-            item
-            xs={6}
-            sm={4}
-            md={4}
-            sx={{
-                height: 200,
-                my: 2
-            }}
-        >
+            <Box
+                sx={{
+                    width: '100%',
+                    height: 200,
+                    my: 2,
+                }}
+            >
             <Box
                 sx={{
                     width: '100%',
@@ -79,12 +76,12 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                     sx={{
                         width: '100%',
                         height: 200,
-                        border: '1px solid lightGrey',
+                        border: isDragging ? '2px solid #1976d2' : '1px solid lightGrey',
                         backgroundColor: 'white',
 
                         borderRadius: 2
                     }}
-                    boxShadow={1}
+                    boxShadow={isDragging ? 4 : 1}
                     flexDirection="column"
                     display="flex"
                 >
@@ -138,7 +135,7 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                 py: 1
                             }}
                         >
-                            {/* Left side: Name + Price */}
+                            {/* Left side: Name + Price + Order */}
                             <Box>
                                 <Typography variant="h5" fontSize={14}>
                                     {item?.name}
@@ -147,6 +144,9 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                     {brand?.currencyDecimals != null
                                         ? `${Number(item?.price).toFixed(brand.currencyDecimals)} ${brand.currency}`
                                         : `${item?.price} ${brand?.currency}`}
+                                </Typography>
+                                <Typography fontSize={12} sx={{ color: 'text.secondary' }}>
+                                    Order: {item?.orderValue ?? '-'}
                                 </Typography>
                             </Box>
 
@@ -178,7 +178,7 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                         </Card>
                 </Box>
             </Box>
-        </Grid>
+            </Box>
     );
 };
 

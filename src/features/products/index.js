@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Grid, Box, OutlinedInput, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem, Typography, Link, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Grid, Box, OutlinedInput, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem, Typography, Link, ToggleButton, ToggleButtonGroup, Chip } from '@mui/material';
 import { useFetchProductsList } from 'features/Store/Products/hooks/useFetchProductsList';
 import GridItem from 'components/products/gridItem';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
@@ -12,8 +12,9 @@ import { useAuth } from 'providers/authProvider';
 import { useSnackbar } from 'notistack';
 import GridViewIcon from '@mui/icons-material/GridView';
 import TableChartIcon from '@mui/icons-material/TableChart';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrder, sortBy }) => {
+const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen }) => {
     const { user, userRole, isAuthenticated } = useAuth();
 
     const { productsList, loading, setProductsList } = useFetchProductsList(reload, selectedBranch);
@@ -25,6 +26,11 @@ const ProductGrid = ({ reload, selectedBranch, setReload, setModalOpen, sortOrde
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+    const [sortBy, setSortBy] = useState('orderValue');
+    const [sortOrder, setSortOrder] = useState(0); // 0 = ascending, 1 = descending
+    const [searchText, setSearchText] = useState('');
+    const [orderDirty, setOrderDirty] = useState(false);
+    const [savingOrder, setSavingOrder] = useState(false);
 
     const [update, setUpdate] = useState(false);
     const [updateData, setUpdateData] = useState({});
@@ -58,6 +64,7 @@ const subTypes = useMemo(() => {
     };
 
     const searchProducts = (search) => {
+        setSearchText(search);
         const searchNameLower = search.toLowerCase();
 
         // Filter based on search term, category, and subcategory
@@ -116,6 +123,52 @@ const subTypes = useMemo(() => {
 
         return () => {};
     }, [sortOrder, sortBy, productsList]);
+
+    // Drag is enabled with no filters/search active, sorted by orderValue ascending
+    const isFiltered = !!category || !!searchText;
+    const isDragEnabled = !isFiltered && sortBy === 'orderValue' && sortOrder === 0;
+
+    const handleReorder = (srcIndex, destIndex) => {
+        setSortedProductList((prev) => {
+            const updated = [...prev];
+            const [moved] = updated.splice(srcIndex, 1);
+            updated.splice(destIndex, 0, moved);
+            return updated.map((item, i) => ({ ...item, orderValue: i }));
+        });
+        setOrderDirty(true);
+    };
+
+    const handleCancelOrder = () => {
+        const temp = sortByProperty([...productsList], sortBy, sortOrder);
+        setSortedProductList([...temp]);
+        setOrderDirty(false);
+    };
+
+    const handleSaveOrder = async () => {
+        setSavingOrder(true);
+        try {
+            for (const product of SortedProductList) {
+                await storeServices.updateProduct({
+                    ...product,
+                    productId: product.id,
+                    brandId: selectedBranch?.id,
+                    productGroups: product.productAddOnGroups?.map((g) => ({
+                        productId: product.id,
+                        prodGroupId: g.productAdditionsGroupId,
+                        orderValue: g.orderValue || 0
+                    })) || []
+                });
+            }
+            enqueueSnackbar('Product order saved successfully', { variant: 'success' });
+            setOrderDirty(false);
+            setReload((prev) => !prev);
+        } catch (error) {
+            console.error('Error saving order:', error);
+            enqueueSnackbar('Failed to save product order', { variant: 'error' });
+        } finally {
+            setSavingOrder(false);
+        }
+    };
 
     const handleFileUpload = async (file) => {
       try {
@@ -204,6 +257,30 @@ const subTypes = useMemo(() => {
                     {row.name}
                   </MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+
+            <FormControl sx={{ width: { xs: '100%', sm: 140 } }}>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value="orderValue">Order Value</MenuItem>
+                <MenuItem value="name">Name</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl sx={{ width: { xs: '100%', sm: 140 } }}>
+              <InputLabel>Order</InputLabel>
+              <Select
+                value={sortOrder}
+                label="Order"
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <MenuItem value={0}>Ascending</MenuItem>
+                <MenuItem value={1}>Descending</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -308,23 +385,50 @@ const subTypes = useMemo(() => {
                     <CircularProgress />
                 </Box>
             ) : viewMode === 'grid' ? (
-                <Grid container spacing={2} sx={{ mt: 2 }} justify="space-between">
-                    {SortedProductList?.map((item, index) => {
-                        return (
-                            <GridItem
-                                key={index}
-                                item={item}
-                                brand={selectedBranch}
-                                productTypes={productTypes}
-                                setUpdateData={setUpdateData}
-                                setUpdate={setUpdate}
-                                setModalOpen={setUpdateModalOpen}
-                                duplicateProduct={duplicateProduct}
-                                user={user}
-                            />
-                        );
-                    })}
-                </Grid>
+                <DragDropContext onDragEnd={(result) => {
+                    if (!result.destination || !isDragEnabled) return;
+                    if (result.source.index === result.destination.index) return;
+                    handleReorder(result.source.index, result.destination.index);
+                }}>
+                    <Droppable droppableId="product-grid" direction="horizontal">
+                        {(droppableProvided) => (
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{ mt: 2 }}
+                                ref={droppableProvided.innerRef}
+                                {...droppableProvided.droppableProps}
+                            >
+                                {SortedProductList?.map((item, index) => (
+                                    <Draggable
+                                        key={String(item.id)}
+                                        draggableId={String(item.id)}
+                                        index={index}
+                                        isDragDisabled={!isDragEnabled}
+                                    >
+                                        {(draggableProvided, snapshot) => (
+                                            <GridItem
+                                                ref={draggableProvided.innerRef}
+                                                {...draggableProvided.draggableProps}
+                                                {...draggableProvided.dragHandleProps}
+                                                isDragging={snapshot.isDragging}
+                                                item={item}
+                                                brand={selectedBranch}
+                                                productTypes={productTypes}
+                                                setUpdateData={setUpdateData}
+                                                setUpdate={setUpdate}
+                                                setModalOpen={setUpdateModalOpen}
+                                                duplicateProduct={duplicateProduct}
+                                                user={user}
+                                            />
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {droppableProvided.placeholder}
+                            </Grid>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             ) : (
                 <ProductEditableTable
                     products={productsList}
@@ -333,7 +437,56 @@ const subTypes = useMemo(() => {
                     selectedBrand={selectedBranch}
                     onReload={() => setReload((prev) => !prev)}
                     addonGroupList={addonGroupList}
+                    isDragEnabled={isDragEnabled}
+                    onReorder={handleReorder}
                 />
+            )}
+
+            {/* Save Order Button - Fixed at bottom */}
+            {isDragEnabled && orderDirty && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1200,
+                        backgroundColor: 'background.paper',
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                        boxShadow: '0 -2px 8px rgba(0,0,0,0.15)',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        gap: 1,
+                        px: 3,
+                        py: 1.5,
+                    }}
+                >
+                    <Chip
+                        label="Drag items to reorder, then save"
+                        size="small"
+                        color="info"
+                        variant="outlined"
+                    />
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleCancelOrder}
+                        disabled={savingOrder}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSaveOrder}
+                        disabled={savingOrder}
+                        startIcon={savingOrder ? <CircularProgress size={16} /> : null}
+                    >
+                        {savingOrder ? 'Saving...' : 'Save Order'}
+                    </Button>
+                </Box>
             )}
 
             {/* <UpdateProduct

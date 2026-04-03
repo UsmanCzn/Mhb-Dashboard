@@ -3,9 +3,10 @@ import { Grid, Typography, Box, Menu, MenuItem, IconButton } from '@mui/material
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
-const GridItem = ({
-  item, brand, productTypes, duplicateProduct, user,
-}) => {
+const GridItem = React.forwardRef((
+  { item, brand, productTypes, duplicateProduct, user, isDragging, ...rest },
+  ref
+) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const type = productTypes?.find(obj => obj?.id === item?.productTypeId);
   const category = type?.subTypes?.find(obj => obj?.id === item?.productSubTypeId);
@@ -18,18 +19,19 @@ const GridItem = ({
   const handleDuplicate = () => { duplicateProduct(item); closeMenu(); };
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3}>
+    <Grid item xs={12} sm={6} md={4} lg={3} ref={ref} {...rest}>
       <Box
         sx={{
           bgcolor: '#fff',
           borderRadius: 3,
-          border: '1px solid #eee',
+          border: isDragging ? '2px solid #1976d2' : '1px solid #eee',
           overflow: 'hidden',
           minHeight: 320,
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          p: 2
+          p: 2,
+          boxShadow: isDragging ? 6 : 0,
         }}
       >
         {/* Order badge */}
@@ -121,6 +123,6 @@ const GridItem = ({
       </Box>
     </Grid>
   );
-};
+});
 
 export default GridItem;
