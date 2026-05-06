@@ -62,6 +62,11 @@ const printOrder = () => {
   Number(data?.pointsEarned) > 0
     ? `<div class="total-row"><span>Points Earned:</span><span>${data?.pointsEarned}</span></div>`
     : '';
+    const homeDeliveryCommentsText = data?.branchDeliveryText ||'';
+    const homeDeliveryCommentsHtml =
+        data?.isHomeDeliver && homeDeliveryCommentsText
+            ? `<div>Comments: ${homeDeliveryCommentsText}</div><div class="separator"></div>`
+            : '';
 
   const documentContent = `
     <html>
@@ -152,6 +157,7 @@ h6.center {
         <div>Date: ${moment(location ==='order'? data?.creationDate: data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
         <div>Payment Method: ${data?.paymentMethod}</div>
         <div> ${data?.carDetails}</div>
+                ${homeDeliveryCommentsHtml}
 
         <div class="separator"></div>
         <div class="item-row" style="font-weight: bold;">
@@ -361,6 +367,7 @@ h6.center {
                                     <Typography variant="h1" fontSize={16} fontFamily="Noto Sans Arabic">
                                         {data?.deliverySystem}
                                     </Typography>
+
                                     <Typography
                                         variant="h6"
                                         fontSize={16}
@@ -452,6 +459,20 @@ h6.center {
                                         {data?.carDetails}
                                         </Typography>
                                     </Box>
+                                    {data?.isHomeDeliver && (data?.branchDeliveryText || data?.comments) && (
+                                        <Box
+                                          sx={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center'
+                                        }}
+                                        >
+                                            <Typography variant="h6" fontSize={16}>
+                                                Comments: {data?.branchDeliveryText || data?.comments}
+                                            </Typography>
+                                        </Box>
+                            )}
 
                                     {orderDetails && (
                                         <Box

@@ -68,6 +68,7 @@ const FormComponent = () => {
         
         phoneNumber: '',
         points: 0,
+        minDaysOnAppForBirthdDayGift: 0,
         reportInterval: 1,
         secondaryLanguage: '',
         showFreeDrinkFeature: false,
@@ -187,6 +188,24 @@ const FormComponent = () => {
         }));
     };
 
+    const handleTableOrderingChange = (event, setFieldValue) => {
+        if (!IsOrderingPaid && event.target.checked) {
+            enqueueSnackbar('You need to purchase the TABLE ORDERING plugin to enable this feature', {
+                variant: 'warning'
+            });
+            return;
+        }
+        setFieldValue('menuOrdering', event.target.checked);
+    };
+
+    const handleDisabledTableOrderingClick = () => {
+        if (!IsOrderingPaid) {
+            enqueueSnackbar('You need to purchase the TABLE ORDERING plugin to enable this feature', {
+                variant: 'warning'
+            });
+        }
+    };
+
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -300,6 +319,7 @@ const getPluginsOrders = async () => {
                     walletSubtitle: selectedBrand?.walletSubTitle || '',
                     walletSubtitleNative: selectedBrand?.walletSubTitleNative || '',
                     points: selectedBrand?.pointsForWalletReplenishment || 0,
+                    minDaysOnAppForBirthdDayGift: selectedBrand?.minDaysOnAppForBirthdDayGift || 0,
                     initialCustomerBalance: selectedBrand?.initialCustomerBalance || 0,
                     initialCreditBalance: selectedBrand?.freeItems || 0,
                     initialCreditBalanceExpiry: null,
@@ -382,6 +402,7 @@ const getPluginsOrders = async () => {
             // notificationBalance: value?.notificationBalance,
             phoneNumber: value?.phoneNumber,
             pointsForWalletReplenishment: value.points,
+            minDaysOnAppForBirthdDayGift: value?.minDaysOnAppForBirthdDayGift,
             privacyPolicy: '',
             privacyPolicyNative: '',
             reportInterval: value?.reportInterval,
@@ -457,6 +478,7 @@ const getPluginsOrders = async () => {
             currencyId: value.currency,
             initialCustomerBalance: value.initialCustomerBalance,
             pointsForWalletReplenishment: value.points,
+            minDaysOnAppForBirthdDayGift: value?.minDaysOnAppForBirthdDayGift,
             showFreeDrinkFeature: value?.showFreeDrinkFeature,
             enableFoodics: value?.enableFoodics,
             enableGrubTech: value?.enableGrubTech,
@@ -862,6 +884,25 @@ const getPluginsOrders = async () => {
                                             <Grid item xs={12} sm={6}>
                                                 <Field
                                                     as={TextField}
+                                                    name="minDaysOnAppForBirthdDayGift"
+                                                    label="Min Days On App For Birthday Gift"
+                                                    type="number"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    onChange={handleChange}
+                                                    error={
+                                                        touched.minDaysOnAppForBirthdDayGift &&
+                                                        Boolean(errors.minDaysOnAppForBirthdDayGift)
+                                                    }
+                                                    helperText={
+                                                        touched.minDaysOnAppForBirthdDayGift &&
+                                                        errors.minDaysOnAppForBirthdDayGift
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Field
+                                                    as={TextField}
                                                     name="initialCustomerBalance"
                                                     label="Initial Customer Balance"
                                                     fullWidth
@@ -984,10 +1025,17 @@ const getPluginsOrders = async () => {
                                                 />
 
                                                 <FormControlLabel
+                                                    onClick={handleDisabledTableOrderingClick}
                                                     control={
                                                         <Field name="menuOrdering">
-                                                            {({ field }) => <Switch {...field}
-                                                            checked={field.value} />}
+                                                            {({ field }) => (
+                                                                <Switch
+                                                                    {...field}
+                                                                    checked={field.value}
+                                                                    disabled={!IsOrderingPaid}
+                                                                    onChange={(e) => handleTableOrderingChange(e, setFieldValue)}
+                                                                />
+                                                            )}
                                                         </Field>
                                                     }
                                                     label="Table Ordering"

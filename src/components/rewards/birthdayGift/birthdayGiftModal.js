@@ -8,7 +8,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
-import dayjs from 'dayjs';
+
 
 const ORDER_TYPES = [
   { key: '0', label: 'Pickup' },
@@ -30,9 +30,7 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
   const [points, setPoints] = useState(initialValues?.points ?? 0);
   const [credit, setCredit] = useState(initialValues?.credit ?? 0);
   const [items, setItems] = useState(initialValues?.items ?? 0);
-  const [expiryDate, setExpiryDate] = useState(
-    initialValues?.expiryDate ? dayjs(initialValues.expiryDate) : null
-  );
+  const [expiryDays, setExpiryDays] = useState(initialValues?.expiryDays ?? 0);
   const [redemptionTypes, setRedemptionTypes] = useState(
     parseCSV(initialValues?.redemptionTypes)
   );
@@ -46,7 +44,7 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
     setPoints(initialValues?.points ?? 0);
     setCredit(initialValues?.credit ?? 0);
     setItems(initialValues?.items ?? 0);
-    setExpiryDate(initialValues?.expiryDate ? dayjs(initialValues.expiryDate) : null);
+    setExpiryDays(initialValues?.expiryDays ?? 0);
     setRedemptionTypes(parseCSV(initialValues?.redemptionTypes));
     setEnabled(!!initialValues?.enableBirthDayGiftsForBrand);
     setErrors({});
@@ -60,8 +58,8 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
 
     // Only require expiry + redemption when the feature is enabled
     if (enabled) {
-      if (!expiryDate ) {
-        e.expiryDate = 'Select a valid expiry days';
+      if (!expiryDays || expiryDays <= 0) {
+        e.expiryDays = 'Enter a valid number of expiry days';
       }
       if (toCSV(redemptionTypes) === '') {
         e.redemptionTypes = 'Choose at least one order type';
@@ -80,9 +78,7 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
         points: Math.trunc(points),
         credit: parseFloat(Number(credit).toFixed(2)),
         items: Math.trunc(items),
-        expiryDate:
-          enabled && expiryDate ?expiryDate 
-            : null,
+        expiryDays: enabled ? Math.trunc(expiryDays) : 0,
         redemptionTypes: enabled ? toCSV(redemptionTypes) : '',
         enableBirthDayGiftsForBrand: enabled,
       });
@@ -174,15 +170,15 @@ export default function UpdateBirthdayGiftModal({ open, onClose, initialValues, 
 
           <Grid item xs={12} md={6}>
             <TextField
-              type="date"
-              label="Expiry Date"
+              type="number"
+              label="Expiry Days"
               fullWidth
-              value={expiryDate ? dayjs(expiryDate).format('YYYY-MM-DD') : ''}
-              onChange={(e) => setExpiryDate(dayjs(e.target.value))}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ min: dayjs().format('YYYY-MM-DD') }}
-              error={!!errors.expiryDate}
-              helperText={errors.expiryDate}
+              value={expiryDays}
+              onChange={(e) => setExpiryDays(Math.max(0, Number(e.target.value)))}
+              inputProps={{ step: 1, min: 0 }}
+              InputProps={{ endAdornment: StepperAdornment(expiryDays, setExpiryDays, 1) }}
+              error={!!errors.expiryDays}
+              helperText={errors.expiryDays}
             />
           </Grid>
 

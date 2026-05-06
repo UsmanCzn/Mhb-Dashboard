@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Divider, DialogActions,
   FormControl, FormControlLabel, Grid, IconButton, Radio, RadioGroup,
-  TextField, Typography, Paper, Chip, InputAdornment, Stack
+  TextField, Typography, Paper, Chip, Stack
 } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
@@ -18,7 +18,6 @@ export default function RefundRequestDialog({
   onSubmit,          
   order,
   totalAmount,
-  currency = 'KWD',
 }) {
   const [refundType, setRefundType] = useState('SYSTEM');   // 'SYSTEM' | 'PARTIAL'
   const [refundMethod, setRefundMethod] = useState('1');    // '1' (Bank) | '0' (Credit)
@@ -28,6 +27,7 @@ export default function RefundRequestDialog({
   const [submitting, setSubmitting] = useState(false);
 
   const maxRefund = order?.totalAmount ?? totalAmount;
+  const currencyDecimal = Number(order?.brandCurrencyDecimal ?? 3);
 
   useEffect(() => {
     if (!order) return;
@@ -207,11 +207,10 @@ export default function RefundRequestDialog({
               error={!!partialAmount && !isPartialValid}
               helperText={
                 !!partialAmount && !isPartialValid
-                  ? `Amount must be > 0${typeof maxRefund === 'number' ? ` and ≤ ${maxRefund.toFixed(3)} ${currency}` : ''}`
+                  ? `Amount must be > 0${typeof maxRefund === 'number' ? ` and ≤ ${maxRefund.toFixed(currencyDecimal ?? 3)}` : ''}`
                   : ' '
               }
               InputProps={{
-                startAdornment: <InputAdornment position="start">{currency}</InputAdornment>,
                 sx: { borderRadius: 2 }
               }}
               sx={{ mb: 1.5 }}
@@ -231,7 +230,7 @@ export default function RefundRequestDialog({
 
             {typeof maxRefund === 'number' && (
               <Typography variant="caption" sx={{ mt: 1, display: 'block', color: 'text.secondary' }}>
-                Max refundable: {maxRefund.toFixed(3)} {currency}
+                Max refundable: {maxRefund.toFixed(currencyDecimal ?? 3)}
               </Typography>
             )}
           </Box>
@@ -353,7 +352,7 @@ export default function RefundRequestDialog({
           <Grid item xs={12}>
             <Typography variant="caption" sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'text.secondary' }}>
               {refundType === 'PARTIAL' && isPartialValid
-                ? `You will refund ${currency} ${Number(partialAmount).toFixed(3)} via ${refundMethod === '1' ? 'Bank' : 'Credit'} refund.`
+                ? `You will refund ${Number(partialAmount).toFixed(currencyDecimal ?? 3)} via ${refundMethod === '1' ? 'Bank' : 'Credit'} refund.`
                 : refundType === 'SYSTEM'
                 ? `Review item quantities above before submitting.`
                 : ' '}

@@ -12,7 +12,9 @@ import {
     Avatar,
     Tooltip,
     Chip,
-    Stack
+    Stack,
+    Backdrop,
+    CircularProgress
 } from '@mui/material';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import DataGridComponent from 'components/DataGridComponent';
@@ -20,14 +22,17 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ServiceFactory } from 'services/index';
 import moment from 'moment-jalaali';
+import { useSnackbar } from 'notistack';
 const CustomerNotification = ({user}) => {
 
     const [selectedBrand, setselectedBrand] = useState({});
     const [reload, setReload] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [customerGroup, setCustomerGroup] = useState([]);
     const customerService = ServiceFactory.get('customer');
 
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [notifications, setNotifications] = useState([]);
     const [selectedNotification, setselectedNotification] = useState();
@@ -56,23 +61,41 @@ const CustomerNotification = ({user}) => {
         }
     };
     const acceptNotification = async (data) => {
+        setActionLoading(true);
         try {
             const response = await customerService.AcceptNotification(data);
             if (response) {
-                fetchData();
+                await fetchData();
+                enqueueSnackbar('Notification accepted successfully', {
+                    variant: 'success'
+                });
             }
         } catch (error) {
             console.log(error);
+            enqueueSnackbar(error?.response?.data?.error?.message || 'Failed to accept notification', {
+                variant: 'error'
+            });
+        } finally {
+            setActionLoading(false);
         }
     };
     const rejecttNotification = async (data) => {
+        setActionLoading(true);
         try {
             const response = await customerService.RejectNotification(data);
             if (response) {
-                fetchData();
+                await fetchData();
+                enqueueSnackbar('Notification rejected successfully', {
+                    variant: 'success'
+                });
             }
         } catch (error) {
             console.log(error);
+            enqueueSnackbar(error?.response?.data?.error?.message || 'Failed to reject notification', {
+                variant: 'error'
+            });
+        } finally {
+            setActionLoading(false);
         }
     };
     useEffect(() => {
@@ -82,8 +105,13 @@ const CustomerNotification = ({user}) => {
         setselectedNotification(params.row);
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = (data) => {
+    const handleClose = async (data) => {
         console.log(data);
+        if (!data?.name || !selectedNotification) {
+            setAnchorEl(null);
+            return;
+        }
+
         const payload = {
             notificationMessage: selectedNotification.notificationMessage,
             notificationTitle: selectedNotification.notificationTitle,
@@ -97,13 +125,13 @@ const CustomerNotification = ({user}) => {
             notificationDate: selectedNotification.notificationDate,
             customersGroups: selectedNotification.requestGroup.map((e) => e.requestGroupID)
         };
-        if (data.name === 'Accept') {
-            acceptNotification(payload);
-        } else if (data.name === 'Reject') {
-            rejecttNotification(payload);
-        }
-
         setAnchorEl(null);
+
+        if (data.name === 'Accept') {
+            await acceptNotification(payload);
+        } else if (data.name === 'Reject') {
+            await rejecttNotification(payload);
+        }
     };
 
         const columns = [
@@ -300,7 +328,7 @@ const CustomerNotification = ({user}) => {
                 <DataGridComponent
                     rows={notifications}
                     columns={columns}
-                    loading={reload}
+                    loading={reload || actionLoading}
                     getRowId={(row) => row.id}
                     rowsPerPageOptions={[10]}
                     totalRowCount={notifications?.length ?? 0}
@@ -320,12 +348,15 @@ const CustomerNotification = ({user}) => {
                     {options.map((row, index) => {
                         return (
             
-                            <MenuItem disabled={user?.isAccessRevoked} key={index} onClick={() => handleClose(row)} value={row.name}>
+                            <MenuItem disabled={user?.isAccessRevoked || actionLoading} key={index} onClick={() => handleClose(row)} value={row.name}>
                                 {row.name}
                             </MenuItem>
                         );
                     })}
                 </Menu>
+                <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={actionLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </Grid>
         </Grid>
     );

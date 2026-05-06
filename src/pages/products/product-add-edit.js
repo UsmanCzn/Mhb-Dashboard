@@ -47,6 +47,7 @@ const ProductAddEdit = () => {
         isFeaturedProduct: false,
         isMerchProduct: false,
         isQtyAvailable: false,
+        isSuggest: false,
         isTopProduct: false,
         name: '',
         nativeName: '',
@@ -163,6 +164,7 @@ const ProductAddEdit = () => {
                 isFeaturedProduct: Product.isFeaturedProduct || false,
                 isMerchProduct: Product.isMerchProduct || false,
                 isQtyAvailable: Product.isQtyAvailable || false,
+                isSuggest: Product.isSuggest || false,
                 isTopProduct: Product.isTopProduct || false,
                 name: Product.name || '',
                 nativeName: Product.nativeName || '',
@@ -309,6 +311,7 @@ const ProductAddEdit = () => {
                                             nativeName: values?.nativeName,
                                             orderValue: +values.orderValue,
                                             isDeliveryProduct: values?.isDeliveryProduct,
+                                            isSuggest: values?.isSuggest,
                                             productDescriptionNative: values?.productDescriptionNative,
                                             productDescription: values?.productDescription,
                                             productGroups: values?.addonGroups?.map((group) => ({
@@ -343,6 +346,7 @@ const ProductAddEdit = () => {
                                         price: values.price,
                                         isEligibleForFreeItem: values.isEligibleForFreeItem,
                                         isQtyAvailable: values.isQtyAvailable,
+                                        isSuggest: values.isSuggest,
                                         punchesForPurchase: values.punchesForPurchase,
                                         pointsOfCost: values.pointsOfCost,
                                         orderValue: values.orderValue,
@@ -667,13 +671,14 @@ const ProductAddEdit = () => {
                                             <MenuItem value={1}>FreeFood</MenuItem>
                                             <MenuItem value={2}>SpecialItem</MenuItem>
                                             <MenuItem value={3}>SpecialProduct</MenuItem>
-                                            <MenuItem value={4}>Speical1</MenuItem>
-                                            <MenuItem value={5}>Speical2</MenuItem>
-                                            <MenuItem value={6}>Speical3</MenuItem>
-                                            <MenuItem value={7}>Speical4</MenuItem>
+                                            <MenuItem value={4}>Special1</MenuItem>
+                                            <MenuItem value={5}>Special2</MenuItem>
+                                            <MenuItem value={6}>Special3</MenuItem>
+                                            <MenuItem value={7}>Special4</MenuItem>
                                             <MenuItem value={8}>Acai_Bowl</MenuItem>
                                             <MenuItem value={9}>Matcha</MenuItem>
                                             <MenuItem value={10}>Drinks</MenuItem>
+                                            <MenuItem value={11}>Small_Acai_Bowl</MenuItem>
                                             </Select>
 
                                             {touched.punchesType && errors.punchesType && (
@@ -1014,6 +1019,20 @@ const ProductAddEdit = () => {
                                         <FormControlLabel
                                             control={
                                             <Switch
+                                                name="isSuggest"
+                                                checked={values.isSuggest}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                            />
+                                            }
+                                            label="Suggest"
+                                        />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4}>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
                                                 name="isFeaturedProduct"
                                                 checked={values.isFeaturedProduct}
                                                 onChange={handleChange}
@@ -1173,6 +1192,9 @@ const ProductAddEdit = () => {
                                             {Product && <img width={100} src={Product?.productImage} alt="Product" />}
                                             <Typography variant="body1" gutterBottom>
                                             Click to upload
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" display="block">
+                                            Best size: 600 x 600 px
                                             </Typography>
                                             <Button variant="outlined" component="label" sx={{ mt: 2 }}>
                                             Choose File

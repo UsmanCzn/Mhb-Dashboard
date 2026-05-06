@@ -82,18 +82,20 @@ function PhoneShot({ src, alt }) {
 
 // ---- Components -------------------------------------------------------
 
-function PluginCard({ item, onOpen, onBuy, onEdit, user,orders }) {
+function PluginCard({ item, onOpen, onBuy, onEdit, user, orders }) {
   const { title, blurb, price, cta, Icon } = item;
-  const isBuy = /buy/i.test(cta);
+  const isBuy = /buy/i.test(cta || "");
   const canEdit = user?.roleId === 2;
-  let tempCta =cta
-  const ispurchased = orders && orders?.some(order => order.isPaid);
-  tempCta = ispurchased ? "Purchased" : cta;
-  console.log(ispurchased,"ispurchased");
+  const isPurchased = Array.isArray(orders) && orders.some((order) => order?.isPaid);
+  const tempCta = isPurchased ? "Purchased" : cta;
+
   const handlePrimaryClick = (e) => {
     e.stopPropagation();
     if (canEdit) {
       return onEdit ? onEdit(item) : null;
+    }
+    if (isPurchased) {
+      return onOpen(item);
     }
     return isBuy ? onBuy(item) : onOpen(item);
   };
@@ -168,6 +170,7 @@ function PluginCard({ item, onOpen, onBuy, onEdit, user,orders }) {
         <Button
           variant="contained"
           sx={{ textTransform: "none", px: 3 }}
+          disabled={!canEdit && isPurchased}
           onClick={handlePrimaryClick}
         >
           {canEdit ? "Edit" : tempCta}
@@ -259,6 +262,11 @@ function formatAmount(num, brand) {
   return `${Number(num || 0).toFixed(getDecimals(brand?.currencyDecimals))} ${getCurrencyCode(brand)}`;
 }
 
+const PAYMENT_SYSTEM = {
+  knet: 1,
+  apple: 14,
+};
+
 function PaymentDialog({ open, onClose, item, brand }) {
   const [method, setMethod] = React.useState("knet");
   const [loading, setLoading] = React.useState(false);
@@ -281,7 +289,7 @@ function PaymentDialog({ open, onClose, item, brand }) {
   const handleCheckout = async () => {
     try {
       setLoading(true);
-      const paymentSystemIdpaymentSystemId = PAYMENT_SYSTEM[method];
+      const paymentSystemId  = PAYMENT_SYSTEM[method];
       if (!item.id || !paymentSystemId) throw new Error("Missing plugin ID or method mapping.");
 
       const resp = await pluginService.checkoutForBrandPlugin(item.id, paymentSystemId);
@@ -528,7 +536,18 @@ export default function Plugins() {
   const handleOpenDetails = (item) => { setSelected(item); setOpenDetails(true); };
   const handleCloseDetails = () => setOpenDetails(false);
 
-  const handleOpenBuy = (item) => { setBuying(item); setOpenBuy(true); };
+  const handleOpenBuy = (item) => {
+    const isPurchased = Array.isArray(pluginOrders)
+      && pluginOrders.some((order) => order?.brandPluginId === item?.id && order?.isPaid);
+
+    if (isPurchased) {
+      handleOpenDetails(item);
+      return;
+    }
+
+    setBuying(item);
+    setOpenBuy(true);
+  };
   const handleCloseBuy = () => setOpenBuy(false);
 
   const handleOpenEdit = (item) => { setEditing(item); setOpenEdit(true); };

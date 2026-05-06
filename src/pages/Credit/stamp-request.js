@@ -179,19 +179,19 @@ const columns = [
     align: 'right',
     renderCell: ({ value }) => value ?? '--',
   },
-//   {
-//     field: 'comments',
-//     headerName: 'Comments',
-//     flex: 1.4,
-//     minWidth: 220,
-//     headerAlign: 'left',
-//     align: 'left',
-//     renderCell: ({ value }) => (
-//       <span className="ellipsis" title={value}>
-//         {value || '--'}
-//       </span>
-//     ),
-//   },
+  {
+    field: 'comments',
+    headerName: 'Comments',
+    flex: 1.4,
+    minWidth: 220,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: ({ value }) => (
+      <span className="ellipsis" title={value ?? ''}>
+        {value ?? '--'}
+      </span>
+    ),
+  },
   {
     field: 'isAccepted',
     headerName: 'Approval Status',

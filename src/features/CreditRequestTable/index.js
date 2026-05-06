@@ -185,7 +185,7 @@ const columns = [
     minWidth: 150,
     headerAlign: 'right',
     align: 'right',
-    renderCell: ({ value }) => (value != null ? `${value} KD` : '--'),
+    renderCell: ({ value }) => (value != null ? `${value}` : '--'),
   },
   {
     field: 'walletComments',

@@ -109,8 +109,8 @@ const columns = [
 
   const handleSaved = async (payload) => {
     try {
-      // normalize payload.expiryDate -> birthDayGiftExpiryDays (number)
-      const expiryDays = Number(payload.expiryDate ?? payload.expiryDays ?? 0) || 0;
+      // normalize payload.expiryDays -> birthDayGiftExpiryDays (number)
+      const expiryDays = Number(payload.expiryDays ?? 0) || 0;
 
       const updated = {
         ...selectedBrand,
@@ -180,8 +180,7 @@ const columns = [
           points: selectedGift?.birthDayGiftPoints ?? 0,
           credit: selectedGift?.birthDayGiftCredit ?? 0,
           items: selectedGift?.birthDayGiftItems ?? 0,
-          // pass canonical expiry value to modal (string or number accepted)
-          expiryDate: selectedGift?.birthDayGiftExpiryDays ?? '',
+          expiryDays: selectedGift?.birthDayGiftExpiryDays ?? 0,
           redemptionTypes: selectedGift?.birthDayGiftRedemptionTypes ?? [],
           enableBirthDayGiftsForBrand: !!selectedGift?.enableBirthDayGiftsForBrand,
         }}

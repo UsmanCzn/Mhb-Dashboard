@@ -155,7 +155,7 @@ const columns = [
     headerAlign: 'right',
     align: 'right',
     renderCell: ({ value }) =>
-      value != null ? `${value} KD` : '--',
+      value != null ? `${value}` : '--',
   },
   {
     field: 'refundMethod',

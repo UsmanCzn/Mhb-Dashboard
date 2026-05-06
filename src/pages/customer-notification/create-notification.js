@@ -302,12 +302,12 @@ const CreateNotification = () => {
                                     <TextField
                                         id="notificationMessage"
                                         label="Notification Message"
-                                        
+                                        multiline
+                                        rows={4}
                                         fullWidth
-                                        
                                         value={formik.values.notificationMessage}
                                         onChange={(e) =>
-                                            formik.setFieldValue('notificationMessage', removeEmojis(e.target.value))
+                                            formik.setFieldValue('notificationMessage', e.target.value)
                                           }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationMessage && Boolean(formik.errors.notificationMessage)}
@@ -320,12 +320,12 @@ const CreateNotification = () => {
                                     <TextField
                                         id="notificationMessageNative"
                                         label="Notification Message Native"
-                                        
+                                        multiline
+                                        rows={4}
                                         fullWidth
-                                        
                                         value={formik.values.notificationMessageNative}
                                         onChange={(e) =>
-                                            formik.setFieldValue('notificationMessageNative', removeEmojis(e.target.value))
+                                            formik.setFieldValue('notificationMessageNative', e.target.value)
                                           }
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.notificationMessageNative && Boolean(formik.errors.notificationMessageNative)}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 import { Modal, Box, Typography, TextField, Grid, Button, Switch,RadioGroup,FormControlLabel,Radio,FormControl,FormLabel } from "@mui/material/index";
 import DropDown from 'components/dropdown'
 
@@ -200,6 +201,7 @@ return (
                   required
                   disabled
                   value={data.displayEmailAddress}
+                    onChange={(e) => setData({ ...data, displayEmailAddress: e.target.value })}
                 />
               </Grid>
             </Grid>
@@ -269,8 +271,9 @@ return (
                   fullWidth
                   label="Phone"
                   required
-                  disabled
+                  disabled={prevData?.isPhoneSet}
                   value={data.displayPhoneNumber}
+                  onChange={(e) => setData({ ...data, displayPhoneNumber: e.target.value })}
                 />
               </Grid>
 
@@ -319,6 +322,33 @@ return (
 );
 
 }
+
+UpdateCustomer.propTypes = {
+  modalOpen: PropTypes.bool,
+  setModalOpen: PropTypes.func,
+  setReload: PropTypes.func,
+  prevData: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    name: PropTypes.string,
+    surname: PropTypes.string,
+    displayEmailAddress: PropTypes.string,
+    displayPhoneNumber: PropTypes.string,
+    gender: PropTypes.string,
+    dateOfBirth: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+      PropTypes.object
+    ]),
+    countryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    companyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    isPhoneSet: PropTypes.any,
+    customerGroups: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      })
+    )
+  })
+};
 
 export default UpdateCustomer
 
