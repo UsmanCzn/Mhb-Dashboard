@@ -71,6 +71,9 @@ import DashboardReport from 'pages/dashboard-report/report';
 import CommissionSetup from 'pages/comissions/commission-setup';
 import ReportsAndStatements from 'pages/comissions/commission-invoices';
 import InvoicePaymentPage from 'pages/comissions/commission-payment';
+import Regions from 'pages/regions';
+import AddEditRegion from 'pages/regions/add-edit-region';
+import Areas from 'pages/areas';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const Companies = Loadable(lazy(() => import('pages/companies')));
@@ -180,6 +183,10 @@ export default function MainRoutes() {
                     <Route path="/membership-detail/:id" element={<Subscription />} />
                     <Route path="/membership" element={<Membership />} />
                     <Route path="/deliverySettings" element={<DeliverySettings />} />
+                    <Route path="/regions" element={<Regions />} />
+                    <Route path="/regions/add-edit/:brandId/:branchId" element={<AddEditRegion />} />
+                    <Route path="/regions/add-edit/:brandId/:branchId/:regionId" element={<AddEditRegion />} />
+                    <Route path="/delivery-areas/:brandId/:branchId/:regionId" element={<Areas />} />
                 </Route>
             </Route>
             <Route path="/paymentSuccess" element={<PaymentSuccess />} />

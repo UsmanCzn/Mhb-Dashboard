@@ -25,6 +25,7 @@ import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import WalletIcon from '@mui/icons-material/Wallet';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PublicIcon from '@mui/icons-material/Public';
 // icons
 const icons = {
     DashboardOutlined
@@ -408,6 +409,15 @@ const dashboard = {
             icon: DeliveryDiningIcon,
             breadcrumbs: false,
             forUserRoles: [ADMIN, COMPANY_ADMIN]
+        },
+        {
+            id: 'regions',
+            title: 'Regions',
+            type: 'item',
+            url: '/regions',
+            icon: PublicIcon,
+            breadcrumbs: false,
+            forUserRoles: [ADMIN, COMPANY_ADMIN, BRAND_MANAGER]
         },
         {
             id: 'notifcations',

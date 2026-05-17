@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     TextField,
@@ -13,9 +13,17 @@ import {
     FormControl,
     Switch,
     Card,
-    Select
+    Select,
+    List,
+    ListItemButton,
+    Paper,
+    IconButton,
+    CircularProgress
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
+import EastIcon from '@mui/icons-material/East';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Formik, Form } from 'formik';
@@ -31,6 +39,7 @@ import StoreCopy from '../copyMenu/copyMenu';
 import imageCompression from 'browser-image-compression';
 
 const AddEditBranch = () => {
+    const theme = useTheme();
     const brandService = ServiceFactory.get('brands');
     const [tabValue, setTabValue] = useState('1');
     const [brands, setBrands] = useState([]);
@@ -42,6 +51,118 @@ const AddEditBranch = () => {
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const { user, userRole, isAuthenticated } = useAuth();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [deliveryAreas, setDeliveryAreas] = useState([]);
+    const [selectedDeliveryAreas, setSelectedDeliveryAreas] = useState([]);
+    const [loadingDeliveryAreas, setLoadingDeliveryAreas] = useState(false);
+    const [updatingAreaId, setUpdatingAreaId] = useState(null);
+    const [selectedBrandIdForAreas, setSelectedBrandIdForAreas] = useState(null);
+
+    const sortByAreaName = (areas) =>
+        [...areas].sort((a, b) =>
+            (a.areaName || '').trim().toLowerCase().localeCompare((b.areaName || '').trim().toLowerCase())
+        );
+
+    const flattenDeliveryAreas = (regions = []) =>
+        regions.flatMap((region) =>
+            (region.children || []).map((child) => ({
+                regionId: region.id,
+                regionName: region.name,
+                regionNativeName: region.nativeName,
+                regionType: region.type,
+                regionIsHidden: region.isHidden,
+                areaId: child.id,
+                areaName: child.name,
+                areaNativeName: child.nativeName,
+                areaType: child.type,
+                areaIsHidden: child.isHidden
+            }))
+        );
+
+    const filteredDeliveryAreas = useMemo(() => {
+        const normalizedTerm = (searchTerm || '').toLowerCase();
+        return deliveryAreas.filter((area) => (area.areaName || '').toLowerCase().includes(normalizedTerm));
+    }, [deliveryAreas, searchTerm]);
+
+    const getDeliveryAreas = useCallback(async (brandId) => {
+        if (!brandId) {
+            setDeliveryAreas([]);
+            setSelectedDeliveryAreas([]);
+            return;
+        }
+
+        setLoadingDeliveryAreas(true);
+        try {
+            const res = await branchServices.getDeliveryAreasTreeByBrandId(brandId);
+            const flattened = flattenDeliveryAreas(res?.data?.result || []);
+
+            setDeliveryAreas(sortByAreaName(flattened.filter((area) => area.areaIsHidden)));
+            setSelectedDeliveryAreas(flattened.filter((area) => !area.areaIsHidden));
+        } catch (error) {
+            enqueueSnackbar('Failed to load delivery areas', { variant: 'error' });
+        } finally {
+            setLoadingDeliveryAreas(false);
+        }
+    }, [enqueueSnackbar]);
+
+    const getSelectDeliveryAreas = async (area, isHidden = false) => {
+        if (!selectedBrandIdForAreas) {
+            return;
+        }
+
+        setUpdatingAreaId(area.areaId);
+        try {
+            await branchServices.updateDeliveryAreaHide({
+                brandId: selectedBrandIdForAreas,
+                regionId: area.regionId,
+                areaId: area.areaId,
+                isHidden
+            });
+        } finally {
+            setUpdatingAreaId(null);
+        }
+    };
+
+    const addArea = async (area) => {
+        if (selectedDeliveryAreas.some((item) => item.areaId === area.areaId)) {
+            return;
+        }
+
+        const previousDeliveryAreas = deliveryAreas;
+        const previousSelectedAreas = selectedDeliveryAreas;
+
+        setSelectedDeliveryAreas((prev) => [...prev, area]);
+        setDeliveryAreas((prev) => prev.filter((item) => item.areaId !== area.areaId));
+
+        try {
+            await getSelectDeliveryAreas(area, false);
+        } catch (error) {
+            setDeliveryAreas(previousDeliveryAreas);
+            setSelectedDeliveryAreas(previousSelectedAreas);
+            enqueueSnackbar('Failed to update delivery area', { variant: 'error' });
+        }
+    };
+
+    const removeArea = async (area) => {
+        const selectedIndex = selectedDeliveryAreas.findIndex((item) => item.areaId === area.areaId);
+        if (selectedIndex === -1) {
+            return;
+        }
+
+        const previousDeliveryAreas = deliveryAreas;
+        const previousSelectedAreas = selectedDeliveryAreas;
+
+        setSelectedDeliveryAreas((prev) => prev.filter((item) => item.areaId !== area.areaId));
+        setDeliveryAreas((prev) => sortByAreaName([...prev, area]));
+
+        try {
+            await getSelectDeliveryAreas(area, true);
+        } catch (error) {
+            setDeliveryAreas(previousDeliveryAreas);
+            setSelectedDeliveryAreas(previousSelectedAreas);
+            enqueueSnackbar('Failed to update delivery area', { variant: 'error' });
+        }
+    };
 
 
 const handleNext = async (validateForm, setTouched, values) => {
@@ -144,6 +265,16 @@ const handleNext = async (validateForm, setTouched, values) => {
             if (found) setBrand(found);
             }
     }, [brands,branch])
+
+    useEffect(() => {
+        if (branch?.brandId) {
+            setSelectedBrandIdForAreas(branch.brandId);
+        }
+    }, [branch]);
+
+    useEffect(() => {
+        getDeliveryAreas(selectedBrandIdForAreas);
+    }, [getDeliveryAreas, selectedBrandIdForAreas]);
     
 
     const handleTabChange = (event, newValue) => {
@@ -423,7 +554,10 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         variant="outlined"
                                                         name="brandId"
                                                         value={values.brandId}
-                                                        onChange={handleChange}
+                                                        onChange={(e) => {
+                                                            handleChange(e);
+                                                            setSelectedBrandIdForAreas(Number(e.target.value));
+                                                        }}
                                                         onBlur={handleBlur}
                                                         error={touched.brandId && Boolean(errors.brandId)}
                                                         helperText={touched.brandId && errors.brandId}
@@ -746,6 +880,101 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                                     {/* Add more options as needed */}
                                                                 </Select>
                                                             </FormControl>
+                                                        </Grid>
+
+                                                        <Grid item xs={12}>
+                                                            <Grid container spacing={2} alignItems="stretch">
+                                                                <Grid item xs={12} md={5.5}>
+                                                                    <Paper variant="outlined" sx={{ height: '100%' }}>
+                                                                        <Box sx={{ bgcolor: theme.palette.primary.main, color: theme.palette.primary.contrastText, p: 1.25 }}>
+                                                                            <Typography align="center">Excluded Areas</Typography>
+                                                                        </Box>
+                                                                        <Box sx={{ p: 1.5 }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                size="small"
+                                                                                placeholder="Search Delivery Area"
+                                                                                value={searchTerm}
+                                                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                                                sx={{ mb: 1.5 }}
+                                                                            />
+                                                                            <List sx={{ maxHeight: 303, overflowY: 'auto', p: 0 }}>
+                                                                                {loadingDeliveryAreas ? (
+                                                                                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                                                                                        <CircularProgress size={20} />
+                                                                                    </Box>
+                                                                                ) : (
+                                                                                    filteredDeliveryAreas.map((area) => (
+                                                                                        <ListItemButton
+                                                                                            key={area.areaId}
+                                                                                            onClick={() => addArea(area)}
+                                                                                            disabled={updatingAreaId === area.areaId}
+                                                                                            divider
+                                                                                        >
+                                                                                            <Typography variant="body2">{area.areaName}</Typography>
+                                                                                        </ListItemButton>
+                                                                                    ))
+                                                                                )}
+                                                                            </List>
+                                                                        </Box>
+                                                                    </Paper>
+                                                                </Grid>
+
+                                                                <Grid item xs={12} md={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <EastIcon fontSize="large" />
+                                                                </Grid>
+
+                                                                <Grid item xs={12} md={5.5}>
+                                                                    <Paper variant="outlined" sx={{ height: '100%' }}>
+                                                                        <Box sx={{ bgcolor: theme.palette.primary.main, color: theme.palette.primary.contrastText, p: 1.25 }}>
+                                                                            <Typography align="center">All Delivery Areas</Typography>
+                                                                        </Box>
+                                                                        <Box sx={{ p: 1.5 }}>
+                                                                            <List sx={{ maxHeight: 303, overflowY: 'auto', p: 0 }}>
+                                                                                {selectedDeliveryAreas.map((area, index) => (
+                                                                                    <ListItemButton
+                                                                                        key={area.areaId}
+                                                                                        divider
+                                                                                        disabled={updatingAreaId === area.areaId}
+                                                                                        sx={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center'
+                                                                                        }}
+                                                                                    >
+                                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                                            <Box
+                                                                                                sx={{
+                                                                                                    width: 24,
+                                                                                                    height: 24,
+                                                                                                    borderRadius: '50%',
+                                                                                                    bgcolor: theme.palette.primary.main,
+                                                                                                    color: theme.palette.primary.contrastText,
+                                                                                                    display: 'flex',
+                                                                                                    alignItems: 'center',
+                                                                                                    justifyContent: 'center',
+                                                                                                    fontSize: '0.75rem'
+                                                                                                }}
+                                                                                            >
+                                                                                                {index + 1}
+                                                                                            </Box>
+                                                                                            <Typography variant="body2">{area.areaName}</Typography>
+                                                                                        </Box>
+
+                                                                                        <IconButton
+                                                                                            size="small"
+                                                                                            onClick={() => removeArea(area)}
+                                                                                            disabled={updatingAreaId === area.areaId}
+                                                                                        >
+                                                                                            <CloseIcon fontSize="small" />
+                                                                                        </IconButton>
+                                                                                    </ListItemButton>
+                                                                                ))}
+                                                                            </List>
+                                                                        </Box>
+                                                                    </Paper>
+                                                                </Grid>
+                                                            </Grid>
                                                         </Grid>
                                                     </>
                                                 )}
