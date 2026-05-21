@@ -3,6 +3,8 @@ export default {
     brandId: 1
 };
 
+export const IMAGE_COMPRESSION_MAX_SIZE_MB = 2;
+
 export const PaymentGateWayEnum = {
     None: 0,
     Tap: 1,

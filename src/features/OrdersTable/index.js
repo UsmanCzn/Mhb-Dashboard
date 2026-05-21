@@ -108,7 +108,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     modal: false
                 }
             ]);
-        } else if (params?.row?.status == 'Accepted' && params?.row?.deliverySystem === 'HomeDeliver' && !params.row?.verdiOrderId) {
+        } else if (params?.row?.status == 'Accepted' && params?.row?.deliverySystem === 'HomeDeliver' && params.row?.verdiOrderId>0) {
             setOptions([
                 {
                     name: 'Open/Print',

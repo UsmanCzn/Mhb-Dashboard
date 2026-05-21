@@ -40,6 +40,7 @@ import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
 import imageCompression from 'browser-image-compression';
 import { useFetchAddonGroupList } from 'features/Store/AddonGroups/hooks/useFetchAddonGroupList';
+import { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 
 const ProductEditableTable = ({ 
   products = [], 
@@ -101,7 +102,7 @@ const ProductEditableTable = ({
     setImageUploadingForId(product.id);
     try {
       const options = {
-        maxSizeMB: 0.1,
+        maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
         maxWidthOrHeight: 1920,
         useWebWorker: true
       };
@@ -245,6 +246,9 @@ const ProductEditableTable = ({
                   #
                 </TableCell>
               )}
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: isMobile ? '0.7rem' : isTablet ? '0.8rem' : '0.9rem', padding: isMobile ? '4px' : '8px', minWidth: '80px' }}>
+                PID
+              </TableCell>
               {!isMobile && (
                 <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: isMobile ? '0.7rem' : isTablet ? '0.8rem' : '0.9rem', padding: isMobile ? '4px' : '8px', minWidth: '120px' }}>
                   Image
@@ -353,6 +357,11 @@ const ProductEditableTable = ({
                     <DragIndicatorIcon sx={{ color: '#999', cursor: 'grab', fontSize: 20 }} />
                   </TableCell>
                 )}
+
+                {/* Product ID */}
+                <TableCell align="center" sx={{ padding: isMobile ? '4px' : '8px', fontSize: isMobile ? '0.75rem' : 'inherit', fontWeight: 700 }}>
+                  {product.id}
+                </TableCell>
 
                 {/* Product Image */}
                 {!isMobile && (

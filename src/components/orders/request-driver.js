@@ -19,7 +19,7 @@ import { DirectionsCar, AccessTime, AttachMoney } from '@mui/icons-material';
 const RequestDriverDialog = ({ open, onClose }) => {
     const driverOptions = [
         {
-            name: 'Wordy',
+            name: 'Verdi',
             distance: '1.2 KM Away',
             time: '25-35 min',
             price: '0.000 KD',

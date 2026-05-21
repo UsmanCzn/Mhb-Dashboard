@@ -23,7 +23,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import { ServiceFactory } from 'services/index';
-import constants from 'helper/constants';
+import constants, { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 import { useFetchProductTypeList } from 'features/Store/ProductType/hooks/useFetchProductTypeList';
 import { useFetchBranchList } from 'features/BranchesTable/hooks/useFetchBranchesList';
 import storeServices from 'services/storeServices';
@@ -123,7 +123,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, setReload, selectedBrand, upda
         };
 
         const options = {
-            maxSizeMB: 1,
+            maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };

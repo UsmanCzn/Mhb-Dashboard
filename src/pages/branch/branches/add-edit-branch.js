@@ -37,6 +37,7 @@ import BranchTimings from '../../../pages/branch/branchTimings/index';
 import { useAuth } from 'providers/authProvider';
 import StoreCopy from '../copyMenu/copyMenu';
 import imageCompression from 'browser-image-compression';
+import { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 
 const AddEditBranch = () => {
     const theme = useTheme();
@@ -63,20 +64,31 @@ const AddEditBranch = () => {
             (a.areaName || '').trim().toLowerCase().localeCompare((b.areaName || '').trim().toLowerCase())
         );
 
-    const flattenDeliveryAreas = (regions = []) =>
+    const flattenDeliveryAreas = (regions = [], currentBranchId = null) =>
         regions.flatMap((region) =>
-            (region.children || []).map((child) => ({
-                regionId: region.id,
-                regionName: region.name,
-                regionNativeName: region.nativeName,
-                regionType: region.type,
-                regionIsHidden: region.isHidden,
-                areaId: child.id,
-                areaName: child.name,
-                areaNativeName: child.nativeName,
-                areaType: child.type,
-                areaIsHidden: child.isHidden
-            }))
+            (region.children || []).flatMap((child) => {
+                if (child?.isHidden === true) {
+                    return [];
+                }
+
+                const branchAllotments = (child.children || []).filter(
+                    (node) => node?.type === 'BranchAlloted' && Number(node?.branchId) === currentBranchId
+                );
+                const hasVisibleBranchAllotment = branchAllotments.some((node) => node?.isHidden === false);
+
+                return [{
+                    regionId: region.id,
+                    regionName: region.name,
+                    regionNativeName: region.nativeName,
+                    regionType: region.type,
+                    regionIsHidden: region.isHidden,
+                    areaId: child.id,
+                    areaName: child.name,
+                    areaNativeName: child.nativeName,
+                    areaType: child.type,
+                    areaIsHidden: currentBranchId ? !hasVisibleBranchAllotment : child.isHidden
+                }];
+            })
         );
 
     const filteredDeliveryAreas = useMemo(() => {
@@ -94,7 +106,11 @@ const AddEditBranch = () => {
         setLoadingDeliveryAreas(true);
         try {
             const res = await branchServices.getDeliveryAreasTreeByBrandId(brandId);
-            const flattened = flattenDeliveryAreas(res?.data?.result || []);
+            const currentBranchId = Number(id);
+            const flattened = flattenDeliveryAreas(
+                res?.data?.result || [],
+                Number.isFinite(currentBranchId) && currentBranchId > 0 ? currentBranchId : null
+            );
 
             setDeliveryAreas(sortByAreaName(flattened.filter((area) => area.areaIsHidden)));
             setSelectedDeliveryAreas(flattened.filter((area) => !area.areaIsHidden));
@@ -103,19 +119,19 @@ const AddEditBranch = () => {
         } finally {
             setLoadingDeliveryAreas(false);
         }
-    }, [enqueueSnackbar]);
+    }, [enqueueSnackbar, id]);
 
     const getSelectDeliveryAreas = async (area, isHidden = false) => {
-        if (!selectedBrandIdForAreas) {
+        const currentBranchId = Number(id);
+        if (!selectedBrandIdForAreas || !Number.isFinite(currentBranchId) || currentBranchId <= 0) {
             return;
         }
 
         setUpdatingAreaId(area.areaId);
         try {
-            await branchServices.updateDeliveryAreaHide({
-                brandId: selectedBrandIdForAreas,
-                regionId: area.regionId,
+            await branchServices.createOrUpdateDeliveryAreaBranchMapping({
                 areaId: area.areaId,
+                branchId: currentBranchId,
                 isHidden
             });
         } finally {
@@ -447,7 +463,7 @@ const handleNext = async (validateForm, setTouched, values) => {
         }
 
         const options = {
-            maxSizeMB: 0.1,
+            maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };

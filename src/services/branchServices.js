@@ -140,11 +140,10 @@ export default {
     });
   },
 
-  getRegions(brandId, branchId) {
+  getRegions(brandId) {
     return ApiV1.get('services/app/Country/GetDeliveryAreasTreeByBrandId', {
       params: {
-        brandId,
-        branchId
+        brandId
       }
     });
   },
@@ -185,6 +184,16 @@ export default {
         brandId,
         RegionId: regionId,
         AreaId: areaId,
+        IsHidden: isHidden
+      }
+    });
+  },
+
+  createOrUpdateDeliveryAreaBranchMapping({ areaId, branchId, isHidden }) {
+    return ApiV1.post('services/app/CustomerDeliveryAddress/CreateOrUpdateDeliveryAreaBranchMapping', null, {
+      params: {
+        areaId,
+        branchId,
         IsHidden: isHidden
       }
     });

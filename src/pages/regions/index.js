@@ -176,21 +176,7 @@ export default function Regions() {
                                 </Select>
                             </FormControl>
 
-                            <FormControl size="small" sx={{ minWidth: 220 }} disabled={!selectedBrand || loadingBranches}>
-                                <InputLabel id="regions-branch-select-label">Branch</InputLabel>
-                                <Select
-                                    labelId="regions-branch-select-label"
-                                    value={selectedBranch}
-                                    label="Branch"
-                                    onChange={(event) => setSelectedBranch(event.target.value)}
-                                >
-                                    {filteredBranches.map((branch) => (
-                                        <MenuItem key={branch.id} value={branch.id}>
-                                            {branch.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            {/* Branch dropdown hidden as requested */}
 
                             <Button
                                 variant="contained"

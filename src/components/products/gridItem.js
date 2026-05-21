@@ -103,6 +103,11 @@ const GridItem = React.forwardRef((
         </Typography>
 
         {/* Price */}
+        <Box>
+        <Typography variant="body2" color="text.secondary" fontWeight={700} noWrap>
+        PID: {item?.id}
+        </Typography>
+        </Box>
         <Box
   sx={{
     bgcolor: '#f6f6f6',
@@ -115,6 +120,7 @@ const GridItem = React.forwardRef((
 
   }}
 >
+
   {brand?.currencyDecimals != null
     ? `${Number(item?.price).toFixed(brand.currencyDecimals)} ${brand?.currency || ''}`
     : `${item?.price} ${brand?.currency || ''}`}

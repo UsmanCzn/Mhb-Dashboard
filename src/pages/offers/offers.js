@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import ConfirmationModal from '../../components/confirmation-modal';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
+import { useBranches } from 'providers/branchesProvider';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -98,6 +99,15 @@ const Offers = () => {
   };
 
   const [selectedBrand, setselectedBrand] = useState({});
+  const { branchesList } = useBranches();
+  const branchNameById = useMemo(() => {
+    return new Map(
+      branchesList.map((branch) => [
+        Number(branch?.id),
+        branch?.name || branch?.branchName || ''
+      ])
+    );
+  }, [branchesList]);
 
   useEffect(() => {
     if (brandsList[0]?.id) {
@@ -195,6 +205,12 @@ const Offers = () => {
 
         <TableCell>
           <Box display="flex" alignItems="center" gap={2}>
+            {branchNameById.get(Number(offer?.branchId)) || 'All Branches'}
+          </Box>
+        </TableCell>
+
+        <TableCell>
+          <Box display="flex" alignItems="center" gap={2}>
             {getActionType(offer.actionType)}
           </Box>
         </TableCell>
@@ -222,7 +238,7 @@ const Offers = () => {
         )}
       </Draggable>
     ));
-  }, [offers, user?.isAccessRevoked, handleMenuOpen, menuOpen]);
+  }, [offers, user?.isAccessRevoked, handleMenuOpen, menuOpen, branchNameById]);
 
 const getOffersByBrandId = async (id) => {
   if (!id) return; // ✅ guard
@@ -244,6 +260,7 @@ const getOffersByBrandId = async (id) => {
   const headers = [
     { name: '', value: 'drag' },
     { name: 'Offer Name', value: 'offerName' },
+    { name: 'Branch Name', value: 'branchName' },
     { name: 'Action Type', value: 'actionType' },
     { name: 'Sort Order', value: 'orderValue' },
     { name: 'Action', value: 'action' }

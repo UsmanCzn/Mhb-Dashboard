@@ -13,6 +13,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import storeServices from 'services/storeServices';
 import fileService from 'services/fileService';
 import imageCompression from 'browser-image-compression';
+import { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 
 const style = {
     position: 'absolute',
@@ -76,7 +77,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
         if (p1) {
             try {
         const options = {
-            maxSizeMB: 0.1,
+          maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };
@@ -122,7 +123,7 @@ const EditCategory = ({ modalOpen, setModalOpen, setReload, type, selectedBrand 
             if (subTypeImages[index]) {
                 try {
         const options = {
-            maxSizeMB: 0.1,
+            maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };

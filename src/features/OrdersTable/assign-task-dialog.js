@@ -87,7 +87,7 @@ const AssignTaskDialog = ({ open, onClose, onAssignTask, selectedOrder }) => {
                     Confirmation!
                 </Typography>
                 <Typography variant="body2" color="textSecondary" marginBottom={2}>
-                    Are you sure you want to assign the delivery task to Wordy?
+                    Are you sure you want to assign the delivery task to Verdi?
                 </Typography>
 
                 <Box

@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import { ServiceFactory } from "services/index";
-import constants from "helper/constants";
+import constants, { IMAGE_COMPRESSION_MAX_SIZE_MB } from "helper/constants";
 import storeServices from "services/storeServices";
 import fileService from "services/fileService";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -107,7 +107,7 @@ const NewAddon = ({
             posId: 1
 };
                 const options = {
-            maxSizeMB: 0.1,
+      maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };
@@ -162,7 +162,7 @@ const NewAddon = ({
         };
         if(p1){
         const options = {
-            maxSizeMB: 0.1,
+          maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
             maxWidthOrHeight: 1920,
             useWebWorker: true
         };

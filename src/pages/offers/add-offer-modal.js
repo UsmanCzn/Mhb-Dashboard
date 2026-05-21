@@ -6,6 +6,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import UploadFile from 'components/Upload-File/upload-file';
 import storeServices from 'services/storeServices';
+import branchServices from 'services/branchServices';
 import {
     Box,
     Typography,
@@ -22,16 +23,17 @@ import {
     MenuItem,
     Select
 } from '@mui/material/index';
-import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 import LinearProgress from '@mui/material/LinearProgress';
 import fileService from 'services/fileService';
 import offerServices from 'services/offerServices';
 import imageCompression from 'browser-image-compression';
+import { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 
 const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) => {
     const [Image, setImage] = useState(null);
     const [ViewImage, setViewImage] = useState(null);
     const [actionItems, setActionItems] = useState([]);
+    const [branchOptions, setBranchOptions] = useState([]);
     const intialData = {
         id: 0,
         brandId: 0,
@@ -44,7 +46,6 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
     };
     const [Offer, setOffer] = useState(intialData);
     const [load, setload] = useState(false);
-    const { brandsList } = useFetchBrandsList(false);
     const actions = [
         {
             value: 0,
@@ -78,10 +79,53 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
         setOffer(intialData);
     };
 
+    const getAllBranchesByBrandId = async (brandId) => {
+        try {
+            const response = await branchServices.getAllBranches();
+            const filteredBranches = (response?.data?.result || []).filter(
+                (branchItem) => Number(branchItem?.brandId) === Number(brandId)
+            );
+
+            setActionItems(
+                filteredBranches.map((branchItem) => ({
+                    id: branchItem?.id,
+                    name: branchItem?.name || branchItem?.branchName
+                }))
+            );
+        } catch (error) {
+            setActionItems([]);
+        }
+    };
+
+    const getBranchOptionsByBrandId = async (brandId) => {
+        try {
+            const response = await branchServices.getAllBranches();
+            const filteredBranches = (response?.data?.result || []).filter(
+                (branchItem) => Number(branchItem?.brandId) === Number(brandId)
+            );
+
+            setBranchOptions(
+                filteredBranches.map((branchItem) => ({
+                    id: branchItem?.id,
+                    name: branchItem?.name || branchItem?.branchName
+                }))
+            );
+        } catch (error) {
+            setBranchOptions([]);
+        }
+    };
+
     const getMenuActions = async (action, id) => {
+        const selectedBrandId = id || brand?.id;
+
+        if (action === 0) {
+            await getAllBranchesByBrandId(selectedBrandId);
+            return;
+        }
+
         if (action === 1 || action === 2) {
             try {
-                const response = await storeServices.getProductTypes(brand.id);
+                const response = await storeServices.getProductTypes(selectedBrandId);
                 if (response) {
                     switch (action) {
                         case 1:
@@ -96,17 +140,11 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                 }
             } catch (error) {}
         } else if (action === 3) {
-            getAllProductsByBrandId(brand.id);
+            getAllProductsByBrandId(selectedBrandId);
         } else {
             setActionItems([]);
         }
     };
-
-    useEffect(() => {
-        if (brandsList[0]?.id) {
-            setOffer({ ...Offer, brandId: brandsList[0].id });
-        }
-    }, [brandsList]);
 
     useEffect(() => {
         if (offer) {
@@ -115,14 +153,27 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
             setViewImage(temp.offerImageUrl);
             getMenuActions(offer.actionType, offer.brandId);
         } else {
-            setOffer({ ...intialData });
+            setOffer({ ...intialData, brandId: brand?.id || 0, branchId: 0 });
             setViewImage(null);
+            getMenuActions(0, brand?.id);
         }
-    }, [offer]);
+    }, [offer, brand?.id]);
     useEffect(() => {
         console.log(Offer,"Offer");
         
     }, [Offer]);
+
+    useEffect(() => {
+        if (modalOpen && Offer?.actionType === 0) {
+            getMenuActions(0, brand?.id || Offer.brandId);
+        }
+    }, [modalOpen, brand?.id]);
+
+    useEffect(() => {
+        if (modalOpen && brand?.id) {
+            getBranchOptionsByBrandId(brand.id);
+        }
+    }, [modalOpen, brand?.id]);
 
     const getAllSubTypes = (items) => {
         let allSubTypes = [];
@@ -158,7 +209,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
             try {
                 setload(true);
                 const options = {
-                    maxSizeMB: 1,
+                    maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
                     maxWidthOrHeight: 1920,
                     useWebWorker: true
                 };
@@ -168,11 +219,11 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                 const payload = {
                     id: 0,
                     brandId: brand.id,
-                    branchId: 0,
+                    branchId: Offer.branchId,
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId,
+                    actionId: Offer.actionType === 0 ? Offer.branchId : Offer.actionId,
                     orderValue: Offer.orderValue
                 };
 
@@ -197,7 +248,7 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
         } else {
             if (Image) {
                                 const options = {
-                    maxSizeMB: 0.1,
+                    maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
                     maxWidthOrHeight: 1920,
                     useWebWorker: true
                 };
@@ -206,10 +257,11 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                 const payload = {
                     ...offer,
                     brandId: brand.id,
+                    branchId: Offer.branchId,
                     offerName: Offer.offerName,
                     offerImageUrl: uploadRes.data?.result,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId,
+                    actionId: Offer.actionType === 0 ? Offer.branchId : Offer.actionId,
                     orderValue:Offer.orderValue
                 };
                 await offerServices.UpdateOffer(payload);
@@ -220,10 +272,11 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                 const payload = {
                     ...offer,
                     brandId: Offer.brandId,
+                    branchId: Offer.branchId,
                     offerName: Offer.offerName,
                     offerImageUrl: Offer.offerImageUrl,
                     actionType: Offer.actionType,
-                    actionId: Offer.actionId,
+                    actionId: Offer.actionType === 0 ? Offer.branchId : Offer.actionId,
                     orderValue: Offer.orderValue
                 };
                 await offerServices.UpdateOffer(payload);
@@ -304,6 +357,33 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                         </Grid> */}
                         <Grid item xs={6}>
                             <FormControl fullWidth>
+                                <InputLabel id="offer-branch-select-label">{'Branch'}</InputLabel>
+                                <Select
+                                    labelId="offer-branch-select-label"
+                                    id="offer-branch-select"
+                                    value={Offer?.branchId ?? 0}
+                                    label={'Branch'}
+                                    onChange={(event) => {
+                                        setOffer({
+                                            ...Offer,
+                                            branchId: event.target.value,
+                                            actionId: Offer?.actionType === 0 ? event.target.value : Offer.actionId
+                                        });
+                                    }}
+                                >
+                                    <MenuItem value={0}>All Branches</MenuItem>
+                                    {branchOptions.map((row, index) => {
+                                        return (
+                                            <MenuItem key={index} value={row.id}>
+                                                {row?.name}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-label">{'Action'}</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
@@ -311,8 +391,12 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                                     value={Offer?.actionType}
                                     label={'Action'}
                                     onChange={(event) => {
-                                        setOffer({ ...Offer, actionType: event.target.value });
-                                        getMenuActions(event.target.value, Offer.brandId);
+                                        setOffer({
+                                            ...Offer,
+                                            actionType: event.target.value,
+                                            actionId: event.target.value === 0 ? Offer.branchId : 0
+                                        });
+                                        getMenuActions(event.target.value, brand?.id || Offer.brandId);
                                     }}
                                 >
                                     {actions.map((row, index) => {
@@ -325,28 +409,30 @@ const OfferModal = ({ modalOpen, setModalOpen, onClose, offer = null, brand }) =
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">{'Action Items'}</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={Offer?.actionId}
-                                    label={'Action Item'}
-                                    onChange={(event) => {
-                                        setOffer({ ...Offer, actionId: event.target.value });
-                                    }}
-                                >
-                                    {actionItems.map((row, index) => {
-                                        return (
-                                            <MenuItem key={index} value={row.id}>
-                                                {row?.name}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                        {Offer?.actionType !== 0 && (
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">{'Action Items'}</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={Offer?.actionId}
+                                        label={'Action Item'}
+                                        onChange={(event) => {
+                                            setOffer({ ...Offer, actionId: event.target.value });
+                                        }}
+                                    >
+                                        {actionItems.map((row, index) => {
+                                            return (
+                                                <MenuItem key={index} value={row.id}>
+                                                    {row?.name || row?.branchName}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        )}
                         <Grid item xs={6}>
     <TextField
         fullWidth

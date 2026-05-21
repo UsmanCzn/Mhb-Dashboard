@@ -120,7 +120,24 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
 
                         <Typography sx={{ px: 1 }}>{item?.price + ' ' + brand?.currency}</Typography>
                     </ButtonBase> */}
-                        <Card sx={{ maxWidth: 345 }}>
+                        <Card sx={{ maxWidth: 345, position: 'relative' }}>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: 8,
+                                left: 8,
+                                bgcolor: 'rgba(0, 0, 0, 0.72)',
+                                color: '#fff',
+                                px: 1,
+                                py: 0.25,
+                                borderRadius: 1,
+                                fontSize: 11,
+                                fontWeight: 700,
+                                zIndex: 2
+                            }}
+                        >
+                            PID: {item?.id ?? '-'}
+                        </Box>
                         <CardMedia
                             sx={{ height: 130 }}
                             image={item?.image || DefaultImage}
@@ -147,6 +164,9 @@ const AddonItem = ({ item, brand, addonGroupList, setModalOpen, setUpdate, setUp
                                 </Typography>
                                 <Typography fontSize={12} sx={{ color: 'text.secondary' }}>
                                     Order: {item?.orderValue ?? '-'}
+                                </Typography>
+                                <Typography fontSize={12} sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                                    PID: {item?.id ?? '-'}
                                 </Typography>
                             </Box>
 
