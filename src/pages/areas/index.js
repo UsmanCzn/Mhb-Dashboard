@@ -189,6 +189,12 @@ export default function Areas() {
 
     const columns = [
         {
+            field: 'id',
+            headerName: 'Area ID',
+            minWidth: 220,
+            flex: 1
+        },
+        {
             field: 'name',
             headerName: 'Area Name',
             minWidth: 220,

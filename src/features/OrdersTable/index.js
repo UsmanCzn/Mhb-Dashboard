@@ -56,6 +56,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
     ]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const getOrderTypeLabel = (row) =>
+        row?.isTableOrder ? 'Table ordering' : (row?.deliverySystem || '');
+
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
     };
@@ -282,6 +285,11 @@ const columns = [
     minWidth: 120,
     headerAlign: 'left',
     align: 'left',
+        renderCell: (params) => (
+            <Typography variant="body2" noWrap>
+                {getOrderTypeLabel(params.row)}
+            </Typography>
+        ),
   },
   {
     field: 'orderNumber',

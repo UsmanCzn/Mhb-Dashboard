@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     TextField,
@@ -18,12 +18,15 @@ import {
     ListItemButton,
     Paper,
     IconButton,
-    CircularProgress
+    CircularProgress,
+    Menu
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import EastIcon from '@mui/icons-material/East';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Formik, Form } from 'formik';
@@ -36,7 +39,12 @@ import { useSnackbar } from 'notistack';
 import BranchTimings from '../../../pages/branch/branchTimings/index';
 import { useAuth } from 'providers/authProvider';
 import StoreCopy from '../copyMenu/copyMenu';
+import BranchTableInsertModal from './branch-table-insert-modal';
+import BranchTableEditModal from './branch-table-edit-modal';
+import ConfirmationModal from 'components/confirmation-modal';
+import DataGridComponent from 'components/DataGridComponent';
 import imageCompression from 'browser-image-compression';
+import { QRCodeCanvas } from 'qrcode.react';
 import { IMAGE_COMPRESSION_MAX_SIZE_MB } from 'helper/constants';
 
 const AddEditBranch = () => {
@@ -58,6 +66,150 @@ const AddEditBranch = () => {
     const [loadingDeliveryAreas, setLoadingDeliveryAreas] = useState(false);
     const [updatingAreaId, setUpdatingAreaId] = useState(null);
     const [selectedBrandIdForAreas, setSelectedBrandIdForAreas] = useState(null);
+    const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+    const [isEditTableModalOpen, setIsEditTableModalOpen] = useState(false);
+    const [isDeleteTableModalOpen, setIsDeleteTableModalOpen] = useState(false);
+    const [selectedTable, setSelectedTable] = useState(null);
+    const [tableActionAnchorEl, setTableActionAnchorEl] = useState(null);
+    const [branchTables, setBranchTables] = useState([]);
+    const [loadingBranchTables, setLoadingBranchTables] = useState(false);
+    const tableQrRef = useRef(null);
+    const isTableOrderingEnabled = Boolean(brand?.menuOrdering);
+
+    const downloadQRCode = (ref, filename = 'qr-code.png') => {
+        const canvas = ref;
+        if (canvas) {
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+    };
+
+    const selectedTableQrUrl = useMemo(() => {
+        if (!selectedTable?.id || !brand?.id || !brand?.name) {
+            return '';
+        }
+
+        const sanitizedBrandName = (brand?.name || '').replace(/\s/g, '');
+        const branchName = (selectedTable?.branchName || branch?.name || '').replace(/\s/g, '');
+
+        return `https://menu.avorewards.com/menu/${sanitizedBrandName}/${brand.id}?branch=${branchName}&branchId=${selectedTable.branchId}&tableId=${selectedTable.id}`;
+    }, [brand, branch, selectedTable]);
+
+    const handleOpenTableActions = useCallback((event, table) => {
+        setTableActionAnchorEl(event.currentTarget);
+        setSelectedTable(table);
+    }, []);
+
+    const handleCloseTableActions = useCallback(() => {
+        setTableActionAnchorEl(null);
+    }, []);
+
+    const getBranchTables = useCallback(async () => {
+        const currentBranchId = Number(id);
+        if (!Number.isFinite(currentBranchId) || currentBranchId <= 0) {
+            setBranchTables([]);
+            return;
+        }
+
+        try {
+            setLoadingBranchTables(true);
+            const response = await branchServices.getAllBranchTablesByBranchId(currentBranchId);
+            const rows = response?.data?.result || response?.data || [];
+            setBranchTables(Array.isArray(rows) ? rows : []);
+        } catch (error) {
+            setBranchTables([]);
+            enqueueSnackbar('Failed to load branch tables', { variant: 'error' });
+        } finally {
+            setLoadingBranchTables(false);
+        }
+    }, [enqueueSnackbar, id]);
+
+    const handleOpenEditTableModal = useCallback(() => {
+        if (!selectedTable) {
+            return;
+        }
+        setIsEditTableModalOpen(true);
+        setTableActionAnchorEl(null);
+    }, [selectedTable]);
+
+    const handleRequestDeleteTable = useCallback(() => {
+        if (!selectedTable?.id) {
+            return;
+        }
+        setTableActionAnchorEl(null);
+        setIsDeleteTableModalOpen(true);
+    }, [selectedTable]);
+
+    const handleDownloadTableQrCode = useCallback(() => {
+        if (!selectedTable?.id || !selectedTableQrUrl) {
+            enqueueSnackbar('Missing table QR data', { variant: 'error' });
+            return;
+        }
+
+        downloadQRCode(tableQrRef.current, `table-${selectedTable.id}-qr-code.png`);
+        setTableActionAnchorEl(null);
+    }, [enqueueSnackbar, selectedTable, selectedTableQrUrl]);
+
+    const handleDeleteTable = useCallback(async () => {
+        if (!selectedTable?.id) {
+            return;
+        }
+
+        try {
+            await branchServices.deleteBranchTable(selectedTable.id);
+            enqueueSnackbar('Table deleted successfully', { variant: 'success' });
+            setIsDeleteTableModalOpen(false);
+            setTableActionAnchorEl(null);
+            setSelectedTable(null);
+            getBranchTables();
+        } catch (error) {
+            const errorMessage =
+                error?.response?.data?.error?.validationErrors?.[0]?.message ||
+                error?.response?.data?.error?.message ||
+                'Failed to delete table';
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+        }
+    }, [enqueueSnackbar, getBranchTables, selectedTable]);
+
+    const branchTableColumns = useMemo(
+        () => [
+            { field: 'name', headerName: 'Table Name', flex: 1.2, minWidth: 180 },
+            { field: 'branchName', headerName: 'Branch Name', flex: 1, minWidth: 170 },
+            {
+                field: 'isAvailable',
+                headerName: 'Available',
+                flex: 0.7,
+                minWidth: 120,
+                valueFormatter: ({ value }) => (value ? 'Yes' : 'No')
+            },
+            {
+                field: 'isHidden',
+                headerName: 'Hidden',
+                flex: 0.7,
+                minWidth: 110,
+                valueFormatter: ({ value }) => (value ? 'Yes' : 'No')
+            },
+            { field: 'noOfSeats', headerName: 'Seats', flex: 0.6, minWidth: 100 },
+            { field: 'noOfChildSeats', headerName: 'Child Seats', flex: 0.8, minWidth: 120 },
+            {
+                field: 'actions',
+                headerName: 'Action',
+                sortable: false,
+                filterable: false,
+                flex: 0.6,
+                minWidth: 90,
+                renderCell: (params) => (
+                    <IconButton size="small" onClick={(event) => handleOpenTableActions(event, params.row)}>
+                        <MoreVertIcon fontSize="small" />
+                    </IconButton>
+                )
+            }
+        ],
+        [handleOpenTableActions]
+    );
 
     const sortByAreaName = (areas) =>
         [...areas].sort((a, b) =>
@@ -75,6 +227,10 @@ const AddEditBranch = () => {
                     (node) => node?.type === 'BranchAlloted' && Number(node?.branchId) === currentBranchId
                 );
                 const hasVisibleBranchAllotment = branchAllotments.some((node) => node?.isHidden === false);
+                const currentMapping =
+                    branchAllotments.find((node) => node?.isHidden === false) || branchAllotments[0] || null;
+                const mappedDeliveryFee = currentMapping?.deliveryFee ?? currentMapping?.delvieryFee ?? 0;
+                const mappedZoneTwo = currentMapping?.IsZoneTwoArea ?? currentMapping?.isZoneTwoArea ?? false;
 
                 return [{
                     regionId: region.id,
@@ -86,7 +242,9 @@ const AddEditBranch = () => {
                     areaName: child.name,
                     areaNativeName: child.nativeName,
                     areaType: child.type,
-                    areaIsHidden: currentBranchId ? !hasVisibleBranchAllotment : child.isHidden
+                    areaIsHidden: currentBranchId ? !hasVisibleBranchAllotment : child.isHidden,
+                    deliveryFee: Number(mappedDeliveryFee) || 0,
+                    isZoneTwoArea: Boolean(mappedZoneTwo)
                 }];
             })
         );
@@ -139,6 +297,44 @@ const AddEditBranch = () => {
         }
     };
 
+    const handleSelectedAreaFieldChange = useCallback((areaId, key, value) => {
+        setSelectedDeliveryAreas((prev) =>
+            prev.map((item) => {
+                if (item.areaId !== areaId) {
+                    return item;
+                }
+
+                return {
+                    ...item,
+                    [key]: value
+                };
+            })
+        );
+    }, []);
+
+    const updateAreaExtraSettings = async (area) => {
+        const currentBranchId = Number(id);
+        if (!selectedBrandIdForAreas || !Number.isFinite(currentBranchId) || currentBranchId <= 0) {
+            return;
+        }
+
+        setUpdatingAreaId(area.areaId);
+        try {
+            await branchServices.createOrUpdateDeliveryAreaBranchMapping({
+                areaId: area.areaId,
+                branchId: currentBranchId,
+                isHidden: false,
+                deliveryFee: Number(area.deliveryFee) || 0,
+                isZoneTwoArea: Boolean(area.isZoneTwoArea)
+            });
+            enqueueSnackbar('Delivery area updated successfully', { variant: 'success' });
+        } catch (error) {
+            enqueueSnackbar('Failed to update delivery area', { variant: 'error' });
+        } finally {
+            setUpdatingAreaId(null);
+        }
+    };
+
     const addArea = async (area) => {
         if (selectedDeliveryAreas.some((item) => item.areaId === area.areaId)) {
             return;
@@ -147,7 +343,14 @@ const AddEditBranch = () => {
         const previousDeliveryAreas = deliveryAreas;
         const previousSelectedAreas = selectedDeliveryAreas;
 
-        setSelectedDeliveryAreas((prev) => [...prev, area]);
+        setSelectedDeliveryAreas((prev) => [
+            ...prev,
+            {
+                ...area,
+                deliveryFee: Number(area.deliveryFee) || 0,
+                isZoneTwoArea: Boolean(area.isZoneTwoArea)
+            }
+        ]);
         setDeliveryAreas((prev) => prev.filter((item) => item.areaId !== area.areaId));
 
         try {
@@ -240,7 +443,12 @@ const handleNext = async (validateForm, setTouched, values) => {
                     openTime: branch?.openTime || 0,
                     readyTime: branch?.readyTime || 0,
                     usedDeliverySystem: branch?.usedDeliverySystem || 1, // Patch the values dynamically
-                    foodicsId: branch?.foodicsId ||''
+                    foodicsId: branch?.foodicsId || '',
+                    odooId: branch?.odooId || '',
+                    timeAllowedToCancelOrder: branch?.timeAllowedToCancelOrder ?? 0,
+                    fastTrackOrderPrice: branch?.fastTrackOrderPrice ?? 0,
+                    minimumOrderValueForDeliveryOrder: branch?.minimumOrderValueForDeliveryOrder ?? 0,
+                    allowZoneTwoAreasForDeliveryOrders: branch?.allowZoneTwoAreasForDeliveryOrders ?? false
                 }));
                 setBranch(branch);
             }
@@ -289,8 +497,20 @@ const handleNext = async (validateForm, setTouched, values) => {
     }, [branch]);
 
     useEffect(() => {
+        if (!isTableOrderingEnabled && tabValue === '8') {
+            setTabValue('1');
+        }
+    }, [isTableOrderingEnabled, tabValue]);
+
+    useEffect(() => {
         getDeliveryAreas(selectedBrandIdForAreas);
     }, [getDeliveryAreas, selectedBrandIdForAreas]);
+
+    useEffect(() => {
+        if (id && isTableOrderingEnabled && tabValue === '8') {
+            getBranchTables();
+        }
+    }, [getBranchTables, id, isTableOrderingEnabled, tabValue]);
     
 
     const handleTabChange = (event, newValue) => {
@@ -322,7 +542,12 @@ const handleNext = async (validateForm, setTouched, values) => {
         openTime: '',
         readyTime: 0,
         usedDeliverySystem: 1,
-        foodicsId:""
+        foodicsId: '',
+        odooId: '',
+        timeAllowedToCancelOrder: 0,
+        fastTrackOrderPrice: 0,
+        minimumOrderValueForDeliveryOrder: 0,
+        allowZoneTwoAreasForDeliveryOrders: false
     });
     const validationSchemas = {
         1: Yup.object().shape({
@@ -361,7 +586,11 @@ const handleNext = async (validateForm, setTouched, values) => {
             usedDeliverySystem: Yup.number().when('isDelivery', {
                 is: true,
                 then: Yup.number().required('Delivery System is required')
-            })
+            }),
+            timeAllowedToCancelOrder: Yup.number().min(0, 'Cannot be negative'),
+            fastTrackOrderPrice: Yup.number().min(0, 'Cannot be negative'),
+            minimumOrderValueForDeliveryOrder: Yup.number().min(0, 'Cannot be negative'),
+            allowZoneTwoAreasForDeliveryOrders: Yup.boolean()
         }),
         4: Yup.object().shape({
             // branchAddress: Yup.string().required('Address is required'),
@@ -394,6 +623,12 @@ const handleNext = async (validateForm, setTouched, values) => {
             ...values,
             deliveryFee: values?.DeliveryFee,
             deliveryDistanceKM: values?.DeliveryDistanceKM,
+            timeAllowedToCancelOrder: Number(values?.timeAllowedToCancelOrder) || 0,
+            fastTrackOrderPrice: Number(values?.fastTrackOrderPrice) || 0,
+            minimumOrderValueForDeliveryOrder: Number(values?.minimumOrderValueForDeliveryOrder) || 0,
+            allowZoneTwoAreasForDeliveryOrders: Boolean(values?.allowZoneTwoAreasForDeliveryOrders),
+            odooId: values?.odooId || '',
+            foodicsId: values?.foodicsId || '',
             latitude: formatDecimal(values?.latitude),
             longitude: formatDecimal(values?.longitude)
         };
@@ -520,6 +755,7 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                 <Tab label="Logo" value="5" disabled={!id && tabValue !== '5'} />
                                                 {id && <Tab label="Branch Schedule" value="6" disabled={false} />}
                                                 {id && <Tab label="Copy Menu" value="7" disabled={false} />}
+                                                {id && isTableOrderingEnabled && <Tab label="Table Ordering" value="8" disabled={false} />}
                                             </TabList>
                                         </Box>
 
@@ -572,7 +808,9 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                         value={values.brandId}
                                                         onChange={(e) => {
                                                             handleChange(e);
-                                                            setSelectedBrandIdForAreas(Number(e.target.value));
+                                                            const selectedBrandId = Number(e.target.value);
+                                                            setSelectedBrandIdForAreas(selectedBrandId);
+                                                            setBrand(brands.find((item) => item.id === selectedBrandId) || null);
                                                         }}
                                                         onBlur={handleBlur}
                                                         error={touched.brandId && Boolean(errors.brandId)}
@@ -644,6 +882,20 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                     </FormControl>
                                                 </Grid>
                                                 }
+                                               <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        label="Odoo Branch Id"
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        type="text"
+                                                        name="odooId"
+                                                        value={values.odooId}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        error={touched.odooId && Boolean(errors.odooId)}
+                                                        helperText={touched.odooId && errors.odooId}
+                                                    />
+                                                </Grid>
                                             </Grid>
                                         </TabPanel>
 
@@ -843,6 +1095,81 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                     </Box>
                                                 </Grid>
 
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        label="Time Allowed To Cancel Order (Minutes)"
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        type="number"
+                                                        name="timeAllowedToCancelOrder"
+                                                        value={values.timeAllowedToCancelOrder}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        error={
+                                                            touched.timeAllowedToCancelOrder &&
+                                                            Boolean(errors.timeAllowedToCancelOrder)
+                                                        }
+                                                        helperText={
+                                                            touched.timeAllowedToCancelOrder && errors.timeAllowedToCancelOrder
+                                                        }
+                                                        size="small"
+                                                    />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        label="Fast Track Order Price"
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        type="number"
+                                                        name="fastTrackOrderPrice"
+                                                        value={values.fastTrackOrderPrice}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        error={touched.fastTrackOrderPrice && Boolean(errors.fastTrackOrderPrice)}
+                                                        helperText={touched.fastTrackOrderPrice && errors.fastTrackOrderPrice}
+                                                        size="small"
+                                                    />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        label="Minimum Order Value For Delivery"
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        type="number"
+                                                        name="minimumOrderValueForDeliveryOrder"
+                                                        value={values.minimumOrderValueForDeliveryOrder}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        error={
+                                                            touched.minimumOrderValueForDeliveryOrder &&
+                                                            Boolean(errors.minimumOrderValueForDeliveryOrder)
+                                                        }
+                                                        helperText={
+                                                            touched.minimumOrderValueForDeliveryOrder &&
+                                                            errors.minimumOrderValueForDeliveryOrder
+                                                        }
+                                                        size="small"
+                                                    />
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Switch
+                                                                name="allowZoneTwoAreasForDeliveryOrders"
+                                                                checked={Boolean(values.allowZoneTwoAreasForDeliveryOrders)}
+                                                                onChange={(e) =>
+                                                                    setFieldValue('allowZoneTwoAreasForDeliveryOrders', e.target.checked)
+                                                                }
+                                                                size="small"
+                                                            />
+                                                        }
+                                                        label="Allow Zone Two Areas For Delivery Orders"
+                                                    />
+                                                </Grid>
+
                                                 {values.isDelivery && (
                                                     <>
                                                         {/* Delivery Distance KM */}
@@ -948,43 +1275,105 @@ const handleNext = async (validateForm, setTouched, values) => {
                                                                         <Box sx={{ p: 1.5 }}>
                                                                             <List sx={{ maxHeight: 303, overflowY: 'auto', p: 0 }}>
                                                                                 {selectedDeliveryAreas.map((area, index) => (
-                                                                                    <ListItemButton
+                                                                                    <Box
                                                                                         key={area.areaId}
-                                                                                        divider
-                                                                                        disabled={updatingAreaId === area.areaId}
                                                                                         sx={{
+                                                                                            borderBottom: `1px solid ${theme.palette.divider}`,
+                                                                                            py: 1,
                                                                                             display: 'flex',
-                                                                                            justifyContent: 'space-between',
-                                                                                            alignItems: 'center'
+                                                                                            flexDirection: 'column',
+                                                                                            gap: 1
                                                                                         }}
                                                                                     >
-                                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                                            <Box
-                                                                                                sx={{
-                                                                                                    width: 24,
-                                                                                                    height: 24,
-                                                                                                    borderRadius: '50%',
-                                                                                                    bgcolor: theme.palette.primary.main,
-                                                                                                    color: theme.palette.primary.contrastText,
-                                                                                                    display: 'flex',
-                                                                                                    alignItems: 'center',
-                                                                                                    justifyContent: 'center',
-                                                                                                    fontSize: '0.75rem'
-                                                                                                }}
-                                                                                            >
-                                                                                                {index + 1}
+                                                                                        <Box
+                                                                                            sx={{
+                                                                                                display: 'flex',
+                                                                                                justifyContent: 'space-between',
+                                                                                                alignItems: 'center'
+                                                                                            }}
+                                                                                        >
+                                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                                                <Box
+                                                                                                    sx={{
+                                                                                                        width: 24,
+                                                                                                        height: 24,
+                                                                                                        borderRadius: '50%',
+                                                                                                        bgcolor: theme.palette.primary.main,
+                                                                                                        color: theme.palette.primary.contrastText,
+                                                                                                        display: 'flex',
+                                                                                                        alignItems: 'center',
+                                                                                                        justifyContent: 'center',
+                                                                                                        fontSize: '0.75rem'
+                                                                                                    }}
+                                                                                                >
+                                                                                                    {index + 1}
+                                                                                                </Box>
+                                                                                                <Typography variant="body2">{area.areaName}</Typography>
                                                                                             </Box>
-                                                                                            <Typography variant="body2">{area.areaName}</Typography>
+
+                                                                                            <IconButton
+                                                                                                size="small"
+                                                                                                onClick={() => removeArea(area)}
+                                                                                                disabled={updatingAreaId === area.areaId}
+                                                                                            >
+                                                                                                <CloseIcon fontSize="small" />
+                                                                                            </IconButton>
                                                                                         </Box>
 
-                                                                                        <IconButton
-                                                                                            size="small"
-                                                                                            onClick={() => removeArea(area)}
-                                                                                            disabled={updatingAreaId === area.areaId}
-                                                                                        >
-                                                                                            <CloseIcon fontSize="small" />
-                                                                                        </IconButton>
-                                                                                    </ListItemButton>
+                                                                                        <Grid container spacing={1} alignItems="center">
+                                                                                            <Grid item xs={12} sm={4}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    size="small"
+                                                                                                    type="number"
+                                                                                                    label="Delivery Fee"
+                                                                                                    value={area.deliveryFee ?? 0}
+                                                                                                    onChange={(event) =>
+                                                                                                        handleSelectedAreaFieldChange(
+                                                                                                            area.areaId,
+                                                                                                            'deliveryFee',
+                                                                                                            event.target.value
+                                                                                                        )
+                                                                                                    }
+                                                                                                    inputProps={{ min: 0 }}
+                                                                                                    disabled={updatingAreaId === area.areaId}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={4}>
+                                                                                                <FormControlLabel
+                                                                                                    control={
+                                                                                                        <Switch
+                                                                                                            checked={Boolean(area.isZoneTwoArea)}
+                                                                                                            onChange={(event) =>
+                                                                                                                handleSelectedAreaFieldChange(
+                                                                                                                    area.areaId,
+                                                                                                                    'isZoneTwoArea',
+                                                                                                                    event.target.checked
+                                                                                                                )
+                                                                                                            }
+                                                                                                            disabled={updatingAreaId === area.areaId}
+                                                                                                        />
+                                                                                                    }
+                                                                                                    label="Zone Two"
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={4}>
+                                                                                                <Button
+                                                                                                    fullWidth
+                                                                                                    variant="contained"
+                                                                                                    onClick={() => updateAreaExtraSettings(area)}
+                                                                                                    disabled={updatingAreaId === area.areaId}
+                                                                                                    startIcon={
+                                                                                                        updatingAreaId === area.areaId ? (
+                                                                                                            <CircularProgress size={16} color="inherit" />
+                                                                                                        ) : null
+                                                                                                    }
+                                                                                                >
+                                                                                                    {updatingAreaId === area.areaId ? 'Updating...' : 'Update'}
+                                                                                                </Button>
+                                                                                            </Grid>
+                                                                                        </Grid>
+                                                                                    </Box>
                                                                                 ))}
                                                                             </List>
                                                                         </Box>
@@ -1160,6 +1549,62 @@ const handleNext = async (validateForm, setTouched, values) => {
                                         <TabPanel value="7">
                                             <StoreCopy />
                                         </TabPanel>
+                                        <TabPanel value="8">
+                                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                                                <Button
+                                                    variant="contained"
+                                               
+                                                    onClick={() => setIsTableModalOpen(true)}
+                                                >
+                                                    Add Table
+                                                </Button>
+                                            </Box>
+                                            <DataGridComponent
+                                                rows={branchTables}
+                                                columns={branchTableColumns}
+                                                loading={loadingBranchTables}
+                                                getRowId={(row) => row.id}
+                                                rowsPerPageOptions={[10]}
+                                                totalRowCount={branchTables?.length ?? 0}
+                                                onRowClick={() => {}}
+                                                pSize={10}
+                                                pMode={'client'}
+                                            />
+                                        </TabPanel>
+                                        <BranchTableInsertModal
+                                            open={isTableModalOpen}
+                                            onClose={() => setIsTableModalOpen(false)}
+                                            branchId={Number(id)}
+                                            branchName={values?.name || branch?.name || ''}
+                                            onCreated={getBranchTables}
+                                        />
+                                        <BranchTableEditModal
+                                            open={isEditTableModalOpen}
+                                            onClose={() => {
+                                                setIsEditTableModalOpen(false);
+                                                setSelectedTable(null);
+                                            }}
+                                            tableData={selectedTable}
+                                            onUpdated={getBranchTables}
+                                        />
+                                        <Menu
+                                            anchorEl={tableActionAnchorEl}
+                                            open={Boolean(tableActionAnchorEl)}
+                                            onClose={handleCloseTableActions}
+                                        >
+                                            <MenuItem onClick={handleOpenEditTableModal}>Edit</MenuItem>
+                                            <MenuItem onClick={handleDownloadTableQrCode}>Download QR Code</MenuItem>
+                                            <MenuItem onClick={handleRequestDeleteTable}>Delete</MenuItem>
+                                        </Menu>
+                                        <Box sx={{ display: 'none' }}>
+                                            {selectedTableQrUrl && <QRCodeCanvas ref={tableQrRef} value={selectedTableQrUrl} size={256} />}
+                                        </Box>
+                                        <ConfirmationModal
+                                            open={isDeleteTableModalOpen}
+                                            onClose={() => setIsDeleteTableModalOpen(false)}
+                                            onConfirm={handleDeleteTable}
+                                            statement="Are you sure you want to delete this table?"
+                                        />
                                     </TabContext>
                                 </Form>
                             );

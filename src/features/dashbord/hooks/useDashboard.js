@@ -35,6 +35,7 @@ const fetchRewardList = useCallback(() => {
         rewardService.getCustomersCountOrdered(brandId, apiStartDate, apiEndDate,branchId),
         rewardService.getCustomersLastOrders(brandId, apiStartDate, apiEndDate),
         rewardService.peakHoursData(brandId, apiStartDate, apiEndDate,branchId),
+        rewardService.getManualPoinstDashboardDataGivenByPOS(brandId, branchId),
     ])
         .then((results) => {
             // index map just for readability
@@ -48,6 +49,7 @@ const fetchRewardList = useCallback(() => {
             const CUSTOMER_COUNT = 7;
             const LAST_ORDERS = 8;
             const PEAK_HOUR = 9;
+            const POS_DASHBOARD = 10;
 
             // helper to safely read numeric/simple values with fallback
             const getData = (idx, fallback) => {
@@ -123,6 +125,8 @@ const fetchRewardList = useCallback(() => {
                 pointsRedeemed: getData(POINTS_REDEEMED, 0),
                 avgDispatchTime: getData(AVG_DISPATCH, null),
                 peakHoursData: getPeakHoursData(PEAK_HOUR, { hourly: [], peak: null }),
+                posOrders: getData(POS_DASHBOARD, {}).item1 ?? 0,
+                posSales: getData(POS_DASHBOARD, {}).item2 ?? 0,
 
                 topTenProducts:
                     results[TOP_TEN_PRODUCTS].status === "fulfilled"

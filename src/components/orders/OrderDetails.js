@@ -43,6 +43,27 @@ const style = {
 };
 
 const  OrderDetails = ({ modalOpen, setModalOpen, setReload, data, statustypes,location='order' }) => {
+const orderTypeLabel = data?.isTableOrder ? 'Table ordering' : data?.deliverySystem;
+const getReadyDurationLabel = (creationTimeUTC, readyTime) => {
+    if (!creationTimeUTC || !readyTime) return '';
+
+    const createdAt = moment.utc(creationTimeUTC);
+    const readyAt = moment.utc(readyTime);
+
+    if (!createdAt.isValid() || !readyAt.isValid()) return '';
+
+    const totalMinutes = readyAt.diff(createdAt, 'minutes');
+    if (totalMinutes < 0) return '';
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+    if (hours > 0) return `${hours}h`;
+    return `${minutes}m`;
+};
+
+const readyDurationLabel = getReadyDurationLabel(data?.creationTimeUTC, data?.readyTime);
  
 
 const printOrder = () => {
@@ -148,13 +169,15 @@ h6.center {
         <div class="separator"></div>
         <div class="center">No of Items: ${data?.products?.reduce((sum, item) => sum + (item?.quantity || 0), 0)}</div>
         <h2 class="center">${data?.branchName}</h2>
-        <h6 class="center m-0">${data?.deliverySystem}</h6>
+        <h6 class="center m-0">${orderTypeLabel || ''}</h6>
 
         <div>Order #${data?.orderNumber}</div>
+        ${data?.isTableOrder ? `<div>Table :${data?.tableName}</div>` : ''}
         <div>Customer: ${data?.customerName ?? data?.name} ${data?.customerSurname ?? data?.surname}</div>
         <div>Mobile: ${data?.customerPhoneNumber ?? data?.displayPhoneNumber}</div>
         <div>Email: ${data?.customerEmail ?? data?.displayEmailAddress}</div>
         <div>Date: ${moment(location ==='order'? data?.creationDate: data?.date).format('DD-MMM-YYYY hh:mm a')}</div>
+        ${readyDurationLabel ? `<div>Ready In: ${readyDurationLabel}</div>` : ''}
         <div>Payment Method: ${data?.paymentMethod}</div>
         <div> ${data?.carDetails}</div>
                 ${homeDeliveryCommentsHtml}
@@ -365,7 +388,7 @@ h6.center {
                                         {data?.branchName}
                                     </Typography>
                                     <Typography variant="h1" fontSize={16} fontFamily="Noto Sans Arabic">
-                                        {data?.deliverySystem}
+                                        {orderTypeLabel}
                                     </Typography>
 
                                     <Typography
@@ -376,8 +399,20 @@ h6.center {
                                         }}
                                         align="left"
                                     >
-                                        Order # {data?.orderNumber}{' '}
+                                        Order # {data?.orderNumber}
                                     </Typography>
+                                    {data?.isTableOrder && (
+                                    <Typography
+                                        variant="h6"
+                                        fontSize={16}
+                                        sx={{
+                                            width: '100%'
+                                        }}
+                                        align="left"
+                                    >
+                                        Table : {data?.tableName}
+                                    </Typography>)          
+}
                                     {/* <Box sx={{
           width:"100%",  
         }}> 
@@ -435,6 +470,20 @@ h6.center {
                                             Date :{' ' + moment(location ==='order'? data?.creationDate: data?.date).format('DD-MMM-YYYY hh:mm a')}
                                         </Typography>
                                     </Box>
+                                    {readyDurationLabel && (
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography variant="h6" fontSize={16}>
+                                                Ready In : {readyDurationLabel}
+                                            </Typography>
+                                        </Box>
+                                    )}
                                     <Box
                                         sx={{
                                             width: '100%',

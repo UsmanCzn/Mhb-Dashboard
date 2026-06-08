@@ -231,6 +231,7 @@ const DashboardDefault = () => {
 
     const topCard = () => {
         let roundedNumber = dashbaordBoardData?.totalSale?.toFixed(3) || 0;
+        const roundedPosSales = Number(dashbaordBoardData?.posSales ?? 0).toFixed(3);
         return (
             <>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -253,6 +254,30 @@ const DashboardDefault = () => {
                                 : `${roundedNumber}`
                           }
                           
+                        isLoading={loading}
+                        percentage={27.4}
+                        isLoss
+                        color="warning"
+                        extra="$20,395"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="POS Orders"
+                        count={dashbaordBoardData?.posOrders ?? 0}
+                        isLoading={loading}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
+                        title="POS Sales"
+                        count={
+                            selectedBrand?.currency
+                                ? `${roundedPosSales}${selectedBrand.currency}`
+                                : `${roundedPosSales}`
+                        }
                         isLoading={loading}
                         percentage={27.4}
                         isLoss
@@ -322,6 +347,8 @@ const DashboardDefault = () => {
                         extra="$20,395"
                     />
                 </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}></Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}></Grid>
                 {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Average Order Ready Time"

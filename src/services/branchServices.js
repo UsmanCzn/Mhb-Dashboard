@@ -189,12 +189,41 @@ export default {
     });
   },
 
-  createOrUpdateDeliveryAreaBranchMapping({ areaId, branchId, isHidden }) {
+  createOrUpdateDeliveryAreaBranchMapping({ areaId, branchId, isHidden, deliveryFee, isZoneTwoArea }) {
+    const hasDeliveryFee = deliveryFee !== undefined && deliveryFee !== null && deliveryFee !== '';
+    const hasZoneTwoArea = typeof isZoneTwoArea === 'boolean';
+
     return ApiV1.post('services/app/CustomerDeliveryAddress/CreateOrUpdateDeliveryAreaBranchMapping', null, {
       params: {
         areaId,
         branchId,
-        IsHidden: isHidden
+        IsHidden: isHidden,
+        ...(hasDeliveryFee ? { deliveryFee: Number(deliveryFee) } : {}),
+        ...(hasZoneTwoArea ? { IsZoneTwoArea: isZoneTwoArea } : {})
+      }
+    });
+  },
+
+  insertBranchTable(payload) {
+    return ApiV1.post('services/app/BranchTable/InsertBranchTable', payload);
+  },
+
+  getAllBranchTablesByBranchId(branchId) {
+    return ApiV1.get('services/app/BranchTable/GetAllBranchTablesByBranchId', {
+      params: {
+        branchId
+      }
+    });
+  },
+
+  updateBranchTable(payload) {
+    return ApiV1.put('services/app/BranchTable/UpdateBranchTable', payload);
+  },
+
+  deleteBranchTable(tableId) {
+    return ApiV1.delete('services/app/BranchTable/DeleteBranchTable', {
+      params: {
+        tableId
       }
     });
   }
