@@ -12,6 +12,7 @@ import FreeDrinksRequest from './free-drinks-request';
 import ScanRequest from './scans-request';
 import RefundRequest from './refund-request';
 import StampsRequest from './stamp-request';
+import WalletRequest from './wallet-request';
 import { useAuth } from 'providers/authProvider';
 
 const Credit = () => {
@@ -42,6 +43,7 @@ const Credit = () => {
                         <Tab label="Stamps Request" value="5" />
                         <Tab label="Remove Scan Request" value="6" />
                         <Tab label="Refund Request" value="7" />
+                        <Tab label="Wallet Request" value="8" />
                     </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -64,6 +66,9 @@ const Credit = () => {
                 </TabPanel>
                 <TabPanel value="7">
                     <RefundRequest user={user} />
+                </TabPanel>
+                <TabPanel value="8">
+                    <WalletRequest user={user} />
                 </TabPanel>
             </TabContext>
             <Grid item xs={12}></Grid>

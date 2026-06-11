@@ -5,9 +5,9 @@ import { useParams } from 'react-router-dom';
 import { useFetchBrandsList } from 'features/BrandsTable/hooks/useFetchBrandsList';
 
 import UpdateCreditBalance from 'components/customers/updateCreditBalance';
+import UpdateWalletBalanceModal from 'components/customers/UpdateWalletBalanceModal';
 import AdjustCustomerValueModal from 'components/customers/AdjustCustomerValueModal'; // <-- new generic modal
 import LinearProgress from '@mui/material/LinearProgress';
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import { useSnackbar } from 'notistack';
 
 const CreditBalance = (props) => {
@@ -18,13 +18,14 @@ const CreditBalance = (props) => {
 
     const [selectedBrand, setselectedBrand] = useState({});
     const [filteredBrand, setFilteredBrand] = useState([]);
-    const [walletDetails, setWalletDetails] = useState([]);
+    const [walletDetails, setWalletDetails] = useState(null);
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(false);
     const [totalPoints, setTotalPoints] = useState(0);
     const [totalFreePoints, setTotalFreePoints] = useState(0);
     const [totalStamps, setTotalStamps] = useState(0);
     const [updateCreditBalanceModal, setupdateCreditBalanceModalOpen] = useState(false);
+    const [updateWalletBalanceModal, setUpdateWalletBalanceModalOpen] = useState(false);
 
     // Avoid name clash with component name
     const [creditBalanceState, setCreditBalanceState] = useState({
@@ -60,6 +61,21 @@ const CreditBalance = (props) => {
             console.log(err);
         }
     };
+
+      const getWalletDetailsByUserAndBrand = async () => {
+        if (Number(selectedBrand?.id) !== 32) {
+          setWalletDetails(null);
+          return;
+        }
+
+        try {
+          const res = await customerService.getAllWalletsListByUserIdAndBrandId(+cid, +selectedBrand.id);
+          setWalletDetails(res?.data?.result?.[0] ?? null);
+        } catch (err) {
+          console.log(err?.response?.data || err);
+          setWalletDetails(null);
+        }
+      };
 
     // Points update (uses pointsUsed)
     const updateCustomerPoints = async (p, comments = '') => {
@@ -159,9 +175,10 @@ const CreditBalance = (props) => {
         if (selectedBrand && selectedBrand.id) {
             GetCreditDetails();
             getCustomerPoints();
+        getWalletDetailsByUserAndBrand();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedBrand]);
+    }, [selectedBrand, reload]);
 
     useEffect(() => {
         if (brandsList[0]?.id) {
@@ -218,58 +235,105 @@ return (
           </Grid>
 
           {/* Credit Balance */}
-          <Grid item xs={12}>
-            <Grid
-              container
-              spacing={2}
-              alignItems="stretch"
-            >
-              <Grid item xs={12} sm={6} md={4}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1.5,
-                    p: 2,
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    backgroundColor: '#fff',
-                    height: '100%'
-                  }}
-                >
-                  <Typography variant="subtitle1" fontWeight={600}>
-                    Credit 
-                  </Typography>
-
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Credit "
-                    value={creditBalanceState?.creditBalance?.toFixed(2) ?? '0.00'}
-                    InputProps={{ readOnly: true }}
-                  />
-                </Box>
-              </Grid>
-
+          {Number(selectedBrand?.id) !== 32 && (
+            <Grid item xs={12}>
               <Grid
-                item
-                xs={12}
-                sm={6}
-                md={2}
-                display="flex"
-                alignItems="center"
+                container
+                spacing={2}
+                alignItems="stretch"
               >
-                <Button
-                  size="small"
-                  variant="contained"
-                  fullWidth
-                  onClick={() => setupdateCreditBalanceModalOpen(true)}
+                <Grid item xs={12} sm={6} md={4}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1.5,
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      backgroundColor: '#fff',
+                      height: '100%'
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Credit 
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Credit "
+                      value={creditBalanceState?.creditBalance?.toFixed(2) ?? '0.00'}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={2}
+                  display="flex"
+                  alignItems="center"
                 >
-                  Update
-                </Button>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() => setupdateCreditBalanceModalOpen(true)}
+                  >
+                    Update
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          )}
+
+          {/* Wallet Balance (Brand 32) */}
+          {Number(selectedBrand?.id) === 32 && (
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="stretch">
+                <Grid item xs={12} sm={6} md={4}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1.5,
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      backgroundColor: '#fff',
+                      height: '100%'
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Wallet Name: {walletDetails?.displayName || '-'}
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Wallet Balance"
+                      value={Number(walletDetails?.walletBalance ?? 0).toFixed(2)}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={2} display="flex" alignItems="center">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() => setUpdateWalletBalanceModalOpen(true)}
+                  >
+                    Update
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
 
           {/* Points */}
           <Grid item xs={12}>
@@ -453,6 +517,14 @@ return (
             brand={
               brandsList?.find((obj) => obj?.id === selectedBrand?.id)
             }
+          />
+
+          <UpdateWalletBalanceModal
+            modalOpen={updateWalletBalanceModal}
+            setModalOpen={setUpdateWalletBalanceModalOpen}
+            setReload={setReload}
+            prevData={walletDetails}
+            brand={brandsList?.find((obj) => obj?.id === selectedBrand?.id)}
           />
         </Grid>
       </CardContent>

@@ -287,6 +287,15 @@ const DashboardDefault = () => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
+                        title="POS Points"
+                        count={dashbaordBoardData?.posPoints ?? 0}
+                        isLoading={loading}
+                        percentage={27.4}
+                        extra="1,943"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <AnalyticEcommerce
                         title="Avg order ready time"
                         count={dashbaordBoardData?.avgDispatchTime ?? 0}
                         isLoading={loading}
@@ -348,7 +357,7 @@ const DashboardDefault = () => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4} lg={3}></Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}></Grid>
+                {/* <Grid item xs={12} sm={6} md={4} lg={3}></Grid> */}
                 {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Average Order Ready Time"

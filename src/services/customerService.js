@@ -1,5 +1,4 @@
 import { ApiV1 } from 'helper/api';
-import CreateNotification from 'pages/customer-notification/create-notification';
 
 export default {
     getAllCustomers(data) {
@@ -62,8 +61,29 @@ export default {
         });
     },
 
+    getAllWalletsListByUserIdAndBrandId(userId, brandId) {
+        return ApiV1.get('services/app/Customer/GetAllWalletsListByUserIdAndBrandId', {
+            params: {
+                userId,
+                brandId
+            }
+        });
+    },
+
     UpdateCustomerWalletBalance(data) {
         return ApiV1.put('services/app/Customer/UpdateCustomerWalletBalance', data);
+    },
+
+    AddByCompanyManagersync(data) {
+        return ApiV1.post('services/app/Customer/AddByCompanyManagersync', data);
+    },
+
+    getAllWalletIncreaseRequestByBrandId(brandId) {
+        return ApiV1.get(`services/app/Customer/GetAllWalletIncreaseRequestByBrandId?brandId=${brandId}`);
+    },
+
+    acceptRejectDepositWalletById(id, isAccept) {
+        return ApiV1.post(`services/app/Customer/AcceptRejectDepositWalletById?id=${id}&IsAccept=${isAccept}`);
     },
 
     getCreditDetails() {

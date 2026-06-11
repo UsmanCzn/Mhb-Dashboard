@@ -35,7 +35,7 @@ const fetchRewardList = useCallback(() => {
         rewardService.getCustomersCountOrdered(brandId, apiStartDate, apiEndDate,branchId),
         rewardService.getCustomersLastOrders(brandId, apiStartDate, apiEndDate),
         rewardService.peakHoursData(brandId, apiStartDate, apiEndDate,branchId),
-        rewardService.getManualPoinstDashboardDataGivenByPOS(brandId, branchId),
+        rewardService.getManualPoinstDashboardDataGivenByPOS(brandId, branchId, apiStartDate, apiEndDate),
     ])
         .then((results) => {
             // index map just for readability
@@ -127,6 +127,7 @@ const fetchRewardList = useCallback(() => {
                 peakHoursData: getPeakHoursData(PEAK_HOUR, { hourly: [], peak: null }),
                 posOrders: getData(POS_DASHBOARD, {}).item1 ?? 0,
                 posSales: getData(POS_DASHBOARD, {}).item2 ?? 0,
+                posPoints: getData(POS_DASHBOARD, {}).item3 ?? 0,
 
                 topTenProducts:
                     results[TOP_TEN_PRODUCTS].status === "fulfilled"

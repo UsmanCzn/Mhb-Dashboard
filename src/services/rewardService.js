@@ -67,9 +67,9 @@ export default {
     getCustomersLastOrders(brandId, startDate, endDate) {
         return ApiV1.get(`services/app/Store/GetUserOrdersForDashboardPage?brandId=${brandId}&Skip=0&Take=10`);
     },
-    getManualPoinstDashboardDataGivenByPOS(brandId, branchId) {
+    getManualPoinstDashboardDataGivenByPOS(brandId, branchId, startDate, endDate) {
         return ApiV1.get(
-            `services/app/SimphonyPOSService/GetManualPoinstDashboardDataGivenByPOS?brandId=${brandId}&branchId=${branchId || 0}`
+            `services/app/SimphonyPOSService/GetManualPoinstDashboardDataGivenByPOS?brandId=${brandId}&branchId=${branchId || 0}&startDate=${startDate}&endDate=${endDate}`
         );
     },
     editPurchasesCollectionProgram(data) {

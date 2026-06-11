@@ -251,6 +251,22 @@ const NewScedule = ({ modalOpen, setModalOpen, updateData, branchId, setReload }
                                     <Grid item xs={12} sm="auto">
                                         <Button
                                             fullWidth
+                                            variant="outlined"
+                                            onClick={() => {
+                                                setData((prev) => ({
+                                                    ...prev,
+                                                    startTime: '00:00',
+                                                    endTime: '23:59'
+                                                }));
+                                            }}
+                                        >
+                                            Set Time 24/7
+                                        </Button>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm="auto">
+                                        <Button
+                                            fullWidth
                                             variant="contained"
                                             onClick={updateData?.dayOfTheWeek ? save : createNew}
                                         >
