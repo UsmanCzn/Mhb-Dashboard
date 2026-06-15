@@ -13,7 +13,7 @@ import { useAuth } from 'providers/authProvider';
 import RefundRequestDialog from 'features/refund/refund';
 import refundService from 'services/refundService';
 
-export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, selectedBrand, data, filter, filterStatus }) {
+export default function OrdersTable({ type, setData, setModalOpen, selectedBranch, selectedBrand, data, filter, filterStatus, onOrdersListChange }) {
     const { user, userRole, isAuthenticated } = useAuth();
     const [isRefundOpen, setIsRefundOpen] = useState(false);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -397,6 +397,10 @@ const columns = [
 
     // simple toggle button handler
     const toggleAudioEnabled = () => setAudioEnabled((v) => !v);
+
+    useEffect(() => {
+        onOrdersListChange?.(ordersList || []);
+    }, [ordersList, onOrdersListChange]);
 
     return (
         <div>
