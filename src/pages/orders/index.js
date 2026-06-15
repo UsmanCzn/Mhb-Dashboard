@@ -1,4 +1,24 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import {
+    FormControl,
+    Grid,
+    InputLabel,
+    Menu,
+    MenuItem,
+    Select,
+    Typography,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    List,
+    ListItem,
+    ListItemText,
+    Box,
+    IconButton
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import BoltIcon from '@mui/icons-material/Bolt';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import OrderDetail from 'components/orders/OrderDetails';
@@ -9,12 +29,20 @@ import { useBranches } from 'providers/branchesProvider';
 import { useAuth } from 'providers/authProvider';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment/moment';
 import orderServices from 'services/orderServices';
 import branchServices from 'services/branchServices';
 import { ADMIN, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 
 
 export default function Orders() {
+
+    // Dummy data for accordions
+    const customersArrived = [
+        { name: 'Ahmad M', order: 5795, time: '10:24 AM' },
+        { name: 'Usman Shahzad', order: 5799, time: '10:26 AM' },
+        { name: 'Shahzaib Naseer', order: 5799, time: '10:28 AM' },
+    ];
 
 
     const { type } = useParams();
@@ -44,6 +72,10 @@ export default function Orders() {
     const [selectedBranchId, setselectedBranchId] = useState('');
     const [selectedBrandId, setselectedBrandId] = useState('');
     const [checked, setChecked] = useState(false);
+    const [ordersSnapshot, setOrdersSnapshot] = useState([]);
+    const [fastTrackAnchorEl, setFastTrackAnchorEl] = useState(null);
+    const [selectedFastTrackOrder, setSelectedFastTrackOrder] = useState(null);
+    const [fastTrackOptions, setFastTrackOptions] = useState([{ name: 'Open/Print', modal: true }]);
     const [statustypes, setStatusTypes] = useState([
         { id: 1, title: 'Open' },
         { id: 3, title: 'Accepted' },
@@ -65,6 +97,13 @@ export default function Orders() {
     const selectedBranch = useMemo(() => {
         return branchZero.find((branch) => branch.id === selectedBranchId) || {};
     }, [branchZero, selectedBranchId]);
+
+    const fastTrackOrders = useMemo(() => {
+        return (ordersSnapshot || []).filter((order) => order?.isFastTrackOrder === true);
+    }, [ordersSnapshot]);
+
+    const showCustomersArrived = false;
+    const showFastTrackUI = selectedBrandId !== 0 && Boolean(selectedBrand?.fastTrackOrdersAllowed);
 
     useEffect(() => {
         if (!brandsList?.length || selectedBrandId !== '') {
@@ -268,8 +307,105 @@ export default function Orders() {
         return () => clearInterval(interval);
     }, []);
 
+    const handleFastTrackOpen = (order) => {
+        setData(order);
+        setModalOpen(true);
+    };
+
+    const getFastTrackOptions = (order) => {
+        if (order?.status == 'Open') {
+            return [
+                { name: 'Open/Print', modal: true },
+                { name: 'Accept', modal: false },
+                { name: 'Reject', modal: false }
+            ];
+        }
+
+        if (order?.status == 'Accepted' && order?.deliverySystem === 'HomeDeliver' && order?.verdiOrderId > 0) {
+            return [
+                { name: 'Open/Print', modal: true },
+                { name: 'Request Driver', modal: false }
+            ];
+        }
+
+        if (order?.status == 'Accepted') {
+            return [
+                { name: 'Open/Print', modal: true },
+                { name: 'Ready', modal: false }
+            ];
+        }
+
+        if (order?.status == 'OutForDelivery' && order?.verdiTrackingLink) {
+            return [
+                { name: 'Open/Print', modal: true },
+                { name: 'Track Order', modal: false }
+            ];
+        }
+
+        if (order?.status == 'Ready' && order?.deliverySystem !== 'HomeDeliver') {
+            return [
+                { name: 'Open/Print', modal: true },
+                { name: 'Close', modal: false }
+            ];
+        }
+
+        return [{ name: 'Open/Print', modal: true }];
+    };
+
+    const updateFastTrackOrderStatus = async (order, statusTitle) => {
+        const statusId = statustypes?.find((obj) => obj?.title == statusTitle)?.id;
+        if (!order?.id || !statusId) {
+            return;
+        }
+
+        await orderServices
+            .updateOrderStatus({
+                id: order.id,
+                status: statusId,
+                reason: ''
+            })
+            .then(() => {
+                setReload((prev) => !prev);
+            })
+            .catch((err) => {
+                console.log(err?.response?.data);
+            });
+    };
+
+    const openFastTrackMenu = (event, order) => {
+        event.stopPropagation();
+        setSelectedFastTrackOrder(order);
+        setFastTrackOptions(getFastTrackOptions(order));
+        setFastTrackAnchorEl(event.currentTarget);
+    };
+
+    const handleFastTrackAction = async (action) => {
+        if (!selectedFastTrackOrder) {
+            setFastTrackAnchorEl(null);
+            return;
+        }
+
+        if (action?.name == 'Open/Print') {
+            setData(selectedFastTrackOrder);
+            setModalOpen(true);
+        } else if (action?.name == 'Accept') {
+            await updateFastTrackOrderStatus(selectedFastTrackOrder, 'Accepted');
+        } else if (action?.name == 'Reject') {
+            await updateFastTrackOrderStatus(selectedFastTrackOrder, 'Rejected');
+        } else if (action?.name == 'Ready') {
+            await updateFastTrackOrderStatus(selectedFastTrackOrder, 'Ready');
+        } else if (action?.name == 'Close') {
+            await updateFastTrackOrderStatus(selectedFastTrackOrder, 'Closed');
+        } else if (action?.name == 'Track Order') {
+            window.open(selectedFastTrackOrder?.verdiTrackingLink, '_blank');
+        }
+
+        setFastTrackAnchorEl(null);
+    };
+
     return (
-        <Grid container spacing={2}>
+            <Grid container spacing={2}>
+
             <Grid item xs={12}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
@@ -337,6 +473,7 @@ export default function Orders() {
                             />
                         )}
                     </Grid>
+   
                     {/* <Grid item xs={6}>
                     <TableControl type="Customer"/>
                 </Grid> */}
@@ -410,7 +547,97 @@ export default function Orders() {
             </Grid>
             </Grid>
 
-
+                                                     {/* Collapsible Dropdowns */}
+                {showCustomersArrived && (
+                    <Grid item xs={12} sm={6} md={showFastTrackUI ? 6 : 12}>
+                        <Accordion defaultExpanded>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <FiberManualRecordIcon sx={{ color: 'success.main', fontSize: 14 }} />
+                                    {`6 Customers Arrived`}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <List dense>
+                                    {customersArrived.map((c, idx) => (
+                                        <ListItem
+                                            key={idx}
+                                            disablePadding
+                                            secondaryAction={
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {c.time}
+                                                    </Typography>
+                                                    <IconButton size="small" sx={{ p: 0.25 }}>
+                                                        <MoreVertIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Box>
+                                            }
+                                        >
+                                            <ListItemText primary={`${c.name} (Order #${c.order})`} />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid>
+                )}
+                {showFastTrackUI && (
+                    <Grid item xs={12} sm={showCustomersArrived ? 6 : 12} md={showCustomersArrived ? 6 : 12}>
+                        <Accordion defaultExpanded>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <BoltIcon sx={{ color: 'warning.main', fontSize: 18 }} />
+                                    {`${fastTrackOrders.length} Fast Track Orders`}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <List dense>
+                                    {fastTrackOrders.map((c, idx) => (
+                                        <ListItem
+                                            key={idx}
+                                            disablePadding
+                                            sx={{ cursor: 'pointer' }}
+                                            onClick={() => handleFastTrackOpen(c)}
+                                            secondaryAction={
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {moment(c?.creationDate).format('hh:mm a')}
+                                                    </Typography>
+                                                    <IconButton
+                                                        size="small"
+                                                        sx={{ p: 0.25 }}
+                                                        onClick={(event) => openFastTrackMenu(event, c)}
+                                                    >
+                                                        <MoreVertIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Box>
+                                            }
+                                        >
+                                            <ListItemText
+                                                primary={`${c?.customerName || '-'} ${c?.customerSurname || ''} (Order #${c?.orderNumber || '-'})`}
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Grid>
+                )}
+                {showFastTrackUI && (
+                    <Menu
+                        id="fast-track-menu"
+                        anchorEl={fastTrackAnchorEl}
+                        open={Boolean(fastTrackAnchorEl)}
+                        onClose={() => setFastTrackAnchorEl(null)}
+                    >
+                        {fastTrackOptions.map((option, index) => (
+                            <MenuItem key={index} onClick={() => handleFastTrackAction(option)}>
+                                {option.name}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                )}
             <Grid item xs={12}>
                 <OrdersTable
                     reload={reload}
@@ -419,6 +646,7 @@ export default function Orders() {
                     setData={setData}
                     data={data}
                     setModalOpen={setModalOpen}
+                    onOrdersListChange={setOrdersSnapshot}
                     // statustypes={statustypes}
                     filter={filter}
                     // setTimerReload={setTimerReload}

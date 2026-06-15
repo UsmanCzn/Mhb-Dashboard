@@ -74,6 +74,8 @@ const FormComponent = () => {
         showFreeDrinkFeature: false,
         enableGrubTech: false,
         enableFoodics: false,
+        fastTrackOrdersAllowed: false,
+        fastTrackPrice: 0,
         twitterURL: '',
         useQRCode: false,
         walletSubtitle: '',
@@ -139,6 +141,7 @@ const FormComponent = () => {
     const [currencies, setCurrencies] = useState([]);
     const [IsMenuViewPaid, setIsMenuViewPaid] = useState(false);
     const [IsOrderingPaid, setIsOrderingPaid] = useState(false);
+    const [IsFastTrackPaid, setIsFastTrackPaid] = useState(false);
     const [pluginOrders, setPluginOrders] = useState([]);
 
 
@@ -206,6 +209,25 @@ const FormComponent = () => {
         }
     };
 
+    const handleFastTrackChange = (event, setFieldValue) => {
+        if (!IsFastTrackPaid && event.target.checked) {
+            enqueueSnackbar('You need to purchase the FAST TRACK plugin to enable this feature', {
+                variant: 'warning'
+            });
+            return;
+        }
+
+        setFieldValue('fastTrackOrdersAllowed', event.target.checked);
+    };
+
+    const handleDisabledFastTrackClick = () => {
+        if (!IsFastTrackPaid) {
+            enqueueSnackbar('You need to purchase the FAST TRACK plugin to enable this feature', {
+                variant: 'warning'
+            });
+        }
+    };
+
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -246,11 +268,16 @@ const getPluginsOrders = async () => {
 
         // Check if TABLE ORDERING is paid (at least one match)
         const isTableOrderingPaid = items.some(
-            (item) =>
-                item?.name === 'TABLE ORDERING' &&
-                item?.isPaid === true
+            (item) => item?.name === 'TABLE ORDERING' && item?.isPaid === true
         );
         setIsOrderingPaid(isTableOrderingPaid);
+
+        const isFastTrackPaid = items.some(
+            (item) =>
+                ['FAST TRACK', 'FAST TRACK ORDER', 'FAST TRACK ORDERS'].includes((item?.name || '').toUpperCase()) &&
+                item?.isPaid === true
+        );
+        setIsFastTrackPaid(isFastTrackPaid);
 
         // Check if MENU VIEW is paid (at least one match)
         const isMenuViewPaid = items.some(
@@ -266,6 +293,7 @@ const getPluginsOrders = async () => {
         // On error, safest default is: they are NOT paid/locked
         setPluginOrders([]);
         setIsOrderingPaid(false);
+        setIsFastTrackPaid(false);
         setIsMenuViewPaid(false);
     }
 };
@@ -334,6 +362,8 @@ const getPluginsOrders = async () => {
                     showFreeDrinkFeature: selectedBrand.showFreeDrinkFeature || false,
                     enableGrubTech: selectedBrand.enableGrubTech || false,
                     enableFoodics: selectedBrand.enableFoodics || false,
+                    fastTrackOrdersAllowed: selectedBrand?.fastTrackOrdersAllowed || false,
+                    fastTrackPrice: selectedBrand?.fastTrackPrice || 0,
                     menuView: selectedBrand?.menuView || false,
                     menuOrdering: selectedBrand?.menuOrdering || false,
                     primaryThemeColor: selectedBrand?.primaryThemeColor,
@@ -409,6 +439,8 @@ const getPluginsOrders = async () => {
             showFreeDrinkFeature: value?.showFreeDrinkFeature,
             enableGrubTech: value?.enableGrubTech,
             enableFoodics: value?.enableFoodics,
+            fastTrackOrdersAllowed: value?.fastTrackOrdersAllowed,
+            fastTrackPrice: value?.fastTrackPrice,
             socialFacebookUrl: value?.facebookURL,
             socialTikTokUrl: value?.tiktokURL,
             socialInstaUrl: value?.instagramURL,
@@ -482,6 +514,8 @@ const getPluginsOrders = async () => {
             showFreeDrinkFeature: value?.showFreeDrinkFeature,
             enableFoodics: value?.enableFoodics,
             enableGrubTech: value?.enableGrubTech,
+            fastTrackOrdersAllowed: value?.fastTrackOrdersAllowed,
+            fastTrackPrice: value?.fastTrackPrice,
             socialFacebookUrl: value?.facebookURL,
             socialTikTokUrl: value?.tiktokURL,
             socialInstaUrl: value?.instagramURL,
@@ -1013,6 +1047,39 @@ const getPluginsOrders = async () => {
                                                     }
                                                     label="Enable Foodics"
                                                 />
+
+                                                <FormControlLabel
+                                                    onClick={handleDisabledFastTrackClick}
+                                                    control={
+                                                        <Field name="fastTrackOrdersAllowed">
+                                                            {({ field }) => (
+                                                                <Switch
+                                                                    {...field}
+                                                                    checked={field.value}
+                                                                    disabled={!IsFastTrackPaid}
+                                                                    onChange={(e) => handleFastTrackChange(e, setFieldValue)}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    }
+                                                    label="Fast Track Ordering"
+                                                />
+
+                                                {values.fastTrackOrdersAllowed && (
+                                                    <Grid item xs={12} sm={6}>
+                                                        <Field
+                                                            as={TextField}
+                                                            name="fastTrackPrice"
+                                                            label="Fast Track Price"
+                                                            fullWidth
+                                                            type="number"
+                                                            variant="outlined"
+                                                            onChange={handleChange}
+                                                            error={touched.fastTrackPrice && Boolean(errors.fastTrackPrice)}
+                                                            helperText={touched.fastTrackPrice && errors.fastTrackPrice}
+                                                        />
+                                                    </Grid>
+                                                )}
 
                                                 <FormControlLabel
                                                     control={
