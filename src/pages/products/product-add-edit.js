@@ -53,6 +53,7 @@ const ProductAddEdit = () => {
         nativeName: '',
         newAddonGroup: '',
         pointsOfCost: 0,
+        posId: 0,
         punchesForPurchase: 0,
         price: 0,
         productDescription: '',
@@ -170,6 +171,7 @@ const ProductAddEdit = () => {
                 nativeName: Product.nativeName || '',
                 newAddonGroup: '',
                 pointsOfCost: Product.pointsOfCost || 0,
+                posId: Product.posId || 0,
                 price: Product.price || 0,
                 productDescription: Product.productDescription || '',
                 productDescriptionNative: Product.productDescriptionNative || '',
@@ -306,6 +308,7 @@ const ProductAddEdit = () => {
                                     newProducts: [
                                         {
                                             name: values?.name,
+                                            posId: +values?.posId || 0,
                                             price: values?.price,
                                             pointsOfCost: +values?.pointsOfCost || 0,
                                             nativeName: values?.nativeName,
@@ -342,7 +345,7 @@ const ProductAddEdit = () => {
                                         estimatePreparationTimeInMinutes: values.estimatePreparationTimeInMinutes,
                                         punchesType : values.punchesType,
                                         isFileRequired: values.isFileRequired,
-                                        posId: 0,
+                                        posId: +values.posId || 0,
                                         price: values.price,
                                         isEligibleForFreeItem: values.isEligibleForFreeItem,
                                         isQtyAvailable: values.isQtyAvailable,
@@ -585,6 +588,21 @@ const ProductAddEdit = () => {
                                             Boolean(errors.orderValue)
                                             }
                                             helperText={touched.orderValue && errors.orderValue}
+                                        />
+                                        </Grid>
+
+                                        {/* POS ID */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="POS ID"
+                                            name="posId"
+                                            value={values.posId}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.posId && Boolean(errors.posId)}
+                                            helperText={touched.posId && errors.posId}
                                         />
                                         </Grid>
 

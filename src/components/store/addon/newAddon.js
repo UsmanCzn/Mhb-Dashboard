@@ -104,7 +104,7 @@ const NewAddon = ({
             ...data,
             brandId: selectedBrand?.id,
             productId: selectedProduct?.id,
-            posId: 1
+            posId: data.posId
 };
                 const options = {
       maxSizeMB: IMAGE_COMPRESSION_MAX_SIZE_MB,
@@ -309,6 +309,21 @@ return (
                     setData({
                       ...data,
                       pointsOfCost: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField
+                  fullWidth
+                  label="POS ID"
+                  type="number"
+                  value={data.posId}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      posId: e.target.value,
                     })
                   }
                 />

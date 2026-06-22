@@ -36,15 +36,6 @@ import { ADMIN, BRAND_MANAGER, COMPANY_ADMIN } from 'helper/UserRoles';
 
 
 export default function Orders() {
-
-    // Dummy data for accordions
-    const customersArrived = [
-        { name: 'Ahmad M', order: 5795, time: '10:24 AM' },
-        { name: 'Usman Shahzad', order: 5799, time: '10:26 AM' },
-        { name: 'Shahzaib Naseer', order: 5799, time: '10:28 AM' },
-    ];
-
-
     const { type } = useParams();
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
@@ -73,6 +64,7 @@ export default function Orders() {
     const [selectedBrandId, setselectedBrandId] = useState('');
     const [checked, setChecked] = useState(false);
     const [ordersSnapshot, setOrdersSnapshot] = useState([]);
+    const [customersArrived, setCustomersArrived] = useState([]);
     const [fastTrackAnchorEl, setFastTrackAnchorEl] = useState(null);
     const [selectedFastTrackOrder, setSelectedFastTrackOrder] = useState(null);
     const [fastTrackOptions, setFastTrackOptions] = useState([{ name: 'Open/Print', modal: true }]);
@@ -288,12 +280,36 @@ export default function Orders() {
         //     console.log(err?.response?.data);
         // })
     };
+
+    const getCustomersArrived = async () => {
+        if (selectedBrandId === '') {
+            setCustomersArrived([]);
+            return;
+        }
+
+        try {
+            const res = await orderServices.getCustomerArrivedOrders({
+                branchId: selectedBranchId || 0,
+                brandId: selectedBrandId || 0
+            });
+        
+            setCustomersArrived(res?.data?.result?.data?.data || []);
+        } catch (error) {
+            console.log(error?.response?.data);
+            setCustomersArrived([]);
+        }
+    };
+
     // useEffect(() => {
     //     // getOrderTypes()
     // }, []);
     useEffect(() => {
         getAnalytics();
     }, [selectedBranchId, reload]);
+
+    useEffect(() => {
+        getCustomersArrived();
+    }, [selectedBranchId, selectedBrandId, reload]);
 
     useEffect(() => {
 
@@ -313,43 +329,67 @@ export default function Orders() {
     };
 
     const getFastTrackOptions = (order) => {
+        const posRemoteOrderId =  order?.posRemoteOrderId;
+        const appendSubmitToPOSAction = (options) => {
+            if (posRemoteOrderId == null) {
+                return [...options, { name: 'Submit To POS Again', modal: false }];
+            }
+
+            return options;
+        };
+
         if (order?.status == 'Open') {
-            return [
+            return appendSubmitToPOSAction([
                 { name: 'Open/Print', modal: true },
                 { name: 'Accept', modal: false },
                 { name: 'Reject', modal: false }
-            ];
+            ]);
         }
 
         if (order?.status == 'Accepted' && order?.deliverySystem === 'HomeDeliver' && order?.verdiOrderId > 0) {
-            return [
+            return appendSubmitToPOSAction([
                 { name: 'Open/Print', modal: true },
                 { name: 'Request Driver', modal: false }
-            ];
+            ]);
         }
 
         if (order?.status == 'Accepted') {
-            return [
+            return appendSubmitToPOSAction([
                 { name: 'Open/Print', modal: true },
                 { name: 'Ready', modal: false }
-            ];
+            ]);
         }
 
         if (order?.status == 'OutForDelivery' && order?.verdiTrackingLink) {
-            return [
+            return appendSubmitToPOSAction([
                 { name: 'Open/Print', modal: true },
                 { name: 'Track Order', modal: false }
-            ];
+            ]);
         }
 
         if (order?.status == 'Ready' && order?.deliverySystem !== 'HomeDeliver') {
-            return [
+            return appendSubmitToPOSAction([
                 { name: 'Open/Print', modal: true },
                 { name: 'Close', modal: false }
-            ];
+            ]);
         }
 
-        return [{ name: 'Open/Print', modal: true }];
+        return appendSubmitToPOSAction([{ name: 'Open/Print', modal: true }]);
+    };
+
+    const submitOrderToPOSAgain = async (order) => {
+        if (!order?.id) {
+            return;
+        }
+
+        await orderServices
+            .submitOrderToPOSFromOrder(order.id)
+            .then(() => {
+                setReload((prev) => !prev);
+            })
+            .catch((err) => {
+                console.log(err?.response?.data);
+            });
     };
 
     const updateFastTrackOrderStatus = async (order, statusTitle) => {
@@ -398,6 +438,8 @@ export default function Orders() {
             await updateFastTrackOrderStatus(selectedFastTrackOrder, 'Closed');
         } else if (action?.name == 'Track Order') {
             window.open(selectedFastTrackOrder?.verdiTrackingLink, '_blank');
+        } else if (action?.name == 'Submit To POS Again') {
+            await submitOrderToPOSAgain(selectedFastTrackOrder);
         }
 
         setFastTrackAnchorEl(null);
@@ -554,19 +596,21 @@ export default function Orders() {
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Typography variant="subtitle1" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <FiberManualRecordIcon sx={{ color: 'success.main', fontSize: 14 }} />
-                                    {`6 Customers Arrived`}
+                                    {`${customersArrived.length} Customers Arrived`}
                                 </Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <List dense>
                                     {customersArrived.map((c, idx) => (
                                         <ListItem
-                                            key={idx}
+                                            key={c?.id || idx}
                                             disablePadding
+                                            sx={{ cursor: 'pointer' }}
+                                            onClick={() => handleFastTrackOpen(c)}
                                             secondaryAction={
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                     <Typography variant="caption" color="text.secondary">
-                                                        {c.time}
+                                                        {c?.arrivalTime ? moment(c.arrivalTime).format('hh:mm a') : '-'}
                                                     </Typography>
                                                     <IconButton size="small" sx={{ p: 0.25 }}>
                                                         <MoreVertIcon fontSize="small" />
@@ -574,7 +618,9 @@ export default function Orders() {
                                                 </Box>
                                             }
                                         >
-                                            <ListItemText primary={`${c.name} (Order #${c.order})`} />
+                                            <ListItemText
+                                                primary={`${c?.customerName || c?.guestCustomerName || '-'} ${c?.customerSurname || ''} (Order #${c?.orderNumber || '-'})`}
+                                            />
                                         </ListItem>
                                     ))}
                                 </List>

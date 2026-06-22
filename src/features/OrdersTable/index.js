@@ -67,6 +67,15 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         setIsDialogOpen(false);
     };
 
+    const appendSubmitToPOSActionIfNeeded = (options, order) => {
+        const posRemoteOrderId = order?.POSRemoteOrderId ?? order?.posRemoteOrderId;
+        if (posRemoteOrderId == null) {
+            return [...options, { name: 'Submit To POS Again', modal: false }];
+        }
+
+        return options;
+    };
+
     const handleAssignTask = () => {
         console.log('Task Assigned');
         setIsDialogOpen(false); // Close dialog after assigning the task
@@ -97,7 +106,7 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
         
         setAnchorEl(event.currentTarget);
         if (params?.row?.status == 'Open') {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -110,9 +119,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Reject',
                     modal: false
                 }
-            ]);
+            ], params?.row));
         } else if (params?.row?.status == 'Accepted' && params?.row?.deliverySystem === 'HomeDeliver' && params.row?.verdiOrderId>0) {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -121,9 +130,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Request Driver',
                     modal: false
                 }
-            ]);
+            ], params?.row));
         } else if (params?.row?.status == 'Accepted') {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -133,9 +142,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Ready',
                     modal: false
                 }
-            ]);
+            ], params?.row));
         } else if (params?.row?.status == 'OutForDelivery' && params?.row?.verdiTrackingLink) {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -144,9 +153,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Track Order',
                     modal: false
                 }
-            ]);
+            ], params?.row));
         } else if (params?.row?.status == 'Ready' && params?.row?.deliverySystem === 'HomeDeliver') {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -155,9 +164,9 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                 //     name: 'Close',
                 //     modal: false
                 // }
-            ]);
+            ], params?.row));
         } else if (params?.row?.status == 'Ready') {
-            setOptions([
+            setOptions(appendSubmitToPOSActionIfNeeded([
                 {
                     name: 'Open/Print',
                     modal: true
@@ -166,14 +175,14 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
                     name: 'Close',
                     modal: false
                 }
-            ]);
+            ], params?.row));
         } else {
         const base = [{ name: 'Open/Print', modal: true }];
                 if (shouldShowRefundButton(params?.row)) {
                 base.push({ name: 'Refund Request', modal: true });
                 }
 
-             setOptions(base);
+             setOptions(appendSubmitToPOSActionIfNeeded(base, params?.row));
                 }
                 };
     const handleClose = (Data) => {
@@ -199,6 +208,16 @@ export default function OrdersTable({ type, setData, setModalOpen, selectedBranc
             console.log('Close');
         } else if (Data?.name == 'Track Order') {
             window.open(data?.verdiTrackingLink, '_blank');
+        } else if (Data?.name == 'Submit To POS Again') {
+            orderServices.submitOrderToPOSFromOrder(data?.id)
+                .then(() => {
+                    enqueueSnackbar('Order submitted to POS', { variant: 'success' });
+                    fetchOrdersList();
+                })
+                .catch((err) => {
+                    enqueueSnackbar('Failed to submit order to POS', { variant: 'error' });
+                    console.log(err?.response?.data);
+                });
         }
         setAnchorEl(null);
     };
@@ -417,7 +436,7 @@ const columns = [
             </Stack>
 
             <DataGridComponent
-                rows={ordersList}
+                rows={(ordersList || []).filter(o => !o.isFastTrackOrder)}
                 columns={columns}
                 loading={loading}
                 getRowId={(row) => row.id}

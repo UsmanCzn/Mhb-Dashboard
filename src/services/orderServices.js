@@ -23,6 +23,16 @@ export default {
       }
     );
   },
+
+  getCustomerArrivedOrders(data) {
+    return ApiV1.get(
+      'services/app/Store/GetUserOrdersAsBranchUserCustomerArrived',
+      {
+        params: data
+      }
+    );
+  },
+
   getOrderTypes() { 
     return ApiV1.get(
       'services/app/Store/GetOrderStatusTypes', 
@@ -106,6 +116,10 @@ export default {
       return ApiV1.post(`services/app/Store/CreateTaskForDelivery?orderId=${orderId}`);
   }
 ,
+  submitOrderToPOSFromOrder(orderId){
+    return ApiV1.post(`services/app/Store/SubmitOrderToPOSFromOrder?orderId=${orderId}`);
+  },
+
   getOrderDetails(id){
     return ApiV1.get(`services/app/Store/GetOrderDetails?orderId=${id}`)
   }
