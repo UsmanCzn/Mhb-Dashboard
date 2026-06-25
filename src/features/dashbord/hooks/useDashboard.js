@@ -128,6 +128,7 @@ const fetchRewardList = useCallback(() => {
                 posOrders: getData(POS_DASHBOARD, {}).item1 ?? 0,
                 posSales: getData(POS_DASHBOARD, {}).item2 ?? 0,
                 posPoints: getData(POS_DASHBOARD, {}).item3 ?? 0,
+                posScanUsers: getData(POS_DASHBOARD, {}).item4 ?? 0,
 
                 topTenProducts:
                     results[TOP_TEN_PRODUCTS].status === "fulfilled"

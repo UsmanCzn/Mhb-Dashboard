@@ -1065,22 +1065,6 @@ const getPluginsOrders = async () => {
                                                     label="Fast Track Ordering"
                                                 />
 
-                                                {values.fastTrackOrdersAllowed && (
-                                                    <Grid item xs={12} sm={6}>
-                                                        <Field
-                                                            as={TextField}
-                                                            name="fastTrackPrice"
-                                                            label="Fast Track Price"
-                                                            fullWidth
-                                                            type="number"
-                                                            variant="outlined"
-                                                            onChange={handleChange}
-                                                            error={touched.fastTrackPrice && Boolean(errors.fastTrackPrice)}
-                                                            helperText={touched.fastTrackPrice && errors.fastTrackPrice}
-                                                        />
-                                                    </Grid>
-                                                )}
-
                                                 <FormControlLabel
                                                     control={
                                                         <Field name="menuView">

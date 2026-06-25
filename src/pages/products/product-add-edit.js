@@ -56,6 +56,7 @@ const ProductAddEdit = () => {
         posId: 0,
         punchesForPurchase: 0,
         price: 0,
+        beforeDiscountPrice: 0,
         productDescription: '',
         productDescriptionNative: '',
         productImage: null,
@@ -173,6 +174,7 @@ const ProductAddEdit = () => {
                 pointsOfCost: Product.pointsOfCost || 0,
                 posId: Product.posId || 0,
                 price: Product.price || 0,
+                beforeDiscountPrice: Product.beforeDiscountPrice || 0,
                 productDescription: Product.productDescription || '',
                 productDescriptionNative: Product.productDescriptionNative || '',
                 productImage: Product.productImage || null,
@@ -310,6 +312,7 @@ const ProductAddEdit = () => {
                                             name: values?.name,
                                             posId: +values?.posId || 0,
                                             price: values?.price,
+                                            beforeDiscountPrice: values?.beforeDiscountPrice || 0,
                                             pointsOfCost: +values?.pointsOfCost || 0,
                                             nativeName: values?.nativeName,
                                             orderValue: +values.orderValue,
@@ -347,6 +350,7 @@ const ProductAddEdit = () => {
                                         isFileRequired: values.isFileRequired,
                                         posId: +values.posId || 0,
                                         price: values.price,
+                                        beforeDiscountPrice: values.beforeDiscountPrice || 0,
                                         isEligibleForFreeItem: values.isEligibleForFreeItem,
                                         isQtyAvailable: values.isQtyAvailable,
                                         isSuggest: values.isSuggest,
@@ -570,6 +574,21 @@ const ProductAddEdit = () => {
                                             onBlur={handleBlur}
                                             error={touched.price && Boolean(errors.price)}
                                             helperText={touched.price && errors.price}
+                                        />
+                                        </Grid>
+
+                                        {/* Before Discount Price */}
+                                        <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Before Discount Price"
+                                            name="beforeDiscountPrice"
+                                            value={values.beforeDiscountPrice}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.beforeDiscountPrice && Boolean(errors.beforeDiscountPrice)}
+                                            helperText={touched.beforeDiscountPrice && errors.beforeDiscountPrice}
                                         />
                                         </Grid>
 

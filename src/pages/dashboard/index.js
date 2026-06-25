@@ -261,39 +261,56 @@ const DashboardDefault = () => {
                         extra="$20,395"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce
-                        title="POS Orders"
-                        count={dashbaordBoardData?.posOrders ?? 0}
-                        isLoading={loading}
-                        percentage={27.4}
-                        extra="1,943"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce
-                        title="POS Sales"
-                        count={
-                            selectedBrand?.currency
-                                ? `${roundedPosSales}${selectedBrand.currency}`
-                                : `${roundedPosSales}`
-                        }
-                        isLoading={loading}
-                        percentage={27.4}
-                        isLoss
-                        color="warning"
-                        extra="$20,395"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AnalyticEcommerce
-                        title="POS Points"
-                        count={dashbaordBoardData?.posPoints ?? 0}
-                        isLoading={loading}
-                        percentage={27.4}
-                        extra="1,943"
-                    />
-                </Grid>
+                {selectedBrand?.enableFoodics && (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce
+                            title="POS Orders"
+                            count={dashbaordBoardData?.posOrders ?? 0}
+                            isLoading={loading}
+                            percentage={27.4}
+                            extra="1,943"
+                        />
+                    </Grid>
+                )}
+                {selectedBrand?.enableFoodics && (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce
+                            title="POS Sales"
+                            count={
+                                selectedBrand?.currency
+                                    ? `${roundedPosSales}${selectedBrand.currency}`
+                                    : `${roundedPosSales}`
+                            }
+                            isLoading={loading}
+                            percentage={27.4}
+                            isLoss
+                            color="warning"
+                            extra="$20,395"
+                        />
+                    </Grid>
+                )}
+                {selectedBrand?.enableFoodics && (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce
+                            title="POS Points"
+                            count={dashbaordBoardData?.posPoints ?? 0}
+                            isLoading={loading}
+                            percentage={27.4}
+                            extra="1,943"
+                        />
+                    </Grid>
+                )}
+                {selectedBrand?.enableFoodics && (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                        <AnalyticEcommerce
+                            title="Scan for Payments"
+                            count={dashbaordBoardData?.posScanUsers ?? 0}
+                            isLoading={loading}
+                            percentage={27.4}
+                            extra="1,943"
+                        />
+                    </Grid>
+                )}
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce
                         title="Avg order ready time"
@@ -356,7 +373,7 @@ const DashboardDefault = () => {
                         extra="$20,395"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4} lg={3}></Grid>
+                {selectedBrand?.enableFoodics && <Grid item xs={12} sm={6} md={4} lg={3}></Grid>}
                 {/* <Grid item xs={12} sm={6} md={4} lg={3}></Grid> */}
                 {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                     <AnalyticEcommerce

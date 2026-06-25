@@ -89,6 +89,13 @@ const printOrder = () => {
             ? `<div>Comments: ${homeDeliveryCommentsText}</div><div class="separator"></div>`
             : '';
 
+  const fastTrackPriceHtml =
+    Number(data?.fastTrackOrderPrice) > 0
+      ? `<div class="total-row"><span>Fast Track Fee:</span><span>${Number(data?.fastTrackOrderPrice).toFixed(
+          data?.brandCurrencyDecimal || 3
+        )}</span></div>`
+      : '';
+
   const documentContent = `
     <html>
     <head>
@@ -219,6 +226,7 @@ h6.center {
         <div class="total-row"><span>Items Total:</span><span>${data?.subTotal?.toFixed(
           data?.brandCurrencyDecimal || 3
         )}</span></div>
+        ${fastTrackPriceHtml}
         ${pointsEarnedHtml}
 
         <div class="total-row"><span>To Pay:</span><span>${data?.totalPrice?.toFixed(
@@ -675,6 +683,24 @@ h6.center {
                                             {data?.subTotal?.toFixed(data?.brandCurrencyDecimal || 3)}
                                         </Typography>
                                     </Box>
+                                    {Number(data?.fastTrackOrderPrice) > 0 && (
+                                        <Box
+                                            style={{
+                                                borderBottom: '1px dashed black',
+                                                width: '100%',
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                justifyContent: 'space-between'
+                                            }}
+                                        >
+                                            <Typography variant="h7" fontSize={14}>
+                                                Fast Track Fee:
+                                            </Typography>
+                                            <Typography variant="h7" fontSize={14}>
+                                                {Number(data?.fastTrackOrderPrice).toFixed(data?.brandCurrencyDecimal || 3)}
+                                            </Typography>
+                                        </Box>
+                                    )}
                                     {Number(data?.pointsEarned) > 0 && (
                                     <Box
                                         style={{
